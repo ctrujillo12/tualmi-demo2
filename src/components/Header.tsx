@@ -28,13 +28,13 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           <nav className="hidden md:flex space-x-6 text-xs">
             <Link href="/products" className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}>
-              Shop All
+              New
             </Link>
-            <Link href="/products?category=Bikini" className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}>
-              Bikinis
-            </Link>
-            <Link href="/products?category=One-Piece" className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}>
-              One-Pieces
+            {/* <Link href="/products?category=Bikini" className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}>
+              Collections
+            </Link> */}
+            <Link href="/story" className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}>
+              Our Story
             </Link>
           </nav>
 

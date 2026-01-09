@@ -17,8 +17,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'Coastal Swim - Premium Swimwear',
-  description: 'Discover elegant, high-quality swimwear for every occasion',
+  title: 'Tualmi Outdoors',
+  description: 'Modern outdoorswear for the modern woman',
 };
 
 export default function RootLayout({

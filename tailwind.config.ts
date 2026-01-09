@@ -22,12 +22,31 @@ const config: Config = {
           900: '#000000',
         },
       },
+
+      /* 🖤 EDITORIAL TYPOGRAPHY SYSTEM */
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         serif: ['var(--font-playfair)', 'Georgia', 'serif'],
+      },
+
+      fontSize: {
+        xs: ['0.7rem', { lineHeight: '1.05rem' }],
+        sm: ['0.8rem', { lineHeight: '1.35rem' }],
+        base: ['0.875rem', { lineHeight: '1.5rem' }],
+        lg: ['1rem', { lineHeight: '1.6rem' }],
+        xl: ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.6rem', { lineHeight: '2rem' }],
+      },
+
+      letterSpacing: {
+        tight: '-0.01em',
+        wide: '0.12em',
+        wider: '0.22em',
+        widest: '0.3em',
       },
     },
   },
   plugins: [],
 }
+
 export default config
