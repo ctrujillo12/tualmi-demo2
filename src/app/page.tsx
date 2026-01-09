@@ -10,7 +10,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-screen w-full">
         <Image
-          src="/images-2/hero7.jpg"
+          src="/images-2/hero5.jpg"
           alt="Hero"
           fill
           className="object-cover"
