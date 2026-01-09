@@ -38,7 +38,7 @@ export default function Header() {
             </Link>
           </nav>
 
-          <Link href="/" className={`absolute left-1/2 transform -translate-x-1/2 text-sm font-normal ${textColor} tracking-[0.3em] uppercase transition-colors duration-300`}>
+          <Link href="/" className={`absolute left-1/2 transform -translate-x-1/2 text-sm font-bold ${textColor} tracking-[0.3em] uppercase transition-colors duration-300`}>
             TUALMI
           </Link>
 

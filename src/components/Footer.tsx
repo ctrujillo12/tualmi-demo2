@@ -1,6 +1,16 @@
+'use client';
+
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function Footer() {
+  // State for mobile expand/collapse
+  const [openSection, setOpenSection] = useState<string | null>(null);
+
+  const toggleSection = (section: string) => {
+    setOpenSection(openSection === section ? null : section);
+  };
+
   return (
     <footer className="bg-sand-50 text-black border-t border-sand-200 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -30,56 +40,76 @@ export default function Footer() {
           </div>
 
           {/* Footer Links */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">
-                Assistance
-              </h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="#" className="hover:opacity-60">Shipping</Link></li>
-                <li><Link href="#" className="hover:opacity-60">Returns</Link></li>
-                <li><Link href="#" className="hover:opacity-60">Size + Fit</Link></li>
-                <li><Link href="#" className="hover:opacity-60">Garment Care</Link></li>
-                <li><Link href="#" className="hover:opacity-60">FAQ</Link></li>
-              </ul>
-            </div>
+          <div className="lg:grid grid-cols-2 md:grid-cols-4 gap-8">
+            {/* Section Template */}
+            {[
+              {
+                title: 'Assistance',
+                links: [
+                  { name: 'Shipping', href: '#' },
+                  { name: 'Returns', href: '#' },
+                  { name: 'Size + Fit', href: '#' },
+                  { name: 'Garment Care', href: '#' },
+                  { name: 'FAQ', href: '#' },
+                ],
+              },
+              {
+                title: 'Company',
+                links: [
+                  { name: 'About', href: '#' },
+                  { name: 'My Account', href: '#' },
+                  { name: 'Gift Cards', href: '#' },
+                ],
+              },
+              {
+                title: 'Social',
+                links: [
+                  { name: 'Instagram', href: '#' },
+                  { name: 'TikTok', href: '#' },
+                ],
+              },
+              {
+                title: 'Legal',
+                links: [
+                  { name: 'Privacy Policy', href: '#' },
+                  { name: 'Terms & Conditions', href: '#' },
+                ],
+              },
+            ].map(section => (
+              <div key={section.title}>
+                {/* Heading clickable on mobile */}
+                <button
+                  className="w-full flex justify-between items-center font-semibold mb-2 text-sm uppercase tracking-wider lg:cursor-auto"
+                  onClick={() => toggleSection(section.title)}
+                >
+                  {section.title}
+                  <span className="lg:hidden">
+                    {openSection === section.title ? '−' : '+'}
+                  </span>
+                </button>
 
-            <div>
-              <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">
-                Company
-              </h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="#" className="hover:opacity-60">About</Link></li>
-                <li><Link href="#" className="hover:opacity-60">My Account</Link></li>
-                <li><Link href="#" className="hover:opacity-60">Gift Cards</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">
-                Social
-              </h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:opacity-60">Instagram</a></li>
-                <li><a href="#" className="hover:opacity-60">TikTok</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">
-                Legal
-              </h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="#" className="hover:opacity-60">Privacy Policy</Link></li>
-                <li><Link href="#" className="hover:opacity-60">Terms & Conditions</Link></li>
-              </ul>
-            </div>
+                {/* Links: visible on desktop, toggle on mobile */}
+                <ul
+                  className={`space-y-2 text-sm overflow-hidden transition-all duration-300
+                    ${openSection === section.title ? 'max-h-96' : 'max-h-0'}
+                    lg:max-h-full lg:block`}
+                >
+                  {section.links.map(link => (
+                    <li key={link.name}>
+                      <Link href={link.href} className="hover:opacity-60 block">
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="border-t border-sand-200 pt-8 text-center text-sm opacity-70">
-          © 2025 TUALMI OUTDOORS
+          © 2025 TUALMI
         </div>
       </div>
     </footer>
