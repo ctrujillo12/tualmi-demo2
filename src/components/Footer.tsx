@@ -2,33 +2,62 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
 export default function Footer() {
   // State for mobile expand/collapse
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    const { error } = await supabase
+      .from('newsletter_subscribers')
+      .insert({ email });
+
+    if (error) {
+      setStatus('error');
+      setErrorMsg(error.message);
+    } else {
+      setStatus('success');
+      setEmail('');
+    }
+  };
+
   return (
     <footer className="bg-sand-50 text-black border-t border-sand-200 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-
         {/* Newsletter + Links Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
-
           {/* Newsletter */}
           <div className="max-w-md">
             <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">
               Newsletter
             </h4>
 
-            <form className="flex items-center border-b border-black pb-2">
+            <form
+              onSubmit={handleSubmit}
+              className="flex items-center border-b border-black pb-2"
+            >
               <input
                 type="email"
                 placeholder="Email"
                 className="flex-1 bg-transparent text-sm focus:outline-none placeholder-black/60"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <button
                 type="submit"
@@ -37,47 +66,36 @@ export default function Footer() {
                 Subscribe
               </button>
             </form>
+
+            {status === 'success' && (
+              <p className="text-green-600 mt-2 text-sm">Subscribed successfully!</p>
+            )}
+            {status === 'error' && (
+              <p className="text-red-600 mt-2 text-sm">Error: {errorMsg}</p>
+            )}
           </div>
 
           {/* Footer Links */}
           <div className="lg:grid grid-cols-2 md:grid-cols-4 gap-8">
-            {/* Section Template */}
             {[
               {
                 title: 'Assistance',
-                links: [
-                  { name: 'Shipping', href: '#' },
-                  { name: 'Returns', href: '#' },
-                  { name: 'Size + Fit', href: '#' },
-                  { name: 'Garment Care', href: '#' },
-                  { name: 'FAQ', href: '#' },
-                ],
+                links: ['Shipping', 'Returns', 'Size + Fit', 'Garment Care', 'FAQ'],
               },
               {
                 title: 'Company',
-                links: [
-                  { name: 'About', href: '#' },
-                  { name: 'My Account', href: '#' },
-                  { name: 'Gift Cards', href: '#' },
-                ],
+                links: ['About', 'My Account', 'Gift Cards'],
               },
               {
                 title: 'Social',
-                links: [
-                  { name: 'Instagram', href: '#' },
-                  { name: 'TikTok', href: '#' },
-                ],
+                links: ['Instagram', 'TikTok'],
               },
               {
                 title: 'Legal',
-                links: [
-                  { name: 'Privacy Policy', href: '#' },
-                  { name: 'Terms & Conditions', href: '#' },
-                ],
+                links: ['Privacy Policy', 'Terms & Conditions'],
               },
-            ].map(section => (
+            ].map((section) => (
               <div key={section.title}>
-                {/* Heading clickable on mobile */}
                 <button
                   className="w-full flex justify-between items-center font-semibold mb-2 text-sm uppercase tracking-wider lg:cursor-auto"
                   onClick={() => toggleSection(section.title)}
@@ -88,16 +106,15 @@ export default function Footer() {
                   </span>
                 </button>
 
-                {/* Links: visible on desktop, toggle on mobile */}
                 <ul
                   className={`space-y-2 text-sm overflow-hidden transition-all duration-300
                     ${openSection === section.title ? 'max-h-96' : 'max-h-0'}
                     lg:max-h-full lg:block`}
                 >
-                  {section.links.map(link => (
-                    <li key={link.name}>
-                      <Link href={link.href} className="hover:opacity-60 block">
-                        {link.name}
+                  {section.links.map((link) => (
+                    <li key={link}>
+                      <Link href="#" className="hover:opacity-60 block">
+                        {link}
                       </Link>
                     </li>
                   ))}
