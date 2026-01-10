@@ -1,119 +1,124 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useCartStore } from '@/store/cartStore';
 import CartItem from '@/components/CartItem';
-import HeaderStaticBlack from '@/components/HeaderStaticBlack';
+import { useCartStore } from '@/store/cartStore';
 
 export default function CartPage() {
+  const router = useRouter();
   const { items, getTotal } = useCartStore();
-  const total = getTotal();
-  const shipping = total > 100 ? 0 : 10;
-  const finalTotal = total + shipping;
 
-  // Empty cart view
+  const total = getTotal();
+  const shipping = total > 0 ? 0 : 0; // Free shipping, or add logic
+  const tax = total * 0.08; // 8% tax
+  const grandTotal = total + shipping + tax;
+
+  const handleCheckout = () => {
+    router.push('/checkout');
+  };
+
   if (items.length === 0) {
     return (
-      <>
-        <HeaderStaticBlack />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center py-16">
-            <svg
-              className="w-24 h-24 text-sand-300 mx-auto mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-
-            <h2 className="font-serif text-2xl md:text-3xl font-normal text-sand-900 mb-4 tracking-wide">
+      <div className="min-h-screen bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+          
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🛒</div>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
               Your cart is empty
             </h2>
-
-            <p className="text-sand-600 text-sm md:text-base mb-8 leading-relaxed">
-              Add some beautiful gear to get started
+            <p className="text-gray-600 mb-6">
+              Add some products to get started
             </p>
-
             <Link
-              href="/products"
-              className="inline-block bg-sand-900 text-white px-6 md:px-8 py-2 md:py-3 rounded-md font-semibold text-sm md:text-base tracking-wide hover:bg-black transition-colors"
+              href="/"
+              className="inline-block bg-black text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-800 transition-all"
             >
-              Shop Now
+              Continue Shopping
             </Link>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
-  // Cart with items
   return (
-    <>
-      <HeaderStaticBlack />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <h1 className="font-serif text-2xl md:text-4xl font-normal text-sand-900 mb-8 tracking-wide">
-          Shopping Cart
-        </h1>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2">
-            <div className="bg-sand-50 rounded-lg shadow-sm p-6 space-y-4">
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
               {items.map((item, index) => (
-                <CartItem
-                  key={`${item.id}-${item.selectedSize}-${item.selectedColor}-${index}`}
-                  item={item}
-                />
+                <CartItem key={`${item.product.id}-${item.selectedSize}-${item.selectedColor}-${index}`} item={item} />
               ))}
             </div>
+
+            <Link
+              href="/"
+              className="inline-block mt-6 text-sm text-gray-600 hover:text-gray-900"
+            >
+              ← Continue Shopping
+            </Link>
           </div>
 
           {/* Order Summary */}
-          <div>
-            <div className="bg-sand-50 rounded-lg shadow-sm p-6 sticky top-24 space-y-4">
-              <h2 className="font-serif text-xl md:text-2xl font-normal text-sand-900 mb-4 tracking-wide">
+          <div className="lg:col-span-1">
+            <div className="bg-gray-50 rounded-lg border border-gray-200 p-6 sticky top-4">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Order Summary
               </h2>
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-sand-600 text-sm md:text-base">
-                  <span>Subtotal</span>
-                  <span>${total.toFixed(2)}</span>
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span className="font-medium text-gray-900">
+                    ${(total / 100).toFixed(2)}
+                  </span>
                 </div>
-                <div className="flex justify-between text-sand-600 text-sm md:text-base">
-                  <span>Shipping</span>
-                  <span>{shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}</span>
+                
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Shipping</span>
+                  <span className="font-medium text-gray-900">
+                    {shipping === 0 ? 'Free' : `$${(shipping / 100).toFixed(2)}`}
+                  </span>
                 </div>
-                {total > 100 && (
-                  <div className="text-sm text-green-600">🎉 You qualify for free shipping!</div>
-                )}
-                <div className="border-t border-sand-200 pt-3 flex justify-between font-serif font-semibold text-base md:text-lg text-sand-900 tracking-wide">
-                  <span>Total</span>
-                  <span>${finalTotal.toFixed(2)}</span>
+                
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Tax</span>
+                  <span className="font-medium text-gray-900">
+                    ${(tax / 100).toFixed(2)}
+                  </span>
                 </div>
               </div>
 
-              <Link
-                href="/checkout"
-                className="block w-full bg-sand-900 text-white py-2 md:py-3 rounded-md font-semibold text-sm md:text-base text-center tracking-wide hover:bg-black transition-colors"
+              <div className="border-t border-gray-300 pt-4 mb-6">
+                <div className="flex justify-between">
+                  <span className="text-lg font-semibold text-gray-900">Total</span>
+                  <span className="text-lg font-semibold text-gray-900">
+                    ${(grandTotal / 100).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                onClick={handleCheckout}
+                className="w-full bg-black text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-all"
               >
                 Proceed to Checkout
-              </Link>
+              </button>
 
-              <Link
-                href="/products"
-                className="block w-full text-center text-sand-900 hover:text-black text-sm md:text-base tracking-wide transition-colors"
-              >
-                Continue Shopping
-              </Link>
+              <p className="text-xs text-gray-500 text-center mt-4">
+                Secure checkout powered by Stripe
+              </p>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

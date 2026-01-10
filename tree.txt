@@ -1,0 +1,45 @@
+Folder PATH listing for volume Windows
+Volume serial number is BEA9-CF4A
+C:\PROJECTS\WEBSITE\OTHER-TUALMI\ECOMMERCE-SITE\SRC
++---app
+|   |   favicon.ico
+|   |   globals.css
+|   |   layout.tsx
+|   |   page.tsx
+|   |   
+|   +---api
+|   |   \---checkout
+|   |           route.ts
+|   |           
+|   +---cart
+|   |       page.tsx
+|   |       
+|   +---checkout
+|   |       page.tsx
+|   |       
+|   +---products
+|   |   \---[id]
+|   |           page.tsx
+|   |           
+|   \---story
+|           page.tsx
+|           
++---components
+|       CartItem.tsx
+|       CheckoutForm.tsx
+|       Footer.tsx
+|       Header.tsx
+|       HeaderStaticBlack.tsx
+|       ProductCard.tsx
+|       ProductDetailClient.tsx
+|       
++---lib
+|       products.ts
+|       stripe.ts
+|       
++---store
+|       cartStore.ts
+|       
+\---types
+        index.ts
+        

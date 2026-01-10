@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { products } from '@/lib/products';
 import ProductCard from '@/components/ProductCard';
 
@@ -23,8 +24,11 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
           {featuredProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
+            <Link key={product.id} href={`/products/${product.id}`}>
+              <ProductCard product={product} />
+            </Link>
           ))}
+
         </div>
       </section>
     </div>

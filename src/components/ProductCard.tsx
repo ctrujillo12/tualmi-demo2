@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/types';
 
@@ -8,24 +7,26 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <Link href={`/products/${product.id}`} className="group">
-      <div className="relative aspect-[3/4] overflow-hidden bg-sand-100 mb-3">
+    <div className="group">
+      <div className="aspect-square relative overflow-hidden bg-gray-100 mb-4">
         <Image
-          src={product.image}
+          src={product.images[0]}
           alt={product.name}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-          sizes="(max-width: 768px) 50vw, 33vw"
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
       </div>
-      <div className="text-center">
-        <h3 className="text-sm text-sand-900 mb-1">
+
+      
+      <div className="space-y-1">
+        <h3 className="font-medium text-gray-900 group-hover:text-gray-700 transition-colors">
           {product.name}
         </h3>
-        <p className="text-sm text-sand-600">
-          ${product.price.toFixed(2)}
+        <p className="text-sm text-gray-600">{product.category}</p>
+        <p className="font-semibold text-gray-500 text-xs">
+          ${(product.price / 100).toFixed(2)}
         </p>
       </div>
-    </Link>
+    </div>
   );
 }

@@ -20,7 +20,7 @@ export default function HeaderStaticBlack() {
           {/* Left Nav */}
           <nav className="hidden md:flex space-x-6 text-xs">
             <Link
-              href="/products"
+              href="/collections"
               className={`${textColor} ${hoverColor} uppercase tracking-widest transition-colors`}
             >
               New
@@ -38,11 +38,12 @@ export default function HeaderStaticBlack() {
 
           {/* Center Logo */}
           <Link
-            href="/"
-            className={`absolute left-1/2 -translate-x-1/2 text-sm font-normal ${textColor} tracking-[0.3em] uppercase`}
-          >
-            TUALMI
-          </Link>
+          href="/"
+          className={`absolute left-1/2 transform -translate-x-1/2 text-sm font-black tracking-[0.25em] uppercase ${textColor} transition-colors duration-300`}
+        >
+          TUALMI
+        </Link>
+
 
           {/* Right Icons */}
           <div className="flex items-center space-x-6">
