@@ -60,7 +60,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 src={product.images[selectedImage]}
                 alt={product.name}
                 fill
-                className="object-cover"
+                className="object-contain"
                 priority
               />
             </div>
@@ -81,7 +81,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       src={image}
                       alt={`${product.name} ${index + 1}`}
                       fill
-                      className="object-cover"
+                      className="object-contain"
                     />
                   </button>
                 ))}

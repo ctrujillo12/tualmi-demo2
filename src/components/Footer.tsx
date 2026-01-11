@@ -45,7 +45,7 @@ export default function Footer() {
           {/* Newsletter */}
           <div className="max-w-md">
             <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">
-              Newsletter
+              Get Updates + Promos
             </h4>
 
             <form
@@ -79,20 +79,15 @@ export default function Footer() {
           <div className="lg:grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
               {
-                title: 'Assistance',
-                links: ['Shipping', 'Returns', 'Size + Fit', 'Garment Care', 'FAQ'],
-              },
-              {
                 title: 'Company',
-                links: ['About', 'My Account', 'Gift Cards'],
+                links: ['About'],
               },
               {
                 title: 'Social',
-                links: ['Instagram', 'TikTok'],
-              },
-              {
-                title: 'Legal',
-                links: ['Privacy Policy', 'Terms & Conditions'],
+                links: [
+                  { name: 'Instagram', href: 'https://www.instagram.com/tualmioutdoors' },
+                  { name: 'TikTok', href: 'https://www.tiktok.com/@tualmioutdoors' },
+                ],
               },
             ].map((section) => (
               <div key={section.title}>
@@ -111,10 +106,15 @@ export default function Footer() {
                     ${openSection === section.title ? 'max-h-96' : 'max-h-0'}
                     lg:max-h-full lg:block`}
                 >
-                  {section.links.map((link) => (
-                    <li key={link}>
-                      <Link href="#" className="hover:opacity-60 block">
-                        {link}
+                  {section.links.map((link: any) => (
+                    <li key={link.name || link}>
+                      <Link
+                        href={link.href || '#'}
+                        target={link.href ? '_blank' : undefined}
+                        rel={link.href ? 'noopener noreferrer' : undefined}
+                        className="hover:opacity-60 block"
+                      >
+                        {link.name || link}
                       </Link>
                     </li>
                   ))}
@@ -126,7 +126,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-sand-200 pt-8 text-center text-sm opacity-70">
-          © 2025 TUALMI
+          © 2026 TUALMI
         </div>
       </div>
     </footer>

@@ -16,7 +16,7 @@ export default function CollectionsPage() {
       <main className="px-6 pt-28 pb-15 max-w-[1200px] mx-auto">
         {/* Title */}
         <div className="text-center">
-          <h1 className="font-sans text-s tracking-tight  ">
+          <h1 className="font-sans text-s tracking-tight">
             New
           </h1>
         </div>
@@ -62,13 +62,13 @@ export default function CollectionsPage() {
               className="group"
             >
               {/* Image */}
-              <div className="relative w-full aspect-[4/5] overflow-hidden bg-sand-200">
+              <div className="relative w-full aspect-[4/5] overflow-hidden bg-sand-200 flex items-center justify-center">
                 <Image
                   src={product.images[0]}
                   alt={product.name}
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                  className="object-contain transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                 />
               </div>
 

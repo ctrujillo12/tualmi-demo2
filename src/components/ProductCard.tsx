@@ -8,16 +8,15 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group">
-      <div className="aspect-square relative overflow-hidden bg-gray-100 mb-4">
+      <div className="aspect-square relative overflow-hidden bg-gray-100 mb-4 flex items-center justify-center">
         <Image
           src={product.images[0]}
           alt={product.name}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          className="object-contain group-hover:scale-105 transition-transform duration-300"
         />
       </div>
 
-      
       <div className="space-y-1">
         <h3 className="font-medium text-gray-900 group-hover:text-gray-700 transition-colors">
           {product.name}

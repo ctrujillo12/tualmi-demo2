@@ -4,14 +4,14 @@ import { products } from '@/lib/products';
 import ProductCard from '@/components/ProductCard';
 
 export default function Home() {
-  const featuredProducts = products.slice(0, 3);
+  const featuredProducts = products.slice(0, 5);
 
   return (
     <div>
       {/* Hero Section */}
       <section className="relative h-screen w-full">
         <Image
-          src="/images-2/hero5.jpg"
+          src="/images-2/hero7.jpg"
           alt="Hero"
           fill
           className="object-cover"

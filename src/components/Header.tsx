@@ -43,7 +43,7 @@ export default function Header() {
                 New
               </Link>
 
-              {/* Dropdown */}
+              {/* Dropdown
               <div className="absolute left-0 top-full mt-4 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200">
                 <div className="bg-white px-6 py-4 shadow-sm">
                   <Link
@@ -53,7 +53,7 @@ export default function Header() {
                     Collections
                   </Link>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <Link
