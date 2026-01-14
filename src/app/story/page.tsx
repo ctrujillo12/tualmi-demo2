@@ -13,22 +13,38 @@ export default function StoryPage() {
         </h1>
 
         <div className="space-y-8 text-sm leading-relaxed">
-          <p>
-            Made in LA, Designed for Adventure
+          <p className="tracking-wide">
+            Made in Los Angeles. Designed for women who move.
           </p>
 
           <p>
-            
-            We manufacture all our pieces in Los Angeles using sustainable materials. 
-            Our goal is to create outdoor wear that empowers women to embrace every adventure with 
-            confidence and style—no compromises.
+            Tualmi began on the trail. After years of hiking, backpacking, and spending time outdoors, 
+            we noticed a pattern: women’s outdoor clothing was rarely designed with women in mind. 
+            Boxy cuts, muted colors, and gear that felt more like a uniform than a choice.
           </p>
 
           <p>
-            We believe clothing should feel considered, personal, and quietly
-            confident.
+            We believe the outdoors should be a place where women can show up fully as themselves—
+            confident, capable, and expressive. Clothing should support the adventure, not limit it.
+          </p>
+
+          <p>
+            That’s why we design functional outdoor apparel that feels considered, personal, and quietly confident.
+            Pieces that perform on the trail and still reflect the individuality of the women who wear them.
+          </p>
+
+          <p>
+            All of our garments are designed and manufactured in Los Angeles using sustainable materials 
+            and responsible production practices. We believe local manufacturing and thoughtful sourcing 
+            are essential to building a better future for both people and the planet.
+          </p>
+
+          <p>
+            Tualmi exists to help more women get outside, because when the clothes truly fit, 
+            the adventure doesn’t have to end early.
           </p>
         </div>
+
       </main>
     </>
   );
