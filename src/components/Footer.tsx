@@ -79,14 +79,34 @@ export default function Footer() {
           <div className="lg:grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
               {
+                title: 'Assistance',
+                links: [
+                  { name: 'Shipping', href: 'https://www.instagram.com/tualmioutdoors' },
+                  { name: 'Returns', href: 'https://www.tiktok.com/@tualmioutdoors' },
+                  { name: 'Size + Fit', href: 'https://www.tiktok.com/@tualmioutdoors' },
+                  { name: 'Garment Care', href: 'https://www.tiktok.com/@tualmioutdoors' },
+                  { name: 'FAQ', href: 'https://www.tiktok.com/@tualmioutdoors' },
+                ],
+              },
+              {
                 title: 'Company',
-                links: ['About'],
+                links: [
+                { name: 'About', href: 'https://www.tiktok.com/@tualmioutdoors' },
+                { name: 'Gift Cards', href: 'https://www.tiktok.com/@tualmioutdoors' },
+                ],
               },
               {
                 title: 'Social',
                 links: [
                   { name: 'Instagram', href: 'https://www.instagram.com/tualmioutdoors' },
                   { name: 'TikTok', href: 'https://www.tiktok.com/@tualmioutdoors' },
+                ],
+              },
+              {
+                title: 'Legal',
+                links: [
+                  { name: 'Privacy Policy', href: '/privacy' },
+                  { name: 'Terms & Conditions', href: '/legal' },
                 ],
               },
             ].map((section) => (
@@ -106,18 +126,23 @@ export default function Footer() {
                     ${openSection === section.title ? 'max-h-96' : 'max-h-0'}
                     lg:max-h-full lg:block`}
                 >
-                  {section.links.map((link: any) => (
-                    <li key={link.name || link}>
-                      <Link
-                        href={link.href || '#'}
-                        target={link.href ? '_blank' : undefined}
-                        rel={link.href ? 'noopener noreferrer' : undefined}
-                        className="hover:opacity-60 block"
-                      >
-                        {link.name || link}
-                      </Link>
-                    </li>
-                  ))}
+                  {section.links.map((link: any) => {
+  const isExternal = link.href?.startsWith('http');
+
+  return (
+    <li key={link.name || link}>
+      <Link
+        href={link.href || '#'}
+        target={isExternal ? '_blank' : undefined}
+        rel={isExternal ? 'noopener noreferrer' : undefined}
+        className="hover:opacity-60 block"
+      >
+        {link.name || link}
+      </Link>
+    </li>
+  );
+})}
+
                 </ul>
               </div>
             ))}
