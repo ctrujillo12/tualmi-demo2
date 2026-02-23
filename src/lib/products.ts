@@ -4,12 +4,12 @@ export const products: Product[] = [
   {
     id: '1',
     name: 'Trailblazer Fleece',
-    description: 'A timeless essential made from 100% organic cotton. Soft, breathable, and perfect for everyday wear. Features a relaxed fit and reinforced seams for lasting durability.',
-    price: 11000, // $29.99 in cents
+    description: 'A cozy fleece designed for the outdoors. Soft, breathable, and warm with a relaxed fit and reinforced seams. Perfect for hiking, camping, or everyday adventures.',
+    price: 110, // $29.99 in cents
     images: [
       '/images-2/polka-fleece-bg.png',
     ],
-    category: 'Fleece',
+    category: 'Outerwear',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Pink', 'Polka', 'Green'],
     stock: 150,
@@ -17,53 +17,53 @@ export const products: Product[] = [
   {
     id: '2',
     name: 'Summit Pant',
-    description: 'Classic denim jacket with a modern fit. Made from premium denim fabric with vintage wash finish. Features button closure, chest pockets, and adjustable cuffs.',
-    price: 9000, // $89.99 in cents
+    description: 'Durable hiking pants built for all terrains. Stretch fabric for mobility, reinforced stitching, and multiple pockets for essentials.',
+    price: 90, // $89.99 in cents
     images: [
       '/images-2/olive-pants-bg.png',
     ],
-    category: 'Pants',
+    category: 'Bottoms',
     sizes: ['S', 'M', 'L', 'XL'],
     colors: ['Olive', 'Gray'],
     stock: 75,
   },
-  {
-    id: '3',
-    name: 'Trail Capri',
-    description: 'Contemporary slim-fit chinos crafted from stretch cotton twill. Perfect for both casual and smart-casual occasions. Features a mid-rise waist and tapered leg.',
-    price: 7000, // $69.99 in cents
-    images: [
-      '/images-2/white-pants.png',
-    ],
-    category: 'Pants',
-    sizes: ['28', '30', '32', '34', '36', '38'],
-    colors: ['Khaki', 'Navy', 'Black', 'Olive'],
-    stock: 120,
-  },
+  // {
+  //   id: '3',
+  //   name: 'Trail Capri',
+  //   description: 'Contemporary slim-fit chinos crafted from stretch cotton twill. Perfect for both casual and smart-casual occasions. Features a mid-rise waist and tapered leg.',
+  //   price: 7000, // $69.99 in cents
+  //   images: [
+  //     '/images-2/white-pants.png',
+  //   ],
+  //   category: 'Bottoms',
+  //   sizes: ['28', '30', '32', '34', '36', '38'],
+  //   colors: ['Khaki', 'Navy', 'Black', 'Olive'],
+  //   stock: 120,
+  // },
   {
     id: '4',
     name: 'Horizon Shorts',
-    description: 'Contemporary slim-fit chinos crafted from stretch cotton twill. Perfect for both casual and smart-casual occasions. Features a mid-rise waist and tapered leg.',
-    price: 7000, // $69.99 in cents
+    description: 'Lightweight, breathable shorts for summer hikes or trail running. Mid-rise waist, comfortable fit, and easy movement.',
+    price: 70, // $69.99 in cents
     images: [
       '/images-2/yellow-shorts-bg.png',
     ],
-    category: 'Pants',
+    category: 'Bottoms',
     sizes: ['28', '30', '32', '34', '36', '38'],
-    colors: ['Khaki', 'Navy', 'Black', 'Olive'],
+    colors: ['Yellow'],
     stock: 120,
   },
   {
     id: '5',
     name: 'Carabiner',
-    description: 'Contemporary slim-fit chinos crafted from stretch cotton twill. Perfect for both casual and smart-casual occasions. Features a mid-rise waist and tapered leg.',
-    price: 7000, // $69.99 in cents
+    description: 'A decorative carabiner for your adventures.',
+    price: 12, // $12.00 in cents
     images: [
       '/images-2/carabiner.png',
     ],
-    category: 'Pants',
-    sizes: ['28', '30', '32', '34', '36', '38'],
-    colors: ['Khaki', 'Navy', 'Black', 'Olive'],
+    category: 'Accessories',
+    sizes: ['One Size'],
+    colors: ['Pink'],
     stock: 120,
   },
   
