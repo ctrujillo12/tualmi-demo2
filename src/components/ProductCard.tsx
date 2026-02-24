@@ -23,7 +23,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </h3>
         <p className="text-sm text-gray-600">{product.category}</p>
         <p className="font-semibold text-gray-500 text-xs">
-          ${(product.price).toFixed(2)}
+          ${(product.price / 100).toFixed(2)}
         </p>
       </div>
     </div>

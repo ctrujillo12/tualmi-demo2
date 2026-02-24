@@ -81,18 +81,18 @@ export default function Footer() {
               {
                 title: 'Assistance',
                 links: [
-                  { name: 'Shipping', href: 'https://www.instagram.com/tualmioutdoors' },
-                  { name: 'Returns', href: 'https://www.tiktok.com/@tualmioutdoors' },
-                  { name: 'Size + Fit', href: 'https://www.tiktok.com/@tualmioutdoors' },
-                  { name: 'Garment Care', href: 'https://www.tiktok.com/@tualmioutdoors' },
-                  { name: 'FAQ', href: 'https://www.tiktok.com/@tualmioutdoors' },
+                  { name: 'Shipping', href: '/footer-pages/shipping'  },
+                  { name: 'Returns', href: '/footer-pages/returns' },
+                  { name: 'Size + Fit', href: '/footer-pages/size-fit' },
+                  { name: 'Garment Care', href: '/footer-pages/garment-care'   },
+                  { name: 'FAQ', href: '/footer-pages/faq' },
                 ],
               },
               {
                 title: 'Company',
                 links: [
-                { name: 'About', href: 'https://www.tiktok.com/@tualmioutdoors' },
-                { name: 'Gift Cards', href: 'https://www.tiktok.com/@tualmioutdoors' },
+                { name: 'About', href: '/story' },
+                // { name: 'Gift Cards', href: '/footer-pages/gift-cards' },
                 ],
               },
               {
@@ -105,8 +105,8 @@ export default function Footer() {
               {
                 title: 'Legal',
                 links: [
-                  { name: 'Privacy Policy', href: '/privacy' },
-                  { name: 'Terms & Conditions', href: '/legal' },
+                  { name: 'Privacy Policy', href: '/footer-pages/privacy' },
+                  { name: 'Terms & Conditions', href: '/footer-pages/legal' },
                 ],
               },
             ].map((section) => (

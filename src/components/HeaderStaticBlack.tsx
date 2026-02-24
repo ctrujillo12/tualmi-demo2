@@ -45,7 +45,7 @@ export default function HeaderStaticBlack() {
         </Link>
 
 
-          {/* Right Icons */}
+          {/* Search & Cart */}
           <div className="flex items-center space-x-6">
             <button className={`${textColor} ${hoverColor} transition-colors`}>
               <svg

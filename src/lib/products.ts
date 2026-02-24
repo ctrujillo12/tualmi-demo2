@@ -5,7 +5,7 @@ export const products: Product[] = [
     id: '1',
     name: 'Trailblazer Fleece',
     description: 'A cozy fleece designed for the outdoors. Soft, breathable, and warm with a relaxed fit and reinforced seams. Perfect for hiking, camping, or everyday adventures.',
-    price: 110, // $29.99 in cents
+    price: 11000, // $29.99 in cents
     images: [
       '/images-2/polka-fleece-bg.png',
     ],
@@ -18,7 +18,7 @@ export const products: Product[] = [
     id: '2',
     name: 'Summit Pant',
     description: 'Durable hiking pants built for all terrains. Stretch fabric for mobility, reinforced stitching, and multiple pockets for essentials.',
-    price: 90, // $89.99 in cents
+    price: 9000, // $89.99 in cents
     images: [
       '/images-2/olive-pants-bg.png',
     ],
@@ -44,7 +44,7 @@ export const products: Product[] = [
     id: '4',
     name: 'Horizon Shorts',
     description: 'Lightweight, breathable shorts for summer hikes or trail running. Mid-rise waist, comfortable fit, and easy movement.',
-    price: 70, // $69.99 in cents
+    price: 7000, // $69.99 in cents
     images: [
       '/images-2/yellow-shorts-bg.png',
     ],
@@ -57,7 +57,7 @@ export const products: Product[] = [
     id: '5',
     name: 'Carabiner',
     description: 'A decorative carabiner for your adventures.',
-    price: 12, // $12.00 in cents
+    price: 1200, // $12.00 in cents
     images: [
       '/images-2/carabiner.png',
     ],
