@@ -27,43 +27,28 @@ export default function ShippingPage() {
             </p>
           </div>
 
-          {/* Australia */}
+          {/* United States */}
           <div className="space-y-4">
-            <h2 className="uppercase tracking-widest text-xs">Shipping Within Australia</h2>
-            <p>Australia Post</p>
+            <h2 className="uppercase tracking-widest text-xs">United States</h2>
 
             <div className="space-y-1">
-              <p>Express Post — $13.00 · 2–3 Business Days</p>
-              <p>Standard Post — $10.00 · 5+ Business Days</p>
-              <p className="tracking-wide">Free standard shipping when you spend over $200</p>
+              <p>Express Shipping — $13.00 USD · 2–3 Business Days</p>
+              <p>Standard Shipping — $10.00 USD · 5+ Business Days</p>
+              <p className="tracking-wide">Free standard shipping when you spend over $200 USD</p>
             </div>
 
             <p>
-              Please note that our warehouse is located in Western Australia, and express next-day delivery is not guaranteed for eastern states.
+              Please note that our warehouse is located in Los Angeles, and express next-day delivery is not guaranteed for eastern states.
             </p>
           </div>
 
-          {/* New Zealand */}
+          {/* Australia */}
           <div className="space-y-4">
-            <h2 className="uppercase tracking-widest text-xs">New Zealand</h2>
+            <h2 className="uppercase tracking-widest text-xs">Australia</h2>
 
             <div className="space-y-1">
-              <p>Standard Post — $15 · 5+ Business Days (Free if you spend over $250)</p>
-              <p>Express Post — $25 · 4 Business Days</p>
-            </div>
-          </div>
-
-          {/* USA */}
-          <div className="space-y-4">
-            <h2 className="uppercase tracking-widest text-xs">USA</h2>
-
-            <p className="italic">
-              Shipping Update 26/8/25: DHL Express is currently the only shipping option to the US and will incur tariffs payable prior to receiving your order. Please follow your order with DHL tracking — they will contact you regarding tariff-related fees during processing.
-            </p>
-
-            <div className="space-y-1">
-              <p className="tracking-wide">Free express shipping when you spend over $400 AUD</p>
-              <p>DHL Express — $25 AUD · 3–5 Business Days</p>
+              <p>Express Shipping — $16.50 USD · 3–5 Business Days</p>
+              <p className="tracking-wide">Free express shipping when you spend over $231.00 USD</p>
             </div>
 
             <p>
@@ -71,13 +56,13 @@ export default function ShippingPage() {
             </p>
           </div>
 
-          {/* UK */}
+          {/* United Kingdom */}
           <div className="space-y-4">
             <h2 className="uppercase tracking-widest text-xs">United Kingdom</h2>
 
             <div className="space-y-1">
-              <p>Standard Post — $25.00 AUD · 14+ Business Days</p>
-              <p>Express Post — $35.00 AUD · 10+ Business Days</p>
+              <p>Standard Shipping — $16.50 USD · 14+ Business Days</p>
+              <p>Express Shipping — $23.10 USD · 10+ Business Days</p>
             </div>
           </div>
 
@@ -86,8 +71,8 @@ export default function ShippingPage() {
             <h2 className="uppercase tracking-widest text-xs">Rest of the World</h2>
 
             <div className="space-y-1">
-              <p>Standard Post — $25.00 AUD · 14+ Business Days</p>
-              <p>DHL Express — $50 AUD · 6+ Business Days</p>
+              <p>Standard Shipping — $16.50 USD · 14+ Business Days</p>
+              <p>DHL Express — $33.00 USD · 6+ Business Days</p>
             </div>
 
             <p>
@@ -129,7 +114,7 @@ export default function ShippingPage() {
             </p>
 
             <p>
-              If you choose to reject or refuse delivery due to customs fees, a $70 AUD return fee will be deducted from your refund or store credit. This covers return shipping and associated fees.
+              If you choose to reject or refuse delivery due to customs fees, a $46.20 USD return fee will be deducted from your refund or store credit. This covers return shipping and associated fees.
             </p>
           </div>
 
@@ -142,7 +127,7 @@ export default function ShippingPage() {
             </p>
 
             <p>
-              To avoid any issues, we recommend requesting signature on delivery or using the free AusPost Parcel Lockers if you are located in Australia.
+              To avoid any issues, we recommend requesting signature on delivery.
             </p>
           </div>
 
