@@ -8,6 +8,8 @@ export const products: Product[] = [
     price: 11000, // $29.99 in cents
     images: [
       '/images-2/polka-fleece-bg.png',
+      '/images-2/pink-fleece-bg.png',
+      '/images-2/yellow-fleece-bg.png'
     ],
     category: 'Outerwear',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
@@ -21,6 +23,7 @@ export const products: Product[] = [
     price: 9000, // $89.99 in cents
     images: [
       '/images-2/olive-pants-bg.png',
+      '/images-2/gray-pants-bg.png'
     ],
     category: 'Bottoms',
     sizes: ['S', 'M', 'L', 'XL'],
