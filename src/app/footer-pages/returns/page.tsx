@@ -50,9 +50,9 @@ export default function ReturnsPage() {
 
             <div className="space-y-1">
               <p className="tracking-wide">Tualmi Outdoors Returns</p>
-              <p>PO BOX 172</p>
-              <p>Bentley 6982 WA</p>
-              <p>Australia</p>
+              <p>340 E Foothill Blvd '#'660</p>
+              <p>Claremont CA 91711</p>
+              <p>USA</p>
             </div>
 
             <p>
