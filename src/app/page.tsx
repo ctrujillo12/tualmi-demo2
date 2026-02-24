@@ -11,7 +11,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-screen w-full">
         <Image
-          src="/images-2/her00.jpg"
+          src="/images-2/her00.JPG"
           alt="Hero"
           fill
           className="object-cover"
