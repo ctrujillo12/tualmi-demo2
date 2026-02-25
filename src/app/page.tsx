@@ -22,10 +22,6 @@ export default function Home() {
 
       {/* Story Blurb */}
       <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-        {/* <p className="text-xs tracking-[0.3em] uppercase mb-6">
-          Our Story
-        </p> */}
-
         <p className="text-sm leading-relaxed mb-6">
           Tualmi was born on the trail. After years of hiking and backpacking, we saw that women’s
           outdoor clothing rarely reflected the women wearing it—designed to blend in rather than stand out.
@@ -44,16 +40,18 @@ export default function Home() {
         </Link>
       </section>
 
-
       {/* Product Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <p className="text-xs tracking-[0.3em] uppercase text-center mb-10">
+          Launching Spring 2026 — Preview Collection
+        </p>
+
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
           {featuredProducts.map(product => (
             <Link key={product.id} href={`/products/${product.id}`}>
               <ProductCard product={product} />
             </Link>
           ))}
-
         </div>
       </section>
     </div>
