@@ -99,7 +99,7 @@ export default function Footer() {
                 title: 'Social',
                 links: [
                   { name: 'Instagram', href: 'https://www.instagram.com/tualmioutdoors' },
-                  { name: 'TikTok', href: 'https://www.tiktok.com/@tualmioutdoors' },
+                  { name: 'TikTok', href: 'https://www.tiktok.com/@tualmi.outdoors' },
                 ],
               },
               {
