@@ -50,7 +50,7 @@ export default function InvitePage() {
           </p>
 
           <p className="tracking-wide">
-            Exciting things are coming soon... Special perks included.
+            Special perks &  early access to limited drops. Exciting things coming soon... 
           </p>
 
           
