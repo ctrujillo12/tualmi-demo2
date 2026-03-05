@@ -50,7 +50,7 @@ export default function InvitePage() {
           </p>
 
           <p className="tracking-wide">
-            Join now to get early access to our launches, exclusive discounts, and special perks. Big things are coming soon, and you’ll be the first to see them. Don’t miss out on the insider updates and surprises!
+            Join now to get early access to our launches, exclusive discounts, and special perks. Big things are coming soon, and you’ll be the first to see them. 
           </p>
 
           
