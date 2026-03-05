@@ -46,24 +46,20 @@ export default function InvitePage() {
 
         <div className="space-y-8 text-sm leading-relaxed">
           <p className="tracking-wide">
-            Be the first to know.
+            Be the first to know!
           </p>
 
-          <p>
-            We're getting ready to launch. Enter your email below and we'll reach out 
-            when we're ready — with early access, exclusive offers, and a look at 
-            what we've been building.
+          <p className="tracking-wide">
+            Join now to get early access to our launches, exclusive discounts, and special perks. Big things are coming soon, and you’ll be the first to see them. Don’t miss out on the insider updates and surprises!
           </p>
 
-          <p>
-            No spam. Just a note when the time comes.
-          </p>
+          
         </div>
 
         <div className="mt-16">
           {status === 'success' ? (
             <p className="text-sm tracking-[0.15em] uppercase">
-              You're on the list. We'll be in touch.
+              We'll be in touch!
             </p>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md">
