@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Redis } from '@upstash/redis';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+// fromEnv() auto-reads KV_REST_API_URL and KV_REST_API_TOKEN
+const redis = Redis.fromEnv();
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,7 +22,7 @@ export async function POST(req: NextRequest) {
     // Check for duplicates
     const exists = await redis.sismember('invite:emails', normalized);
     if (exists) {
-      return NextResponse.json({ success: true }); // silent success, don't reveal duplicates
+      return NextResponse.json({ success: true }); // silent success
     }
 
     // Store in a Redis set (deduped automatically)
@@ -43,7 +41,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET endpoint to view collected emails at /api/invite?secret=YOUR_SECRET
+// View collected emails at /api/invite?secret=YOUR_INVITE_ADMIN_SECRET
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const secret = searchParams.get('secret');
