@@ -41,16 +41,16 @@ export default function InvitePage() {
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <h1 className="text-lg font-normal tracking-[0.3em] uppercase mb-12">
-          Early Access
+          Trailblazer's Club
         </h1>
 
         <div className="space-y-8 text-sm leading-relaxed">
           <p className="tracking-wide">
-            Be the first to know!
+            Be the first to join the club!
           </p>
 
           <p className="tracking-wide">
-            Join now to get early access to our launches, exclusive discounts, and special perks. Big things are coming soon, and you’ll be the first to see them. 
+            Exciting things are coming soon... Special perks included.
           </p>
 
           
