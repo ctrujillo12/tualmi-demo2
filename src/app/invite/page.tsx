@@ -1,82 +1,96 @@
 'use client';
 
 import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import HeaderStaticBlack from '@/components/HeaderStaticBlack';
 
-export default function InviteLandingPage() {
+export default function InvitePage() {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email) return;
+    setStatus('loading');
+    setErrorMsg('');
 
-    const { error } = await supabase
-      .from('newsletter_subscribers')
-      .insert({ email });
+    try {
+      const res = await fetch('/api/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
 
-    if (error) {
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrorMsg(data.error || 'Something went wrong.');
+        setStatus('error');
+      } else {
+        setStatus('success');
+        setEmail('');
+      }
+    } catch {
+      setErrorMsg('Something went wrong. Please try again.');
       setStatus('error');
-      setErrorMsg(error.message);
-    } else {
-      setStatus('success');
-      setEmail('');
     }
-  };
+  }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#f6f5f2] px-6">
-      <div className="w-full max-w-md text-center space-y-8">
+    <>
+      <HeaderStaticBlack />
 
-        <h1 className="text-5xl text-[#b3a67d] font-serif">
-          Tualmi
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <h1 className="text-lg font-normal tracking-[0.3em] uppercase mb-12">
+          Early Access
         </h1>
 
-        <p className="text-xl italic text-[#5f5a4d]">
-          You’re Invited…
-        </p>
+        <div className="space-y-8 text-sm leading-relaxed">
+          <p className="tracking-wide">
+            Be the first to know.
+          </p>
 
-        <p className="text-sm tracking-wide text-[#6e6a5c]">
-          Join the Trailblazing Club
-        </p>
+          <p>
+            We're getting ready to launch. Enter your email below and we'll reach out 
+            when we're ready — with early access, exclusive offers, and a look at 
+            what we've been building.
+          </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-5 py-3 rounded-full border border-[#d8d4c6] bg-white text-sm focus:outline-none focus:ring-1 focus:ring-[#b3a67d]"
-          />
+          <p>
+            No spam. Just a note when the time comes.
+          </p>
+        </div>
 
-          <button
-            type="submit"
-            className="w-full py-3 rounded-full bg-[#b3a67d] text-white text-sm tracking-widest uppercase hover:opacity-90 transition"
-          >
-            Join
-          </button>
-        </form>
+        <div className="mt-16">
+          {status === 'success' ? (
+            <p className="text-sm tracking-[0.15em] uppercase">
+              You're on the list. We'll be in touch.
+            </p>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md">
+              <input
+                type="email"
+                required
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={status === 'loading'}
+                className="flex-1 border-b border-black bg-transparent text-sm py-2 px-0 placeholder-gray-400 focus:outline-none focus:border-black tracking-wide"
+              />
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className="text-sm tracking-[0.2em] uppercase border border-black px-6 py-2 hover:bg-black hover:text-white transition-colors duration-200 disabled:opacity-40"
+              >
+                {status === 'loading' ? 'Submitting...' : 'Notify Me'}
+              </button>
+            </form>
+          )}
 
-        {status === 'success' && (
-          <p className="text-green-600 text-sm">You're on the list ✨</p>
-        )}
-
-        {status === 'error' && (
-          <p className="text-red-600 text-sm">Error: {errorMsg}</p>
-        )}
-
-        <p className="text-xs text-[#9b9686] pt-2">
-          Early access • Limited drops • No spam
-        </p>
-
-      </div>
-    </main>
+          {status === 'error' && (
+            <p className="mt-4 text-sm text-red-600 tracking-wide">{errorMsg}</p>
+          )}
+        </div>
+      </main>
+    </>
   );
 }
