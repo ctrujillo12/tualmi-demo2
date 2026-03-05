@@ -91,8 +91,8 @@ export default function Footer() {
               {
                 title: 'Company',
                 links: [
-                { name: 'About', href: '/story' },
-                // { name: 'Gift Cards', href: '/footer-pages/gift-cards' },
+                  { name: 'About', href: '/story' },
+                  { name: 'Trailblazing Club', href: '/invite' },
                 ],
               },
               {
