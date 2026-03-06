@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 const heroImages = [
   '/images-2/cool13.jpg',
   '/images-2/cool8.jpg',
-  '/images-2/helper.jpg',
+  '/images-2/c8.jpg',
 ];
 
 export default function Home() {
