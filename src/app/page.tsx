@@ -1,29 +1,65 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { products } from '@/lib/products';
 import ProductCard from '@/components/ProductCard';
+import { useState, useEffect } from 'react';
+
+const heroImages = [
+  '/images-2/cool13.jpg',
+  '/images-2/cool8.jpg',
+  '/images-2/helper.jpg',
+];
 
 export default function Home() {
   const featuredProducts = products.slice(0, 5);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % heroImages.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative h-screen w-full">
-        <Image
-          src="/images-2/her00.JPG"
-          alt="Hero"
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
+      <section className="relative h-screen w-full overflow-hidden">
+        {heroImages.map((src, i) => (
+          <Image
+            key={src}
+            src={src}
+            alt="Hero"
+            fill
+            className={`object-cover transition-opacity duration-1000 ${
+              i === currentIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+            priority={i === 0}
+            sizes="100vw"
+          />
+        ))}
+
+        {/* Dot indicators */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {heroImages.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentIndex(i)}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                i === currentIndex ? 'bg-white scale-125' : 'bg-white/50'
+              }`}
+            />
+          ))}
+        </div>
       </section>
 
       {/* Story Blurb */}
       <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
         <p className="text-sm leading-relaxed mb-6">
-          Tualmi was born on the trail. After years of hiking and backpacking, we saw that women’s
+          Tualmi was born on the trail. After years of hiking and backpacking, we saw that women's
           outdoor clothing rarely reflected the women wearing it—designed to blend in rather than stand out.
         </p>
 
