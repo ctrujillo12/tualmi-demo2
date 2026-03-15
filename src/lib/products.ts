@@ -40,7 +40,7 @@ export const products: Product[] = [
     ],
     category: 'Tops',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Pink', 'Lemon'],
+    colors: ['Lemon', 'Pink'],
     stock: 120,
   },
   {
@@ -55,7 +55,7 @@ export const products: Product[] = [
     ],
     category: 'Bottoms',
     sizes: ['28', '30', '32', '34', '36', '38'],
-    colors: ['Plaid', 'Red', 'Pink/Green'],
+    colors: ['Red', 'Plaid', 'Pink/Green'],
     stock: 120,
   },
   {
