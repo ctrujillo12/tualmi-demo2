@@ -7,13 +7,12 @@ export const products: Product[] = [
     description: 'A cozy fleece designed for the outdoors. Soft, breathable, and warm with a relaxed fit and reinforced seams. Perfect for hiking, camping, or everyday adventures.',
     price: 11000, // $29.99 in cents
     images: [
-      '/images-2/polka-fleece-bg.png',
-      '/images-2/pink-fleece-bg.png',
-      '/images-2/yellow-fleece-bg.png'
+      '/images-2/fleece-pink.png',
+      '/images-2/fleece-yellow.png'
     ],
     category: 'Outerwear',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Pink', 'Polka', 'Green'],
+    colors: ['Pink', 'Lemon'],
     stock: 150,
   },
   {
@@ -22,38 +21,41 @@ export const products: Product[] = [
     description: 'Durable hiking pants built for all terrains. Stretch fabric for mobility, reinforced stitching, and multiple pockets for essentials.',
     price: 9000, // $89.99 in cents
     images: [
-      '/images-2/olive-pants-bg.png',
-      '/images-2/gray-pants-bg.png'
+      '/images-2/pants-olive.png',
+      '/images-2/pants-white.png'
     ],
     category: 'Bottoms',
     sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Olive', 'Gray'],
+    colors: ['Olive', 'Cream'],
     stock: 75,
   },
-  // {
-  //   id: '3',
-  //   name: 'Trail Capri',
-  //   description: 'Contemporary slim-fit chinos crafted from stretch cotton twill. Perfect for both casual and smart-casual occasions. Features a mid-rise waist and tapered leg.',
-  //   price: 7000, // $69.99 in cents
-  //   images: [
-  //     '/images-2/white-pants.png',
-  //   ],
-  //   category: 'Bottoms',
-  //   sizes: ['28', '30', '32', '34', '36', '38'],
-  //   colors: ['Khaki', 'Navy', 'Black', 'Olive'],
-  //   stock: 120,
-  // },
+  {
+    id: '3',
+    name: 'Trail Baby Tee',
+    description: 'Engineered with ultra-soft performance fabric, this tee offers a second-skin feel while providing UPF 40 protection and the perfect fit that flexes with your moves. Light, breathable, and designed with your workouts in mind, this tee is built to perform.',
+    price: 3800, // $69.99 in cents
+    images: [
+      '/images-2/shirt-pink.png',
+      '/images-2/shirt-yellow.png'
+    ],
+    category: 'Tops',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    colors: ['Pink', 'Lemon'],
+    stock: 120,
+  },
   {
     id: '4',
     name: 'Horizon Shorts',
     description: 'Lightweight, breathable shorts for summer hikes or trail running. Mid-rise waist, comfortable fit, and easy movement.',
     price: 7000, // $69.99 in cents
     images: [
-      '/images-2/yellow-shorts-bg.png',
+      '/images-2/shorts-pink.png',
+      '/images-2/shorts-red.png',
+      '/images-2/shorts-pattern.png'
     ],
     category: 'Bottoms',
     sizes: ['28', '30', '32', '34', '36', '38'],
-    colors: ['Yellow'],
+    colors: ['Plaid', 'Red', 'Pink/Green'],
     stock: 120,
   },
   {
