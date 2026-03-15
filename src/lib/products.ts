@@ -77,7 +77,7 @@ export const products: Product[] = [
     description: 'Join the Club!',
     price: 1200, // $12.00 in cents
     images: [
-      '/images-2/tote.png',
+      '/images-2/tote-bg.png',
     ],
     category: 'Accessories',
     sizes: ['One Size'],
