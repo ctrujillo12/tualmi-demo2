@@ -81,7 +81,7 @@ export const products: Product[] = [
     ],
     category: 'Accessories',
     sizes: ['One Size'],
-    colors: ['Pink'],
+    colors: ['Classic'],
     stock: 120,
   },
   

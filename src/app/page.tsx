@@ -13,7 +13,7 @@ const heroImages = [
 ];
 
 export default function Home() {
-  const featuredProducts = products.slice(0, 5);
+  const featuredProducts = products.slice(0, 6);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
