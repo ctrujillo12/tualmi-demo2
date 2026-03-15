@@ -71,6 +71,18 @@ export const products: Product[] = [
     colors: ['Pink'],
     stock: 120,
   },
-  
+  {
+    id: '6',
+    name: 'Trailblazing Tote',
+    description: 'Join the Club!',
+    price: 1200, // $12.00 in cents
+    images: [
+      '/images-2/tote-bg.png',
+    ],
+    category: 'Accessories',
+    sizes: ['One Size'],
+    colors: ['Pink'],
+    stock: 120,
+  },
   
 ];
