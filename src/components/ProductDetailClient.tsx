@@ -12,6 +12,19 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const router = useRouter();
+
+  // Map each color to the image index that corresponds to it.
+  // Assumes images are ordered to match colors: image[0] → color[0], image[1] → color[1], etc.
+  // If a product has more images than colors (e.g. multiple shots per colorway),
+  // you can adjust this mapping to fit your data shape.
+  const colorImageMap: Record<string, number> = {};
+  product.colors.forEach((color, index) => {
+    // Only map if there's a corresponding image at that index
+    if (index < product.images.length) {
+      colorImageMap[color] = index;
+    }
+  });
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState(product.sizes[0] || '');
   const [selectedColor, setSelectedColor] = useState(product.colors[0] || '');
@@ -20,6 +33,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const addItem = useCartStore((state) => state.addItem);
+
+  const handleColorSelect = (color: string) => {
+    setSelectedColor(color);
+    // Switch the main image to the one that matches this colorway
+    const imageIndex = colorImageMap[color];
+    if (imageIndex !== undefined) {
+      setSelectedImage(imageIndex);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
@@ -70,7 +92,17 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 {product.images.map((image, index) => (
                   <button
                     key={index}
-                    onClick={() => setSelectedImage(index)}
+                    onClick={() => {
+                      setSelectedImage(index);
+                      // Also sync the selected color when clicking a thumbnail directly.
+                      // Find which color maps to this image index (if any).
+                      const matchingColor = product.colors.find(
+                        (color) => colorImageMap[color] === index
+                      );
+                      if (matchingColor) {
+                        setSelectedColor(matchingColor);
+                      }
+                    }}
                     className={`aspect-[3/4] relative overflow-hidden transition-opacity ${
                       selectedImage === index
                         ? 'opacity-100'
@@ -129,7 +161,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   {product.colors.map((color) => (
                     <button
                       key={color}
-                      onClick={() => setSelectedColor(color)}
+                      onClick={() => handleColorSelect(color)}
                       className={`py-2 px-4 text-xs transition-all ${
                         selectedColor === color
                           ? 'bg-black text-white'
