@@ -7,8 +7,8 @@ export const products: Product[] = [
     description: 'A cozy fleece designed for the outdoors. Soft, breathable, and warm with a relaxed fit and reinforced seams. Perfect for hiking, camping, or everyday adventures.',
     price: 11000, // $29.99 in cents
     images: [
-      '/images-2/fleece-pink.png',
-      '/images-2/fleece-yellow.png'
+      '/images-2/fleece-pink-bg.png',
+      '/images-2/fleece-yellow-bg.png'
     ],
     category: 'Outerwear',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
@@ -22,7 +22,7 @@ export const products: Product[] = [
     price: 9000, // $89.99 in cents
     images: [
       '/images-2/pants-olive.png',
-      '/images-2/pants-white.png'
+      '/images-2/pants-white-bg.png'
     ],
     category: 'Bottoms',
     sizes: ['S', 'M', 'L', 'XL'],
@@ -35,8 +35,8 @@ export const products: Product[] = [
     description: 'Engineered with ultra-soft performance fabric, this tee offers a second-skin feel while providing UPF 40 protection and the perfect fit that flexes with your moves. Light, breathable, and designed with your workouts in mind, this tee is built to perform.',
     price: 3800, // $69.99 in cents
     images: [
-      '/images-2/shirt-pink.png',
-      '/images-2/shirt-yellow.png'
+      '/images-2/shirt-yellow-bg.png',
+      '/images-2/shirt-pink-bg.png'
     ],
     category: 'Tops',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
@@ -49,8 +49,8 @@ export const products: Product[] = [
     description: 'Lightweight, breathable shorts for summer hikes or trail running. Mid-rise waist, comfortable fit, and easy movement.',
     price: 7000, // $69.99 in cents
     images: [
+      '/images-2/shorts-red-bg.png',
       '/images-2/shorts-pink.png',
-      '/images-2/shorts-red.png',
       '/images-2/shorts-pattern.png'
     ],
     category: 'Bottoms',
