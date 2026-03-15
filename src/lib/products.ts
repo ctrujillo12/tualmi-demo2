@@ -50,8 +50,8 @@ export const products: Product[] = [
     price: 7000, // $69.99 in cents
     images: [
       '/images-2/shorts-red-bg.png',
-      '/images-2/shorts-pink.png',
-      '/images-2/shorts-pattern.png'
+      '/images-2/shorts-pink-bg.png',
+      '/images-2/shorts-pattern-bg.png'
     ],
     category: 'Bottoms',
     sizes: ['28', '30', '32', '34', '36', '38'],
