@@ -31,7 +31,7 @@ export const products: Product[] = [
   },
   {
     id: '3',
-    name: 'Trail Baby Tee',
+    name: 'Alpine Baby Tee',
     description: 'Engineered with ultra-soft performance fabric, this tee offers a second-skin feel while providing UPF 40 protection and the perfect fit that flexes with your moves. Light, breathable, and designed with your workouts in mind, this tee is built to perform.',
     price: 3800, // $69.99 in cents
     images: [
