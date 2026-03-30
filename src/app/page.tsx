@@ -13,7 +13,7 @@ const heroImages = [
 ];
 
 export default function Home() {
-  const featuredProducts = products.slice(0, 6);
+  const featuredProducts = products.slice(0, 11);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -42,7 +42,6 @@ export default function Home() {
           />
         ))}
 
-        {/* Dot indicators */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
           {heroImages.map((_, i) => (
             <button
@@ -84,9 +83,8 @@ export default function Home() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
           {featuredProducts.map(product => (
-            <Link key={product.id} href={`/products/${product.id}`}>
-              <ProductCard product={product} />
-            </Link>
+            // ✅ No <Link> wrapper here — ProductCard has its own Link inside
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
