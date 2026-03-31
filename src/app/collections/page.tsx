@@ -17,7 +17,7 @@ export default function CollectionsPage() {
         {/* Title */}
         <div className="text-center">
           <h1 className="font-sans text-s tracking-tight">
-            New
+            Coming Spring 2026
           </h1>
         </div>
 
@@ -55,7 +55,7 @@ export default function CollectionsPage() {
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-20">
-          {products.map((product) => (
+          {products.slice(0, 10).map((product) => (
             <Link
               key={product.id}
               href={`/products/${product.id}`}

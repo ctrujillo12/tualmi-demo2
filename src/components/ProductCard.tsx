@@ -10,13 +10,16 @@ interface ProductCardProps {
 }
 
 const COLOR_MAP: Record<string, string> = {
-  Pink: '#F4A7B9',
-  Lemon: '#F5E642',
-  Olive: '#6B7C3E',
-  Cream: '#F5F0E8',
-  Red: '#C0392B',
-  Plaid: '#8B3A3A',
-  'Pink/Green': 'linear-gradient(135deg, #F4A7B9 50%, #7DBE8E 50%)',
+  Wildflower: '#F4A7B9',
+  'Golden Hour': '#F5E642',
+  Moss: '#6B7C3E',
+  Birch: '#F5F0E8',
+  Solstice: '#F5E642',
+  Petal: '#F4A7B9',
+  Canyon: '#8B3A3A',
+  Dusk: '#E8A0B0',
+  Meadow: 'linear-gradient(135deg, #F4A7B9 50%, #7DBE8E 50%)',
+  Natural: '#D4C5A9',
 };
 
 function ColorSwatch({

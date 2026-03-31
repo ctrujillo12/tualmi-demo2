@@ -40,7 +40,7 @@ export default function Header() {
                 href="/collections"
                 className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}
               >
-                New
+                Drop 1
               </Link>
 
               {/* Dropdown
@@ -76,7 +76,7 @@ export default function Header() {
           {/* RIGHT ICONS */}
           <div className="flex items-center space-x-6">
             {/* Search */}
-            <button className={`${textColor} ${hoverColor} transition-colors`}>
+            {/* <button className={`${textColor} ${hoverColor} transition-colors`}>
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -90,7 +90,7 @@ export default function Header() {
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
-            </button>
+            </button> */}
 
             {/* Cart */}
             <Link href="/cart" className="relative group">

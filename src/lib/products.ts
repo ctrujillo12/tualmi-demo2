@@ -3,146 +3,145 @@ import { Product } from '@/types';
 export const products: Product[] = [
   {
     id: '1',
-    name: 'Trailblazer Fleece',
+    name: 'Trailblazer Fleece — Wildflower',
     description: 'A cozy fleece designed for the outdoors. Soft, breathable, and warm with a relaxed fit and reinforced seams. Perfect for hiking, camping, or everyday adventures.',
-    price: 11000, // $29.99 in cents
+    price: 11000,
     images: [
       '/images-2/fleece-pink-bg.png'
     ],
     category: 'Outerwear',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Pink'],
+    colors: ['Wildflower'],
     stock: 150,
   },
   {
     id: '2',
-    name: 'Trailblazer Fleece',
+    name: 'Trailblazer Fleece — Golden Hour',
     description: 'A cozy fleece designed for the outdoors. Soft, breathable, and warm with a relaxed fit and reinforced seams. Perfect for hiking, camping, or everyday adventures.',
-    price: 11000, // $29.99 in cents
+    price: 11000,
     images: [
       '/images-2/fleece-yellow-bg.png'
     ],
     category: 'Outerwear',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Lemon'],
+    colors: ['Golden Hour'],
     stock: 150,
   },
   {
     id: '3',
-    name: 'Summit Pant',
+    name: 'Summit Pant — Moss',
     description: 'Durable hiking pants built for all terrains. Stretch fabric for mobility, reinforced stitching, and multiple pockets for essentials.',
-    price: 9000, // $89.99 in cents
+    price: 9000,
     images: [
       '/images-2/pants-olive.png'
     ],
     category: 'Bottoms',
     sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Olive'],
+    colors: ['Moss'],
     stock: 75,
   },
   {
     id: '4',
-    name: 'Summit Pant',
+    name: 'Summit Pant — Birch',
     description: 'Durable hiking pants built for all terrains. Stretch fabric for mobility, reinforced stitching, and multiple pockets for essentials.',
-    price: 9000, // $89.99 in cents
+    price: 9000,
     images: [
       '/images-2/pants-white-bg.png'
     ],
     category: 'Bottoms',
     sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Cream'],
+    colors: ['Birch'],
     stock: 75,
   },
   {
     id: '5',
-    name: 'Alpine Baby Tee',
+    name: 'Alpine Baby Tee — Solstice',
     description: 'Engineered with ultra-soft performance fabric, this tee offers a second-skin feel while providing UPF 40 protection and the perfect fit that flexes with your moves. Light, breathable, and designed with your workouts in mind, this tee is built to perform.',
-    price: 3800, // $69.99 in cents
+    price: 3800,
     images: [
       '/images-2/shirt-yellow-bg.png'
     ],
     category: 'Tops',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Lemon'],
+    colors: ['Solstice'],
     stock: 120,
   },
   {
     id: '6',
-    name: 'Alpine Baby Tee',
+    name: 'Alpine Baby Tee — Petal',
     description: 'Engineered with ultra-soft performance fabric, this tee offers a second-skin feel while providing UPF 40 protection and the perfect fit that flexes with your moves. Light, breathable, and designed with your workouts in mind, this tee is built to perform.',
-    price: 3800, // $69.99 in cents
+    price: 3800,
     images: [
       '/images-2/shirt-pink-bg.png'
     ],
     category: 'Tops',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Pink'],
+    colors: ['Petal'],
     stock: 120,
   },
   {
     id: '7',
-    name: 'Horizon Shorts',
+    name: 'Horizon Shorts — Canyon',
     description: 'Lightweight, breathable shorts for summer hikes or trail running. Mid-rise waist, comfortable fit, and easy movement.',
-    price: 7000, // $69.99 in cents
+    price: 7000,
     images: [
       '/images-2/shorts-red-bg.png'
     ],
     category: 'Bottoms',
     sizes: ['28', '30', '32', '34', '36', '38'],
-    colors: ['Plaid'],
+    colors: ['Canyon'],
     stock: 120,
   },
   {
     id: '8',
-    name: 'Horizon Shorts',
+    name: 'Horizon Shorts — Dusk',
     description: 'Lightweight, breathable shorts for summer hikes or trail running. Mid-rise waist, comfortable fit, and easy movement.',
-    price: 7000, // $69.99 in cents
+    price: 7000,
     images: [
       '/images-2/shorts-pink-bg.png'
     ],
     category: 'Bottoms',
     sizes: ['28', '30', '32', '34', '36', '38'],
-    colors: ['Plaid'],
+    colors: ['Dusk'],
     stock: 120,
   },
   {
     id: '9',
-    name: 'Horizon Shorts',
+    name: 'Horizon Shorts — Meadow',
     description: 'Lightweight, breathable shorts for summer hikes or trail running. Mid-rise waist, comfortable fit, and easy movement.',
-    price: 7000, // $69.99 in cents
+    price: 7000,
     images: [
       '/images-2/shorts-pattern-bg.png'
     ],
     category: 'Bottoms',
     sizes: ['28', '30', '32', '34', '36', '38'],
-    colors: ['Pink/Green'],
+    colors: ['Meadow'],
     stock: 120,
   },
   {
     id: '10',
     name: 'Carabiner',
     description: 'A decorative carabiner for your adventures.',
-    price: 1200, // $12.00 in cents
+    price: 1200,
     images: [
       '/images-2/carabiner.png',
     ],
     category: 'Accessories',
     sizes: ['One Size'],
-    colors: ['Pink'],
+    colors: ['Wildflower'],
     stock: 120,
   },
   {
     id: '11',
     name: 'Trailblazing Tote',
     description: 'Join the Club!',
-    price: 1200, // $12.00 in cents
+    price: 1200,
     images: [
-      '/images-2/tote-bg.png',
+      '/images-2/tote_hp_bg.png',
     ],
     category: 'Accessories',
     sizes: ['One Size'],
-    colors: ['Classic'],
+    colors: ['Natural'],
     stock: 120,
   },
-  
 ];
