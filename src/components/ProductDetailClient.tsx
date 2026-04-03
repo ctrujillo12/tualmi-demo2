@@ -10,16 +10,14 @@ interface ProductDetailClientProps {
   product: Product;
 }
 
+const AVAILABLE_HANDLES = ['trailblazing-tote', 'carabiner'];
+
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const router = useRouter();
+  const isAvailable = AVAILABLE_HANDLES.includes(product.handle ?? '');
 
-  // Map each color to the image index that corresponds to it.
-  // Assumes images are ordered to match colors: image[0] → color[0], image[1] → color[1], etc.
-  // If a product has more images than colors (e.g. multiple shots per colorway),
-  // you can adjust this mapping to fit your data shape.
   const colorImageMap: Record<string, number> = {};
   product.colors.forEach((color, index) => {
-    // Only map if there's a corresponding image at that index
     if (index < product.images.length) {
       colorImageMap[color] = index;
     }
@@ -36,33 +34,27 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
-    // Switch the main image to the one that matches this colorway
     const imageIndex = colorImageMap[color];
-    if (imageIndex !== undefined) {
-      setSelectedImage(imageIndex);
-    }
+    if (imageIndex !== undefined) setSelectedImage(imageIndex);
   };
 
   const handleAddToCart = () => {
+    if (!isAvailable) return;
     if (!selectedSize || !selectedColor) {
       alert('Please select both size and color');
       return;
     }
-
     addItem(product, selectedSize, selectedColor, quantity);
     setAddedToCart(true);
-    
-    setTimeout(() => {
-      setAddedToCart(false);
-    }, 2000);
+    setTimeout(() => setAddedToCart(false), 2000);
   };
 
   const handleBuyNow = () => {
+    if (!isAvailable) return;
     if (!selectedSize || !selectedColor) {
       alert('Please select both size and color');
       return;
     }
-
     addItem(product, selectedSize, selectedColor, quantity);
     router.push('/cart');
   };
@@ -75,18 +67,27 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     <div className="min-h-screen bg-white">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Images Section */}
+
+          {/* Images */}
           <div className="space-y-3">
-            <div className="aspect-[3/4] relative overflow-hidden bg-gray-50">
+            <div className={`aspect-[3/4] relative overflow-hidden bg-gray-50 ${!isAvailable ? 'opacity-80' : ''}`}>
               <Image
                 src={product.images[selectedImage]}
                 alt={product.name}
                 fill
-                className="object-contain"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className={`object-contain ${!isAvailable ? 'saturate-[0.8]' : ''}`}
                 priority
               />
+              {!isAvailable && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="bg-white/90 text-gray-700 text-xs tracking-widest uppercase px-6 py-2">
+                    Coming Soon
+                  </span>
+                </div>
+              )}
             </div>
-            
+
             {product.images.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
                 {product.images.map((image, index) => (
@@ -94,25 +95,18 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     key={index}
                     onClick={() => {
                       setSelectedImage(index);
-                      // Also sync the selected color when clicking a thumbnail directly.
-                      // Find which color maps to this image index (if any).
-                      const matchingColor = product.colors.find(
-                        (color) => colorImageMap[color] === index
-                      );
-                      if (matchingColor) {
-                        setSelectedColor(matchingColor);
-                      }
+                      const matchingColor = product.colors.find((c) => colorImageMap[c] === index);
+                      if (matchingColor) setSelectedColor(matchingColor);
                     }}
                     className={`aspect-[3/4] relative overflow-hidden transition-opacity ${
-                      selectedImage === index
-                        ? 'opacity-100'
-                        : 'opacity-50 hover:opacity-75'
+                      selectedImage === index ? 'opacity-100' : 'opacity-50 hover:opacity-75'
                     }`}
                   >
                     <Image
                       src={image}
                       alt={`${product.name} ${index + 1}`}
                       fill
+                      sizes="25vw"
                       className="object-contain"
                     />
                   </button>
@@ -121,10 +115,20 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             )}
           </div>
 
-          {/* Product Info Section */}
+          {/* Product Info */}
           <div className="lg:pl-4">
-            {/* Title & Price */}
             <div className="mb-8">
+              {/* Coming soon banner */}
+              {!isAvailable && (
+                <div className="inline-block bg-gray-100 text-gray-500 text-[10px] tracking-widest uppercase px-3 py-1 mb-4">
+                  Spring 2026
+                </div>
+              )}
+              {isAvailable && (
+                <div className="inline-block bg-black text-white text-[10px] tracking-widest uppercase px-3 py-1 mb-4">
+                  Available Now
+                </div>
+              )}
               <h1 className="text-xl font-normal text-black mb-2 tracking-wide">
                 {product.name}
               </h1>
@@ -134,18 +138,19 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </div>
 
             {/* Size Selection */}
-            {product.sizes.length > 0 && (
+            {product.sizes.length > 0 && product.sizes[0] !== 'One Size' && (
               <div className="mb-6">
                 <div className="flex flex-wrap gap-2">
                   {product.sizes.map((size) => (
                     <button
                       key={size}
-                      onClick={() => setSelectedSize(size)}
+                      onClick={() => isAvailable && setSelectedSize(size)}
+                      disabled={!isAvailable}
                       className={`py-2 px-4 text-xs transition-all ${
                         selectedSize === size
                           ? 'bg-black text-white'
                           : 'bg-white text-black border border-gray-300 hover:border-black'
-                      }`}
+                      } disabled:opacity-40 disabled:cursor-not-allowed`}
                     >
                       {size}
                     </button>
@@ -155,18 +160,19 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             )}
 
             {/* Color Selection */}
-            {product.colors.length > 0 && (
+            {product.colors.length > 0 && product.colors[0] !== 'Default' && (
               <div className="mb-6">
                 <div className="flex flex-wrap gap-2">
                   {product.colors.map((color) => (
                     <button
                       key={color}
-                      onClick={() => handleColorSelect(color)}
+                      onClick={() => isAvailable && handleColorSelect(color)}
+                      disabled={!isAvailable}
                       className={`py-2 px-4 text-xs transition-all ${
                         selectedColor === color
                           ? 'bg-black text-white'
                           : 'bg-white text-black border border-gray-300 hover:border-black'
-                      }`}
+                      } disabled:opacity-40 disabled:cursor-not-allowed`}
                     >
                       {color}
                     </button>
@@ -175,15 +181,29 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             )}
 
-            {/* Add to Cart Button */}
-            <button
-              onClick={handleAddToCart}
-              className="w-full bg-black text-white py-3 text-xs tracking-wide hover:bg-gray-900 transition-all mb-8"
-            >
-              {addedToCart ? 'ADDED TO CART' : 'ADD TO CART'}
-            </button>
+            {/* Add to Cart / Coming Soon Button */}
+            {isAvailable ? (
+              <button
+                onClick={handleAddToCart}
+                className="w-full bg-black text-white py-3 text-xs tracking-wide hover:bg-gray-900 transition-all mb-4"
+              >
+                {addedToCart ? 'ADDED TO CART' : 'ADD TO CART'}
+              </button>
+            ) : (
+              <div className="mb-4 space-y-2">
+                <button
+                  disabled
+                  className="w-full bg-gray-200 text-gray-400 py-3 text-xs tracking-wide cursor-not-allowed"
+                >
+                  COMING SOON — SPRING 2026
+                </button>
+                <p className="text-xs text-gray-400 text-center">
+                  Sign up on our homepage to get early access when this drops.
+                </p>
+              </div>
+            )}
 
-            {/* Product Description */}
+            {/* Description */}
             <div className="mb-8 pb-8 border-b border-gray-200">
               <p className="text-xs leading-relaxed text-black">
                 {product.description}
@@ -192,7 +212,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
             {/* Expandable Sections */}
             <div className="space-y-0">
-              {/* Size & Fit */}
               <div className="border-b border-gray-200">
                 <button
                   onClick={() => toggleSection('size')}
@@ -203,13 +222,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 </button>
                 {expandedSection === 'size' && (
                   <div className="pb-4 text-xs text-gray-700 leading-relaxed">
-                    <p>Model is 5'9" and wearing size S</p>
+                    <p>Model is 5&apos;9&quot; and wearing size S</p>
                     <p className="mt-2">Fits true to size. For a relaxed fit, size up.</p>
                   </div>
                 )}
               </div>
 
-              {/* Shipping & Returns */}
               <div className="border-b border-gray-200">
                 <button
                   onClick={() => toggleSection('shipping')}
@@ -227,7 +245,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 )}
               </div>
 
-              {/* Care Details */}
               <div className="border-b border-gray-200">
                 <button
                   onClick={() => toggleSection('care')}
@@ -246,12 +263,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             </div>
 
-            {/* Stock Info */}
-            {product.stock > 0 ? (
-              <p className="text-xs text-gray-500 mt-6">In Stock</p>
-            ) : (
-              <p className="text-xs text-black mt-6">Out of Stock</p>
-            )}
+            <p className="text-xs text-gray-500 mt-6">
+              {isAvailable ? 'In Stock' : 'Available Spring 2026'}
+            </p>
           </div>
         </div>
       </div>

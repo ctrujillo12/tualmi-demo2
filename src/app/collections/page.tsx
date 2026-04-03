@@ -1,13 +1,12 @@
-'use client'
+import Link from 'next/link';
+import Image from 'next/image';
+import HeaderStaticBlack from '@/components/HeaderStaticBlack';
+import { getProducts } from '@/lib/products';
+import CollectionsFilters from '@/components/CollectionsFilters';
+import type { Product } from '@/types';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import HeaderStaticBlack from '@/components/HeaderStaticBlack'
-import { products } from '@/lib/products'
-
-export default function CollectionsPage() {
-  const [filtersOpen, setFiltersOpen] = useState(false)
+export default async function CollectionsPage() {
+  const products = await getProducts();
 
   return (
     <>
@@ -21,44 +20,15 @@ export default function CollectionsPage() {
           </h1>
         </div>
 
-        {/* Filter Bar */}
-        <div className="flex justify-end mb-10">
-          <button
-            onClick={() => setFiltersOpen(!filtersOpen)}
-            className="font-sans text-xs uppercase tracking-widest flex items-center gap-1"
-          >
-            Filter
-            <span className="text-sm leading-none">
-              {filtersOpen ? '−' : '+'}
-            </span>
-          </button>
-        </div>
-
-        {/* Expandable Filters */}
-        {filtersOpen && (
-          <div className="mb-14 border-t border-b py-6">
-            <div className="flex flex-col sm:flex-row gap-10">
-              <div>
-                <p className="mb-4 font-sans text-xs uppercase tracking-widest">
-                  Sort By
-                </p>
-                <ul className="space-y-3 font-sans text-sm text-sand-700">
-                  <li className="cursor-pointer">Newest</li>
-                  <li className="cursor-pointer">Best Selling</li>
-                  <li className="cursor-pointer">Price: Low → High</li>
-                  <li className="cursor-pointer">Price: High → Low</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Filter toggle — needs client interactivity, isolated below */}
+        <CollectionsFilters />
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-20">
-          {products.slice(0, 10).map((product) => (
+          {products.map((product: Product) => (
             <Link
               key={product.id}
-              href={`/products/${product.id}`}
+              href={`/products/${product.handle ?? product.id}`}
               className="group"
             >
               {/* Image */}
@@ -86,5 +56,5 @@ export default function CollectionsPage() {
         </div>
       </main>
     </>
-  )
+  );
 }

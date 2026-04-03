@@ -1,57 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
+// src/app/api/checkout/route.ts
+//
+// This route is no longer needed for Shopify.
+// Checkout is now handled client-side via the Storefront API's cartCreate mutation
+// in src/store/cartStore.ts → redirectToShopifyCheckout().
+//
+// Keeping this file so any stale references don't 404, but it simply
+// returns a 410 Gone to make the change obvious during debugging.
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
-});
+import { NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
-  try {
-    const { items, customerInfo } = await request.json();
-
-    if (!items || items.length === 0) {
-      return NextResponse.json(
-        { error: 'No items in cart' },
-        { status: 400 }
-      );
-    }
-
-    // Create line items for Stripe
-    const lineItems = items.map((item: any) => ({
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: item.name,
-          description: `Size: ${item.size}, Color: ${item.color}`,
-        },
-        unit_amount: item.price, // Price in cents
-      },
-      quantity: item.quantity,
-    }));
-
-    // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/cancel`,
-      customer_email: customerInfo.email,
-      shipping_address_collection: {
-        allowed_countries: ['US', 'CA', 'GB', 'AU'],
-      },
-      metadata: {
-        customerFirstName: customerInfo.firstName,
-        customerLastName: customerInfo.lastName,
-      },
-    });
-
-    return NextResponse.json({ sessionId: session.id });
-  } catch (error) {
-    console.error('Checkout error:', error);
-    return NextResponse.json(
-      { error: 'Error creating checkout session' },
-      { status: 500 }
-    );
-  }
+export async function POST() {
+  return NextResponse.json(
+    {
+      error:
+        'This Stripe checkout endpoint has been removed. ' +
+        'Checkout is now handled via the Shopify Storefront API.',
+    },
+    { status: 410 }
+  );
 }

@@ -1,42 +1,42 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Link from 'next/link';
 import CartItem from '@/components/CartItem';
 import { useCartStore } from '@/store/cartStore';
 import HeaderStaticBlack from '@/components/HeaderStaticBlack';
 
 export default function CartPage() {
-  const router = useRouter();
-  const { items, getTotal } = useCartStore();
+  const { items, getTotal, redirectToShopifyCheckout } = useCartStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const total = getTotal();
-  const shipping = total > 0 ? 0 : 0;
+  const shipping = 0;
   const tax = total * 0.08;
   const grandTotal = total + shipping + tax;
 
-  const handleCheckout = () => {
-    router.push('/checkout');
+  const handleCheckout = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await redirectToShopifyCheckout();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setIsLoading(false);
+    }
   };
 
   if (items.length === 0) {
     return (
       <>
         <HeaderStaticBlack />
-
         <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <h1 className="text-lg font-normal tracking-[0.3em] uppercase mb-12">
-            Cart
-          </h1>
-
+          <h1 className="text-lg font-normal tracking-[0.3em] uppercase mb-12">Cart</h1>
           <div className="text-center space-y-4">
             <div className="text-4xl">🛒</div>
             <p className="text-sm text-sand-600">Your cart is empty</p>
-
-            <Link
-              href="/"
-              className="inline-block text-sm underline underline-offset-4 hover:opacity-70 transition"
-            >
+            <Link href="/" className="inline-block text-sm underline underline-offset-4 hover:opacity-70 transition">
               Continue Shopping
             </Link>
           </div>
@@ -48,15 +48,11 @@ export default function CartPage() {
   return (
     <>
       <HeaderStaticBlack />
-
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        {/* Title */}
-        <h1 className="text-lg font-normal tracking-[0.3em] uppercase mb-16">
-          Cart
-        </h1>
+        <h1 className="text-lg font-normal tracking-[0.3em] uppercase mb-16">Cart</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
-          
+
           {/* LEFT: Items */}
           <div className="lg:col-span-2 space-y-8">
             {items.map((item, index) => (
@@ -65,38 +61,26 @@ export default function CartPage() {
                 item={item}
               />
             ))}
-
-            <Link
-              href="/"
-              className="inline-block text-xs text-sand-600 hover:text-sand-900 transition"
-            >
+            <Link href="/" className="inline-block text-xs text-sand-600 hover:text-sand-900 transition">
               ← Continue Shopping
             </Link>
           </div>
 
           {/* RIGHT: Summary */}
           <div className="space-y-6">
-            <h2 className="text-sm tracking-widest uppercase text-sand-700">
-              Order Summary
-            </h2>
+            <h2 className="text-sm tracking-widest uppercase text-sand-700">Order Summary</h2>
 
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-sand-600">Subtotal</span>
                 <span>${(total / 100).toFixed(2)}</span>
               </div>
-
               <div className="flex justify-between">
                 <span className="text-sand-600">Shipping</span>
-                <span>
-                  {shipping === 0
-                    ? 'Free'
-                    : `$${(shipping / 100).toFixed(2)}`}
-                </span>
+                <span>{shipping === 0 ? 'Calculated at checkout' : `$${(shipping / 100).toFixed(2)}`}</span>
               </div>
-
               <div className="flex justify-between">
-                <span className="text-sand-600">Tax</span>
+                <span className="text-sand-600">Est. Tax</span>
                 <span>${(tax / 100).toFixed(2)}</span>
               </div>
             </div>
@@ -106,15 +90,20 @@ export default function CartPage() {
               <span>${(grandTotal / 100).toFixed(2)}</span>
             </div>
 
+            {error && (
+              <p className="text-xs text-red-600">{error}</p>
+            )}
+
             <button
               onClick={handleCheckout}
-              className="w-full border border-black py-3 text-sm uppercase tracking-wide hover:bg-black hover:text-white transition"
+              disabled={isLoading}
+              className="w-full border border-black py-3 text-sm uppercase tracking-wide hover:bg-black hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Checkout
+              {isLoading ? 'Redirecting…' : 'Checkout'}
             </button>
 
             <p className="text-xs text-sand-500 text-center">
-              Secure checkout powered by Stripe
+              Secure checkout powered by Shopify
             </p>
           </div>
         </div>
