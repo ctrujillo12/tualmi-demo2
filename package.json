@@ -4,14 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.90.1",
     "@upstash/redis": "^1.36.3",
-    "next": "15.1.7",
+    "next": "15.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "zustand": "^4.5.7"
