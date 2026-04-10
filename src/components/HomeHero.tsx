@@ -6,7 +6,8 @@ import { useState, useEffect } from 'react';
 const heroImages = [
   '/images-2/hero0vsco.jpeg',
   '/images-2/hero1vsco.jpeg',
-  '/images-2/hero2vsco.jpeg',
+  // '/images-2/hero2vsco.jpeg',
+  '/images-2/fia-chat.png',
 ];
 
 export default function HomeHero() {
