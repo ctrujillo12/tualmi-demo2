@@ -14,7 +14,7 @@ export default function StoryPage() {
 
         <div className="space-y-8 text-sm leading-relaxed">
           <p className="tracking-wide">
-            Made in Los Angeles. Designed for women who move.
+            Created in Los Angeles. Designed for women who move.
           </p>
 
           <p>
