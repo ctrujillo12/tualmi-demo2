@@ -61,65 +61,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ─── THREE PILLARS ─── */}
-      <section id="our-story" style={{ borderTop: `1px solid ${rule}`, borderBottom: `1px solid ${rule}`, padding: '96px 32px', backgroundColor: bgAlt }}>
-        <div style={{ maxWidth: '960px', margin: '0 auto' }}>
-          <p style={{ fontSize: '10px', letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, marginBottom: '80px', textAlign: 'center', fontFamily: sans }}>
-            What makes us different
-          </p>
-
-          {([
-            {
-              n: '01',
-              title: <><em>Sustainable</em> materials.<br />Not greenwashing.</>,
-              body: `We use recycled and low-impact fabrics because it's the right thing to do, not because it makes good copy. Every material is chosen for its environmental footprint first—then its performance. We'll tell you exactly what's in your clothes and why.`,
-              tags: 'Recycled nylon · Deadstock fabrics · Low-impact dyes',
-            },
-            {
-              n: '02',
-              title: <>Made with intention.<br /><em>Transparently.</em></>,
-              body: `Most outdoor brands won't tell you where their clothes are made or why. We will. Our collection is manufactured at Springtex, a facility we chose for its labor standards and quality control—not just its price point. Ethical manufacturing isn't about geography. It's about accountability.`,
-              tags: 'Vetted manufacturing · Fair labor standards · Full transparency',
-            },
-            {
-              n: '03',
-              title: <>By women.<br /><em>For women.</em></>,
-              body: `We're a women-founded company making gear for women—which sounds obvious but is still genuinely rare in the outdoor industry. Every fit, every pocket placement, every design decision comes from someone who's actually worn it on a real trail. We design for function that doesn't ask you to compromise on how you look.`,
-              tags: 'Women-founded · Fit-tested by women · Designed for real bodies',
-            },
-          ] as const).map((pillar, i) => (
-            <div
-              key={i}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'minmax(160px, 1fr) 2fr',
-                gap: '56px',
-                alignItems: 'start',
-                borderTop: i > 0 ? `1px solid ${rule}` : 'none',
-                paddingTop: i > 0 ? '72px' : '0',
-                marginTop: i > 0 ? '72px' : '0',
-              }}
-            >
-              <div>
-                <span style={{ display: 'block', fontSize: '88px', lineHeight: 1, fontFamily: serif, color: rule, marginBottom: '12px', userSelect: 'none' }}>
-                  {pillar.n}
-                </span>
-                <h3 style={{ fontSize: '22px', fontWeight: 400, color: black, lineHeight: 1.35, fontFamily: serif }}>
-                  {pillar.title}
-                </h3>
-              </div>
-              <div style={{ paddingTop: '8px' }}>
-                <p style={{ fontSize: '14px', lineHeight: 1.9, color: mid, marginBottom: '24px', fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-                  {pillar.body}
-                </p>
-                <p style={{ fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', color: muted, fontFamily: sans }}>
-                  {pillar.tags}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* ─── FEATURED TOTE ─── */}
       {tote && (
