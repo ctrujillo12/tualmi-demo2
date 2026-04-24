@@ -67,7 +67,7 @@ export default async function Home() {
         <section style={{ padding: '96px 32px' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <p style={{ fontSize: '10px', letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, textAlign: 'center', marginBottom: '72px', fontFamily: sans }}>
-              Available for preorder
+              Available Tuesday, April 28th
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
               <div style={{ aspectRatio: '4/5', position: 'relative', overflow: 'hidden', backgroundColor: bgAlt }}>
@@ -103,7 +103,7 @@ export default async function Home() {
                     fontFamily: sans,
                   }}
                 >
-                  Preorder Now
+                  Get 20% off — join the list
                 </Link>
               </div>
             </div>
