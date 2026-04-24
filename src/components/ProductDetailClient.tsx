@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
@@ -11,6 +12,13 @@ interface ProductDetailClientProps {
 }
 
 const AVAILABLE_HANDLES = ['carabiner'];
+
+// Earthy palette
+const brown  = '#3B2F1E';
+const mid    = '#6B5C4C';
+const muted  = '#8C7B6B';
+const rule   = '#DDD5C8';
+const bgAlt  = '#F2EDE4';
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const router = useRouter();
@@ -64,24 +72,24 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div style={{ minHeight: '100vh', backgroundColor: '#FAFAF7' }}>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
           {/* Images */}
           <div className="space-y-3">
-            <div className={`aspect-[3/4] relative overflow-hidden bg-gray-50 ${!isAvailable ? 'opacity-80' : ''}`}>
+            <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden', backgroundColor: bgAlt, opacity: isAvailable ? 1 : 0.8 }}>
               <Image
                 src={product.images[selectedImage]}
                 alt={product.name}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className={`object-contain ${!isAvailable ? 'saturate-[0.8]' : ''}`}
+                style={{ objectFit: 'contain', filter: isAvailable ? 'none' : 'saturate(0.8)' }}
                 priority
               />
               {!isAvailable && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="bg-white/90 text-gray-700 text-xs tracking-widest uppercase px-6 py-2">
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ backgroundColor: 'rgba(250,250,247,0.92)', color: mid, fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '8px 24px' }}>
                     Coming Soon
                   </span>
                 </div>
@@ -98,16 +106,14 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       const matchingColor = product.colors.find((c) => colorImageMap[c] === index);
                       if (matchingColor) setSelectedColor(matchingColor);
                     }}
-                    className={`aspect-[3/4] relative overflow-hidden transition-opacity ${
-                      selectedImage === index ? 'opacity-100' : 'opacity-50 hover:opacity-75'
-                    }`}
+                    style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden', opacity: selectedImage === index ? 1 : 0.45, border: 'none', background: 'none', cursor: 'pointer', transition: 'opacity 0.2s' }}
                   >
                     <Image
                       src={image}
                       alt={`${product.name} ${index + 1}`}
                       fill
                       sizes="25vw"
-                      className="object-contain"
+                      style={{ objectFit: 'contain' }}
                     />
                   </button>
                 ))}
@@ -117,40 +123,45 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
           {/* Product Info */}
           <div className="lg:pl-4">
-            <div className="mb-8">
-              {/* Coming soon banner */}
-              {!isAvailable && (
-                <div className="inline-block bg-gray-100 text-gray-500 text-[10px] tracking-widest uppercase px-3 py-1 mb-4">
+            <div style={{ marginBottom: '32px' }}>
+              {/* Badge */}
+              {!isAvailable ? (
+                <div style={{ display: 'inline-block', backgroundColor: bgAlt, color: muted, fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 12px', marginBottom: '16px' }}>
                   Spring 2026
                 </div>
-              )}
-              {isAvailable && (
-                <div className="inline-block bg-black text-white text-[10px] tracking-widest uppercase px-3 py-1 mb-4">
+              ) : (
+                <div style={{ display: 'inline-block', backgroundColor: brown, color: '#FAFAF7', fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 12px', marginBottom: '16px' }}>
                   Available Now
                 </div>
               )}
-              <h1 className="text-xl font-normal text-black mb-2 tracking-wide">
+              <h1 style={{ fontSize: '20px', fontWeight: 400, color: brown, marginBottom: '8px', letterSpacing: '0.03em' }}>
                 {product.name}
               </h1>
-              <p className="text-sm text-black">
+              <p style={{ fontSize: '14px', color: mid }}>
                 ${(product.price / 100).toFixed(2)}
               </p>
             </div>
 
             {/* Size Selection */}
             {product.sizes.length > 0 && product.sizes[0] !== 'One Size' && (
-              <div className="mb-6">
-                <div className="flex flex-wrap gap-2">
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {product.sizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => isAvailable && setSelectedSize(size)}
                       disabled={!isAvailable}
-                      className={`py-2 px-4 text-xs transition-all ${
-                        selectedSize === size
-                          ? 'bg-black text-white'
-                          : 'bg-white text-black border border-gray-300 hover:border-black'
-                      } disabled:opacity-40 disabled:cursor-not-allowed`}
+                      style={{
+                        padding: '8px 16px',
+                        fontSize: '12px',
+                        border: `1px solid ${selectedSize === size ? brown : rule}`,
+                        backgroundColor: selectedSize === size ? brown : 'transparent',
+                        color: selectedSize === size ? '#FAFAF7' : brown,
+                        cursor: isAvailable ? 'pointer' : 'not-allowed',
+                        opacity: isAvailable ? 1 : 0.4,
+                        transition: 'all 0.15s',
+                        letterSpacing: '0.05em',
+                      }}
                     >
                       {size}
                     </button>
@@ -161,18 +172,24 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
             {/* Color Selection */}
             {product.colors.length > 0 && product.colors[0] !== 'Default' && (
-              <div className="mb-6">
-                <div className="flex flex-wrap gap-2">
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {product.colors.map((color) => (
                     <button
                       key={color}
                       onClick={() => isAvailable && handleColorSelect(color)}
                       disabled={!isAvailable}
-                      className={`py-2 px-4 text-xs transition-all ${
-                        selectedColor === color
-                          ? 'bg-black text-white'
-                          : 'bg-white text-black border border-gray-300 hover:border-black'
-                      } disabled:opacity-40 disabled:cursor-not-allowed`}
+                      style={{
+                        padding: '8px 16px',
+                        fontSize: '12px',
+                        border: `1px solid ${selectedColor === color ? brown : rule}`,
+                        backgroundColor: selectedColor === color ? brown : 'transparent',
+                        color: selectedColor === color ? '#FAFAF7' : brown,
+                        cursor: isAvailable ? 'pointer' : 'not-allowed',
+                        opacity: isAvailable ? 1 : 0.4,
+                        transition: 'all 0.15s',
+                        letterSpacing: '0.05em',
+                      }}
                     >
                       {color}
                     </button>
@@ -181,92 +198,95 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             )}
 
-            {/* Add to Cart / Coming Soon Button */}
+            {/* Add to Cart / Coming Soon */}
             {isAvailable ? (
               <button
                 onClick={handleAddToCart}
-                className="w-full bg-black text-white py-3 text-xs tracking-wide hover:bg-gray-900 transition-all mb-4"
+                style={{ width: '100%', backgroundColor: brown, color: '#FAFAF7', padding: '14px', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', border: 'none', cursor: 'pointer', marginBottom: '16px', transition: 'opacity 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
               >
                 {addedToCart ? 'ADDED TO CART' : 'ADD TO CART'}
               </button>
             ) : (
-              <div className="mb-4 space-y-2">
+              <div style={{ marginBottom: '16px' }}>
                 <button
                   disabled
-                  className="w-full bg-gray-200 text-gray-400 py-3 text-xs tracking-wide cursor-not-allowed"
+                  style={{ width: '100%', backgroundColor: bgAlt, color: muted, padding: '14px', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', border: 'none', cursor: 'not-allowed', marginBottom: '8px' }}
                 >
                   COMING SOON — SPRING 2026
                 </button>
-                <p className="text-xs text-gray-400 text-center">
+                <p style={{ fontSize: '12px', color: muted, textAlign: 'center' }}>
                   Sign up on our homepage to get early access when this drops.
                 </p>
               </div>
             )}
 
             {/* Description */}
-            <div className="mb-8 pb-8 border-b border-gray-200">
-              <p className="text-xs leading-relaxed text-black">
+            <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
+              <p style={{ fontSize: '13px', lineHeight: 1.8, color: mid }}>
                 {product.description}
               </p>
             </div>
 
             {/* Expandable Sections */}
-            <div className="space-y-0">
-              <div className="border-b border-gray-200">
-                <button
-                  onClick={() => toggleSection('size')}
-                  className="w-full py-4 flex items-center justify-between text-xs text-black hover:text-gray-600 transition-colors"
-                >
-                  <span>SIZE & FIT</span>
-                  <span className="text-lg">{expandedSection === 'size' ? '−' : '+'}</span>
-                </button>
-                {expandedSection === 'size' && (
-                  <div className="pb-4 text-xs text-gray-700 leading-relaxed">
-                    <p>Model is 5&apos;9&quot; and wearing size S</p>
-                    <p className="mt-2">Fits true to size. For a relaxed fit, size up.</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="border-b border-gray-200">
-                <button
-                  onClick={() => toggleSection('shipping')}
-                  className="w-full py-4 flex items-center justify-between text-xs text-black hover:text-gray-600 transition-colors"
-                >
-                  <span>SHIPPING & RETURNS</span>
-                  <span className="text-lg">{expandedSection === 'shipping' ? '−' : '+'}</span>
-                </button>
-                {expandedSection === 'shipping' && (
-                  <div className="pb-4 text-xs text-gray-700 leading-relaxed">
-                    <p>Free shipping on orders over $100</p>
-                    <p className="mt-2">30-day returns and exchanges</p>
-                    <p className="mt-2">Ships within 2-3 business days</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="border-b border-gray-200">
-                <button
-                  onClick={() => toggleSection('care')}
-                  className="w-full py-4 flex items-center justify-between text-xs text-black hover:text-gray-600 transition-colors"
-                >
-                  <span>CARE DETAILS</span>
-                  <span className="text-lg">{expandedSection === 'care' ? '−' : '+'}</span>
-                </button>
-                {expandedSection === 'care' && (
-                  <div className="pb-4 text-xs text-gray-700 leading-relaxed">
-                    <p>Hand wash cold</p>
-                    <p className="mt-2">Lay flat to dry</p>
-                    <p className="mt-2">Do not bleach or iron</p>
-                  </div>
-                )}
-              </div>
+            <div>
+              {[
+                {
+                  key: 'size',
+                  label: 'SIZE & FIT',
+                  content: (
+                    <>
+                      <p>Model is 5'9" and wearing size S</p>
+                      <p style={{ marginTop: '8px' }}>Fits true to size. For a relaxed fit, size up.</p>
+                    </>
+                  ),
+                },
+                {
+                  key: 'shipping',
+                  label: 'SHIPPING & RETURNS',
+                  content: (
+                    <>
+                      <p>Free shipping on orders over $100</p>
+                      <p style={{ marginTop: '8px' }}>30-day returns and exchanges</p>
+                      <p style={{ marginTop: '8px' }}>Ships within 2–3 business days</p>
+                    </>
+                  ),
+                },
+                {
+                  key: 'care',
+                  label: 'CARE DETAILS',
+                  content: (
+                    <>
+                      <p>Hand wash cold</p>
+                      <p style={{ marginTop: '8px' }}>Lay flat to dry</p>
+                      <p style={{ marginTop: '8px' }}>Do not bleach or iron</p>
+                    </>
+                  ),
+                },
+              ].map(({ key, label, content }) => (
+                <div key={key} style={{ borderBottom: `1px solid ${rule}` }}>
+                  <button
+                    onClick={() => toggleSection(key)}
+                    style={{ width: '100%', padding: '16px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', letterSpacing: '0.15em', color: brown, background: 'none', border: 'none', cursor: 'pointer' }}
+                  >
+                    <span>{label}</span>
+                    <span style={{ fontSize: '18px', color: muted }}>{expandedSection === key ? '−' : '+'}</span>
+                  </button>
+                  {expandedSection === key && (
+                    <div style={{ paddingBottom: '16px', fontSize: '12px', color: mid, lineHeight: 1.8 }}>
+                      {content}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
 
-            <p className="text-xs text-gray-500 mt-6">
+            <p style={{ fontSize: '12px', color: muted, marginTop: '24px' }}>
               {isAvailable ? 'In Stock' : 'Available Spring 2026'}
             </p>
           </div>
+
         </div>
       </div>
     </div>

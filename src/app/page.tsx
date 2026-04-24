@@ -9,13 +9,13 @@ import type { Product } from '@/types';
 const serif = "'Cormorant Garamond', Georgia, serif";
 const sans = "'Jost', 'DM Sans', system-ui, sans-serif";
 
-// Palette
-const bg    = '#FAFAF8';   // near-white with a breath of warmth
-const bgAlt = '#F2F0EB';   // soft oat — section contrast without going brown
-const black = '#111110';   // off-black, not harsh
-const mid   = '#6B6B67';   // medium gray for body text
-const muted = '#A8A8A3';   // muted labels / tags
-const rule  = '#E2E0DA';   // hairline dividers
+// Palette — earthy brown
+const bg    = '#FAFAF7';   // warm near-white
+const bgAlt = '#F2EDE4';   // soft linen
+const black = '#3B2F1E';   // dark warm brown
+const mid   = '#6B5C4C';   // medium brown for body text
+const muted = '#8C7B6B';   // taupe for labels
+const rule  = '#DDD5C8';   // warm hairline dividers
 
 export default async function Home() {
   const products = await getProducts();
@@ -61,7 +61,6 @@ export default async function Home() {
         </div>
       </section>
 
-
       {/* ─── FEATURED TOTE ─── */}
       {tote && (
         <section style={{ padding: '96px 32px' }}>
@@ -85,11 +84,14 @@ export default async function Home() {
                     {tote.description}
                   </p>
                 </div>
+                <p style={{ fontSize: '14px', color: muted, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
+                  Join the Trailblazer's Club below for 20% off when we launch Tuesday.
+                </p>
                 <p style={{ fontSize: '18px', color: black, fontFamily: serif }}>
                   ${(tote.price / 100).toFixed(2)}
                 </p>
-                <Link
-                  href={`/products/${tote.handle ?? tote.id}`}
+                <a
+                  href="#trailblazers"
                   style={{
                     display: 'inline-block',
                     width: 'fit-content',
@@ -104,7 +106,7 @@ export default async function Home() {
                   }}
                 >
                   Get 20% off — join the list
-                </Link>
+                </a>
               </div>
             </div>
           </div>
@@ -126,7 +128,7 @@ export default async function Home() {
       </section>
 
       {/* ─── TRAILBLAZER'S CLUB ─── */}
-      <section style={{ borderTop: `1px solid ${rule}`, padding: '120px 32px', backgroundColor: bgAlt }}>
+      <section id="trailblazers" style={{ borderTop: `1px solid ${rule}`, padding: '120px 32px', backgroundColor: bgAlt }}>
         <div style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
           <p style={{ fontSize: '10px', letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, marginBottom: '32px', fontFamily: sans }}>
             Trailblazer's Club

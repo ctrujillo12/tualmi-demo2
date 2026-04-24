@@ -3,9 +3,9 @@
 import { useState } from 'react';
 
 const sans = "'Jost', 'DM Sans', system-ui, sans-serif";
-const black = '#111110';
-const muted = '#A8A8A3';
-const rule  = '#E2E0DA';
+const black = '#3B2F1E';   // dark warm brown
+const muted = '#8C7B6B';   // taupe
+const rule  = '#DDD5C8';   // warm divider
 
 export default function TrailblazerSignup() {
   const [email, setEmail] = useState('');
