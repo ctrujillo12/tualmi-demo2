@@ -115,7 +115,7 @@ export default async function Home() {
       <section style={{ borderTop: `1px solid ${rule}`, padding: '96px 32px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <p style={{ fontSize: '10px', letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, textAlign: 'center', marginBottom: '72px', fontFamily: sans }}>
-            Launching Spring 2026 — Preview Drop 1
+            Launching Summer 2026 — Preview Drop 1
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
             {previewProducts.map((product: Product) => (

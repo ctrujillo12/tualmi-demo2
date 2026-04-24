@@ -7,6 +7,7 @@ import { Product } from '@/types';
 
 interface ProductCardProps {
   product: Product;
+  showPrice?: boolean;
 }
 
 // Matches exactly the color names defined in localProducts
@@ -71,7 +72,7 @@ function ColorSwatch({
 const sans = "'Jost', 'DM Sans', system-ui, sans-serif";
 const serif = "'Cormorant Garamond', Georgia, serif";
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, showPrice = true }: ProductCardProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(
     product.colors ? product.colors[0] : null
@@ -87,7 +88,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div>
-      <Link href={`/products/${product.id}`} style={{ textDecoration: 'none' }}>
+      <Link href={`/products/${product.handle ?? product.id}`} style={{ textDecoration: 'none' }}>
         {/* Image */}
         <div style={{
           aspectRatio: '1',
@@ -121,9 +122,11 @@ export default function ProductCard({ product }: ProductCardProps) {
           <p style={{ fontSize: '11px', color: '#A8A8A3', fontFamily: sans, letterSpacing: '0.02em', marginBottom: '3px' }}>
             {product.category}
           </p>
-          <p style={{ fontSize: '13px', color: '#111110', fontFamily: serif }}>
-            ${(product.price / 100).toFixed(2)}
-          </p>
+          {showPrice && (
+            <p style={{ fontSize: '13px', color: '#111110', fontFamily: serif }}>
+              ${(product.price / 100).toFixed(2)}
+            </p>
+          )}
         </div>
       </Link>
 
