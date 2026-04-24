@@ -14,8 +14,9 @@ body {
   cursor: url('/strawberry_cursor.png'), auto;
 }
 
-html, body, *, *::before, *::after {
-  cursor: url('/strawberry_cursor.png'), auto !important;
+body {
+  @apply bg-sand-50 text-sand-900;
+  cursor: url('/strawberry_cursor.png'), auto;
 }
 
 @layer utilities {

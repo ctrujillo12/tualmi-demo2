@@ -10,7 +10,7 @@ interface ProductDetailClientProps {
   product: Product;
 }
 
-const AVAILABLE_HANDLES = ['trailblazing-tote', 'carabiner'];
+const AVAILABLE_HANDLES = ['carabiner'];
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const router = useRouter();
