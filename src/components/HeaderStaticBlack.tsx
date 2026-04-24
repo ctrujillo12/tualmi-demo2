@@ -12,13 +12,13 @@ export default function HeaderStaticBlack() {
     setMounted(true);
   }, []);
 
-  const textColor = 'text-black';
-  const hoverColor = 'hover:text-gray-600';
-  const borderColor = 'border-gray-200';
+  const textColor   = 'text-[#3B2F1E]';
+  const hoverColor  = 'hover:text-[#8C7B6B]';
+  const borderColor = 'border-[#DDD5C8]';
 
   return (
     <header
-      className={`bg-transparent border-b ${borderColor} fixed top-0 left-0 right-0 z-50`}
+      className={`bg-[#FAFAF7] border-b ${borderColor} fixed top-0 left-0 right-0 z-50`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -62,7 +62,7 @@ export default function HeaderStaticBlack() {
               </svg>
 
               {mounted && itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-[#3B2F1E] text-[#FAFAF7] text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {itemCount}
                 </span>
               )}
