@@ -7,7 +7,7 @@ const heroImages = [
   '/images-2/hero0vsco.jpeg',
   '/images-2/hero1vsco.jpeg',
   // '/images-2/hero2vsco.jpeg',
-  '/images-2/hero4vsco.jpeg',
+  '/images-2/hero_anna.JPG',
 ];
 
 export default function HomeHero() {
