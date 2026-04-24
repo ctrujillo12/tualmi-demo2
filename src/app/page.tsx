@@ -119,7 +119,7 @@ export default async function Home() {
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
             {previewProducts.map((product: Product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} showPrice={false} />
             ))}
           </div>
         </div>
