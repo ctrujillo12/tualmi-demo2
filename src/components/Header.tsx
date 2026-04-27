@@ -36,12 +36,12 @@ export default function Header() {
 
           {/* LEFT NAV */}
           <nav className="hidden md:flex space-x-6 text-xs">
-            <Link
+            {/* <Link
               href="/collections"
               className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}
             >
               Drop 1
-            </Link>
+            </Link> */}
             <Link
               href="/story"
               className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}
@@ -58,7 +58,7 @@ export default function Header() {
             TUALMI
           </Link>
 
-          {/* RIGHT — CART */}
+          {/* RIGHT — CART
           <div className="flex items-center space-x-6">
             <Link href="/cart" className="relative group">
               <svg
@@ -84,7 +84,7 @@ export default function Header() {
                 </span>
               )}
             </Link>
-          </div>
+          </div> */}
 
         </div>
       </div>

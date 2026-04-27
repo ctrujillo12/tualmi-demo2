@@ -25,12 +25,12 @@ export default function HeaderStaticBlack() {
 
           {/* Left Nav */}
           <nav className="hidden md:flex space-x-6 text-xs">
-            <Link
+            {/* <Link
               href="/collections"
               className={`${textColor} ${hoverColor} uppercase tracking-widest transition-colors`}
             >
               Drop 1
-            </Link>
+            </Link> */}
             <Link href="/story" className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}>
               Our Story
             </Link>
@@ -45,7 +45,7 @@ export default function HeaderStaticBlack() {
           </Link>
 
           {/* Cart */}
-          <div className="flex items-center space-x-6">
+          {/* <div className="flex items-center space-x-6">
             <Link href="/cart" className="relative">
               <svg
                 className={`w-5 h-5 ${textColor} ${hoverColor} transition-colors`}
@@ -67,7 +67,7 @@ export default function HeaderStaticBlack() {
                 </span>
               )}
             </Link>
-          </div>
+          </div> */}
 
         </div>
       </div>
