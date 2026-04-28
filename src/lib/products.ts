@@ -106,7 +106,7 @@ export const localProducts: Product[] = [
     name: 'Trailblazing Club Tote',
     description:
       'Elevated everyday tote made from 100% organic cotton canvas. Reusable & eco-conscious, durable for everyday use, soft yet structured feel.',
-    price: 1800,
+    price: 3000,
     images: ['/images-2/tote_hp_bg.png'],
     category: 'Accessories',
     sizes: ['One Size'],
