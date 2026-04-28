@@ -93,7 +93,7 @@ export default async function Home() {
                   </p>
                 </div>
                 <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', color: muted, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-                  Join the Trailblazer's Club below for 20% off when we launch Tuesday.
+                  Join the Trailblazer's Club below for 50% off when we launch Tuesday.
                 </p>
                 <p style={{ fontSize: '18px', color: black, fontFamily: serif }}>
                   ${(tote.price / 100).toFixed(2)}
@@ -113,7 +113,7 @@ export default async function Home() {
                     fontFamily: sans,
                   }}
                 >
-                  Get 20% off — join the list
+                  Get 50% off — join the list
                 </a>
               </div>
             </div>
