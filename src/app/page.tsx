@@ -48,8 +48,8 @@ export default async function Home() {
             to solve it. So we did.
           </p>
           <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', lineHeight: 1.9, color: mid, marginBottom: '40px', fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-            We make functional outdoor apparel for women who want to show up fully as themselves—
-            on the mountain, in the canyon, at the trailhead, and everywhere in between. Every piece
+            We make functional outdoor apparel for women who want to show up fully as themselves—on 
+            the mountain, in the canyon, at the trailhead, and everywhere in between. Every piece
             is designed by women, ethically and intentionally manufactured, and made from materials
             we'd stake our names on.
           </p>
