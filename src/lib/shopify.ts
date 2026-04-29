@@ -134,7 +134,7 @@ export async function createCheckout(lines: { variantId: string; quantity: numbe
   // Shopify builds checkoutUrl using the primary domain (tualmi.com) but that
   // points to Vercel, not Shopify. Rewrite to myshopify.com so checkout loads.
   const url = new URL(cart.checkoutUrl);
-  url.hostname = 'tualmi-outdoors.myshopify.com';
+  url.hostname = 'tualmi.myshopify.com';
   url.port = '';
   return url.toString();
 }

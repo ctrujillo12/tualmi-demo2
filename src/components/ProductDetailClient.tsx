@@ -69,7 +69,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   // Skips cart entirely — creates Shopify cart and redirects straight to checkout
   const handleBuyNow = () => {
-    window.location.href = 'https://tualmi-outdoors.myshopify.com/cart/52063437553977:1?discount=WELOVEYOU50';
+    window.location.href = 'https://tualmi.myshopify.com/cart/52063437553977:1?discount=WELOVEYOU50';
   };
 
   const toggleSection = (section: string) => {
