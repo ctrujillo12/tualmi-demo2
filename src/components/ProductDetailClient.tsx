@@ -68,9 +68,28 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   };
 
   // Skips cart entirely — creates Shopify cart and redirects straight to checkout
-  const handleBuyNow = () => {
-    window.location.href = 'https://tualmi.myshopify.com/cart/52063437553977:1?discount=WELOVEYOU50';
-  };
+  const handleBuyNow = async () => {
+  setBuyStatus('loading');
+  try {
+    const res = await fetch('https://tualmi.myshopify.com/api/2024-01/graphql.json', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': 'dd02cba6150c5aed56445312b622a25b'
+      },
+      body: JSON.stringify({
+        query: `mutation { cartCreate(input: { lines: [{ merchandiseId: "gid://shopify/ProductVariant/52063437553977", quantity: 1 }] }) { cart { checkoutUrl } userErrors { message } } }`
+      })
+    });
+    const data = await res.json();
+    const url = data.data.cartCreate.cart.checkoutUrl;
+    console.log('checkout url:', url);
+    window.location.href = url;
+  } catch(e) {
+    setBuyStatus('error');
+    setBuyError('Something went wrong.');
+  }
+};
 
   const toggleSection = (section: string) => {
     setExpandedSection(expandedSection === section ? null : section);
