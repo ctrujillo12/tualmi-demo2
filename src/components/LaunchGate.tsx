@@ -83,7 +83,7 @@ function Countdown() {
           userSelect: 'none',
         }}
       >
-        Opening at 7 PM PT
+        Opening at 7:30 PM PT
       </div>
 
       <p style={{ fontSize: '11px', color: muted, fontFamily: sans, letterSpacing: '0.05em' }}>
