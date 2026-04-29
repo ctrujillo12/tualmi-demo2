@@ -39,9 +39,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 
         {/* Newsletter + Links Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+        <div className="grid grid-cols-1 gap-12 mb-12">
 
-          {/* Newsletter */}
+          {/* Newsletter
           <div className="max-w-md">
             <h4 style={{ fontWeight: 600, marginBottom: '16px', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#3B2F1E' }}>
               Get Updates + Promos
@@ -67,10 +67,10 @@ export default function Footer() {
             {status === 'error' && (
               <p style={{ color: '#A87060', marginTop: '8px', fontSize: '12px' }}>Error: {errorMsg}</p>
             )}
-          </div>
+          </div> */}
 
           {/* Footer Links */}
-          <div className="lg:grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:col-span-2 w-full gap-8">
             {[
               {
                 title: 'Assistance',
