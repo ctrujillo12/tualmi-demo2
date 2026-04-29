@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 // 7:00 PM Pacific Time on April 28, 2026
-const LAUNCH_TIME = new Date('2026-04-28T19:00:00-07:00').getTime();
+const LAUNCH_TIME = new Date('2026-04-28T19:00:00-07:30').getTime();
 
 const serif = "'Cormorant Garamond', Georgia, serif";
 const sans  = "'Jost', 'DM Sans', system-ui, sans-serif";

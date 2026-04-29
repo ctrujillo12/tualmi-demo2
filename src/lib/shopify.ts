@@ -131,7 +131,12 @@ export async function createCheckout(lines: { variantId: string; quantity: numbe
   if (userErrors.length > 0) throw new Error(userErrors.map((e) => e.message).join(', '));
   if (!cart) throw new Error('Cart creation failed — no cart returned.');
 
-  return cart.checkoutUrl;
+  // Shopify builds checkoutUrl using the primary domain (tualmi.com) but that
+  // points to Vercel, not Shopify. Rewrite to myshopify.com so checkout loads.
+  const url = new URL(cart.checkoutUrl);
+  url.hostname = 'tualmi.myshopify.com';
+  url.port = '';
+  return url.toString();
 }
 
 import type { Product } from '@/types';
@@ -143,7 +148,6 @@ export function toProduct(sp: ShopifyProduct): Product {
   const sizes  = [...new Set(variants.flatMap((v) => v.selectedOptions.filter((o) => o.name.toLowerCase() === 'size').map((o) => o.value)))];
   const colors = [...new Set(variants.flatMap((v) => v.selectedOptions.filter((o) => o.name.toLowerCase() === 'color').map((o) => o.value)))];
 
-  // Fixed: correctly access e.node.url (not e.url)
   const images = sp.images.edges.map((e) => e.node.url);
 
   const priceInCents = Math.round(parseFloat(firstVariant?.price.amount ?? '0') * 100);
