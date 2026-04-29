@@ -84,7 +84,7 @@ export const localProducts: Product[] = [
     handle: 'trailblazing-tote',
     name: 'Trailblazing Club Tote',
     description:
-      'Elevated everyday tote made from 100% organic cotton canvas. Reusable & eco-conscious, durable for everyday use, soft yet structured feel.',
+      'Elevated everyday tote made from 100% organic cotton canvas. Reusable & eco-conscious, durable for everyday use, soft yet structured feel. Dimensions: 15.5"L x 11.5"H x 6"D, 6" and 13" handles.',
     price: 3000,
     images: ['/images-2/tote_hp_bg.png'],
     category: 'Accessories',
