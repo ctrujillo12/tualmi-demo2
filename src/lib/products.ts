@@ -1,13 +1,4 @@
 // src/lib/products.ts
-//
-// Local fallback data matches your Shopify products exactly:
-//   - Same handles as the Shopify URL slugs
-//   - Same prices (in cents)
-//   - Same consolidated products (colors are variants, not separate products)
-//   - Same sizes per product type
-//
-// Once Shopify is live, getProducts() / getProduct() will pull from the API
-// automatically and this fallback is bypassed.
 
 import { getAllProducts as shopifyGetAll, getProductByHandle, toProduct } from './shopify';
 import type { Product } from '@/types';
@@ -15,8 +6,6 @@ import type { Product } from '@/types';
 // ─── Fallback local data ──────────────────────────────────────────────────────
 
 export const localProducts: Product[] = [
-  // ── Trailblazing Fleece ── handle: trailblazing-fleece ─────────────────────
-  // Colors: Wildflower, Golden Hour  |  Sizes: XS S M L XL  |  $110
   {
     id: 'trailblazing-fleece',
     handle: 'trailblazing-fleece',
@@ -29,10 +18,8 @@ export const localProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Wildflower', 'Golden Hour'],
     stock: 100,
+    variants: [],
   },
-
-  // ── Summit Pant ── handle: summit-pant ─────────────────────────────────────
-  // Colors: Moss, Birch  |  Sizes: XS S M L XL  |  $90
   {
     id: 'summit-pant',
     handle: 'summit-pant',
@@ -45,10 +32,8 @@ export const localProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Moss', 'Birch'],
     stock: 100,
+    variants: [],
   },
-
-  // ── Alpine Baby Tee ── handle: alpine-baby-tee ─────────────────────────────
-  // Colors: Solstice, Petal  |  Sizes: XS S M L XL  |  $40
   {
     id: 'alpine-baby-tee',
     handle: 'alpine-baby-tee',
@@ -61,10 +46,8 @@ export const localProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Solstice', 'Petal'],
     stock: 100,
+    variants: [],
   },
-
-  // ── Horizon Shorts ── handle: horizon-shorts ───────────────────────────────
-  // Colors: Canyon, Dusk, Meadow  |  Sizes: XS S M L XL  |  $70
   {
     id: 'horizon-shorts',
     handle: 'horizon-shorts',
@@ -81,10 +64,8 @@ export const localProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Canyon', 'Dusk', 'Meadow'],
     stock: 100,
+    variants: [],
   },
-
-  // ── Carabiner ── handle: carabiner ─────────────────────────────────────────
-  // No size/color variants  |  $22
   {
     id: 'carabiner',
     handle: 'carabiner',
@@ -96,10 +77,8 @@ export const localProducts: Product[] = [
     sizes: ['One Size'],
     colors: ['Silver'],
     stock: 100,
+    variants: [],
   },
-
-  // ── Trailblazing Club Tote ── handle: trailblazing-tote ─────
-  // No size variants  |  $18
   {
     id: 'trailblazing-tote',
     handle: 'trailblazing-tote',
@@ -112,15 +91,12 @@ export const localProducts: Product[] = [
     sizes: ['One Size'],
     colors: ['Natural'],
     stock: 100,
+    variants: [],
   },
 ];
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-/**
- * Returns all products.
- * Tries Shopify first; falls back to local data if the store has no products yet.
- */
 export async function getProducts(): Promise<Product[]> {
   try {
     const shopifyProducts = await shopifyGetAll();
@@ -133,17 +109,6 @@ export async function getProducts(): Promise<Product[]> {
   return localProducts;
 }
 
-/**
- * Returns a single product by its Shopify handle or old numeric string ID.
- * Falls back to local data when the store isn't populated yet.
- *
- * Accepts:
- *   - Shopify handle:  "trailblazing-fleece"
- *   - Old numeric id:  "1", "2", etc. (matched via legacyIdMap below)
- */
-
-// Maps old numeric IDs → new Shopify handles, so existing /products/[id] URLs
-// still resolve correctly during the transition.
 const legacyIdMap: Record<string, string> = {
   '1': 'trailblazing-fleece',
   '2': 'trailblazing-fleece',
@@ -159,7 +124,6 @@ const legacyIdMap: Record<string, string> = {
 };
 
 export async function getProduct(id: string): Promise<Product | null> {
-  // Resolve old numeric IDs to handles
   const handle = legacyIdMap[id] ?? id;
 
   try {
@@ -169,6 +133,5 @@ export async function getProduct(id: string): Promise<Product | null> {
     console.warn('[products] Shopify product fetch failed, using local data:', err);
   }
 
-  // Fallback: match by handle or id
   return localProducts.find((p) => p.handle === handle || p.id === id) ?? null;
 }

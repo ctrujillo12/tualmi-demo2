@@ -4,12 +4,13 @@ import { getProducts } from '@/lib/products';
 import ProductCard from '@/components/ProductCard';
 import HomeHero from '@/components/HomeHero';
 import TrailblazerSignup from '@/components/TrailblazerSignup';
+import LaunchGate from '@/components/LaunchGate';
+import AddToCartButton from '@/components/AddToCartButton'; // your existing cart button
 import type { Product } from '@/types';
 
 const serif = "'Cormorant Garamond', Georgia, serif";
 const sans = "'Jost', 'DM Sans', system-ui, sans-serif";
 
-// Palette — earthy brown
 const bg    = '#FAFAF7';
 const bgAlt = '#F2EDE4';
 const black = '#3B2F1E';
@@ -66,10 +67,9 @@ export default async function Home() {
         <section style={{ padding: 'clamp(48px, 8vw, 96px) clamp(20px, 5vw, 32px)' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <p style={{ fontSize: '10px', letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, textAlign: 'center', marginBottom: 'clamp(40px, 6vw, 72px)', fontFamily: sans }}>
-              Available Tuesday, April 28th
+              Available Tuesday, April 28th — 7 PM PT
             </p>
 
-            {/* Stacks on mobile, side-by-side on desktop */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
@@ -92,29 +92,33 @@ export default async function Home() {
                     {tote.description}
                   </p>
                 </div>
-                <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', color: muted, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-                  Join the Trailblazer's Club below for 50% off when we launch Tuesday.
-                </p>
+
                 <p style={{ fontSize: '18px', color: black, fontFamily: serif }}>
                   ${(tote.price / 100).toFixed(2)}
                 </p>
-                <a
-                  href="#trailblazers"
-                  style={{
-                    display: 'block',
-                    textAlign: 'center',
-                    border: `1px solid ${black}`,
-                    padding: '14px 40px',
-                    fontSize: '10px',
-                    letterSpacing: '0.3em',
-                    textTransform: 'uppercase',
-                    color: black,
-                    textDecoration: 'none',
-                    fontFamily: sans,
-                  }}
-                >
-                  Get 50% off — join the list
-                </a>
+
+                {/*
+                  ── LAUNCH GATE ──────────────────────────────────────────────
+                  openContent  → your real AddToCartButton, shown at/after 7 PM
+                  (no lockedContent prop) → defaults to the countdown display
+                  ─────────────────────────────────────────────────────────────
+                */}
+                <LaunchGate
+                  openContent={
+                    <AddToCartButton product={tote} />
+                  }
+                />
+
+                {/* Trailblazer nudge — only relevant before launch */}
+                <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', color: muted, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
+                  Trailblazer's Club members get 50% off at checkout.{' '}
+                  <a
+                    href="#trailblazers"
+                    style={{ color: black, borderBottom: `1px solid ${black}`, textDecoration: 'none', fontFamily: sans }}
+                  >
+                    Join below ↓
+                  </a>
+                </p>
               </div>
             </div>
           </div>
@@ -128,7 +132,6 @@ export default async function Home() {
             Launching Summer 2026 — Preview Drop 1
           </p>
 
-          {/* 1 col mobile → 2 col tablet → 3 col desktop */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))',

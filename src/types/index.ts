@@ -11,7 +11,7 @@ export interface Product {
   sizes: string[];
   colors: string[];
   stock: number;
-  variants?: ShopifyVariant[]; // raw Shopify variants, used at checkout
+  variants: ShopifyVariant[]; // raw Shopify variants, used at checkout
 }
 
 export interface CartItem {
