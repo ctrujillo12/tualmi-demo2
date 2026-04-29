@@ -17,7 +17,7 @@ export default async function CollectionsPage() {
         {/* Title */}
         <div className="text-center">
           <h1 className="font-sans text-s tracking-tight">
-            Coming Spring 2026
+            Coming Summer 2026
           </h1>
         </div>
 
