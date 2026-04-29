@@ -6,7 +6,8 @@ import CollectionsFilters from '@/components/CollectionsFilters';
 import type { Product } from '@/types';
 
 export default async function CollectionsPage() {
-  const products = await getProducts();
+  const allProducts = await getProducts();
+  const products = allProducts.filter((p) => p.handle !== 'trailblazing-tote');
 
   return (
     <>
