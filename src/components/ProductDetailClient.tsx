@@ -78,13 +78,16 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         'X-Shopify-Storefront-Access-Token': 'dd02cba6150c5aed56445312b622a25b'
       },
       body: JSON.stringify({
-        query: `mutation { cartCreate(input: { lines: [{ merchandiseId: "gid://shopify/ProductVariant/52063437553977", quantity: 1 }] }) { cart { checkoutUrl } userErrors { message } } }`
+        query: `mutation { cartCreate(input: { lines: [{ merchandiseId: "gid://shopify/ProductVariant/52063437553977", quantity: 1 }] }) { cart { checkoutUrl } } }`
       })
     });
     const data = await res.json();
-    const url = data.data.cartCreate.cart.checkoutUrl;
-    console.log('checkout url:', url);
-    window.location.href = url;
+    const rawUrl = data.data.cartCreate.cart.checkoutUrl;
+    const urlObj = new URL(rawUrl);
+    urlObj.hostname = 'tualmi.myshopify.com';
+    urlObj.port = '';
+    const url = urlObj.toString();
+    window.location.href = url + (url.includes('?') ? '&' : '?') + 'discount=WELOVEYOU50';
   } catch(e) {
     setBuyStatus('error');
     setBuyError('Something went wrong.');
