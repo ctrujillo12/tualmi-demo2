@@ -44,7 +44,7 @@ export default async function Home() {
           </h2>
           <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', lineHeight: 1.9, color: mid, marginBottom: '16px', fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
             Tualmi was built on the trail. After years of hiking and backpacking in clothes
-            designed for men—or designed to blend in—we got tired of waiting for someone else
+            designed for men, we got tired of waiting for someone else
             to solve it. So we did.
           </p>
           <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', lineHeight: 1.9, color: mid, marginBottom: '40px', fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
