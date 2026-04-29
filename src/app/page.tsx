@@ -77,7 +77,7 @@ export default async function Home() {
               alignItems: 'center',
             }}>
               <div style={{ aspectRatio: '4/5', position: 'relative', overflow: 'hidden', backgroundColor: bgAlt }}>
-                <Image src={tote.images[1]} alt={tote.name} fill style={{ objectFit: 'contain' }} />
+                <Image src={tote.images[0]} alt={tote.name} fill style={{ objectFit: 'contain' }} />
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
