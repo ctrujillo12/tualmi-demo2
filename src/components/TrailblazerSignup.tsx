@@ -12,9 +12,9 @@ const bgAlt = '#F2EDE4';
 
 const SOURCE_OPTIONS = [
   'Instagram',
-  'A friend referred me',
-  'Claremont Earth Day',
-  'HMC Spring Fest',
+  'A friend referred me!',
+  'HMC Alumni Weekend',
+  'Sagetank',
   'Other',
   // ← swap in your actual events
 ];
@@ -88,7 +88,7 @@ export default function TrailblazerSignup() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
         <input
           type="text"
-          placeholder="First name"
+          placeholder="Name"
           value={name}
           onChange={e => setName(e.target.value)}
           style={inputBase}
