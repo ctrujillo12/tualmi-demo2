@@ -1,16 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
-  const { email } = await req.json();
+  const { name, email, source } = await req.json();
 
   if (!email || !email.includes('@')) {
     return NextResponse.json({ error: 'Invalid email.' }, { status: 400 });
   }
 
+  if (!name || name.trim() === '') {
+    return NextResponse.json({ error: 'Name is required.' }, { status: 400 });
+  }
+
   const res = await fetch('https://sheetdb.io/api/v1/9550th9aimf6t', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ data: { email, date: new Date().toISOString() } }),
+    body: JSON.stringify({
+      data: {
+        name: name.trim(),
+        email,
+        source: source?.trim() || '',
+        date: new Date().toISOString(),
+      },
+    }),
   });
 
   if (!res.ok) {
