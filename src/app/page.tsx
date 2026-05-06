@@ -7,6 +7,7 @@ import TrailblazerSignup from '@/components/TrailblazerSignup';
 import LaunchGate from '@/components/LaunchGate';
 import AddToCartButton from '@/components/AddToCartButton'; // your existing cart button
 import type { Product } from '@/types';
+import SaleCountdown from '@/components/SaleCountdown';
 
 const serif = "'Cormorant Garamond', Georgia, serif";
 const sans = "'Jost', 'DM Sans', system-ui, sans-serif";
@@ -97,16 +98,11 @@ export default async function Home() {
                   ${(tote.price / 100).toFixed(2)}
                 </p>
 
-                {/*
-                  ── LAUNCH GATE ──────────────────────────────────────────────
-                  openContent  → your real AddToCartButton, shown at/after 7 PM
-                  (no lockedContent prop) → defaults to the countdown display
-                  ─────────────────────────────────────────────────────────────
-                */}
+                {/* ─── SALE URGENCY BANNER ─── */}
+                <SaleCountdown />
+
                 <LaunchGate
-                  openContent={
-                    <AddToCartButton product={tote} />
-                  }
+                  openContent={<AddToCartButton product={tote} />}
                 />
 
                 {/* Trailblazer nudge — only relevant before launch */}
