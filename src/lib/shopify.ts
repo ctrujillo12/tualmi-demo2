@@ -37,6 +37,8 @@ export interface ShopifyProduct {
   title: string;
   description: string;
   productType: string;
+  tags: string[];                                          // ← NEW
+  shippingWindow: { value: string } | null;                // ← NEW (aliased metafield)
   images: { edges: { node: { url: string; altText: string | null } }[] };
   variants: { edges: { node: ShopifyVariant }[] };
 }
@@ -63,6 +65,10 @@ const PRODUCT_FIELDS = `
     title
     description
     productType
+    tags
+    shippingWindow: metafield(namespace: "custom", key: "shipping_window") {
+      value
+    }
     images(first: 10) {
       edges { node { url altText } }
     }
@@ -152,6 +158,9 @@ export function toProduct(sp: ShopifyProduct): Product {
 
   const priceInCents = Math.round(parseFloat(firstVariant?.price.amount ?? '0') * 100);
 
+  const isPreorder = sp.tags?.includes('preorder') ?? false;                     // ← NEW
+  const shippingWindow = sp.shippingWindow?.value ?? undefined;                  // ← NEW
+
   return {
     id: sp.handle,
     handle: sp.handle,
@@ -164,5 +173,7 @@ export function toProduct(sp: ShopifyProduct): Product {
     colors: colors.length ? colors : ['Default'],
     stock: variants.some((v) => v.availableForSale) ? 100 : 0,
     variants,
+    isPreorder,                                                                  // ← NEW
+    shippingWindow,                                                              // ← NEW
   };
 }

@@ -19,6 +19,8 @@ export const localProducts: Product[] = [
     colors: ['Wildflower', 'Golden Hour'],
     stock: 100,
     variants: [],
+    isPreorder: true,
+    shippingWindow: 'Ships August 2026',
   },
   {
     id: 'summit-pant',
@@ -33,6 +35,8 @@ export const localProducts: Product[] = [
     colors: ['Moss', 'Birch'],
     stock: 100,
     variants: [],
+    isPreorder: true,
+    shippingWindow: 'Ships August 2026',
   },
   {
     id: 'alpine-baby-tee',
@@ -47,6 +51,8 @@ export const localProducts: Product[] = [
     colors: ['Solstice', 'Petal'],
     stock: 100,
     variants: [],
+    isPreorder: true,
+    shippingWindow: 'Ships August 2026',
   },
   {
     id: 'horizon-shorts',
@@ -65,6 +71,8 @@ export const localProducts: Product[] = [
     colors: ['Canyon', 'Dusk', 'Meadow'],
     stock: 100,
     variants: [],
+    isPreorder: true,
+    shippingWindow: 'Ships August 2026',
   },
   {
     id: 'carabiner',
@@ -78,6 +86,8 @@ export const localProducts: Product[] = [
     colors: ['Silver'],
     stock: 100,
     variants: [],
+    isPreorder: true,
+    shippingWindow: 'Ships August 2026',
   },
   {
     id: 'trailblazing-tote',
@@ -92,6 +102,7 @@ export const localProducts: Product[] = [
     colors: ['Natural'],
     stock: 100,
     variants: [],
+    // tote is in stock — no preorder fields
   },
 ];
 

@@ -12,6 +12,8 @@ export interface Product {
   colors: string[];
   stock: number;
   variants: ShopifyVariant[]; // raw Shopify variants, used at checkout
+  isPreorder?: boolean;       // ← NEW: true if Shopify product has 'preorder' tag
+  shippingWindow?: string;    // ← NEW: e.g. "Ships August 2026"
 }
 
 export interface CartItem {

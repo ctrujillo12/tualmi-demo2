@@ -21,7 +21,6 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Scrolled: dark brown on warm white. Hero: white on transparent.
   const textColor   = isScrolled ? 'text-[#3B2F1E]' : 'text-white';
   const hoverColor  = isScrolled ? 'hover:text-[#8C7B6B]' : 'hover:text-white/60';
   const borderColor = isScrolled ? 'border-[#DDD5C8]' : 'border-white/20';
@@ -36,12 +35,6 @@ export default function Header() {
 
           {/* LEFT NAV */}
           <nav className="hidden md:flex space-x-6 text-xs">
-            {/* <Link
-              href="/collections"
-              className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}
-            >
-              Drop 1
-            </Link> */}
             <Link
               href="/story"
               className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}
@@ -58,7 +51,7 @@ export default function Header() {
             TUALMI
           </Link>
 
-          {/* RIGHT — CART
+          {/* RIGHT — CART */}
           <div className="flex items-center space-x-6">
             <Link href="/cart" className="relative group">
               <svg
@@ -84,7 +77,7 @@ export default function Header() {
                 </span>
               )}
             </Link>
-          </div> */}
+          </div>
 
         </div>
       </div>

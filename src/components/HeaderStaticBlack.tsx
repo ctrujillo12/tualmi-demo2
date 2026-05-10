@@ -17,26 +17,16 @@ export default function HeaderStaticBlack() {
   const borderColor = 'border-[#DDD5C8]';
 
   return (
-    <header
-      className={`bg-[#FAFAF7] border-b ${borderColor} fixed top-0 left-0 right-0 z-50`}
-    >
+    <header className={`bg-[#FAFAF7] border-b ${borderColor} fixed top-0 left-0 right-0 z-50`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
 
-          {/* Left Nav */}
           <nav className="hidden md:flex space-x-6 text-xs">
-            {/* <Link
-              href="/collections"
-              className={`${textColor} ${hoverColor} uppercase tracking-widest transition-colors`}
-            >
-              Drop 1
-            </Link> */}
             <Link href="/story" className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}>
               Our Story
             </Link>
           </nav>
 
-          {/* Center Logo */}
           <Link
             href="/"
             className={`absolute left-1/2 transform -translate-x-1/2 text-sm font-black tracking-[0.25em] uppercase ${textColor} transition-colors duration-300`}
@@ -44,8 +34,7 @@ export default function HeaderStaticBlack() {
             TUALMI
           </Link>
 
-          {/* Cart */}
-          {/* <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-6">
             <Link href="/cart" className="relative">
               <svg
                 className={`w-5 h-5 ${textColor} ${hoverColor} transition-colors`}
@@ -67,7 +56,7 @@ export default function HeaderStaticBlack() {
                 </span>
               )}
             </Link>
-          </div> */}
+          </div>
 
         </div>
       </div>
