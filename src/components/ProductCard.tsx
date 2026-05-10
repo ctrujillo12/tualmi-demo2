@@ -10,27 +10,31 @@ interface ProductCardProps {
   showPrice?: boolean;
 }
 
+// Same gating rules as ProductDetailClient — keep these in sync.
+const AVAILABLE_HANDLES = ['trailblazing-tote'];
+const PREVIEW_ONLY_HANDLES = ['carabiner'];
+
 // Matches exactly the color names defined in localProducts
 const COLOR_MAP: Record<string, string> = {
   // Trailblazing Fleece
-  Wildflower:    '#E8A0B8',   // dusty rose/pink
-  'Golden Hour': '#E8C84A',   // warm golden yellow
+  Wildflower:    '#E8A0B8',
+  'Golden Hour': '#E8C84A',
 
   // Summit Pant
-  Moss:          '#7A8C52',   // olive green
-  Birch:         '#EDE8DF',   // warm off-white/cream
+  Moss:          '#7A8C52',
+  Birch:         '#EDE8DF',
 
-  // Alpine Baby Tee — distinct from fleece colors
-  Solstice:      '#D4A843',   // deeper amber-gold (different from Golden Hour)
-  Petal:         '#F2C4CE',   // soft blush (lighter/pinker than Wildflower)
+  // Alpine Baby Tee
+  Solstice:      '#D4A843',
+  Petal:         '#F2C4CE',
 
   // Horizon Shorts
-  Canyon:        '#A85448',   // terracotta red
-  Dusk:          '#C49AB0',   // muted mauve
-  Meadow:        'linear-gradient(135deg, #A8C484 50%, #7A9E6A 50%)', // two greens
+  Canyon:        '#A85448',
+  Dusk:          '#C49AB0',
+  Meadow:        'linear-gradient(135deg, #A8C484 50%, #7A9E6A 50%)',
 
   // Tote
-  Natural:       '#D6C9B0',   // raw canvas tan
+  Natural:       '#D6C9B0',
 };
 
 function ColorSwatch({
@@ -78,13 +82,51 @@ export default function ProductCard({ product, showPrice = true }: ProductCardPr
     product.colors ? product.colors[0] : null
   );
 
+  const handle        = product.handle ?? '';
+  const isInStock     = AVAILABLE_HANDLES.includes(handle);
+  const isPreviewOnly = PREVIEW_ONLY_HANDLES.includes(handle);
+  const isPreorder    = !isInStock && !isPreviewOnly;
+
   const handleColorClick = (e: React.MouseEvent, index: number) => {
     e.preventDefault();
     e.stopPropagation();
-    // Only switch image if one exists for that index
     if (product.images[index]) setSelectedImageIndex(index);
     if (product.colors) setSelectedColor(product.colors[index]);
   };
+
+  // Pill shown in top-left corner of image. Tote = no pill (it's just available).
+  const cornerPill = isPreorder ? (
+    <div style={{
+      position: 'absolute',
+      top: '10px',
+      left: '10px',
+      backgroundColor: '#FAFAF7',
+      color: '#3B2F1E',
+      fontSize: '9px',
+      letterSpacing: '0.2em',
+      textTransform: 'uppercase',
+      padding: '4px 10px',
+      border: '1px solid #DDD5C8',
+      zIndex: 1,
+    }}>
+      Pre-Order
+    </div>
+  ) : isPreviewOnly ? (
+    <div style={{
+      position: 'absolute',
+      top: '10px',
+      left: '10px',
+      backgroundColor: '#F2EDE4',
+      color: '#8C7B6B',
+      fontSize: '9px',
+      letterSpacing: '0.2em',
+      textTransform: 'uppercase',
+      padding: '4px 10px',
+      zIndex: 1,
+    }}>
+      Coming Soon
+    </div>
+  ) : null;
 
   return (
     <div>
@@ -97,6 +139,7 @@ export default function ProductCard({ product, showPrice = true }: ProductCardPr
           backgroundColor: '#F2F0EB',
           marginBottom: '14px',
         }}>
+          {cornerPill}
           <Image
             src={product.images[selectedImageIndex]}
             alt={product.name}

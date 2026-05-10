@@ -10,8 +10,11 @@ interface ProductDetailClientProps {
   product: Product;
 }
 
-// ─── Add handles here as products become purchasable ─────────────────────────
-const AVAILABLE_HANDLES = ['carabiner', 'trailblazing-tote'];
+// In-stock products (ship immediately).
+const AVAILABLE_HANDLES = ['trailblazing-tote'];
+
+// Preview-only — shown but not purchasable, not pre-orderable.
+const PREVIEW_ONLY_HANDLES = ['carabiner'];
 
 const brown = '#3B2F1E';
 const mid   = '#6B5C4C';
@@ -19,7 +22,6 @@ const muted = '#8C7B6B';
 const rule  = '#DDD5C8';
 const bgAlt = '#F2EDE4';
 
-// ─── Resolve the correct Shopify variant GID ─────────────────────────────────
 function resolveVariantId(product: Product, selectedSize: string, selectedColor: string): string | null {
   const variants: ShopifyVariant[] | undefined = product.variants;
   if (!variants || variants.length === 0) return null;
@@ -27,7 +29,6 @@ function resolveVariantId(product: Product, selectedSize: string, selectedColor:
   const size  = selectedSize.toLowerCase();
   const color = selectedColor.toLowerCase();
 
-  // Match size + color exactly
   const exact = variants.find((v) => {
     const opts = v.selectedOptions.map((o) => ({ name: o.name.toLowerCase(), value: o.value.toLowerCase() }));
     const hasSize  = opts.find((o) => o.name === 'size')?.value  === size;
@@ -36,18 +37,20 @@ function resolveVariantId(product: Product, selectedSize: string, selectedColor:
   });
   if (exact) return exact.id;
 
-  // Fallback: size only
   const bySize = variants.find((v) =>
     v.selectedOptions.some((o) => o.name.toLowerCase() === 'size' && o.value.toLowerCase() === size)
   );
   if (bySize) return bySize.id;
 
-  // Last resort: first available
   return variants.find((v) => v.availableForSale)?.id ?? variants[0]?.id ?? null;
 }
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
-  const isAvailable = AVAILABLE_HANDLES.includes(product.handle ?? '');
+  const handle      = product.handle ?? '';
+  const isInStock   = AVAILABLE_HANDLES.includes(handle);
+  const isPreviewOnly = PREVIEW_ONLY_HANDLES.includes(handle);
+  const isPreorder  = !isInStock && !isPreviewOnly;
+  const isPurchasable = isInStock || isPreorder;
 
   const colorImageMap: Record<string, number> = {};
   product.colors.forEach((color, index) => {
@@ -67,36 +70,54 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     if (imageIndex !== undefined) setSelectedImage(imageIndex);
   };
 
-  // Skips cart entirely — creates Shopify cart and redirects straight to checkout
+  // Uses createCheckout — resolves the right variant per product (no hardcoded ID).
   const handleBuyNow = async () => {
-  setBuyStatus('loading');
-  try {
-    const res = await fetch('https://tualmi.myshopify.com/api/2024-01/graphql.json', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': 'dd02cba6150c5aed56445312b622a25b'
-      },
-      body: JSON.stringify({
-        query: `mutation { cartCreate(input: { lines: [{ merchandiseId: "gid://shopify/ProductVariant/52063437553977", quantity: 1 }] }) { cart { checkoutUrl } } }`
-      })
-    });
-    const data = await res.json();
-    const rawUrl = data.data.cartCreate.cart.checkoutUrl;
-    const urlObj = new URL(rawUrl);
-    urlObj.hostname = 'tualmi.myshopify.com';
-    urlObj.port = '';
-    const url = urlObj.toString();
-    window.location.href = url + (url.includes('?') ? '&' : '?') + 'discount=WELOVEYOU50';
-  } catch(e) {
-    setBuyStatus('error');
-    setBuyError('Something went wrong.');
-  }
-};
+    setBuyStatus('loading');
+    setBuyError('');
+    try {
+      const variantId = resolveVariantId(product, selectedSize, selectedColor);
+      if (!variantId) throw new Error('No purchasable variant available.');
+      const checkoutUrl = await createCheckout([{ variantId, quantity: 1 }]);
+      window.location.href = checkoutUrl;
+    } catch (e) {
+      console.error('[buyNow] failed:', e);
+      setBuyStatus('error');
+      setBuyError('Something went wrong. Please try again.');
+    }
+  };
 
   const toggleSection = (section: string) => {
     setExpandedSection(expandedSection === section ? null : section);
   };
+
+  // ─── Status pill ────────────────────────────────────────────────────────
+  const statusPill = isInStock ? (
+    <div style={{ display: 'inline-block', backgroundColor: brown, color: '#FAFAF7', fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 12px', marginBottom: '16px' }}>
+      Available Now
+    </div>
+  ) : isPreorder ? (
+    <div style={{ display: 'inline-block', backgroundColor: '#FAFAF7', color: brown, border: `1px solid ${brown}`, fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 12px', marginBottom: '16px' }}>
+      Pre-Order
+    </div>
+  ) : (
+    <div style={{ display: 'inline-block', backgroundColor: bgAlt, color: muted, fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 12px', marginBottom: '16px' }}>
+      Spring 2026
+    </div>
+  );
+
+  const imageOverlay = isPreviewOnly ? (
+    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span style={{ backgroundColor: 'rgba(250,250,247,0.92)', color: mid, fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '8px 24px' }}>
+        Coming Soon
+      </span>
+    </div>
+  ) : null;
+
+  const bottomStatus = isInStock
+    ? 'In Stock'
+    : isPreorder
+      ? (product.shippingWindow ?? 'Pre-Order')
+      : 'Available Spring 2026';
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#FAFAF7' }}>
@@ -105,22 +126,16 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
           {/* Images */}
           <div className="space-y-3">
-            <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden', backgroundColor: bgAlt, opacity: isAvailable ? 1 : 0.8 }}>
+            <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden', backgroundColor: bgAlt, opacity: isPurchasable ? 1 : 0.8 }}>
               <Image
                 src={product.images[selectedImage]}
                 alt={product.name}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                style={{ objectFit: 'contain', filter: isAvailable ? 'none' : 'saturate(0.8)' }}
+                style={{ objectFit: 'contain', filter: isPurchasable ? 'none' : 'saturate(0.8)' }}
                 priority
               />
-              {!isAvailable && (
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ backgroundColor: 'rgba(250,250,247,0.92)', color: mid, fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '8px 24px' }}>
-                    Coming Soon
-                  </span>
-                </div>
-              )}
+              {imageOverlay}
             </div>
 
             {product.images.length > 1 && (
@@ -145,21 +160,18 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           {/* Product Info */}
           <div className="lg:pl-4">
             <div style={{ marginBottom: '32px' }}>
-              {!isAvailable ? (
-                <div style={{ display: 'inline-block', backgroundColor: bgAlt, color: muted, fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 12px', marginBottom: '16px' }}>
-                  Spring 2026
-                </div>
-              ) : (
-                <div style={{ display: 'inline-block', backgroundColor: brown, color: '#FAFAF7', fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 12px', marginBottom: '16px' }}>
-                  Available Now
-                </div>
-              )}
+              {statusPill}
               <h1 style={{ fontSize: '20px', fontWeight: 400, color: brown, marginBottom: '8px', letterSpacing: '0.03em' }}>
                 {product.name}
               </h1>
               <p style={{ fontSize: '14px', color: mid }}>
                 ${(product.price / 100).toFixed(2)}
               </p>
+              {isPreorder && product.shippingWindow && (
+                <p style={{ fontSize: '12px', color: muted, marginTop: '6px', letterSpacing: '0.05em' }}>
+                  {product.shippingWindow}
+                </p>
+              )}
             </div>
 
             {/* Size Selection */}
@@ -169,15 +181,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   {product.sizes.map((size) => (
                     <button
                       key={size}
-                      onClick={() => isAvailable && setSelectedSize(size)}
-                      disabled={!isAvailable}
+                      onClick={() => isPurchasable && setSelectedSize(size)}
+                      disabled={!isPurchasable}
                       style={{
                         padding: '8px 16px', fontSize: '12px',
                         border: `1px solid ${selectedSize === size ? brown : rule}`,
                         backgroundColor: selectedSize === size ? brown : 'transparent',
                         color: selectedSize === size ? '#FAFAF7' : brown,
-                        cursor: isAvailable ? 'pointer' : 'not-allowed',
-                        opacity: isAvailable ? 1 : 0.4,
+                        cursor: isPurchasable ? 'pointer' : 'not-allowed',
+                        opacity: isPurchasable ? 1 : 0.4,
                         transition: 'all 0.15s', letterSpacing: '0.05em',
                       }}
                     >
@@ -195,15 +207,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   {product.colors.map((color) => (
                     <button
                       key={color}
-                      onClick={() => isAvailable && handleColorSelect(color)}
-                      disabled={!isAvailable}
+                      onClick={() => isPurchasable && handleColorSelect(color)}
+                      disabled={!isPurchasable}
                       style={{
                         padding: '8px 16px', fontSize: '12px',
                         border: `1px solid ${selectedColor === color ? brown : rule}`,
                         backgroundColor: selectedColor === color ? brown : 'transparent',
                         color: selectedColor === color ? '#FAFAF7' : brown,
-                        cursor: isAvailable ? 'pointer' : 'not-allowed',
-                        opacity: isAvailable ? 1 : 0.4,
+                        cursor: isPurchasable ? 'pointer' : 'not-allowed',
+                        opacity: isPurchasable ? 1 : 0.4,
                         transition: 'all 0.15s', letterSpacing: '0.05em',
                       }}
                     >
@@ -214,9 +226,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             )}
 
-            {/* Buy Now / Coming Soon */}
+            {/* Buy Now / Pre-Order / Coming Soon */}
             <div style={{ marginBottom: '16px' }}>
-              {isAvailable ? (
+              {isPurchasable ? (
                 <>
                   <button
                     onClick={handleBuyNow}
@@ -236,8 +248,17 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     onMouseEnter={e => { if (buyStatus !== 'loading') e.currentTarget.style.opacity = '0.85'; }}
                     onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
                   >
-                    {buyStatus === 'loading' ? 'ONE MOMENT…' : 'BUY NOW'}
+                    {buyStatus === 'loading'
+                      ? 'ONE MOMENT…'
+                      : isPreorder
+                        ? 'PRE-ORDER NOW'
+                        : 'BUY NOW'}
                   </button>
+                  {isPreorder && (
+                    <p style={{ fontSize: '11px', color: muted, marginTop: '10px', textAlign: 'center', lineHeight: 1.6, letterSpacing: '0.03em' }}>
+                      You'll be charged today. {product.shippingWindow ?? 'Ships when collection drops.'}
+                    </p>
+                  )}
                   {buyStatus === 'error' && (
                     <p style={{ fontSize: '12px', color: '#9B4040', marginTop: '8px', textAlign: 'center' }}>
                       {buyError}
@@ -269,24 +290,17 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             {/* Expandable Sections */}
             <div>
               {[
-                // {
-                //   key: 'size',
-                //   label: 'SIZE & FIT',
-                //   content: (
-                //     <>
-                //       <p>Model is 5′9″ and wearing size S</p>
-                //       <p style={{ marginTop: '8px' }}>Fits true to size. For a relaxed fit, size up.</p>
-                //     </>
-                //   ),
-                // },
                 {
                   key: 'shipping',
                   label: 'SHIPPING & RETURNS',
                   content: (
                     <>
-                      {/* <p>Free shipping on orders over $100</p> */}
                       <p style={{ marginTop: '8px' }}>7-day returns and exchanges</p>
-                      <p style={{ marginTop: '8px' }}>Ships within 2–3 business days!</p>
+                      <p style={{ marginTop: '8px' }}>
+                        {isPreorder
+                          ? (product.shippingWindow ?? 'Pre-order — ships when the collection drops.')
+                          : 'Ships within 2–3 business days!'}
+                      </p>
                     </>
                   ),
                 },
@@ -320,7 +334,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </div>
 
             <p style={{ fontSize: '12px', color: muted, marginTop: '24px' }}>
-              {isAvailable ? 'In Stock' : 'Available Spring 2026'}
+              {bottomStatus}
             </p>
           </div>
 
