@@ -105,7 +105,7 @@ export default async function Home() {
                   openContent={<AddToCartButton product={tote} />}
                 />
 
-                {/* Trailblazer nudge — only relevant before launch */}
+                {/* Trailblazer nudge — only relevant before launch
                 <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', color: muted, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
                   Trailblazer's Club members get 50% off at checkout.{' '}
                   <a
@@ -114,7 +114,7 @@ export default async function Home() {
                   >
                     Join below ↓
                   </a>
-                </p>
+                </p> */}
               </div>
             </div>
           </div>
