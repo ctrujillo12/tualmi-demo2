@@ -12,9 +12,7 @@ const bgAlt = '#F2EDE4';
 
 const SOURCE_OPTIONS = [
   'Instagram',
-  'A friend referred me!',
-  'HMC Alumni Weekend',
-  'Sagetank',
+  'Tiktok',
   'Other',
   // ← swap in your actual events
 ];
