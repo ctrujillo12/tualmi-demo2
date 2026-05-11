@@ -49,9 +49,9 @@ export default function StoryPage() {
           </p>
 
           <p style={{ fontSize: 'clamp(13px, 2vw, 15px)', lineHeight: 1.9, color: mid, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-            All of our garments are designed and manufactured in Los Angeles using sustainable materials
-            and responsible production practices. We believe local manufacturing and thoughtful sourcing
-            are essential to building a better future for both people and the planet.
+            All of our garments are designed and manufactured using sustainable materials
+            and ethical production practices. We believe thoughtful sourcing
+            is essential to building a better future for both people and the planet.
           </p>
 
           <p style={{ fontSize: 'clamp(13px, 2vw, 15px)', lineHeight: 1.9, color: mid, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
