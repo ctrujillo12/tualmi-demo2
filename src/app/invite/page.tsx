@@ -1,91 +1,72 @@
 'use client';
 
-import { useState } from 'react';
 import HeaderStaticBlack from '@/components/HeaderStaticBlack';
+import TrailblazerSignup from '@/components/TrailblazerSignup';
+
+const serif = "'Cormorant Garamond', Georgia, serif";
+const sans  = "'Jost', 'DM Sans', system-ui, sans-serif";
+const black = '#3B2F1E';
+const mid   = '#6B5C4C';
+const muted = '#8C7B6B';
 
 export default function InvitePage() {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [errorMsg, setErrorMsg] = useState('');
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus('loading');
-    setErrorMsg('');
-
-    try {
-      const res = await fetch('/api/invite', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setErrorMsg(data.error || 'Something went wrong.');
-        setStatus('error');
-      } else {
-        setStatus('success');
-        setEmail('');
-      }
-    } catch {
-      setErrorMsg('Something went wrong. Please try again.');
-      setStatus('error');
-    }
-  }
-
   return (
     <>
       <HeaderStaticBlack />
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <h1 className="text-lg font-normal tracking-[0.3em] uppercase mb-12">
+      <main style={{
+        maxWidth: '640px',
+        margin: '0 auto',
+        padding: 'clamp(64px, 10vw, 120px) clamp(20px, 5vw, 32px)',
+        textAlign: 'center',
+      }}>
+        <p style={{
+          fontSize: '10px',
+          letterSpacing: '0.4em',
+          textTransform: 'uppercase',
+          color: muted,
+          marginBottom: '28px',
+          fontFamily: sans,
+        }}>
           Trailblazer's Club
+        </p>
+
+        <h1 style={{
+          fontSize: 'clamp(24px, 5vw, 48px)',
+          fontWeight: 400,
+          lineHeight: 1.15,
+          color: black,
+          marginBottom: '20px',
+          fontFamily: serif,
+        }}>
+          You found us <em>before everyone else.</em>
         </h1>
 
-        <div className="space-y-8 text-sm leading-relaxed">
-          <p className="tracking-wide">
-            Be the first to join the club!
-          </p>
+        <p style={{
+          fontSize: 'clamp(13px, 2vw, 14px)',
+          lineHeight: 1.9,
+          color: mid,
+          marginBottom: '12px',
+          fontFamily: sans,
+          fontWeight: 300,
+          letterSpacing: '0.015em',
+        }}>
+          Be the first to join the club. Special perks and early access to limited drops.
+        </p>
 
-          <p className="tracking-wide">
-            Special perks &  early access to limited drops. Exciting things coming soon... 
-          </p>
+        <p style={{
+          fontSize: 'clamp(13px, 2vw, 14px)',
+          lineHeight: 1.9,
+          color: mid,
+          marginBottom: '48px',
+          fontFamily: sans,
+          fontWeight: 300,
+          letterSpacing: '0.015em',
+        }}>
+          No noise. Just your spot.
+        </p>
 
-          
-        </div>
-
-        <div className="mt-16">
-          {status === 'success' ? (
-            <p className="text-sm tracking-[0.15em] uppercase">
-              We'll be in touch!
-            </p>
-          ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md">
-              <input
-                type="email"
-                required
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={status === 'loading'}
-                className="flex-1 border-b border-black bg-transparent text-sm py-2 px-0 placeholder-gray-400 focus:outline-none focus:border-black tracking-wide"
-              />
-              <button
-                type="submit"
-                disabled={status === 'loading'}
-                className="text-sm tracking-[0.2em] uppercase border border-black px-6 py-2 hover:bg-black hover:text-white transition-colors duration-200 disabled:opacity-40"
-              >
-                {status === 'loading' ? 'Submitting...' : 'Notify Me'}
-              </button>
-            </form>
-          )}
-
-          {status === 'error' && (
-            <p className="mt-4 text-sm text-red-600 tracking-wide">{errorMsg}</p>
-          )}
-        </div>
+        <TrailblazerSignup />
       </main>
     </>
   );
