@@ -8,12 +8,19 @@ import type { ShopifyVariant } from '@/lib/shopify';
 
 interface CartStore {
   items: CartItem[];
-  addItem: (product: Product, selectedSize: string, selectedColor: string, quantity?: number) => void;
+  addItem: (
+    product: Product,
+    selectedSize: string,
+    selectedColor: string,
+    quantity?: number,
+    options?: { isPreorder?: boolean; shippingWindow?: string }
+  ) => void;
   removeItem: (productId: string, selectedSize: string, selectedColor: string) => void;
   updateQuantity: (productId: string, selectedSize: string, selectedColor: string, quantity: number) => void;
   clearCart: () => void;
   getTotal: () => number;
   getItemCount: () => number;
+  hasPreorderItems: () => boolean;
   /**
    * Builds a Shopify cart from the current items and navigates to the hosted
    * Shopify checkout. Throws if a variant can't be resolved.
@@ -22,8 +29,6 @@ interface CartStore {
 }
 
 // ─── Variant resolver ─────────────────────────────────────────────────────────
-// Finds the Shopify variant GID that matches the selected size + color.
-// Falls back gracefully so local/fallback products (no `variants` array) don't crash.
 function resolveVariantId(item: CartItem): string | null {
   const variants: ShopifyVariant[] | undefined = item.product.variants;
   if (!variants || variants.length === 0) return null;
@@ -31,7 +36,6 @@ function resolveVariantId(item: CartItem): string | null {
   const size  = item.selectedSize.toLowerCase();
   const color = item.selectedColor.toLowerCase();
 
-  // Try to match both size AND color
   const exact = variants.find((v) => {
     const opts = v.selectedOptions.map((o) => ({ name: o.name.toLowerCase(), value: o.value.toLowerCase() }));
     const hasSize  = opts.find((o) => o.name === 'size')?.value  === size;
@@ -40,13 +44,11 @@ function resolveVariantId(item: CartItem): string | null {
   });
   if (exact) return exact.id;
 
-  // Fallback: match size only
   const bySize = variants.find((v) =>
     v.selectedOptions.some((o) => o.name.toLowerCase() === 'size' && o.value.toLowerCase() === size)
   );
   if (bySize) return bySize.id;
 
-  // Last resort: first available variant
   return variants.find((v) => v.availableForSale)?.id ?? variants[0]?.id ?? null;
 }
 
@@ -56,7 +58,7 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
 
-      addItem: (product, selectedSize, selectedColor, quantity = 1) => {
+      addItem: (product, selectedSize, selectedColor, quantity = 1, options) => {
         set((state) => {
           const existing = state.items.find(
             (i) =>
@@ -73,7 +75,19 @@ export const useCartStore = create<CartStore>()(
             };
           }
 
-          return { items: [...state.items, { product, selectedSize, selectedColor, quantity }] };
+          return {
+            items: [
+              ...state.items,
+              {
+                product,
+                selectedSize,
+                selectedColor,
+                quantity,
+                isPreorder: options?.isPreorder ?? false,
+                shippingWindow: options?.shippingWindow,
+              },
+            ],
+          };
         });
       },
 
@@ -112,11 +126,13 @@ export const useCartStore = create<CartStore>()(
       getItemCount: () =>
         get().items.reduce((sum, i) => sum + i.quantity, 0),
 
+      hasPreorderItems: () =>
+        get().items.some((i) => i.isPreorder),
+
       redirectToShopifyCheckout: async () => {
         const { items, clearCart } = get();
         if (items.length === 0) throw new Error('Cart is empty');
 
-        // Build line items — skip items whose variant can't be resolved
         const lines: { variantId: string; quantity: number }[] = [];
 
         for (const item of items) {
@@ -144,7 +160,7 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: 'tualmi-cart', // localStorage key
+      name: 'tualmi-cart',
     }
   )
 );

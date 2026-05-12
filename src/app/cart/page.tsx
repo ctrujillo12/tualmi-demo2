@@ -7,14 +7,14 @@ import { useCartStore } from '@/store/cartStore';
 import HeaderStaticBlack from '@/components/HeaderStaticBlack';
 
 export default function CartPage() {
-  const { items, getTotal, redirectToShopifyCheckout } = useCartStore();
+  const { items, getTotal, hasPreorderItems, redirectToShopifyCheckout } = useCartStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const total = getTotal();
-  const shipping = 0;
   const tax = total * 0.08;
-  const grandTotal = total + shipping + tax;
+  const grandTotal = total + tax;
+  const containsPreorder = hasPreorderItems();
 
   const handleCheckout = async () => {
     setIsLoading(true);
@@ -53,7 +53,6 @@ export default function CartPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
 
-          {/* LEFT: Items */}
           <div className="lg:col-span-2 space-y-8">
             {items.map((item, index) => (
               <CartItem
@@ -66,7 +65,6 @@ export default function CartPage() {
             </Link>
           </div>
 
-          {/* RIGHT: Summary */}
           <div className="space-y-6">
             <h2 className="text-sm tracking-widest uppercase text-sand-700">Order Summary</h2>
 
@@ -77,7 +75,7 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-sand-600">Shipping</span>
-                <span>{shipping === 0 ? 'Calculated at checkout' : `$${(shipping / 100).toFixed(2)}`}</span>
+                <span>Calculated at checkout</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sand-600">Est. Tax</span>
@@ -89,6 +87,12 @@ export default function CartPage() {
               <span className="uppercase tracking-wide">Total</span>
               <span>${(grandTotal / 100).toFixed(2)}</span>
             </div>
+
+            {containsPreorder && (
+              <p className="text-xs text-[#8C7B6B] leading-relaxed">
+                Your cart contains pre-order items. You'll be charged at checkout, and pre-order items will ship when the collection drops.
+              </p>
+            )}
 
             {error && (
               <p className="text-xs text-red-600">{error}</p>

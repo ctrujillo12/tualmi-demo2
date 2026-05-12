@@ -27,7 +27,6 @@ export default function CartItem({ item }: CartItemProps) {
 
   return (
     <div className="flex gap-4 py-6 border-b border-gray-200">
-      {/* Product Image */}
       <Link
         href={`/products/${item.product.id}`}
         className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100"
@@ -40,7 +39,6 @@ export default function CartItem({ item }: CartItemProps) {
         />
       </Link>
 
-      {/* Product Details */}
       <div className="flex-1 flex flex-col justify-between">
         <div>
           <div className="flex justify-between">
@@ -55,6 +53,11 @@ export default function CartItem({ item }: CartItemProps) {
                 <p>Size: {item.selectedSize}</p>
                 <p>Color: {item.selectedColor}</p>
               </div>
+              {item.isPreorder && (
+                <p className="mt-2 text-xs uppercase tracking-widest text-[#8C7B6B]">
+                  Pre-Order • {item.shippingWindow ?? 'Ships when collection drops'}
+                </p>
+              )}
             </div>
             <p className="text-lg font-semibold text-gray-900">
               ${((item.product.price * item.quantity) / 100).toFixed(2)}
@@ -62,7 +65,6 @@ export default function CartItem({ item }: CartItemProps) {
           </div>
         </div>
 
-        {/* Quantity and Remove */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <button

@@ -3,17 +3,13 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { Product } from '@/types';
-import { createCheckout } from '@/lib/shopify';
-import type { ShopifyVariant } from '@/lib/shopify';
+import { useCartStore } from '@/store/cartStore';
 
 interface ProductDetailClientProps {
   product: Product;
 }
 
-// In-stock products (ship immediately).
 const AVAILABLE_HANDLES = ['trailblazing-tote'];
-
-// Preview-only — shown but not purchasable, not pre-orderable.
 const PREVIEW_ONLY_HANDLES = ['carabiner'];
 
 const brown = '#3B2F1E';
@@ -22,35 +18,14 @@ const muted = '#8C7B6B';
 const rule  = '#DDD5C8';
 const bgAlt = '#F2EDE4';
 
-function resolveVariantId(product: Product, selectedSize: string, selectedColor: string): string | null {
-  const variants: ShopifyVariant[] | undefined = product.variants;
-  if (!variants || variants.length === 0) return null;
-
-  const size  = selectedSize.toLowerCase();
-  const color = selectedColor.toLowerCase();
-
-  const exact = variants.find((v) => {
-    const opts = v.selectedOptions.map((o) => ({ name: o.name.toLowerCase(), value: o.value.toLowerCase() }));
-    const hasSize  = opts.find((o) => o.name === 'size')?.value  === size;
-    const hasColor = opts.find((o) => o.name === 'color')?.value === color;
-    return hasSize && hasColor;
-  });
-  if (exact) return exact.id;
-
-  const bySize = variants.find((v) =>
-    v.selectedOptions.some((o) => o.name.toLowerCase() === 'size' && o.value.toLowerCase() === size)
-  );
-  if (bySize) return bySize.id;
-
-  return variants.find((v) => v.availableForSale)?.id ?? variants[0]?.id ?? null;
-}
-
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const handle      = product.handle ?? '';
   const isInStock   = AVAILABLE_HANDLES.includes(handle);
   const isPreviewOnly = PREVIEW_ONLY_HANDLES.includes(handle);
   const isPreorder  = !isInStock && !isPreviewOnly;
   const isPurchasable = isInStock || isPreorder;
+
+  const addItem = useCartStore((state) => state.addItem);
 
   const colorImageMap: Record<string, number> = {};
   product.colors.forEach((color, index) => {
@@ -61,7 +36,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const [selectedSize, setSelectedSize]       = useState(product.sizes[0] || '');
   const [selectedColor, setSelectedColor]     = useState(product.colors[0] || '');
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
-  const [buyStatus, setBuyStatus]             = useState<'idle' | 'loading' | 'error'>('idle');
+  const [buyStatus, setBuyStatus]             = useState<'idle' | 'added' | 'error'>('idle');
   const [buyError, setBuyError]               = useState('');
 
   const handleColorSelect = (color: string) => {
@@ -70,17 +45,16 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     if (imageIndex !== undefined) setSelectedImage(imageIndex);
   };
 
-  // Uses createCheckout — resolves the right variant per product (no hardcoded ID).
-  const handleBuyNow = async () => {
-    setBuyStatus('loading');
-    setBuyError('');
+  const handleAddToCart = () => {
     try {
-      const variantId = resolveVariantId(product, selectedSize, selectedColor);
-      if (!variantId) throw new Error('No purchasable variant available.');
-      const checkoutUrl = await createCheckout([{ variantId, quantity: 1 }]);
-      window.location.href = checkoutUrl;
+      addItem(product, selectedSize, selectedColor, 1, {
+        isPreorder,
+        shippingWindow: product.shippingWindow,
+      });
+      setBuyStatus('added');
+      setTimeout(() => setBuyStatus('idle'), 2000);
     } catch (e) {
-      console.error('[buyNow] failed:', e);
+      console.error('[addToCart] failed:', e);
       setBuyStatus('error');
       setBuyError('Something went wrong. Please try again.');
     }
@@ -90,7 +64,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     setExpandedSection(expandedSection === section ? null : section);
   };
 
-  // ─── Status pill ────────────────────────────────────────────────────────
   const statusPill = isInStock ? (
     <div style={{ display: 'inline-block', backgroundColor: brown, color: '#FAFAF7', fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 12px', marginBottom: '16px' }}>
       Available Now
@@ -124,7 +97,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
-          {/* Images */}
           <div className="space-y-3">
             <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden', backgroundColor: bgAlt, opacity: isPurchasable ? 1 : 0.8 }}>
               <Image
@@ -157,7 +129,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             )}
           </div>
 
-          {/* Product Info */}
           <div className="lg:pl-4">
             <div style={{ marginBottom: '32px' }}>
               {statusPill}
@@ -174,7 +145,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               )}
             </div>
 
-            {/* Size Selection */}
             {product.sizes.length > 0 && product.sizes[0] !== 'One Size' && (
               <div style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -200,7 +170,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             )}
 
-            {/* Color Selection */}
             {product.colors.length > 0 && product.colors[0] !== 'Default' && (
               <div style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -226,37 +195,36 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             )}
 
-            {/* Buy Now / Pre-Order / Coming Soon */}
             <div style={{ marginBottom: '16px' }}>
               {isPurchasable ? (
                 <>
                   <button
-                    onClick={handleBuyNow}
-                    disabled={buyStatus === 'loading'}
+                    onClick={handleAddToCart}
+                    disabled={buyStatus === 'added'}
                     style={{
                       width: '100%',
-                      backgroundColor: buyStatus === 'loading' ? bgAlt : brown,
-                      color: buyStatus === 'loading' ? muted : '#FAFAF7',
+                      backgroundColor: brown,
+                      color: '#FAFAF7',
                       padding: '14px',
                       fontSize: '11px',
                       letterSpacing: '0.2em',
                       textTransform: 'uppercase',
                       border: 'none',
-                      cursor: buyStatus === 'loading' ? 'wait' : 'pointer',
+                      cursor: buyStatus === 'added' ? 'default' : 'pointer',
                       transition: 'opacity 0.2s, background-color 0.2s',
                     }}
-                    onMouseEnter={e => { if (buyStatus !== 'loading') e.currentTarget.style.opacity = '0.85'; }}
+                    onMouseEnter={e => { if (buyStatus !== 'added') e.currentTarget.style.opacity = '0.85'; }}
                     onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
                   >
-                    {buyStatus === 'loading'
-                      ? 'ONE MOMENT…'
+                    {buyStatus === 'added'
+                      ? 'ADDED TO CART ✓'
                       : isPreorder
                         ? 'PRE-ORDER NOW'
-                        : 'BUY NOW'}
+                        : 'ADD TO CART'}
                   </button>
                   {isPreorder && (
                     <p style={{ fontSize: '11px', color: muted, marginTop: '10px', textAlign: 'center', lineHeight: 1.6, letterSpacing: '0.03em' }}>
-                      You'll be charged today. {product.shippingWindow ?? 'Ships when collection drops.'}
+                      You'll be charged at checkout. {product.shippingWindow ?? 'Ships when collection drops.'}
                     </p>
                   )}
                   {buyStatus === 'error' && (
@@ -280,14 +248,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               )}
             </div>
 
-            {/* Description */}
             <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
               <p style={{ fontSize: '13px', lineHeight: 1.8, color: mid }}>
                 {product.description}
               </p>
             </div>
 
-            {/* Expandable Sections */}
             <div>
               {[
                 {
