@@ -11,8 +11,8 @@ export const localProducts: Product[] = [
     handle: 'trailblazing-fleece',
     name: 'Trailblazing Fleece',
     description:
-      'A cozy fleece designed for the outdoors. Soft, breathable, and warm with a relaxed fit and reinforced seams. Perfect for hiking, camping, or everyday adventures.',
-    price: 11000,
+      'You know that feeling when your outfit is too cute to stay on the trail? That\'s this fleece. The Wildflower colorway is a butter-yellow daisy print that looks like it was pulled from your dream vintage shop, except it\'s actually built for the mountain. Chest zip pocket, snap collar, kangaroo pocket — everything you need for the ridge, the trailhead coffee stop, and wherever the day takes you after. The Golden Hour stripe? Pink stripes shouldn\'t be this functional, but here we are. Made by women. Finally fits like it.',
+    price: 14900,
     images: ['/images-2/fleece-pink-bg.png', '/images-2/fleece-yellow-bg.png'],
     category: 'Outerwear',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
@@ -27,8 +27,8 @@ export const localProducts: Product[] = [
     handle: 'summit-pant',
     name: 'Summit Pant',
     description:
-      'Durable hiking pants built for all terrains. Stretch fabric for mobility, reinforced stitching, and multiple pockets for essentials.',
-    price: 9000,
+      'Flare cargo pants that are also actually good for hiking. We know. The Summit Pant has the fold-over waist you love, cargo pockets that fit your actual stuff, and a flared leg that hits different at the trailhead. Moss is olive green because you have taste. Birch is the neutral you\'ve been reaching for since Patagonia stopped trying — the cargo flare that goes with everything, from weekend trip to campus to coffee. Cinch hem because the trail is real.',
+    price: 9900,
     images: ['/images-2/pants-olive.png', '/images-2/pants-white-bg.png'],
     category: 'Bottoms',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
@@ -43,8 +43,8 @@ export const localProducts: Product[] = [
     handle: 'alpine-baby-tee',
     name: 'Alpine Baby Tee',
     description:
-      'Engineered with ultra-soft performance fabric, this tee offers a second-skin feel while providing UPF 40 protection and the perfect fit that flexes with your moves. Light, breathable, and designed with your workouts in mind.',
-    price: 4000,
+      'The layer you actually want under your fleece — and the top you wear when you ditch it. UPF 40 protection, second-skin fit, and the kind of cut that makes your shoulders look good on the summit. Solstice is your golden-hour yellow. Petal is the pink that goes with everything. Light, breathable, and designed for the girl who doesn\'t leave her style at the trailhead.',
+    price: 6900,
     images: ['/images-2/shirt-yellow-bg.png', '/images-2/shirt-pink-bg.png'],
     category: 'Tops',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
@@ -59,8 +59,8 @@ export const localProducts: Product[] = [
     handle: 'horizon-shorts',
     name: 'Horizon Shorts',
     description:
-      'Lightweight, breathable shorts for summer hikes or trail running. Mid-rise waist, comfortable fit, and easy movement.',
-    price: 7000,
+      'Three colorways, one pair of shorts that becomes your whole summer. Canyon is a deep raspberry-red that shows up in every great photo from every great trip — wear it with the Wildflower fleece or literally nothing else and it still works. Dusk is the pink gingham situation: picnic energy meets trail energy, the shorts you wear on a Zion trip and refuse to take off for the rest of the summer. Meadow is the retro circle print — green, pink, brown, and cream — the pair people are going to ask about. Mid-rise, relaxed fit, made for moving.',
+    price: 7200,
     images: [
       '/images-2/shorts-red-bg.png',
       '/images-2/shorts-pink-bg.png',
@@ -78,7 +78,8 @@ export const localProducts: Product[] = [
     id: 'carabiner',
     handle: 'carabiner',
     name: 'Carabiner',
-    description: 'A decorative carabiner for your adventures.',
+    description:
+      'The finishing touch. Clip it to your bag, your belt loop, your water bottle — wherever it goes, it goes with everything. A little piece of Tualmi for your everyday adventures.',
     price: 2200,
     images: ['/images-2/carabiner.png'],
     category: 'Accessories',
@@ -94,8 +95,8 @@ export const localProducts: Product[] = [
     handle: 'trailblazing-tote',
     name: 'Trailblazing Club Tote',
     description:
-      'Elevated everyday tote made from 100% organic cotton canvas. Reusable & eco-conscious, durable for everyday use, soft yet structured feel. Dimensions: 15.5"L x 11.5"H x 6"D, 6" and 13" handles.',
-    price: 3500,
+      'The tote that goes everywhere you do. Made from 100% organic cotton canvas — soft but structured, light but durable, reusable because obviously. The kind of bag that looks good on the trail, at the farmers market, and in every photo in between. Dimensions: 15.5"L x 11.5"H x 6"D, with 6" and 13" handles.',
+    price: 2500,
     images: ['/images-2/tote_hp_bg.png'],
     category: 'Accessories',
     sizes: ['One Size'],
