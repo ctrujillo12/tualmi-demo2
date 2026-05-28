@@ -18,7 +18,7 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: 'Tualmi Outdoors',
-  description: 'Modern outdoorswear for the modern woman',
+  description: 'Actually cute outdoors gear.',
 };
 
 export default function RootLayout({
