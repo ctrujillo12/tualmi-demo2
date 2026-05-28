@@ -24,7 +24,7 @@ const productFeatures: Record<string, string[]> = {
   'trailblazing-fleece': [
     'Snap collar + chest zip pocket',
     'Kangaroo pocket with clean finish',
-    'Relaxed fit — actually designed for a woman\'s body',
+    "Relaxed fit — actually designed for a woman's body",
     'Patterns designed by women, not afterthought colorways',
   ],
   'summit-pant': [
@@ -37,7 +37,7 @@ const productFeatures: Record<string, string[]> = {
     'UPF 40 sun protection',
     'Second-skin performance fit',
     'Lightweight and breathable for layering',
-    'Cut for the female form, not a men\'s S',
+    "Cut for the female form, not a men's S",
   ],
   'horizon-shorts': [
     'Mid-rise waist — stays put on trail',
@@ -58,60 +58,68 @@ const productFeatures: Record<string, string[]> = {
   ],
 };
 
-// ─── Value proposition matrix data ───────────────────────────────────────────
-
-type CheckValue = true | false | string;
+// ─── Value proposition matrix ─────────────────────────────────────────────────
 
 interface CompRow {
   label: string;
-  tualmi: CheckValue;
-  patagonia: CheckValue;
-  vuori: CheckValue;
-  lululemon: CheckValue;
+  tualmi: boolean;
+  patagonia: boolean;
+  vuori: boolean;
+  comp4: boolean;
 }
 
-const compTableByHandle: Record<string, { price: Record<string, string>; rows: CompRow[] }> = {
+interface CompTable {
+  price: { tualmi: string; patagonia: string; vuori: string; comp4: string };
+  labels: { tualmi: string; patagonia: string; vuori: string; comp4: string };
+  rows: CompRow[];
+}
+
+const compTableByHandle: Record<string, CompTable> = {
   'trailblazing-fleece': {
-    price: { tualmi: '$149', patagonia: '$149', vuori: '$188', lululemon: 'N/A' },
+    price:  { tualmi: '$149', patagonia: '$149', vuori: '$188', comp4: '$98'  },
+    labels: { tualmi: 'Tualmi', patagonia: 'Patago.', vuori: 'Vuori', comp4: 'FP Mvmt' },
     rows: [
-      { label: 'Designed by women', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
-      { label: 'Women-specific fit', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
-      { label: 'Fashion-forward patterns', tualmi: true,  patagonia: false, vuori: true,  lululemon: false },
-      { label: 'Technical outdoor use', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
-      { label: 'Ethical manufacturing', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
-      { label: 'Chest zip pocket', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
+      { label: 'Designed by women',        tualmi: true,  patagonia: false, vuori: false, comp4: true  },
+      { label: 'Women-specific fit',        tualmi: true,  patagonia: false, vuori: false, comp4: true  },
+      { label: 'Fashion-forward patterns',  tualmi: true,  patagonia: false, vuori: true,  comp4: true  },
+      { label: 'Trail-ready construction',  tualmi: true,  patagonia: true,  vuori: false, comp4: false },
+      { label: 'Ethical manufacturing',     tualmi: true,  patagonia: true,  vuori: false, comp4: false },
+      { label: 'Chest zip pocket',          tualmi: true,  patagonia: true,  vuori: false, comp4: false },
     ],
   },
   'summit-pant': {
-    price: { tualmi: '$99', patagonia: '$99', vuori: '$118', lululemon: '$128' },
+    price:  { tualmi: '$99',  patagonia: '$99',  vuori: '$118', comp4: '$128' },
+    labels: { tualmi: 'Tualmi', patagonia: 'Patago.', vuori: 'Vuori', comp4: 'Lulu' },
     rows: [
-      { label: 'Designed by women', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
-      { label: 'Women-specific fit', tualmi: true,  patagonia: false, vuori: false, lululemon: true  },
-      { label: 'Fashion-forward cut', tualmi: true,  patagonia: false, vuori: true,  lululemon: true  },
-      { label: 'Trail-ready construction', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
-      { label: 'Cargo pockets', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
-      { label: 'Flare silhouette', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
+      { label: 'Designed by women',        tualmi: true,  patagonia: false, vuori: false, comp4: false },
+      { label: 'Women-specific fit',        tualmi: true,  patagonia: false, vuori: false, comp4: true  },
+      { label: 'Fashion-forward cut',       tualmi: true,  patagonia: false, vuori: true,  comp4: true  },
+      { label: 'Trail-ready construction',  tualmi: true,  patagonia: true,  vuori: false, comp4: false },
+      { label: 'Cargo pockets',             tualmi: true,  patagonia: false, vuori: false, comp4: false },
+      { label: 'Flare silhouette',          tualmi: true,  patagonia: false, vuori: false, comp4: false },
     ],
   },
   'horizon-shorts': {
-    price: { tualmi: '$72', patagonia: '$75', vuori: '$74', lululemon: '$68' },
+    price:  { tualmi: '$72',  patagonia: '$75',  vuori: '$74',  comp4: '$68'  },
+    labels: { tualmi: 'Tualmi', patagonia: 'Patago.', vuori: 'Vuori', comp4: 'Lulu' },
     rows: [
-      { label: 'Designed by women', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
-      { label: 'Women-specific fit', tualmi: true,  patagonia: false, vuori: false, lululemon: true  },
-      { label: 'Distinctive colorways', tualmi: true,  patagonia: false, vuori: true,  lululemon: false },
-      { label: 'Trail-ready construction', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
-      { label: 'Ethical manufacturing', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
-      { label: 'Pattern options', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
+      { label: 'Designed by women',        tualmi: true,  patagonia: false, vuori: false, comp4: false },
+      { label: 'Women-specific fit',        tualmi: true,  patagonia: false, vuori: false, comp4: true  },
+      { label: 'Distinctive colorways',     tualmi: true,  patagonia: false, vuori: true,  comp4: false },
+      { label: 'Trail-ready construction',  tualmi: true,  patagonia: true,  vuori: false, comp4: false },
+      { label: 'Ethical manufacturing',     tualmi: true,  patagonia: true,  vuori: false, comp4: false },
+      { label: 'Pattern options',           tualmi: true,  patagonia: false, vuori: false, comp4: false },
     ],
   },
   'alpine-baby-tee': {
-    price: { tualmi: '$69', patagonia: '$49', vuori: '$64', lululemon: '$68' },
+    price:  { tualmi: '$69',  patagonia: '$49',  vuori: '$64',  comp4: '$68'  },
+    labels: { tualmi: 'Tualmi', patagonia: 'Patago.', vuori: 'Vuori', comp4: 'Lulu' },
     rows: [
-      { label: 'Designed by women', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
-      { label: 'Women-specific fit', tualmi: true,  patagonia: false, vuori: false, lululemon: true  },
-      { label: 'UPF 40 protection', tualmi: true,  patagonia: false, vuori: false, lululemon: true  },
-      { label: 'Fashion-forward design', tualmi: true,  patagonia: false, vuori: true,  lululemon: false },
-      { label: 'Ethical manufacturing', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
+      { label: 'Designed by women',        tualmi: true,  patagonia: false, vuori: false, comp4: false },
+      { label: 'Women-specific fit',        tualmi: true,  patagonia: false, vuori: false, comp4: true  },
+      { label: 'UPF 40 protection',         tualmi: true,  patagonia: false, vuori: false, comp4: true  },
+      { label: 'Fashion-forward design',    tualmi: true,  patagonia: false, vuori: true,  comp4: false },
+      { label: 'Ethical manufacturing',     tualmi: true,  patagonia: true,  vuori: false, comp4: false },
     ],
   },
 };
@@ -195,34 +203,26 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       ? (product.shippingWindow ?? 'Pre-Order')
       : 'Available Spring 2026';
 
-  const CheckIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="7.5" fill={brown} />
-      <path d="M4.5 8L7 10.5L11.5 5.5" stroke="#FAFAF7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  const Check = () => (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'inline-block' }}>
+      <circle cx="7" cy="7" r="7" fill={brown} />
+      <path d="M3.5 7L5.5 9.5L10.5 4.5" stroke="#FAFAF7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 
-  const XIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="7.5" fill={rule} />
-      <path d="M5.5 5.5L10.5 10.5M10.5 5.5L5.5 10.5" stroke={muted} strokeWidth="1.5" strokeLinecap="round" />
+  const Ex = () => (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'inline-block' }}>
+      <circle cx="7" cy="7" r="7" fill={rule} />
+      <path d="M4.5 4.5L9.5 9.5M9.5 4.5L4.5 9.5" stroke={muted} strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
-
-  const renderCell = (val: CheckValue) => {
-    if (val === true)  return <CheckIcon />;
-    if (val === false) return <XIcon />;
-    return <span style={{ fontSize: '12px', color: mid }}>{val}</span>;
-  };
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#FAFAF7' }}>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-8">
-
-        {/* ── Top section: image + buy panel ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
-          {/* Images */}
+          {/* ── Left: images ── */}
           <div className="space-y-3">
             <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden', backgroundColor: bgAlt, opacity: isPurchasable ? 1 : 0.8 }}>
               <Image
@@ -255,8 +255,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             )}
           </div>
 
-          {/* Buy panel */}
+          {/* ── Right: details panel ── */}
           <div className="lg:pl-4">
+
+            {/* Name + price */}
             <div style={{ marginBottom: '32px' }}>
               {statusPill}
               <h1 style={{ fontSize: '20px', fontWeight: 400, color: brown, marginBottom: '8px', letterSpacing: '0.03em' }}>
@@ -272,6 +274,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               )}
             </div>
 
+            {/* Sizes */}
             {product.sizes.length > 0 && product.sizes[0] !== 'One Size' && (
               <div style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -297,6 +300,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             )}
 
+            {/* Colors */}
             {product.colors.length > 0 && product.colors[0] !== 'Default' && (
               <div style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -322,7 +326,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             )}
 
-            <div style={{ marginBottom: '16px' }}>
+            {/* CTA */}
+            <div style={{ marginBottom: '24px' }}>
               {isPurchasable ? (
                 <>
                   <button
@@ -333,16 +338,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       padding: '14px', fontSize: '11px', letterSpacing: '0.2em',
                       textTransform: 'uppercase', border: 'none',
                       cursor: buyStatus === 'added' ? 'default' : 'pointer',
-                      transition: 'opacity 0.2s, background-color 0.2s',
+                      transition: 'opacity 0.2s',
                     }}
                     onMouseEnter={e => { if (buyStatus !== 'added') e.currentTarget.style.opacity = '0.85'; }}
                     onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
                   >
-                    {buyStatus === 'added'
-                      ? 'ADDED TO CART ✓'
-                      : isPreorder
-                        ? 'PRE-ORDER NOW'
-                        : 'ADD TO CART'}
+                    {buyStatus === 'added' ? 'ADDED TO CART ✓' : isPreorder ? 'PRE-ORDER NOW' : 'ADD TO CART'}
                   </button>
                   {isPreorder && (
                     <p style={{ fontSize: '11px', color: muted, marginTop: '10px', textAlign: 'center', lineHeight: 1.6, letterSpacing: '0.03em' }}>
@@ -350,17 +351,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     </p>
                   )}
                   {buyStatus === 'error' && (
-                    <p style={{ fontSize: '12px', color: '#9B4040', marginTop: '8px', textAlign: 'center' }}>
-                      {buyError}
-                    </p>
+                    <p style={{ fontSize: '12px', color: '#9B4040', marginTop: '8px', textAlign: 'center' }}>{buyError}</p>
                   )}
                 </>
               ) : (
                 <>
-                  <button
-                    disabled
-                    style={{ width: '100%', backgroundColor: bgAlt, color: muted, padding: '14px', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', border: 'none', cursor: 'not-allowed', marginBottom: '8px' }}
-                  >
+                  <button disabled style={{ width: '100%', backgroundColor: bgAlt, color: muted, padding: '14px', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', border: 'none', cursor: 'not-allowed', marginBottom: '8px' }}>
                     COMING SOON — SPRING 2026
                   </button>
                   <p style={{ fontSize: '12px', color: muted, textAlign: 'center' }}>
@@ -382,12 +378,69 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               <div style={{ marginBottom: '24px', paddingBottom: '24px', borderBottom: `1px solid ${rule}` }}>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                   {features.map((f, i) => (
-                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '6px 0', fontSize: '12px', color: mid, lineHeight: 1.5 }}>
-                      <span style={{ color: brown, marginTop: '1px', flexShrink: 0 }}>—</span>
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '5px 0', fontSize: '12px', color: mid, lineHeight: 1.5 }}>
+                      <span style={{ color: brown, flexShrink: 0, marginTop: '1px' }}>—</span>
                       {f}
                     </li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {/* ── Inline comparison matrix ── */}
+            {compTable && (
+              <div style={{ marginBottom: '24px', paddingBottom: '24px', borderBottom: `1px solid ${rule}` }}>
+                <p style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: muted, marginBottom: '12px' }}>
+                  Beyond compare
+                </p>
+                <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+                  <colgroup>
+                    <col style={{ width: '44%' }} />
+                    <col style={{ width: '14%' }} />
+                    <col style={{ width: '14%' }} />
+                    <col style={{ width: '14%' }} />
+                    <col style={{ width: '14%' }} />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th style={{ padding: '0 0 8px', textAlign: 'left', fontSize: '10px', color: 'transparent', borderBottom: `1px solid ${rule}` }}> </th>
+                      {(['tualmi', 'patagonia', 'vuori', 'comp4'] as const).map((key) => {
+                        const hi = key === 'tualmi';
+                        return (
+                          <th
+                            key={key}
+                            style={{
+                              padding: '0 4px 8px',
+                              textAlign: 'center',
+                              fontSize: '10px',
+                              letterSpacing: '0.05em',
+                              fontWeight: hi ? 600 : 400,
+                              color: hi ? brown : muted,
+                              borderBottom: `2px solid ${hi ? brown : rule}`,
+                            }}
+                          >
+                            <div>{compTable.labels[key]}</div>
+                            <div style={{ fontSize: '10px', fontWeight: 400, color: hi ? mid : muted, marginTop: '2px' }}>
+                              {compTable.price[key]}
+                            </div>
+                          </th>
+                        );
+                      })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {compTable.rows.map((row, i) => (
+                      <tr key={i} style={{ backgroundColor: i % 2 === 0 ? 'transparent' : bgAlt }}>
+                        <td style={{ padding: '7px 0', fontSize: '11px', color: mid }}>{row.label}</td>
+                        {(['tualmi', 'patagonia', 'vuori', 'comp4'] as const).map((brand) => (
+                          <td key={brand} style={{ padding: '7px 4px', textAlign: 'center' }}>
+                            {row[brand] ? <Check /> : <Ex />}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
 
@@ -442,68 +495,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </p>
           </div>
         </div>
-
-        {/* ── Value proposition matrix ── */}
-        {compTable && (
-          <div style={{ marginTop: '80px', paddingTop: '60px', borderTop: `1px solid ${rule}` }}>
-            <p style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: muted, marginBottom: '8px' }}>
-              Why Tualmi
-            </p>
-            <h2 style={{ fontSize: '18px', fontWeight: 400, color: brown, marginBottom: '8px' }}>
-              See how we compare
-            </h2>
-            <p style={{ fontSize: '13px', color: mid, marginBottom: '40px', maxWidth: '480px' }}>
-              Same price. Better fit. Actually designed for you.
-            </p>
-
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: '520px' }}>
-                <colgroup>
-                  <col style={{ width: '32%' }} />
-                  <col style={{ width: '17%' }} />
-                  <col style={{ width: '17%' }} />
-                  <col style={{ width: '17%' }} />
-                  <col style={{ width: '17%' }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th style={{ padding: '12px 0', textAlign: 'left', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: muted, borderBottom: `1px solid ${rule}` }}></th>
-                    {[
-                      { key: 'tualmi',    label: 'Tualmi',    highlight: true  },
-                      { key: 'patagonia', label: 'Patagonia', highlight: false },
-                      { key: 'vuori',     label: 'Vuori',     highlight: false },
-                      { key: 'lululemon', label: 'Lululemon', highlight: false },
-                    ].map(({ key, label, highlight }) => (
-                      <th key={key} style={{ padding: '12px 8px', textAlign: 'center', fontSize: '11px', letterSpacing: '0.08em', color: highlight ? brown : mid, fontWeight: highlight ? 600 : 400, borderBottom: `2px solid ${highlight ? brown : rule}` }}>
-                        {label}
-                        <div style={{ fontSize: '12px', fontWeight: 400, color: highlight ? brown : muted, marginTop: '4px' }}>
-                          {compTable.price[key]}
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {compTable.rows.map((row, i) => (
-                    <tr key={i} style={{ backgroundColor: i % 2 === 0 ? '#FAFAF7' : bgAlt }}>
-                      <td style={{ padding: '12px 0', fontSize: '12px', color: mid }}>{row.label}</td>
-                      {(['tualmi', 'patagonia', 'vuori', 'lululemon'] as const).map((brand) => (
-                        <td key={brand} style={{ padding: '12px 8px', textAlign: 'center' }}>
-                          {renderCell(row[brand])}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <p style={{ fontSize: '11px', color: muted, marginTop: '16px' }}>
-              Prices and features reflect standard retail at time of comparison.
-            </p>
-          </div>
-        )}
-
       </div>
     </div>
   );
