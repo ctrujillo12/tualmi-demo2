@@ -18,11 +18,111 @@ const muted = '#8C7B6B';
 const rule  = '#DDD5C8';
 const bgAlt = '#F2EDE4';
 
+// ─── Per-product feature callouts ────────────────────────────────────────────
+
+const productFeatures: Record<string, string[]> = {
+  'trailblazing-fleece': [
+    'Snap collar + chest zip pocket',
+    'Kangaroo pocket with clean finish',
+    'Relaxed fit — actually designed for a woman\'s body',
+    'Patterns designed by women, not afterthought colorways',
+  ],
+  'summit-pant': [
+    'Fold-over waist for real comfort on trail',
+    'Cargo pockets that actually fit your stuff',
+    'Flared leg — functional and fashion-forward',
+    'Cinch hem for versatile styling',
+  ],
+  'alpine-baby-tee': [
+    'UPF 40 sun protection',
+    'Second-skin performance fit',
+    'Lightweight and breathable for layering',
+    'Cut for the female form, not a men\'s S',
+  ],
+  'horizon-shorts': [
+    'Mid-rise waist — stays put on trail',
+    'Relaxed fit for real movement',
+    'Three colorways: bold, playful, and statement',
+    'Light enough for trail running, cute enough for everything else',
+  ],
+  'trailblazing-tote': [
+    '100% organic cotton canvas',
+    '200gsm — soft but structured',
+    '6" and 13" handles for two carry styles',
+    'Reusable, eco-conscious, and actually cute',
+  ],
+  'carabiner': [
+    'Decorative + functional',
+    'Clips to bag, belt loop, or water bottle',
+    'Matches the collection aesthetic',
+  ],
+};
+
+// ─── Value proposition matrix data ───────────────────────────────────────────
+
+type CheckValue = true | false | string;
+
+interface CompRow {
+  label: string;
+  tualmi: CheckValue;
+  patagonia: CheckValue;
+  vuori: CheckValue;
+  lululemon: CheckValue;
+}
+
+const compTableByHandle: Record<string, { price: Record<string, string>; rows: CompRow[] }> = {
+  'trailblazing-fleece': {
+    price: { tualmi: '$149', patagonia: '$149', vuori: '$188', lululemon: 'N/A' },
+    rows: [
+      { label: 'Designed by women', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
+      { label: 'Women-specific fit', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
+      { label: 'Fashion-forward patterns', tualmi: true,  patagonia: false, vuori: true,  lululemon: false },
+      { label: 'Technical outdoor use', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
+      { label: 'Ethical manufacturing', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
+      { label: 'Chest zip pocket', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
+    ],
+  },
+  'summit-pant': {
+    price: { tualmi: '$99', patagonia: '$99', vuori: '$118', lululemon: '$128' },
+    rows: [
+      { label: 'Designed by women', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
+      { label: 'Women-specific fit', tualmi: true,  patagonia: false, vuori: false, lululemon: true  },
+      { label: 'Fashion-forward cut', tualmi: true,  patagonia: false, vuori: true,  lululemon: true  },
+      { label: 'Trail-ready construction', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
+      { label: 'Cargo pockets', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
+      { label: 'Flare silhouette', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
+    ],
+  },
+  'horizon-shorts': {
+    price: { tualmi: '$72', patagonia: '$75', vuori: '$74', lululemon: '$68' },
+    rows: [
+      { label: 'Designed by women', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
+      { label: 'Women-specific fit', tualmi: true,  patagonia: false, vuori: false, lululemon: true  },
+      { label: 'Distinctive colorways', tualmi: true,  patagonia: false, vuori: true,  lululemon: false },
+      { label: 'Trail-ready construction', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
+      { label: 'Ethical manufacturing', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
+      { label: 'Pattern options', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
+    ],
+  },
+  'alpine-baby-tee': {
+    price: { tualmi: '$69', patagonia: '$49', vuori: '$64', lululemon: '$68' },
+    rows: [
+      { label: 'Designed by women', tualmi: true,  patagonia: false, vuori: false, lululemon: false },
+      { label: 'Women-specific fit', tualmi: true,  patagonia: false, vuori: false, lululemon: true  },
+      { label: 'UPF 40 protection', tualmi: true,  patagonia: false, vuori: false, lululemon: true  },
+      { label: 'Fashion-forward design', tualmi: true,  patagonia: false, vuori: true,  lululemon: false },
+      { label: 'Ethical manufacturing', tualmi: true,  patagonia: true,  vuori: false, lululemon: false },
+    ],
+  },
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
-  const handle      = product.handle ?? '';
-  const isInStock   = AVAILABLE_HANDLES.includes(handle);
+  const handle        = product.handle ?? '';
+  const isInStock     = AVAILABLE_HANDLES.includes(handle);
   const isPreviewOnly = PREVIEW_ONLY_HANDLES.includes(handle);
-  const isPreorder  = !isInStock && !isPreviewOnly;
+  const isPreorder    = !isInStock && !isPreviewOnly;
   const isPurchasable = isInStock || isPreorder;
 
   const addItem = useCartStore((state) => state.addItem);
@@ -38,6 +138,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [buyStatus, setBuyStatus]             = useState<'idle' | 'added' | 'error'>('idle');
   const [buyError, setBuyError]               = useState('');
+
+  const features  = productFeatures[handle] ?? [];
+  const compTable = compTableByHandle[handle] ?? null;
 
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
@@ -92,11 +195,34 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       ? (product.shippingWindow ?? 'Pre-Order')
       : 'Available Spring 2026';
 
+  const CheckIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="7.5" fill={brown} />
+      <path d="M4.5 8L7 10.5L11.5 5.5" stroke="#FAFAF7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  const XIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="7.5" fill={rule} />
+      <path d="M5.5 5.5L10.5 10.5M10.5 5.5L5.5 10.5" stroke={muted} strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+
+  const renderCell = (val: CheckValue) => {
+    if (val === true)  return <CheckIcon />;
+    if (val === false) return <XIcon />;
+    return <span style={{ fontSize: '12px', color: mid }}>{val}</span>;
+  };
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#FAFAF7' }}>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-8">
+
+        {/* ── Top section: image + buy panel ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
+          {/* Images */}
           <div className="space-y-3">
             <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden', backgroundColor: bgAlt, opacity: isPurchasable ? 1 : 0.8 }}>
               <Image
@@ -129,6 +255,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             )}
           </div>
 
+          {/* Buy panel */}
           <div className="lg:pl-4">
             <div style={{ marginBottom: '32px' }}>
               {statusPill}
@@ -202,14 +329,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     onClick={handleAddToCart}
                     disabled={buyStatus === 'added'}
                     style={{
-                      width: '100%',
-                      backgroundColor: brown,
-                      color: '#FAFAF7',
-                      padding: '14px',
-                      fontSize: '11px',
-                      letterSpacing: '0.2em',
-                      textTransform: 'uppercase',
-                      border: 'none',
+                      width: '100%', backgroundColor: brown, color: '#FAFAF7',
+                      padding: '14px', fontSize: '11px', letterSpacing: '0.2em',
+                      textTransform: 'uppercase', border: 'none',
                       cursor: buyStatus === 'added' ? 'default' : 'pointer',
                       transition: 'opacity 0.2s, background-color 0.2s',
                     }}
@@ -248,12 +370,28 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               )}
             </div>
 
-            <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
+            {/* Description */}
+            <div style={{ marginBottom: '24px', paddingBottom: '24px', borderBottom: `1px solid ${rule}` }}>
               <p style={{ fontSize: '13px', lineHeight: 1.8, color: mid }}>
                 {product.description}
               </p>
             </div>
 
+            {/* Feature callouts */}
+            {features.length > 0 && (
+              <div style={{ marginBottom: '24px', paddingBottom: '24px', borderBottom: `1px solid ${rule}` }}>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {features.map((f, i) => (
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '6px 0', fontSize: '12px', color: mid, lineHeight: 1.5 }}>
+                      <span style={{ color: brown, marginTop: '1px', flexShrink: 0 }}>—</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Accordion */}
             <div>
               {[
                 {
@@ -303,8 +441,69 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               {bottomStatus}
             </p>
           </div>
-
         </div>
+
+        {/* ── Value proposition matrix ── */}
+        {compTable && (
+          <div style={{ marginTop: '80px', paddingTop: '60px', borderTop: `1px solid ${rule}` }}>
+            <p style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: muted, marginBottom: '8px' }}>
+              Why Tualmi
+            </p>
+            <h2 style={{ fontSize: '18px', fontWeight: 400, color: brown, marginBottom: '8px' }}>
+              See how we compare
+            </h2>
+            <p style={{ fontSize: '13px', color: mid, marginBottom: '40px', maxWidth: '480px' }}>
+              Same price. Better fit. Actually designed for you.
+            </p>
+
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: '520px' }}>
+                <colgroup>
+                  <col style={{ width: '32%' }} />
+                  <col style={{ width: '17%' }} />
+                  <col style={{ width: '17%' }} />
+                  <col style={{ width: '17%' }} />
+                  <col style={{ width: '17%' }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th style={{ padding: '12px 0', textAlign: 'left', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: muted, borderBottom: `1px solid ${rule}` }}></th>
+                    {[
+                      { key: 'tualmi',    label: 'Tualmi',    highlight: true  },
+                      { key: 'patagonia', label: 'Patagonia', highlight: false },
+                      { key: 'vuori',     label: 'Vuori',     highlight: false },
+                      { key: 'lululemon', label: 'Lululemon', highlight: false },
+                    ].map(({ key, label, highlight }) => (
+                      <th key={key} style={{ padding: '12px 8px', textAlign: 'center', fontSize: '11px', letterSpacing: '0.08em', color: highlight ? brown : mid, fontWeight: highlight ? 600 : 400, borderBottom: `2px solid ${highlight ? brown : rule}` }}>
+                        {label}
+                        <div style={{ fontSize: '12px', fontWeight: 400, color: highlight ? brown : muted, marginTop: '4px' }}>
+                          {compTable.price[key]}
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {compTable.rows.map((row, i) => (
+                    <tr key={i} style={{ backgroundColor: i % 2 === 0 ? '#FAFAF7' : bgAlt }}>
+                      <td style={{ padding: '12px 0', fontSize: '12px', color: mid }}>{row.label}</td>
+                      {(['tualmi', 'patagonia', 'vuori', 'lululemon'] as const).map((brand) => (
+                        <td key={brand} style={{ padding: '12px 8px', textAlign: 'center' }}>
+                          {renderCell(row[brand])}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <p style={{ fontSize: '11px', color: muted, marginTop: '16px' }}>
+              Prices and features reflect standard retail at time of comparison.
+            </p>
+          </div>
+        )}
+
       </div>
     </div>
   );
