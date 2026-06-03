@@ -5,7 +5,7 @@ import ProductCard from '@/components/ProductCard';
 import HomeHero from '@/components/HomeHero';
 import TrailblazerSignup from '@/components/TrailblazerSignup';
 import LaunchGate from '@/components/LaunchGate';
-import AddToCartButton from '@/components/AddToCartButton'; // your existing cart button
+import AddToCartButton from '@/components/AddToCartButton';
 import type { Product } from '@/types';
 import SaleCountdown from '@/components/SaleCountdown';
 
@@ -38,21 +38,11 @@ export default async function Home() {
             Why we exist
           </p>
           <h2 style={{ fontSize: 'clamp(28px, 6vw, 58px)', lineHeight: 1.1, fontWeight: 400, color: black, marginBottom: '24px', fontFamily: serif }}>
-            The outdoors has always been{' '}
-            <em>for women.</em>
-            <br />
-            The gear just never caught up.
+            Actually cute outdoors gear.
           </h2>
-          <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', lineHeight: 1.9, color: mid, marginBottom: '16px', fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-            Tualmi was built on the trail. After years of hiking and backpacking in clothes
-            designed for men, we got tired of waiting for someone else
-            to solve it. So we did.
-          </p>
-          <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', lineHeight: 1.9, color: mid, marginBottom: '40px', fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-            We make functional outdoor apparel for women who want to show up fully as themselves—on 
-            the mountain, in the canyon, at the trailhead, and everywhere in between. Every piece
-            is designed by women, ethically and intentionally manufactured, and made from materials
-            we'd stake our names on.
+          <p style={{ fontSize: 'clamp(14px, 2vw, 16px)', lineHeight: 1.85, color: mid, marginBottom: '32px', fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em', maxWidth: '680px' }}>
+            We made the clothes we wish existed when our friends planned a Yosemite trip. Cute enough for brunch, functional enough for the trail.
+            Patagonia is built for performance. Lululemon is built for workouts. Tualmi is built for girls who want both — fashion-forward silhouettes and trail-ready performance, designed by women who actually hike in them.
           </p>
           <Link
             href="/story"
@@ -63,69 +53,39 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ─── FEATURED TOTE ─── */}
-      {tote && (
-        <section style={{ padding: 'clamp(48px, 8vw, 96px) clamp(20px, 5vw, 32px)' }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <p style={{ fontSize: '10px', letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, textAlign: 'center', marginBottom: 'clamp(40px, 6vw, 72px)', fontFamily: sans }}>
-              Available Tuesday, April 28th — 7 PM PT
-            </p>
-
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
-              gap: 'clamp(32px, 6vw, 80px)',
-              alignItems: 'center',
-            }}>
-              <div style={{ aspectRatio: '4/5', position: 'relative', overflow: 'hidden', backgroundColor: bgAlt }}>
-                <Image src={tote.images[0]} alt={tote.name} fill style={{ objectFit: 'contain' }} />
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div>
-                  <p style={{ fontSize: '10px', letterSpacing: '0.35em', textTransform: 'uppercase', color: muted, marginBottom: '10px', fontFamily: sans }}>
-                    {tote.category}
-                  </p>
-                  <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 400, color: black, marginBottom: '14px', fontFamily: serif }}>
-                    {tote.name}
-                  </h2>
-                  <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', lineHeight: 1.9, color: mid, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-                    {tote.description}
-                  </p>
-                </div>
-
-                <p style={{ fontSize: '18px', color: black, fontFamily: serif }}>
-                  ${(tote.price / 100).toFixed(2)}
-                </p>
-
-                {/* ─── SALE URGENCY BANNER ─── */}
-                <SaleCountdown />
-
-                <LaunchGate
-                  openContent={<AddToCartButton product={tote} />}
-                />
-
-                {/* Trailblazer nudge — only relevant before launch
-                <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', color: muted, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-                  Trailblazer's Club members get 50% off at checkout.{' '}
-                  <a
-                    href="#trailblazers"
-                    style={{ color: black, borderBottom: `1px solid ${black}`, textDecoration: 'none', fontFamily: sans }}
-                  >
-                    Join below ↓
-                  </a>
-                </p> */}
-              </div>
+      {/* ─── SOCIAL PROOF ─── */}
+      <section style={{ borderTop: `1px solid ${rule}`, padding: 'clamp(36px, 6vw, 64px) clamp(20px, 5vw, 32px)' }}>
+        <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+            gap: 'clamp(24px, 4vw, 48px)',
+            textAlign: 'center',
+          }}>
+            <div>
+              <p style={{ fontSize: 'clamp(28px, 5vw, 42px)', fontWeight: 400, color: black, fontFamily: serif, marginBottom: '8px' }}>500+</p>
+              <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: muted, fontFamily: sans }}>Women following the journey</p>
+            </div>
+            <div>
+              <p style={{ fontSize: 'clamp(28px, 5vw, 42px)', fontWeight: 400, color: black, fontFamily: serif, marginBottom: '8px' }}>80+</p>
+              <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: muted, fontFamily: sans }}>On our mailing list</p>
+            </div>
+            <div>
+              <p style={{ fontSize: 'clamp(28px, 5vw, 42px)', fontWeight: 400, color: black, fontFamily: serif, marginBottom: '8px' }}>July</p>
+              <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: muted, fontFamily: sans }}>Official launch — pre-orders open now</p>
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* ─── PREVIEW COLLECTION ─── */}
       <section style={{ borderTop: `1px solid ${rule}`, padding: 'clamp(48px, 8vw, 96px) clamp(20px, 5vw, 32px)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <p style={{ fontSize: '10px', letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, textAlign: 'center', marginBottom: 'clamp(40px, 6vw, 72px)', fontFamily: sans }}>
-            Launching Summer 2026 — Preview Drop 1
+          <p style={{ fontSize: '10px', letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, textAlign: 'center', marginBottom: '12px', fontFamily: sans }}>
+            Pre-order now — ships July 2026
+          </p>
+          <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', color: mid, textAlign: 'center', fontFamily: sans, fontWeight: 300, marginBottom: 'clamp(40px, 6vw, 72px)', letterSpacing: '0.015em' }}>
+            Limited quantities. First access goes to Trailblazers.
           </p>
 
           <div style={{
@@ -140,6 +100,52 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ─── FEATURED TOTE ─── */}
+      {tote && (
+        <section style={{ borderTop: `1px solid ${rule}`, padding: 'clamp(36px, 6vw, 72px) clamp(20px, 5vw, 32px)' }}>
+          <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+              gap: 'clamp(24px, 5vw, 60px)',
+              alignItems: 'center',
+            }}>
+              <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden', backgroundColor: bgAlt, maxWidth: '380px' }}>
+                <Image src={tote.images[0]} alt={tote.name} fill style={{ objectFit: 'contain' }} />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>
+                  <p style={{ fontSize: '10px', letterSpacing: '0.35em', textTransform: 'uppercase', color: muted, marginBottom: '10px', fontFamily: sans }}>
+                    {tote.category}
+                  </p>
+                  <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 28px)', fontWeight: 400, color: black, marginBottom: '14px', fontFamily: serif }}>
+                    {tote.name}
+                  </h2>
+                  <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', lineHeight: 1.9, color: mid, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
+                    {tote.description}
+                  </p>
+                </div>
+
+                <p style={{ fontSize: '18px', color: black, fontFamily: serif }}>
+                  ${(tote.price / 100).toFixed(2)}
+                </p>
+
+                <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: muted, fontFamily: sans }}>
+                  Ships July 2026
+                </p>
+
+                <SaleCountdown />
+
+                <LaunchGate
+                  openContent={<AddToCartButton product={tote} />}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ─── TRAILBLAZER'S CLUB ─── */}
       <section id="trailblazers" style={{ borderTop: `1px solid ${rule}`, padding: 'clamp(64px, 10vw, 120px) clamp(20px, 5vw, 32px)', backgroundColor: bgAlt }}>
         <div style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
@@ -147,15 +153,14 @@ export default async function Home() {
             Trailblazer's Club
           </p>
           <h2 style={{ fontSize: 'clamp(24px, 5vw, 48px)', fontWeight: 400, lineHeight: 1.15, color: black, marginBottom: '20px', fontFamily: serif }}>
-            You found us{' '}
-            <em>before everyone else.</em>
+            Get first access{' '}
+            <em>before we open.</em>
           </h2>
           <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', lineHeight: 1.9, color: mid, marginBottom: '12px', fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-            Join the Trailblazer's Club for early access to limited drops, behind-the-scenes
-            from production, and perks reserved for the people who showed up first.
+            We&apos;re launching in late July with limited quantities — and Trailblazers get first pick. Join before we open and you&apos;ll be first through the door: exclusive launch discounts, early access to limited drops, and a chance to become a Tuomi ambassador.
           </p>
           <p style={{ fontSize: 'clamp(13px, 2vw, 14px)', lineHeight: 1.9, color: mid, marginBottom: '48px', fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-            No noise. Just your spot.
+            500+ women are already following the journey. Grab your spot.
           </p>
           <TrailblazerSignup />
         </div>
