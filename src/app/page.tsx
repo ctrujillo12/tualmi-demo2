@@ -201,16 +201,8 @@ export default async function Home() {
                   <ProductCard
                     product={product}
                     showPrice={true}
-                    imageAspectRatio={
-                      product.handle === 'horizon-shorts' || product.handle === 'alpine-baby-tee'
-                        ? '1'
-                        : '2/3'
-                    }
-                    imageFit={
-                      product.handle === 'horizon-shorts' || product.handle === 'alpine-baby-tee'
-                        ? 'contain'
-                        : 'cover'
-                    }
+                    imageAspectRatio="2/3"
+                    imageFit="contain"
                   />
                 </div>
               ))}

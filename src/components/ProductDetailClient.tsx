@@ -1,9 +1,11 @@
 'use client';
 
+import React, { useState } from 'react';
 import Image from 'next/image';
-import { useState } from 'react';
 import { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
+import { PRODUCT_DETAILS } from '@/lib/productDetails';
+import { PRODUCT_COLORS } from '@/lib/productColors';
 
 interface ProductDetailClientProps {
   product: Product;
@@ -19,8 +21,6 @@ const rule  = '#E8E2D8';
 const bgAlt = '#F2EDE4';
 const sans  = 'var(--font-montserrat)';
 const serif = "'Cormorant Garamond', Georgia, serif";
-
-// ─── Value proposition matrix ─────────────────────────────────────────────────
 
 interface CompRow {
   label: string;
@@ -93,24 +93,34 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   const addItem = useCartStore((state) => state.addItem);
 
-  const colorImageMap: Record<string, number> = {};
-  product.colors.forEach((color, index) => {
-    if (index < product.images.length) colorImageMap[color] = index;
-  });
+  // Per-colorway image gallery
+  const swatchColors = PRODUCT_COLORS[handle] ?? [];
+  const colorCount   = Math.max(1, swatchColors.length || product.colors.length);
+  const imgsPerColor = Math.max(1, Math.floor(product.images.length / colorCount));
+
+  const getColorImages = (colorIdx: number): string[] => {
+    const start = colorIdx * imgsPerColor;
+    const end   = colorIdx === colorCount - 1
+      ? product.images.length
+      : start + imgsPerColor;
+    return product.images.slice(start, end);
+  };
 
   const [selectedImage, setSelectedImage]     = useState(0);
   const [selectedSize, setSelectedSize]       = useState(product.sizes[0] || '');
-  const [selectedColor, setSelectedColor]     = useState(product.colors[0] || '');
+  const [selectedColor, setSelectedColor]     = useState(
+    swatchColors.length > 0 ? swatchColors[0].name : (product.colors[0] || '')
+  );
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [buyStatus, setBuyStatus]             = useState<'idle' | 'added' | 'error'>('idle');
   const [buyError, setBuyError]               = useState('');
 
-  const compTable = compTableByHandle[handle] ?? null;
+  const compTable    = compTableByHandle[handle] ?? null;
+  const fabricDetail = PRODUCT_DETAILS[handle] ?? null;
 
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
-    const imageIndex = colorImageMap[color];
-    if (imageIndex !== undefined) setSelectedImage(imageIndex);
+    setSelectedImage(0);
   };
 
   const handleAddToCart = () => {
@@ -132,11 +142,80 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     setExpandedSection(expandedSection === section ? null : section);
   };
 
-  const statusLabel = isInStock
-    ? 'Available Now'
-    : isPreorder
-      ? 'Pre-Order'
-      : 'Spring 2026';
+  // ── Accordion items ──────────────────────────────────────────────────────────
+  const accordionItems: { key: string; label: string; content: React.ReactNode }[] = [];
+
+  if (fabricDetail) {
+    accordionItems.push({
+      key: 'material',
+      label: 'Material',
+      content: (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', rowGap: '6px', columnGap: '12px' }}>
+            <span style={{ color: muted, fontWeight: 400, fontSize: '11px', letterSpacing: '0.05em' }}>Shell</span>
+            <span>{fabricDetail.shell}</span>
+            {fabricDetail.lining && (
+              <>
+                <span style={{ color: muted, fontWeight: 400, fontSize: '11px', letterSpacing: '0.05em' }}>Lining</span>
+                <span>{fabricDetail.lining}</span>
+              </>
+            )}
+            {fabricDetail.pocketLining && (
+              <>
+                <span style={{ color: muted, fontWeight: 400, fontSize: '11px', letterSpacing: '0.05em' }}>Pocket lining</span>
+                <span>{fabricDetail.pocketLining}</span>
+              </>
+            )}
+            {fabricDetail.weight && (
+              <>
+                <span style={{ color: muted, fontWeight: 400, fontSize: '11px', letterSpacing: '0.05em' }}>Weight</span>
+                <span>{fabricDetail.weight}</span>
+              </>
+            )}
+          </div>
+          {fabricDetail.features && fabricDetail.features.length > 0 && (
+            <ul style={{ margin: '6px 0 0', padding: '0 0 0 14px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {fabricDetail.features.map((f, i) => <li key={i}>{f}</li>)}
+            </ul>
+          )}
+        </div>
+      ),
+    });
+  }
+
+  if (fabricDetail?.fit) {
+    accordionItems.push({
+      key: 'fit',
+      label: 'Fit & Sizing',
+      content: <p style={{ margin: 0 }}>{fabricDetail.fit}</p>,
+    });
+  }
+
+  accordionItems.push({
+    key: 'care',
+    label: 'Care',
+    content: (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        {(fabricDetail?.care ?? ['Machine wash cold', 'Hang dry', 'Do not bleach', 'Do not iron'])
+          .map((line, i) => <p key={i} style={{ margin: 0 }}>{line}</p>)}
+      </div>
+    ),
+  });
+
+  accordionItems.push({
+    key: 'shipping',
+    label: 'Shipping & Returns',
+    content: (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <p style={{ margin: 0 }}>7-day returns and exchanges</p>
+        <p style={{ margin: 0 }}>
+          {isPreorder ? 'Preorders ship late July 2026.' : 'Ships within 2-3 business days.'}
+        </p>
+      </div>
+    ),
+  });
+
+  const statusLabel = isInStock ? 'Available Now' : isPreorder ? 'Pre-Order' : 'Spring 2026';
 
   const imageOverlay = isPreviewOnly ? (
     <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -147,111 +226,92 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   ) : null;
 
   const Check = () => (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'inline-block' }}>
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ display: 'inline-block' }}>
       <circle cx="7" cy="7" r="7" fill={brown} />
       <path d="M3.5 7L5.5 9.5L10.5 4.5" stroke="#FAFAF7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 
   const Ex = () => (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'inline-block' }}>
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ display: 'inline-block' }}>
       <circle cx="7" cy="7" r="7" fill={rule} />
       <path d="M4.5 4.5L9.5 9.5M9.5 4.5L4.5 9.5" stroke={muted} strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
+
+  // Compute active colorway gallery
+  const activeColorIdx = swatchColors.length > 0
+    ? swatchColors.findIndex(s => s.name === selectedColor)
+    : product.colors.indexOf(selectedColor);
+  const gallery     = getColorImages(Math.max(0, activeColorIdx));
+  const activeImage = gallery[selectedImage] ?? gallery[0] ?? product.images[0];
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#FAFAF7' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '48px clamp(20px, 4vw, 48px) 80px' }}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16">
 
-          {/* ── Left: images ── */}
+          {/* Left: images */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
-            {/* Main image */}
-            <div className="product-main-image" style={{
-              position: 'relative',
-              overflow: 'hidden',
-              backgroundColor: bgAlt,
-              opacity: isPurchasable ? 1 : 0.8,
-              aspectRatio: '2/3',
-              maxHeight: '75vh',
-            }}>
+            <div className="product-main-image" style={{ position: 'relative', lineHeight: 0 }}>
               <Image
-                src={product.images[selectedImage]}
+                src={activeImage}
                 alt={product.name}
-                fill
+                width={800}
+                height={1200}
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                style={{ objectFit: 'contain', filter: isPurchasable ? 'none' : 'saturate(0.8)' }}
                 priority
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  display: 'block',
+                  opacity: isPurchasable ? 1 : 0.8,
+                  filter: isPurchasable ? 'none' : 'saturate(0.8)',
+                }}
               />
               {imageOverlay}
             </div>
 
-            {/* Thumbnails */}
-            {product.images.length > 1 && (
+            {gallery.length > 1 && (
               <div className="product-thumbnails" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-                {product.images.map((image, index) => (
+                {gallery.map((image, i) => (
                   <button
-                    key={index}
-                    onClick={() => {
-                      setSelectedImage(index);
-                      const matchingColor = product.colors.find((c) => colorImageMap[c] === index);
-                      if (matchingColor) setSelectedColor(matchingColor);
-                    }}
+                    key={i}
+                    onClick={() => setSelectedImage(i)}
                     style={{
-                      aspectRatio: '2/3',
                       position: 'relative',
                       overflow: 'hidden',
-                      opacity: selectedImage === index ? 1 : 0.4,
-                      border: selectedImage === index ? `1.5px solid ${brown}` : '1.5px solid transparent',
-                      background: bgAlt,
+                      opacity: selectedImage === i ? 1 : 0.4,
+                      border: selectedImage === i ? `1.5px solid ${brown}` : '1.5px solid transparent',
+                      background: 'none',
                       cursor: 'pointer',
                       transition: 'opacity 0.2s, border-color 0.2s',
+                      lineHeight: 0,
                     }}
                   >
-                    <Image src={image} alt={`${product.name} ${index + 1}`} fill sizes="25vw" style={{ objectFit: 'contain' }} />
+                    <Image src={image} alt={`${product.name} ${i + 1}`} width={200} height={300} sizes="25vw" style={{ width: '100%', height: 'auto', display: 'block' }} />
                   </button>
                 ))}
               </div>
             )}
 
-            {/* Sample disclaimer */}
             <p style={{ fontFamily: sans, fontSize: '10px', fontWeight: 300, color: muted, letterSpacing: '0.03em', lineHeight: 1.6, margin: 0 }}>
               Photos show pre-production samples. Final color and fit may vary slightly.
             </p>
           </div>
 
-          {/* ── Right: details panel ── */}
+          {/* Right: details panel */}
           <div style={{ paddingTop: '8px' }}>
 
-            {/* Status label */}
-            <p style={{
-              fontFamily: sans,
-              fontSize: '9px',
-              fontWeight: 500,
-              letterSpacing: '0.4em',
-              textTransform: 'uppercase',
-              color: muted,
-              marginBottom: '12px',
-              marginTop: 0,
-            }}>
+            <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, marginBottom: '12px', marginTop: 0 }}>
               {statusLabel}
             </p>
 
-            {/* Product name */}
-            <h1 style={{
-              fontFamily: serif,
-              fontSize: 'clamp(28px, 3vw, 40px)',
-              fontWeight: 400,
-              color: brown,
-              margin: '0 0 10px',
-              lineHeight: 1.1,
-            }}>
+            <h1 style={{ fontFamily: serif, fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 400, color: brown, margin: '0 0 10px', lineHeight: 1.1 }}>
               {product.name}
             </h1>
 
-            {/* Price */}
             <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 300, color: mid, margin: '0 0 6px' }}>
               ${(product.price / 100).toFixed(2)}
             </p>
@@ -296,34 +356,41 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             )}
 
-            {/* Colors */}
-            {product.colors.length > 0 && product.colors[0] !== 'Default' && (
+            {/* Colors — swatch bubbles */}
+            {swatchColors.length > 0 && (
               <div style={{ marginBottom: '24px' }}>
                 <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.35em', textTransform: 'uppercase', color: muted, marginBottom: '10px', marginTop: 0 }}>
-                  Color
+                  Color{' '}<span style={{ fontWeight: 300, textTransform: 'none', letterSpacing: 0 }}>— {selectedColor}</span>
                 </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {product.colors.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => isPurchasable && handleColorSelect(color)}
-                      disabled={!isPurchasable}
-                      style={{
-                        padding: '8px 18px',
-                        fontFamily: sans,
-                        fontSize: '11px',
-                        letterSpacing: '0.08em',
-                        border: `1px solid ${selectedColor === color ? brown : rule}`,
-                        backgroundColor: selectedColor === color ? brown : 'transparent',
-                        color: selectedColor === color ? '#FAFAF7' : brown,
-                        cursor: isPurchasable ? 'pointer' : 'not-allowed',
-                        opacity: isPurchasable ? 1 : 0.4,
-                        transition: 'all 0.15s',
-                      }}
-                    >
-                      {color}
-                    </button>
-                  ))}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                  {swatchColors.map((swatch) => {
+                    const isSelected = selectedColor === swatch.name;
+                    const isGradient = swatch.value.startsWith('linear-gradient');
+                    return (
+                      <button
+                        key={swatch.name}
+                        title={swatch.name}
+                        onClick={() => isPurchasable && handleColorSelect(swatch.name)}
+                        disabled={!isPurchasable}
+                        style={{
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '50%',
+                          border: isSelected ? `2px solid ${brown}` : '2px solid transparent',
+                          outline: isSelected ? 'none' : `1px solid ${rule}`,
+                          outlineOffset: '1px',
+                          background: isGradient ? swatch.value : undefined,
+                          backgroundColor: isGradient ? undefined : swatch.value,
+                          cursor: isPurchasable ? 'pointer' : 'not-allowed',
+                          opacity: isPurchasable ? 1 : 0.4,
+                          padding: 0,
+                          flexShrink: 0,
+                          transition: 'border-color 0.15s, transform 0.15s',
+                          transform: isSelected ? 'scale(1.15)' : 'scale(1)',
+                        }}
+                      />
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -352,11 +419,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     onMouseEnter={e => { if (buyStatus !== 'added') e.currentTarget.style.opacity = '0.85'; }}
                     onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
                   >
-                    {buyStatus === 'added' ? 'Added to Cart ✓' : isPreorder ? 'Pre-Order Now' : 'Add to Cart'}
+                    {buyStatus === 'added' ? 'Added to Cart' : isPreorder ? 'Pre-Order Now' : 'Add to Cart'}
                   </button>
                   {isPreorder && (
                     <p style={{ fontFamily: sans, fontSize: '11px', color: muted, marginTop: '10px', textAlign: 'center', lineHeight: 1.7, letterSpacing: '0.03em' }}>
-                      You'll be charged at checkout. Preorders ship late July 2026.
+                      {"You'll be charged at checkout. Preorders ship late July 2026."}
                     </p>
                   )}
                   {buyStatus === 'error' && (
@@ -366,7 +433,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               ) : (
                 <>
                   <button disabled style={{ width: '100%', backgroundColor: bgAlt, color: muted, padding: '14px', fontFamily: sans, fontSize: '9px', fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', border: 'none', cursor: 'not-allowed', marginBottom: '8px' }}>
-                    Coming Soon — Spring 2026
+                    Coming Soon
                   </button>
                   <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: muted, textAlign: 'center' }}>
                     Sign up on our homepage to get early access when this drops.
@@ -402,23 +469,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       {(['tualmi', 'patagonia', 'vuori', 'comp4'] as const).map((key) => {
                         const hi = key === 'tualmi';
                         return (
-                          <th
-                            key={key}
-                            style={{
-                              padding: '0 4px 10px',
-                              textAlign: 'center',
-                              fontFamily: sans,
-                              fontSize: '9px',
-                              letterSpacing: '0.08em',
-                              fontWeight: hi ? 600 : 400,
-                              color: hi ? brown : muted,
-                              borderBottom: `2px solid ${hi ? brown : rule}`,
-                            }}
-                          >
+                          <th key={key} style={{ padding: '0 4px 10px', textAlign: 'center', fontFamily: sans, fontSize: '9px', letterSpacing: '0.08em', fontWeight: hi ? 600 : 400, color: hi ? brown : muted, borderBottom: `2px solid ${hi ? brown : rule}` }}>
                             <div>{compTable.labels[key]}</div>
-                            <div style={{ fontSize: '10px', fontWeight: 400, color: hi ? mid : muted, marginTop: '3px' }}>
-                              {compTable.price[key]}
-                            </div>
+                            <div style={{ fontSize: '10px', fontWeight: 400, color: hi ? mid : muted, marginTop: '3px' }}>{compTable.price[key]}</div>
                           </th>
                         );
                       })}
@@ -442,33 +495,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
             {/* Accordion */}
             <div>
-              {[
-                {
-                  key: 'shipping',
-                  label: 'Shipping & Returns',
-                  content: (
-                    <>
-                      <p style={{ margin: '0 0 8px' }}>7-day returns and exchanges</p>
-                      <p style={{ margin: 0 }}>
-                        {isPreorder
-                          ? (product.shippingWindow ?? 'Pre-order — ships when the collection drops.')
-                          : 'Ships within 2–3 business days!'}
-                      </p>
-                    </>
-                  ),
-                },
-                {
-                  key: 'care',
-                  label: 'Care Details',
-                  content: (
-                    <>
-                      <p style={{ margin: '0 0 8px' }}>Hand wash cold</p>
-                      <p style={{ margin: '0 0 8px' }}>Lay flat to dry</p>
-                      <p style={{ margin: 0 }}>Do not bleach or iron</p>
-                    </>
-                  ),
-                },
-              ].map(({ key, label, content }) => (
+              {accordionItems.map(({ key, label, content }) => (
                 <div key={key} style={{ borderBottom: `1px solid ${rule}` }}>
                   <button
                     onClick={() => toggleSection(key)}
@@ -490,7 +517,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     }}
                   >
                     <span>{label}</span>
-                    <span style={{ fontSize: '16px', color: muted, fontWeight: 300 }}>{expandedSection === key ? '−' : '+'}</span>
+                    <span style={{ fontSize: '16px', color: muted, fontWeight: 300 }}>{expandedSection === key ? '-' : '+'}</span>
                   </button>
                   {expandedSection === key && (
                     <div style={{ paddingBottom: '16px', fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid, lineHeight: 1.8 }}>
