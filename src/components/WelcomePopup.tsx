@@ -134,7 +134,7 @@ export default function WelcomePopup() {
                 Join for 15% off your first order.
               </h2>
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid, lineHeight: 1.7, margin: '0 0 28px' }}>
-                Be first to know about new drops, restocks, and trail-tested picks. Plus, get 15% off sent straight to your inbox.
+                Be first to know about new drops, restocks, and trail-tested picks. Discount sent straight to your inbox.
               </p>
 
               <form onSubmit={handleSubmit}>
