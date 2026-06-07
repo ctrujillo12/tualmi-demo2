@@ -1,6 +1,6 @@
 'use client';
 
-import HeaderStaticBlack from '@/components/HeaderStaticBlack';
+
 import TrailblazerSignup from '@/components/TrailblazerSignup';
 
 const serif = "'Cormorant Garamond', Georgia, serif";
@@ -12,7 +12,7 @@ const muted = '#8C7B6B';
 export default function InvitePage() {
   return (
     <>
-      <HeaderStaticBlack />
+
 
       <main style={{
         maxWidth: '640px',

@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=pencerio@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Great+Vibes&family=Ballet&family=Rock+3D&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,15 +8,71 @@
 :root {
   --font-inter: 'Inter', sans-serif;
   --font-playfair: 'Playfair Display', serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+  --font-script: 'Great Vibes', cursive;
+  --font-ballet: 'Ballet', cursive;
+  --font-codystar: 'Codystar', cursive;
+  --font-rock3d: 'Rock 3D', cursive;
+  --font-cedarville: 'Cedarville Cursive', cursive;
+  --font-rock3d: 'Rock 3D', cursive;
 }
 
 body {
   @apply bg-sand-50 text-sand-900;
-  cursor: default;
+  cursor: auto;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+/* Marquee scrolling banner */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 32s linear infinite;
+  will-change: transform;
+}
+
+/* ── Mobile responsive ── */
+@media (max-width: 768px) {
+  /* Hero: full width, centered, not pushed to right half */
+  .hero-text-block {
+    width: 90% !important;
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+    align-items: center !important;
+    text-align: center !important;
+    margin: 0 auto;
+  }
+
+  /* Hero: logo + title centered */
+  .hero-text-block > div:first-child {
+    justify-content: center;
+  }
+
+  /* Product grid: 2 columns on mobile */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Footer: 2-column grid on mobile */
+  .footer-links-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Product grid: still 2 cols but tighter */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
   }
 }

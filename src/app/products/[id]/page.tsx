@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import HeaderStaticBlack from '@/components/HeaderStaticBlack';
+
 import ProductDetailClient from '@/components/ProductDetailClient';
 import { getProduct, getProducts } from '@/lib/products';
 
@@ -25,7 +25,7 @@ export default async function ProductPage({
 
   return (
     <>
-      <HeaderStaticBlack />
+
       <main className="pt-16">
         <ProductDetailClient product={product} />
       </main>

@@ -14,46 +14,47 @@ interface ProductCardProps {
 const AVAILABLE_HANDLES = ['trailblazing-tote'];
 const PREVIEW_ONLY_HANDLES = ['carabiner'];
 
-// Matches exactly the color names defined in localProducts
-const COLOR_MAP: Record<string, string> = {
-  // Trailblazing Fleece
-  Wildflower:    '#E8A0B8',
-  'Golden Hour': '#E8C84A',
-
-  // Summit Pant
-  Moss:          '#7A8C52',
-  Birch:         '#EDE8DF',
-
-  // Alpine Baby Tee
-  Solstice:      '#D4A843',
-  Petal:         '#F2C4CE',
-
-  // Horizon Shorts
-  Canyon:        '#A85448',
-  Dusk:          '#C49AB0',
-  Meadow:        'linear-gradient(135deg, #A8C484 50%, #7A9E6A 50%)',
-
-  // Tote
-  Natural:       '#D6C9B0',
+// Hardcoded colors per product handle — not sourced from Shopify
+const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> = {
+  'trailblazing-fleece': [
+    { name: 'Wildflower',    value: '#E8A0B8' },
+    { name: 'Golden Hour',   value: '#E8C84A' },
+  ],
+  'summit-pant': [
+    { name: 'Moss',          value: '#7A8C52' },
+    { name: 'Birch',         value: '#EDE8DF' },
+  ],
+  'alpine-baby-tee': [
+    { name: 'Petal',         value: '#F2C4CE' },
+    { name: 'Solstice',      value: '#D4A843' },
+  ],
+  'horizon-shorts': [
+    { name: 'Meadow',        value: 'linear-gradient(135deg, #A8C484 50%, #7A9E6A 50%)' },
+    { name: 'Canyon',        value: '#A85448' },
+    { name: 'Dusk',          value: '#C49AB0' },
+  ],
+  'trailblazing-tote': [
+    { name: 'Natural',       value: '#D6C9B0' },
+  ],
 };
 
 function ColorSwatch({
-  color,
+  colorValue,
   isSelected,
   onClick,
 }: {
-  color: string;
+  colorValue: string;
   isSelected: boolean;
   onClick: (e: React.MouseEvent) => void;
 }) {
-  const value = COLOR_MAP[color] ?? '#ccc';
+  const value = colorValue;
   const isGradient = value.startsWith('linear-gradient');
 
   return (
     <button
       onClick={onClick}
-      title={color}
-      aria-label={`Select ${color}`}
+      title={colorValue}
+      aria-label={`Select ${colorValue}`}
       style={{
         width: '16px',
         height: '16px',
@@ -77,12 +78,12 @@ const sans = "'Jost', 'DM Sans', system-ui, sans-serif";
 const serif = "'Cormorant Garamond', Georgia, serif";
 
 export default function ProductCard({ product, showPrice = true }: ProductCardProps) {
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [selectedColor, setSelectedColor] = useState(
-    product.colors ? product.colors[0] : null
-  );
-
   const handle        = product.handle ?? '';
+  const colors        = PRODUCT_COLORS[handle] ?? [];
+
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedColor, setSelectedColor]           = useState(colors[0]?.name ?? null);
+
   const isInStock     = AVAILABLE_HANDLES.includes(handle);
   const isPreviewOnly = PREVIEW_ONLY_HANDLES.includes(handle);
   const isPreorder    = !isInStock && !isPreviewOnly;
@@ -91,7 +92,7 @@ export default function ProductCard({ product, showPrice = true }: ProductCardPr
     e.preventDefault();
     e.stopPropagation();
     if (product.images[index]) setSelectedImageIndex(index);
-    if (product.colors) setSelectedColor(product.colors[index]);
+    setSelectedColor(colors[index]?.name ?? null);
   };
 
   // Pill shown in top-left corner of image. Tote = no pill (it's just available).
@@ -174,13 +175,13 @@ export default function ProductCard({ product, showPrice = true }: ProductCardPr
       </Link>
 
       {/* Swatches — outside the Link so clicks don't navigate */}
-      {product.colors && product.colors.length > 0 && (
+      {colors.length > 0 && (
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          {product.colors.map((color, index) => (
+          {colors.map(({ name, value }, index) => (
             <ColorSwatch
-              key={color}
-              color={color}
-              isSelected={selectedColor === color}
+              key={name}
+              colorValue={value}
+              isSelected={selectedColor === name}
               onClick={(e) => handleColorClick(e, index)}
             />
           ))}

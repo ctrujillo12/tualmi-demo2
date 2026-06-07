@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import HeaderStaticBlack from '@/components/HeaderStaticBlack';
+
 import { getProducts } from '@/lib/products';
 import CollectionsFilters from '@/components/CollectionsFilters';
 import type { Product } from '@/types';
@@ -11,7 +11,7 @@ export default async function CollectionsPage() {
 
   return (
     <>
-      <HeaderStaticBlack />
+
 
       <main className="px-6 pt-28 pb-15 max-w-[1200px] mx-auto">
         {/* Title */}

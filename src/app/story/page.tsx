@@ -1,4 +1,4 @@
-import HeaderStaticBlack from '@/components/HeaderStaticBlack';
+
 
 const serif = "'Cormorant Garamond', Georgia, serif";
 const sans = "'Jost', 'DM Sans', system-ui, sans-serif";
@@ -11,7 +11,7 @@ const muted = '#8C7B6B';
 export default function StoryPage() {
   return (
     <div style={{ backgroundColor: bg, minHeight: '100vh' }}>
-      <HeaderStaticBlack />
+
 
       <main
         style={{

@@ -1,10 +1,10 @@
-import HeaderStaticBlack from '@/components/HeaderStaticBlack';
+
 
 export default function StoryPage() {
   return (
     <>
       {/* Black static header */}
-      <HeaderStaticBlack />
+
 
       {/* Page content */}
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
