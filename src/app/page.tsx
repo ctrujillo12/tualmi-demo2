@@ -5,6 +5,7 @@ import { getProducts } from '@/lib/products';
 import ProductCard from '@/components/ProductCard';
 import TrailblazerSignup from '@/components/TrailblazerSignup';
 import HikerOverlay from '@/components/HikerOverlay';
+import WelcomePopup from '@/components/WelcomePopup';
 import type { Product } from '@/types';
 import { PRODUCT_COLORS } from '@/lib/productColors';
 
@@ -67,6 +68,9 @@ export default async function Home() {
 
   return (
     <div style={{ backgroundColor: '#FAFAF7' }}>
+
+      {/* ── WELCOME POPUP ── */}
+      <WelcomePopup />
 
       {/* ── HIKER OVERLAY — fixed so z-index is root-level, JS tracks border position ── */}
       <HikerOverlay />
@@ -281,79 +285,3 @@ export default async function Home() {
                   overflow: 'hidden',
                   display: 'block',
                   position: 'relative',
-                  backgroundImage: tiktokThumbnails[i] ? `url(${tiktokThumbnails[i]})` : undefined,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  textDecoration: 'none',
-                }}
-              >
-                <div style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(0,0,0,0.18)',
-                }}>
-                  <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-                    <circle cx="22" cy="22" r="21" stroke="white" strokeWidth="1.5" fill="rgba(0,0,0,0.3)"/>
-                    <polygon points="18,14 34,22 18,30" fill="white"/>
-                  </svg>
-                </div>
-              </a>
-            ))}
-          </div>
-
-          {/* Follow links */}
-          <div style={{
-            marginTop: 'clamp(28px, 4vw, 44px)',
-            display: 'flex',
-            gap: '16px',
-            flexWrap: 'wrap',
-          }}>
-            <a
-              href="https://www.instagram.com/tualmioutdoors"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontFamily: sans,
-                fontSize: '9px',
-                fontWeight: 600,
-                letterSpacing: '0.25em',
-                textTransform: 'uppercase',
-                color: 'white',
-                textDecoration: 'none',
-                padding: '11px 28px',
-                border: '1.5px solid rgba(255,255,255,0.6)',
-                borderRadius: '100px',
-              }}
-            >
-              Instagram
-            </a>
-            <a
-              href="https://www.tiktok.com/@tualmi.outdoors"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontFamily: sans,
-                fontSize: '9px',
-                fontWeight: 600,
-                letterSpacing: '0.25em',
-                textTransform: 'uppercase',
-                color: 'white',
-                textDecoration: 'none',
-                padding: '11px 28px',
-                border: '1.5px solid rgba(255,255,255,0.6)',
-                borderRadius: '100px',
-              }}
-            >
-              TikTok
-            </a>
-          </div>
-        </section>
-
-      </div>
-    </div>
-  );
-}

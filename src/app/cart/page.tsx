@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import CartItem from '@/components/CartItem';
 import { useCartStore } from '@/store/cartStore';
 
@@ -12,16 +13,38 @@ const rule  = '#E8E2D8';
 const sans  = 'var(--font-montserrat)';
 const serif = "'Cormorant Garamond', Georgia, serif";
 
-export default function CartPage() {
-  const { items, getTotal, hasPreorderItems, redirectToShopifyCheckout } = useCartStore();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+// Minimal local tote product for the upsell — price set to $18
+const TOTE_UPSELL = {
+  id:       'trailblazing-tote',
+  handle:   'trailblazing-tote',
+  name:     'Trailblazing Tote',
+  category: 'Accessories',
+  price:    1800, // $18.00
+  images:   ['/images-2/tote-main.png'],
+  colors:   [],
+  sizes:    ['One Size'],
+  variants: [],
+  description: '',
+};
 
-  const totalCents = getTotal();
-  const total = totalCents / 100;
-  const tax = total * 0.08;
-  const grandTotal = total + tax;
+export default function CartPage() {
+  const { items, addItem, getTotal, hasPreorderItems, redirectToShopifyCheckout } = useCartStore();
+  const [isLoading, setIsLoading]   = useState(false);
+  const [error, setError]           = useState<string | null>(null);
+  const [toteAdded, setToteAdded]   = useState(false);
+
+  const totalCents    = getTotal();
+  const total         = totalCents / 100;
+  const tax           = total * 0.08;
+  const grandTotal    = total + tax;
   const containsPreorder = hasPreorderItems();
+
+  const hasTote = items.some(i => i.product.handle === 'trailblazing-tote');
+
+  const handleAddTote = () => {
+    addItem(TOTE_UPSELL as never, 'One Size', 'Natural', 1);
+    setToteAdded(true);
+  };
 
   const handleCheckout = async () => {
     setIsLoading(true);
@@ -94,6 +117,60 @@ export default function CartPage() {
               Order Summary
             </h2>
 
+            {/* ── Tote Upsell ── */}
+            {!hasTote && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '14px',
+                marginBottom: '24px',
+                backgroundColor: '#F5F0E8',
+                border: '1.5px solid #E4D9C8',
+              }}>
+                <div style={{ flexShrink: 0, width: '56px', height: '56px', position: 'relative', backgroundColor: '#EDE8DF' }}>
+                  <Image
+                    src="/images-2/tote-main.png"
+                    alt="Trailblazing Tote"
+                    fill
+                    style={{ objectFit: 'contain' }}
+                  />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: sans, fontSize: '10px', fontWeight: 600, color: brown, margin: '0 0 2px', letterSpacing: '0.04em' }}>
+                    Add the Trailblazing Tote
+                  </p>
+                  <p style={{ fontFamily: sans, fontSize: '10px', color: mid, margin: 0 }}>
+                    $18.00
+                  </p>
+                </div>
+                <button
+                  onClick={handleAddTote}
+                  disabled={toteAdded}
+                  aria-label="Add tote to cart"
+                  style={{
+                    flexShrink: 0,
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    backgroundColor: toteAdded ? '#A89080' : brown,
+                    color: '#FAFAF7',
+                    border: 'none',
+                    fontSize: '20px',
+                    lineHeight: 1,
+                    cursor: toteAdded ? 'default' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background-color 0.2s',
+                  }}
+                >
+                  {toteAdded ? '✓' : '+'}
+                </button>
+              </div>
+            )}
+
+            {/* Price rows */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontFamily: sans, fontSize: '12px', color: mid }}>Subtotal</span>
