@@ -41,7 +41,6 @@ const compTableByHandle: Record<string, CompTable> = {
     price:  { tualmi: '$149', patagonia: '$149', vuori: '$188', comp4: '$98'  },
     labels: { tualmi: 'Tualmi', patagonia: 'Patago.', vuori: 'Vuori', comp4: 'FP Mvmt' },
     rows: [
-      { label: 'Designed by women',        tualmi: true,  patagonia: false, vuori: false, comp4: true  },
       { label: 'Women-specific fit',        tualmi: true,  patagonia: false, vuori: false, comp4: true  },
       { label: 'Fashion-forward patterns',  tualmi: true,  patagonia: false, vuori: true,  comp4: true  },
       { label: 'Trail-ready construction',  tualmi: true,  patagonia: true,  vuori: false, comp4: false },
@@ -53,7 +52,6 @@ const compTableByHandle: Record<string, CompTable> = {
     price:  { tualmi: '$99',  patagonia: '$99',  vuori: '$118', comp4: '$128' },
     labels: { tualmi: 'Tualmi', patagonia: 'Patago.', vuori: 'Vuori', comp4: 'Lulu' },
     rows: [
-      { label: 'Designed by women',        tualmi: true,  patagonia: false, vuori: false, comp4: false },
       { label: 'Women-specific fit',        tualmi: true,  patagonia: false, vuori: false, comp4: true  },
       { label: 'Fashion-forward cut',       tualmi: true,  patagonia: false, vuori: true,  comp4: true  },
       { label: 'Trail-ready construction',  tualmi: true,  patagonia: true,  vuori: false, comp4: false },
@@ -65,7 +63,6 @@ const compTableByHandle: Record<string, CompTable> = {
     price:  { tualmi: '$72',  patagonia: '$75',  vuori: '$74',  comp4: '$68'  },
     labels: { tualmi: 'Tualmi', patagonia: 'Patago.', vuori: 'Vuori', comp4: 'Lulu' },
     rows: [
-      { label: 'Designed by women',        tualmi: true,  patagonia: false, vuori: false, comp4: false },
       { label: 'Women-specific fit',        tualmi: true,  patagonia: false, vuori: false, comp4: true  },
       { label: 'Distinctive colorways',     tualmi: true,  patagonia: false, vuori: true,  comp4: false },
       { label: 'Trail-ready construction',  tualmi: true,  patagonia: true,  vuori: false, comp4: false },
@@ -77,7 +74,6 @@ const compTableByHandle: Record<string, CompTable> = {
     price:  { tualmi: '$69',  patagonia: '$49',  vuori: '$64',  comp4: '$68'  },
     labels: { tualmi: 'Tualmi', patagonia: 'Patago.', vuori: 'Vuori', comp4: 'Lulu' },
     rows: [
-      { label: 'Designed by women',        tualmi: true,  patagonia: false, vuori: false, comp4: false },
       { label: 'Women-specific fit',        tualmi: true,  patagonia: false, vuori: false, comp4: true  },
       { label: 'UPF 40 protection',         tualmi: true,  patagonia: false, vuori: false, comp4: true  },
       { label: 'Fashion-forward design',    tualmi: true,  patagonia: false, vuori: true,  comp4: false },
@@ -219,6 +215,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 ))}
               </div>
             )}
+
+            {/* Sample disclaimer */}
+            <p style={{ fontFamily: sans, fontSize: '10px', fontWeight: 300, color: muted, letterSpacing: '0.03em', lineHeight: 1.6, margin: 0 }}>
+              Photos show pre-production samples. Final color and fit may vary slightly.
+            </p>
           </div>
 
           {/* ── Right: details panel ── */}
@@ -385,7 +386,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             {compTable && (
               <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
                 <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, marginBottom: '16px', marginTop: 0 }}>
-                  Beyond compare
+                  Fit check
                 </p>
                 <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
                   <colgroup>
