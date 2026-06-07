@@ -100,6 +100,13 @@ body {
     box-sizing: border-box !important;
   }
 
+  /* Hero inner wrapper: expand to full text-block width on mobile so the
+     ribbon button stretches to fill (not just the logo+text content width) */
+  .hero-inner-wrap {
+    display: flex !important;
+    width: 100% !important;
+  }
+
   /* Product page image: let it fill naturally */
   .product-main-image {
     max-height: none !important;
@@ -161,6 +168,13 @@ body {
 }
 .reel-card:hover {
   background-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Product grid: 3-col desktop → 2-col on tablet/mobile */
+@media (max-width: 700px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
 }
 
 @media (max-width: 480px) {

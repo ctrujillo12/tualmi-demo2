@@ -6,6 +6,7 @@ import ProductCard from '@/components/ProductCard';
 import TrailblazerSignup from '@/components/TrailblazerSignup';
 import HikerOverlay from '@/components/HikerOverlay';
 import type { Product } from '@/types';
+import { PRODUCT_COLORS } from '@/lib/productColors';
 
 const serif  = 'var(--font-playfair)';
 const script = 'var(--font-script)';
@@ -21,6 +22,23 @@ export default async function Home() {
   const collectionProducts = PRODUCT_ORDER
     .map((h) => products.find((p) => p.handle === h))
     .filter((p): p is Product => !!p);
+
+  // Expand each product into one card per colorway
+  type ColorwayCard = { product: Product; colorLabel: string };
+  const colorwayCards: ColorwayCard[] = collectionProducts.flatMap((product) => {
+    const colors = PRODUCT_COLORS[product.handle ?? ''] ?? [];
+    if (colors.length === 0) return [{ product, colorLabel: '' }];
+    const imgsPerColor = Math.max(1, Math.floor(product.images.length / colors.length));
+    return colors.map((color, idx) => {
+      const start = idx * imgsPerColor;
+      const end = idx === colors.length - 1 ? product.images.length : start + imgsPerColor;
+      const sliced = product.images.slice(start, end);
+      return {
+        product: { ...product, images: sliced.length > 0 ? sliced : [product.images[0]] },
+        colorLabel: color.name,
+      };
+    });
+  });
 
   const marqueeText = 'Free Tote with $150 Purchase • Ships July 2026 • Limited Quantities • ';
 
@@ -85,7 +103,7 @@ export default async function Home() {
           gap: '18px',
         }}>
           {/* Wrapper keeps button same width as logo+text row */}
-          <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'stretch', gap: '10px' }}>
+          <div className="hero-inner-wrap" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'stretch', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1vw, 12px)' }}>
               <Image
                 src="/images-2/logo2-brown.png"
@@ -185,14 +203,14 @@ export default async function Home() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}>
-          <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+          <div style={{ maxWidth: '1060px', margin: '0 auto' }}>
             <div className="product-grid" style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: 'clamp(16px, 3vw, 36px)',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 'clamp(12px, 2.5vw, 28px)',
             }}>
-              {collectionProducts.map((product) => (
-                <div key={product.id} style={{
+              {colorwayCards.map(({ product, colorLabel }) => (
+                <div key={`${product.id}-${colorLabel}`} style={{
                   backgroundColor: '#FAFAF7',
                   border: '3.5px solid #B84A5E',
                   borderRadius: '12px',
@@ -203,6 +221,8 @@ export default async function Home() {
                     showPrice={true}
                     imageAspectRatio="2/3"
                     imageFit="contain"
+                    hideSwatches
+                    colorLabel={colorLabel}
                   />
                 </div>
               ))}

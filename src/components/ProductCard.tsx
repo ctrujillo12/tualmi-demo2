@@ -10,6 +10,8 @@ interface ProductCardProps {
   showPrice?: boolean;
   imageAspectRatio?: string;
   imageFit?: 'cover' | 'contain';
+  hideSwatches?: boolean;
+  colorLabel?: string;
 }
 
 // Same gating rules as ProductDetailClient — keep these in sync.
@@ -57,7 +59,7 @@ function ColorSwatch({
 const sans = "'Jost', 'DM Sans', system-ui, sans-serif";
 const serif = "'Cormorant Garamond', Georgia, serif";
 
-export default function ProductCard({ product, showPrice = true, imageAspectRatio = '2/3', imageFit = 'cover' }: ProductCardProps) {
+export default function ProductCard({ product, showPrice = true, imageAspectRatio = '2/3', imageFit = 'cover', hideSwatches = false, colorLabel }: ProductCardProps) {
   const handle        = product.handle ?? '';
   const colors        = PRODUCT_COLORS[handle] ?? [];
 
@@ -136,12 +138,17 @@ export default function ProductCard({ product, showPrice = true, imageAspectRati
             fontSize: '13px',
             fontWeight: 400,
             color: '#111110',
-            marginBottom: '3px',
+            marginBottom: colorLabel ? '1px' : '3px',
             fontFamily: sans,
             letterSpacing: '0.01em',
           }}>
             {product.name}
           </h3>
+          {colorLabel && (
+            <p style={{ fontSize: '10px', color: '#B8A898', fontFamily: sans, letterSpacing: '0.06em', marginBottom: '2px', textTransform: 'uppercase' }}>
+              {colorLabel}
+            </p>
+          )}
           <p style={{ fontSize: '11px', color: '#A8A8A3', fontFamily: sans, letterSpacing: '0.02em', marginBottom: '3px' }}>
             {product.category}
           </p>
@@ -154,7 +161,7 @@ export default function ProductCard({ product, showPrice = true, imageAspectRati
       </Link>
 
       {/* Swatches — outside the Link so clicks don't navigate */}
-      {colors.length > 0 && (
+      {!hideSwatches && colors.length > 0 && (
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '0 14px 14px' }}>
           {colors.map(({ name, value }, index) => (
             <ColorSwatch
