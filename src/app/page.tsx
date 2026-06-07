@@ -26,8 +26,8 @@ export default async function Home() {
   return (
     <div style={{ backgroundColor: '#FAFAF7' }}>
 
-      {/* ── FIXED HERO BACKGROUND ── */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+      {/* ── FIXED HERO BACKGROUND (desktop) / contained (mobile) ── */}
+      <div className="hero-bg" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
         <Image
           src={heroImage}
           alt="Tualmi"
@@ -36,11 +36,11 @@ export default async function Home() {
           quality={90}
           style={{ objectFit: 'cover', objectPosition: 'center' }}
         />
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,8,5,0.30)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,8,5,0.38)' }} />
       </div>
 
       {/* ── HERO VIEWPORT ── */}
-      <section style={{
+      <section className="hero-section" style={{
         position: 'relative', zIndex: 1,
         height: '100vh',
         display: 'flex',

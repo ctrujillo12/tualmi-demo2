@@ -43,19 +43,40 @@ body {
 
 /* ── Mobile responsive ── */
 @media (max-width: 768px) {
-  /* Hero: full width, centered, not pushed to right half */
-  .hero-text-block {
-    width: 90% !important;
-    padding-right: 0 !important;
-    padding-left: 0 !important;
-    align-items: center !important;
-    text-align: center !important;
-    margin: 0 auto;
+
+  /* ── Hero: fix the background so it doesn't bleed on scroll ── */
+  .hero-bg {
+    position: absolute !important;
   }
 
-  /* Hero: logo + title centered */
+  /* Hero section becomes a self-contained block */
+  .hero-section {
+    height: 100svh !important;
+    height: 100vh !important; /* fallback */
+    overflow: hidden;
+    /* Push text to bottom-left like desktop, just full-width */
+    align-items: flex-end !important;
+    justify-content: flex-start !important;
+    padding-bottom: 56px !important;
+  }
+
+  /* Text block: left-aligned at the bottom, full width */
+  .hero-text-block {
+    width: 100% !important;
+    padding-left: 28px !important;
+    padding-right: 28px !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  /* Logo + title row: left-aligned */
   .hero-text-block > div:first-child {
-    justify-content: center;
+    justify-content: flex-start !important;
+  }
+
+  /* Tagline: allow wrapping on small screens */
+  .hero-text-block p {
+    white-space: normal !important;
   }
 
   /* Product grid: 2 columns on mobile */
@@ -70,7 +91,6 @@ body {
 }
 
 @media (max-width: 480px) {
-  /* Product grid: still 2 cols but tighter */
   .product-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
