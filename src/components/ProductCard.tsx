@@ -97,7 +97,7 @@ export default function ProductCard({ product, showPrice = true }: ProductCardPr
 
   // Pill shown in top-left corner of image. Tote = no pill (it's just available).
   const cornerPill = isPreorder ? (
-    <div style={{
+    <div className="product-pill" style={{
       position: 'absolute',
       top: '10px',
       left: '10px',
@@ -113,7 +113,7 @@ export default function ProductCard({ product, showPrice = true }: ProductCardPr
       Pre-Order
     </div>
   ) : isPreviewOnly ? (
-    <div style={{
+    <div className="product-pill" style={{
       position: 'absolute',
       top: '10px',
       left: '10px',

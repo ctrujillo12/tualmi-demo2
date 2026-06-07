@@ -44,22 +44,48 @@ body {
 /* ── Mobile responsive ── */
 @media (max-width: 768px) {
 
-  /* Hero image: shift focus so it's not awkwardly cropped */
+  /* Hero: shorter, not full-screen */
+  .hero-section {
+    height: 65vh !important;
+  }
+
+  /* Hero overlay: barely-there so the image reads clearly */
+  .hero-overlay {
+    background: rgba(10, 8, 5, 0.12) !important;
+  }
+
+  /* Hero image: shift so subject isn't cropped */
   .hero-bg img {
     object-position: 35% center !important;
   }
 
-  /* Hero text: right-aligned, takes up more width, stays readable */
+  /* Hero text block: right side, tighter gap */
   .hero-text-block {
-    width: 70% !important;
-    padding-right: 24px !important;
+    width: 65% !important;
+    padding-right: 20px !important;
     padding-left: 0 !important;
     align-items: flex-start !important;
+    gap: 10px !important;
   }
 
-  /* Tagline: allow it to wrap instead of overflowing */
+  /* Tagline: wrap instead of overflow */
   .hero-text-block p {
     white-space: normal !important;
+    font-size: clamp(12px, 4vw, 18px) !important;
+  }
+
+  /* CTA button: smaller on mobile */
+  .hero-cta {
+    padding: 9px 22px !important;
+    font-size: 8px !important;
+    letter-spacing: 0.2em !important;
+  }
+
+  /* Product pill: 25% smaller */
+  .product-pill {
+    font-size: 7px !important;
+    padding: 3px 7px !important;
+    letter-spacing: 0.15em !important;
   }
 
   /* Product grid: 2 columns */

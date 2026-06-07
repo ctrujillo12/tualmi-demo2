@@ -36,7 +36,7 @@ export default async function Home() {
           quality={90}
           style={{ objectFit: 'cover', objectPosition: 'center' }}
         />
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,8,5,0.38)' }} />
+        <div className="hero-overlay" style={{ position: 'absolute', inset: 0, background: 'rgba(10,8,5,0.38)' }} />
       </div>
 
       {/* ── HERO VIEWPORT ── */}
@@ -57,6 +57,7 @@ export default async function Home() {
           alignItems: 'flex-start',
           gap: '18px',
         }}>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1vw, 12px)' }}>
             <Image
               src="/images-2/logo2-brown.png"
@@ -94,6 +95,7 @@ export default async function Home() {
           </p>
           <a
             href="#collection"
+            className="hero-cta"
             style={{
               marginTop: '6px',
               display: 'inline-block',
