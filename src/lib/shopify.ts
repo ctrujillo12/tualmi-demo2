@@ -69,7 +69,7 @@ const PRODUCT_FIELDS = `
     shippingWindow: metafield(namespace: "custom", key: "shipping_window") {
       value
     }
-    images(first: 10) {
+    images(first: 20) {
       edges { node { url altText } }
     }
     variants(first: 50) {
