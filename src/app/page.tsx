@@ -22,7 +22,7 @@ export default async function Home() {
     .map((h) => products.find((p) => p.handle === h))
     .filter((p): p is Product => !!p);
 
-  const marqueeText = 'Free Tote with $150 Purchase • Limited Quantities • ';
+  const marqueeText = 'Free Tote with $150 Purchase • Ships July 2026 • Limited Quantities • ';
 
   const tiktokVideos = [
     { id: '7625759601576660238' },
