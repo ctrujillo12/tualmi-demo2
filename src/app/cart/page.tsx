@@ -58,7 +58,7 @@ export default function CartPage() {
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
         {/* Page header */}
-        <div style={{ marginBottom: '48px' }}>
+        <div style={{ marginBottom: '40px' }}>
           <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, marginBottom: '12px', marginTop: 0 }}>
             Your Cart
           </p>
@@ -67,12 +67,12 @@ export default function CartPage() {
           </h1>
         </div>
 
-        {/* Two-column layout: items left, summary right */}
-        <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '64px', alignItems: 'start' }}>
+        {/* Two-column on desktop, single-column on mobile */}
+        <div className="cart-grid">
 
           {/* Left: items */}
           <div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               {items.map((item, index) => (
                 <CartItem
                   key={`${item.product.id}-${item.selectedSize}-${item.selectedColor}-${index}`}
@@ -89,7 +89,7 @@ export default function CartPage() {
           </div>
 
           {/* Right: order summary */}
-          <div style={{ borderLeft: `1px solid ${rule}`, paddingLeft: '48px' }}>
+          <div className="cart-summary-panel">
             <h2 style={{ fontFamily: serif, fontSize: '22px', fontWeight: 400, color: brown, margin: '0 0 24px' }}>
               Order Summary
             </h2>

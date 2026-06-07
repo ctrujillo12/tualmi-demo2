@@ -45,11 +45,6 @@ body {
 /* ── Mobile responsive ── */
 @media (max-width: 768px) {
 
-  /* Hide the decorative hiker overlay — too large on small screens */
-  .hiker-overlay {
-    display: none !important;
-  }
-
   /* Hero: shorter, not full-screen */
   .hero-section {
     height: 65vh !important;
@@ -155,6 +150,31 @@ body {
 
 }
 
+
+/* ── Cart page ── */
+.cart-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 64px;
+  align-items: start;
+}
+.cart-summary-panel {
+  border-left: 1px solid #E8E2D8;
+  padding-left: 48px;
+}
+
+@media (max-width: 768px) {
+  .cart-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .cart-summary-panel {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid #E8E2D8;
+    padding-top: 32px;
+  }
+}
 
 .reel-card {
   display: block;

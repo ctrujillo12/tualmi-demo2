@@ -13,10 +13,13 @@ export async function generateStaticParams() {
 
 export default async function ProductPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ color?: string }>;
 }) {
   const { id } = await params;
+  const { color } = await searchParams;
   const product = await getProduct(id);
 
   if (!product) {
@@ -25,9 +28,8 @@ export default async function ProductPage({
 
   return (
     <>
-
       <main className="pt-16">
-        <ProductDetailClient product={product} />
+        <ProductDetailClient product={product} initialColor={color} />
       </main>
     </>
   );

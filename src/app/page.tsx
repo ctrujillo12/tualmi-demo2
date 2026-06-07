@@ -223,6 +223,7 @@ export default async function Home() {
                     imageFit="contain"
                     hideSwatches
                     colorLabel={colorLabel}
+                    colorQuery={colorLabel}
                   />
                 </div>
               ))}

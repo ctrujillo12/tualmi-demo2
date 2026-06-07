@@ -12,6 +12,7 @@ interface ProductCardProps {
   imageFit?: 'cover' | 'contain';
   hideSwatches?: boolean;
   colorLabel?: string;
+  colorQuery?: string;
 }
 
 // Same gating rules as ProductDetailClient — keep these in sync.
@@ -59,7 +60,15 @@ function ColorSwatch({
 const sans = "'Jost', 'DM Sans', system-ui, sans-serif";
 const serif = "'Cormorant Garamond', Georgia, serif";
 
-export default function ProductCard({ product, showPrice = true, imageAspectRatio = '2/3', imageFit = 'cover', hideSwatches = false, colorLabel }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  showPrice = true,
+  imageAspectRatio = '2/3',
+  imageFit = 'cover',
+  hideSwatches = false,
+  colorLabel,
+  colorQuery,
+}: ProductCardProps) {
   const handle        = product.handle ?? '';
   const colors        = PRODUCT_COLORS[handle] ?? [];
 
@@ -111,9 +120,11 @@ export default function ProductCard({ product, showPrice = true, imageAspectRati
     </div>
   ) : null;
 
+  const href = `/products/${product.handle ?? product.id}${colorQuery ? `?color=${encodeURIComponent(colorQuery)}` : ''}`;
+
   return (
     <div>
-      <Link href={`/products/${product.handle ?? product.id}`} style={{ textDecoration: 'none' }}>
+      <Link href={href} style={{ textDecoration: 'none' }}>
         {/* Image */}
         <div style={{
           aspectRatio: imageAspectRatio,

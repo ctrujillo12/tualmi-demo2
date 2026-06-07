@@ -9,6 +9,7 @@ import { PRODUCT_COLORS } from '@/lib/productColors';
 
 interface ProductDetailClientProps {
   product: Product;
+  initialColor?: string;
 }
 
 const AVAILABLE_HANDLES = ['trailblazing-tote'];
@@ -82,9 +83,7 @@ const compTableByHandle: Record<string, CompTable> = {
   },
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
-export default function ProductDetailClient({ product }: ProductDetailClientProps) {
+export default function ProductDetailClient({ product, initialColor }: ProductDetailClientProps) {
   const handle        = product.handle ?? '';
   const isInStock     = AVAILABLE_HANDLES.includes(handle);
   const isPreviewOnly = PREVIEW_ONLY_HANDLES.includes(handle);
@@ -93,7 +92,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   const addItem = useCartStore((state) => state.addItem);
 
-  // Per-colorway image gallery
   const swatchColors = PRODUCT_COLORS[handle] ?? [];
   const colorCount   = Math.max(1, swatchColors.length || product.colors.length);
   const imgsPerColor = Math.max(1, Math.floor(product.images.length / colorCount));
@@ -108,9 +106,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   const [selectedImage, setSelectedImage]     = useState(0);
   const [selectedSize, setSelectedSize]       = useState(product.sizes[0] || '');
-  const [selectedColor, setSelectedColor]     = useState(
-    swatchColors.length > 0 ? swatchColors[0].name : (product.colors[0] || '')
-  );
+  const [selectedColor, setSelectedColor]     = useState(() => {
+    const fallback = swatchColors.length > 0 ? swatchColors[0].name : (product.colors[0] || '');
+    if (initialColor && swatchColors.some(s => s.name === initialColor)) return initialColor;
+    return fallback;
+  });
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [buyStatus, setBuyStatus]             = useState<'idle' | 'added' | 'error'>('idle');
   const [buyError, setBuyError]               = useState('');
@@ -142,7 +142,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     setExpandedSection(expandedSection === section ? null : section);
   };
 
-  // ── Accordion items ──────────────────────────────────────────────────────────
   const accordionItems: { key: string; label: string; content: React.ReactNode }[] = [];
 
   if (fabricDetail) {
@@ -239,7 +238,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     </svg>
   );
 
-  // Compute active colorway gallery
   const activeColorIdx = swatchColors.length > 0
     ? swatchColors.findIndex(s => s.name === selectedColor)
     : product.colors.indexOf(selectedColor);
@@ -253,7 +251,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
           {/* Left: images */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-
             <div className="product-main-image" style={{ position: 'relative', lineHeight: 0 }}>
               <Image
                 src={activeImage}
@@ -303,7 +300,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
           {/* Right: details panel */}
           <div style={{ paddingTop: '8px' }}>
-
             <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, marginBottom: '12px', marginTop: 0 }}>
               {statusLabel}
             </p>
@@ -356,7 +352,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </div>
             )}
 
-            {/* Colors — swatch bubbles */}
+            {/* Colors */}
             {swatchColors.length > 0 && (
               <div style={{ marginBottom: '24px' }}>
                 <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.35em', textTransform: 'uppercase', color: muted, marginBottom: '10px', marginTop: 0 }}>
