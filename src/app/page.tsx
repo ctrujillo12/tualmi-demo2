@@ -142,7 +142,7 @@ export default async function Home() {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images-2/hero-button.png"
+                src="/images-2/hero-button.png?v=2"
                 alt=""
                 style={{ display: 'block', height: 'clamp(26px, 3.2vw, 35px)', width: '100%', objectFit: 'fill' }}
               />
