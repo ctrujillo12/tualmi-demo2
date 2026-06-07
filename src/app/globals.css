@@ -68,17 +68,32 @@ body {
     gap: 10px !important;
   }
 
-  /* Tagline: wrap instead of overflow */
-  .hero-text-block p {
-    white-space: normal !important;
-    font-size: clamp(12px, 4vw, 18px) !important;
+  /* Hide tagline on mobile */
+  .hero-tagline {
+    display: none !important;
   }
 
-  /* CTA button: smaller on mobile */
+  /* Tighten gap so title and button sit close together */
+  .hero-text-block {
+    gap: 8px !important;
+  }
+
+  /* CTA button: smaller on mobile, minimal top margin */
   .hero-cta {
     padding: 9px 22px !important;
     font-size: 8px !important;
     letter-spacing: 0.2em !important;
+    margin-top: 4px !important;
+  }
+
+  /* Product page: smaller main image on mobile */
+  .product-main-image {
+    max-height: 52vh !important;
+  }
+
+  /* Product thumbnails: slightly smaller */
+  .product-thumbnails {
+    gap: 6px !important;
   }
 
   /* Product pill: 25% smaller */

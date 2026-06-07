@@ -83,7 +83,7 @@ export default async function Home() {
               Tualmi
             </h1>
           </div>
-          <p style={{
+          <p className="hero-tagline" style={{
             fontFamily: 'var(--font-cedarville), "Cedarville Cursive", cursive',
             fontSize: 'clamp(13px, 3.5vw, 40px)',
             fontWeight: 400,

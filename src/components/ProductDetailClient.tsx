@@ -173,7 +173,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
             {/* Main image */}
-            <div style={{
+            <div className="product-main-image" style={{
               position: 'relative',
               overflow: 'hidden',
               backgroundColor: bgAlt,
@@ -194,7 +194,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
             {/* Thumbnails */}
             {product.images.length > 1 && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+              <div className="product-thumbnails" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
                 {product.images.map((image, index) => (
                   <button
                     key={index}
