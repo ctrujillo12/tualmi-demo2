@@ -31,6 +31,7 @@ interface CompRow {
   comp4: boolean;
 }
 
+/* COMPARISON MATRICES — hidden, keep for later
 interface CompTable {
   price: { tualmi: string; patagonia: string; vuori: string; comp4: string };
   labels: { tualmi: string; patagonia: string; vuori: string; comp4: string };
@@ -82,6 +83,7 @@ const compTableByHandle: Record<string, CompTable> = {
     ],
   },
 };
+*/
 
 export default function ProductDetailClient({ product, initialColor }: ProductDetailClientProps) {
   const handle        = product.handle ?? '';
@@ -115,7 +117,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   const [buyStatus, setBuyStatus]             = useState<'idle' | 'added' | 'error'>('idle');
   const [buyError, setBuyError]               = useState('');
 
-  const compTable    = compTableByHandle[handle] ?? null;
+  // const compTable    = compTableByHandle[handle] ?? null;  // comparison matrix hidden
   const fabricDetail = PRODUCT_DETAILS[handle] ?? null;
 
   const handleColorSelect = (color: string) => {
@@ -445,7 +447,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               </p>
             </div>
 
-            {/* Comparison matrix */}
+            {/* COMPARISON MATRIX — hidden, keep for later
             {compTable && (
               <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
                 <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, marginBottom: '16px', marginTop: 0 }}>
@@ -488,6 +490,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                 </table>
               </div>
             )}
+            */}
 
             {/* Accordion */}
             <div>

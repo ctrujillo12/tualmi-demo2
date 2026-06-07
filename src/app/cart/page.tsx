@@ -13,36 +13,32 @@ const rule  = '#E8E2D8';
 const sans  = 'var(--font-montserrat)';
 const serif = "'Cormorant Garamond', Georgia, serif";
 
-// Minimal local tote product for the upsell — price set to $18
-const TOTE_UPSELL = {
-  id:       'trailblazing-tote',
-  handle:   'trailblazing-tote',
-  name:     'Trailblazing Tote',
-  category: 'Accessories',
-  price:    1800, // $18.00
-  images:   ['/images-2/tote-main.png'],
-  colors:   [],
-  sizes:    ['One Size'],
-  variants: [],
-  description: '',
+const FREE_TOTE_THRESHOLD = 149; // matches Shopify automatic discount
+
+const TOTE_BASE = {
+  id: 'trailblazing-tote', handle: 'trailblazing-tote', name: 'Trailblazing Tote',
+  category: 'Accessories', images: ['/images-2/tote-main.png'],
+  colors: [], sizes: ['One Size'], variants: [], description: '',
 };
+const TOTE_PAID = { ...TOTE_BASE, price: 1800 };
+const TOTE_FREE = { ...TOTE_BASE, price: 0 };
 
 export default function CartPage() {
   const { items, addItem, getTotal, hasPreorderItems, redirectToShopifyCheckout } = useCartStore();
-  const [isLoading, setIsLoading]   = useState(false);
-  const [error, setError]           = useState<string | null>(null);
-  const [toteAdded, setToteAdded]   = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError]         = useState<string | null>(null);
+  const [toteAdded, setToteAdded] = useState(false);
 
-  const totalCents    = getTotal();
-  const total         = totalCents / 100;
-  const tax           = total * 0.08;
-  const grandTotal    = total + tax;
+  const totalCents       = getTotal();
+  const total            = totalCents / 100;
+  const tax              = total * 0.08;
+  const grandTotal       = total + tax;
   const containsPreorder = hasPreorderItems();
-
-  const hasTote = items.some(i => i.product.handle === 'trailblazing-tote');
+  const hasTote          = items.some(i => i.product.handle === 'trailblazing-tote');
+  const toteFree         = total >= FREE_TOTE_THRESHOLD;
 
   const handleAddTote = () => {
-    addItem(TOTE_UPSELL as never, 'One Size', 'Natural', 1);
+    addItem((toteFree ? TOTE_FREE : TOTE_PAID) as never, 'One Size', 'Natural', 1);
     setToteAdded(true);
   };
 
@@ -66,10 +62,7 @@ export default function CartPage() {
         <h1 style={{ fontFamily: serif, fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 400, color: brown, margin: '0 0 48px', lineHeight: 1.1 }}>
           Nothing here yet.
         </h1>
-        <Link
-          href="/"
-          style={{ fontFamily: sans, fontSize: '9px', fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#FAFAF7', backgroundColor: brown, padding: '13px 32px', textDecoration: 'none', display: 'inline-block' }}
-        >
+        <Link href="/" style={{ fontFamily: sans, fontSize: '9px', fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#FAFAF7', backgroundColor: brown, padding: '13px 32px', textDecoration: 'none', display: 'inline-block' }}>
           Shop the Collection
         </Link>
       </main>
@@ -80,7 +73,6 @@ export default function CartPage() {
     <main style={{ backgroundColor: '#FAFAF7', minHeight: '100vh', padding: 'clamp(80px, 10vw, 100px) clamp(20px, 4vw, 48px) 80px' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
-        {/* Page header */}
         <div style={{ marginBottom: '40px' }}>
           <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, marginBottom: '12px', marginTop: 0 }}>
             Your Cart
@@ -90,7 +82,6 @@ export default function CartPage() {
           </h1>
         </div>
 
-        {/* Two-column on desktop, single-column on mobile */}
         <div className="cart-grid">
 
           {/* Left: items */}
@@ -103,11 +94,8 @@ export default function CartPage() {
                 />
               ))}
             </div>
-            <Link
-              href="/"
-              style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.25em', textTransform: 'uppercase', color: muted, textDecoration: 'none', display: 'inline-block', marginTop: '24px' }}
-            >
-              ← Continue Shopping
+            <Link href="/" style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.25em', textTransform: 'uppercase', color: muted, textDecoration: 'none', display: 'inline-block', marginTop: '24px' }}>
+              Back to Shop
             </Link>
           </div>
 
@@ -117,31 +105,23 @@ export default function CartPage() {
               Order Summary
             </h2>
 
-            {/* ── Tote Upsell ── */}
+            {/* Tote upsell */}
             {!hasTote && (
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px',
-                padding: '14px',
-                marginBottom: '24px',
-                backgroundColor: '#F5F0E8',
-                border: '1.5px solid #E4D9C8',
+                display: 'flex', alignItems: 'center', gap: '14px',
+                padding: '14px', marginBottom: '24px',
+                backgroundColor: toteFree ? '#EEF5E6' : '#F5F0E8',
+                border: `1.5px solid ${toteFree ? '#B8D4A0' : '#E4D9C8'}`,
               }}>
                 <div style={{ flexShrink: 0, width: '56px', height: '56px', position: 'relative', backgroundColor: '#EDE8DF' }}>
-                  <Image
-                    src="/images-2/tote-main.png"
-                    alt="Trailblazing Tote"
-                    fill
-                    style={{ objectFit: 'contain' }}
-                  />
+                  <Image src="/images-2/tote-main.png" alt="Trailblazing Tote" fill style={{ objectFit: 'contain' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: sans, fontSize: '10px', fontWeight: 600, color: brown, margin: '0 0 2px', letterSpacing: '0.04em' }}>
-                    Add the Trailblazing Tote
+                    {toteFree ? 'You unlocked a free tote!' : 'Add the Trailblazing Tote'}
                   </p>
-                  <p style={{ fontFamily: sans, fontSize: '10px', color: mid, margin: 0 }}>
-                    $18.00
+                  <p style={{ fontFamily: sans, fontSize: '10px', color: toteFree ? '#5A8A3A' : mid, fontWeight: toteFree ? 600 : 400, margin: 0 }}>
+                    {toteFree ? 'FREE — applied at checkout' : `$18.00 — spend $${FREE_TOTE_THRESHOLD}+ to get it free`}
                   </p>
                 </div>
                 <button
@@ -149,19 +129,11 @@ export default function CartPage() {
                   disabled={toteAdded}
                   aria-label="Add tote to cart"
                   style={{
-                    flexShrink: 0,
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
+                    flexShrink: 0, width: '32px', height: '32px', borderRadius: '50%',
                     backgroundColor: toteAdded ? '#A89080' : brown,
-                    color: '#FAFAF7',
-                    border: 'none',
-                    fontSize: '20px',
-                    lineHeight: 1,
+                    color: '#FAFAF7', border: 'none', fontSize: '20px', lineHeight: 1,
                     cursor: toteAdded ? 'default' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'background-color 0.2s',
                   }}
                 >
@@ -170,7 +142,7 @@ export default function CartPage() {
               </div>
             )}
 
-            {/* Price rows */}
+            {/* Price breakdown */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontFamily: sans, fontSize: '12px', color: mid }}>Subtotal</span>
@@ -200,17 +172,11 @@ export default function CartPage() {
               onClick={handleCheckout}
               disabled={isLoading}
               style={{
-                width: '100%',
-                padding: '15px 32px',
-                backgroundColor: brown,
-                color: '#FAFAF7',
-                fontFamily: sans,
-                fontSize: '9px',
-                fontWeight: 600,
-                letterSpacing: '0.28em',
-                textTransform: 'uppercase',
-                border: 'none',
-                cursor: isLoading ? 'default' : 'pointer',
+                width: '100%', padding: '15px 32px',
+                backgroundColor: brown, color: '#FAFAF7',
+                fontFamily: sans, fontSize: '9px', fontWeight: 600,
+                letterSpacing: '0.28em', textTransform: 'uppercase',
+                border: 'none', cursor: isLoading ? 'default' : 'pointer',
                 opacity: isLoading ? 0.7 : 1,
               }}
             >
