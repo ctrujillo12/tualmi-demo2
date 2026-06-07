@@ -44,47 +44,30 @@ body {
 /* ── Mobile responsive ── */
 @media (max-width: 768px) {
 
-  /* ── Hero: fix the background so it doesn't bleed on scroll ── */
-  .hero-bg {
-    position: absolute !important;
+  /* Hero image: shift focus so it's not awkwardly cropped */
+  .hero-bg img {
+    object-position: 35% center !important;
   }
 
-  /* Hero section becomes a self-contained block */
-  .hero-section {
-    height: 100svh !important;
-    height: 100vh !important; /* fallback */
-    overflow: hidden;
-    /* Push text to bottom-left like desktop, just full-width */
-    align-items: flex-end !important;
-    justify-content: flex-start !important;
-    padding-bottom: 56px !important;
-  }
-
-  /* Text block: left-aligned at the bottom, full width */
+  /* Hero text: right-aligned, takes up more width, stays readable */
   .hero-text-block {
-    width: 100% !important;
-    padding-left: 28px !important;
-    padding-right: 28px !important;
+    width: 70% !important;
+    padding-right: 24px !important;
+    padding-left: 0 !important;
     align-items: flex-start !important;
-    text-align: left !important;
   }
 
-  /* Logo + title row: left-aligned */
-  .hero-text-block > div:first-child {
-    justify-content: flex-start !important;
-  }
-
-  /* Tagline: allow wrapping on small screens */
+  /* Tagline: allow it to wrap instead of overflowing */
   .hero-text-block p {
     white-space: normal !important;
   }
 
-  /* Product grid: 2 columns on mobile */
+  /* Product grid: 2 columns */
   .product-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 
-  /* Footer: 2-column grid on mobile */
+  /* Footer: 2 columns */
   .footer-links-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }

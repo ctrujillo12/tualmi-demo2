@@ -26,7 +26,7 @@ export default async function Home() {
   return (
     <div style={{ backgroundColor: '#FAFAF7' }}>
 
-      {/* ── FIXED HERO BACKGROUND (desktop) / contained (mobile) ── */}
+      {/* ── FIXED HERO BACKGROUND ── */}
       <div className="hero-bg" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
         <Image
           src={heroImage}
