@@ -256,9 +256,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               ${(product.price / 100).toFixed(2)}
             </p>
 
-            {isPreorder && product.shippingWindow && (
+            {isPreorder && (
               <p style={{ fontFamily: sans, fontSize: '11px', color: muted, letterSpacing: '0.05em', margin: '0 0 32px' }}>
-                {product.shippingWindow}
+                Preorders ship late July 2026
               </p>
             )}
 
@@ -356,7 +356,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   </button>
                   {isPreorder && (
                     <p style={{ fontFamily: sans, fontSize: '11px', color: muted, marginTop: '10px', textAlign: 'center', lineHeight: 1.7, letterSpacing: '0.03em' }}>
-                      You'll be charged at checkout. {product.shippingWindow ?? 'Ships when collection drops.'}
+                      You'll be charged at checkout. Preorders ship late July 2026.
                     </p>
                   )}
                   {buyStatus === 'error' && (

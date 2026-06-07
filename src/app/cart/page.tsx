@@ -111,7 +111,7 @@ export default function CartPage() {
 
             {containsPreorder && (
               <p style={{ fontFamily: sans, fontSize: '11px', color: muted, marginBottom: '16px', lineHeight: 1.6 }}>
-                Your order contains pre-order items. Payment will be collected now and items will ship when available.
+                Your order contains pre-order items. Payment is collected at checkout — preorders ship late July 2026.
               </p>
             )}
 
