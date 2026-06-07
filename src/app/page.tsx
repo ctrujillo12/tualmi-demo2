@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getProducts } from '@/lib/products';
 import ProductCard from '@/components/ProductCard';
 import TrailblazerSignup from '@/components/TrailblazerSignup';
+import HikerOverlay from '@/components/HikerOverlay';
 import type { Product } from '@/types';
 
 const serif  = 'var(--font-playfair)';
@@ -21,10 +22,36 @@ export default async function Home() {
     .map((h) => products.find((p) => p.handle === h))
     .filter((p): p is Product => !!p);
 
-  const marqueeText = 'Pre-order now !! • Ships July 2026 • Limited Quantities • ';
+  const marqueeText = 'Free Tote with $150 Purchase • Limited Quantities • ';
+
+  const tiktokVideos = [
+    { id: '7625759601576660238' },
+    { id: '7611273720295984398' },
+    { id: '7638058106563349774' },
+    { id: '7634715220631424270' },
+  ].map((v) => ({ ...v, url: `https://www.tiktok.com/@tualmi.outdoors/video/${v.id}` }));
+
+  const tiktokThumbnails = await Promise.all(
+    tiktokVideos.map(async ({ url }) => {
+      try {
+        const res = await fetch(`https://www.tiktok.com/oembed?url=${url}`, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1)' },
+          next: { revalidate: 86400 },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          return (data.thumbnail_url as string) ?? '';
+        }
+      } catch {}
+      return '';
+    })
+  );
 
   return (
     <div style={{ backgroundColor: '#FAFAF7' }}>
+
+      {/* ── HIKER OVERLAY — fixed so z-index is root-level, JS tracks border position ── */}
+      <HikerOverlay />
 
       {/* ── FIXED HERO BACKGROUND ── */}
       <div className="hero-bg" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
@@ -57,62 +84,67 @@ export default async function Home() {
           alignItems: 'flex-start',
           gap: '18px',
         }}>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1vw, 12px)' }}>
-            <Image
-              src="/images-2/logo2-brown.png"
-              alt="Tualmi"
-              width={80}
-              height={80}
+          {/* Wrapper keeps button same width as logo+text row */}
+          <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'stretch', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1vw, 12px)' }}>
+              <Image
+                src="/images-2/logo2-brown.png"
+                alt="Tualmi"
+                width={80}
+                height={80}
+                style={{
+                  objectFit: 'contain',
+                  height: 'clamp(32px, 5.6vw, 67px)',
+                  width: 'auto',
+                  filter: 'brightness(0) invert(1)',
+                }}
+              />
+              <h1 style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontSize: 'clamp(38px, 6.4vw, 80px)',
+                fontWeight: 400,
+                color: 'white',
+                margin: 0,
+                lineHeight: 1,
+                textShadow: '0 2px 48px rgba(0,0,0,0.15)',
+              }}>
+                Tualmi
+              </h1>
+            </div>
+            <a
+              href="#collection"
+              className="hero-cta"
               style={{
-                objectFit: 'contain',
-                height: 'clamp(40px, 7vw, 84px)',
-                width: 'auto',
-                filter: 'brightness(0) invert(1)',
+                display: 'block',
+                position: 'relative',
+                textDecoration: 'none',
+                transition: 'opacity 0.2s',
               }}
-            />
-            <h1 style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontSize: 'clamp(48px, 8vw, 100px)',
-              fontWeight: 400,
-              color: 'white',
-              margin: 0,
-              lineHeight: 1,
-              textShadow: '0 2px 48px rgba(0,0,0,0.22)',
-            }}>
-              Tualmi
-            </h1>
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images-2/hero-button.png"
+                alt=""
+                style={{ display: 'block', height: 'clamp(26px, 3.2vw, 35px)', width: '100%', objectFit: 'fill' }}
+              />
+              <span style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: sans,
+                fontSize: '8px',
+                fontWeight: 600,
+                letterSpacing: '0.28em',
+                textTransform: 'uppercase',
+                color: 'white',
+                textShadow: '0 1px 3px rgba(0,0,0,0.2)',
+              }}>
+                Pre-order Now
+              </span>
+            </a>
           </div>
-          <p className="hero-tagline" style={{
-            fontFamily: 'var(--font-cedarville), "Cedarville Cursive", cursive',
-            fontSize: 'clamp(13px, 3.5vw, 40px)',
-            fontWeight: 400,
-            color: 'rgba(255,255,255,0.92)',
-            margin: 0,
-            whiteSpace: 'nowrap',
-          }}>
-            Actually cute outdoors gear.
-          </p>
-          <a
-            href="#collection"
-            className="hero-cta"
-            style={{
-              marginTop: '6px',
-              display: 'inline-block',
-              padding: '13px 36px',
-              backgroundColor: 'white',
-              color: '#3B2F1E',
-              fontFamily: sans,
-              fontSize: '9px',
-              fontWeight: 600,
-              letterSpacing: '0.28em',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-              transition: 'opacity 0.2s',
-            }}
-          >
-            Pre-order Now
-          </a>
         </div>
       </section>
 
@@ -125,17 +157,12 @@ export default async function Home() {
           padding: 'clamp(48px, 7vw, 80px) clamp(24px, 6vw, 80px)',
           borderBottom: '1px solid #E8E2D8',
         }}>
-          <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-            <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.4em', textTransform: 'uppercase', color: '#A89080', marginBottom: '20px', marginTop: 0 }}>
-              Why we exist
-            </p>
-            <h2 style={{ fontFamily: serif, fontSize: 'clamp(26px, 4vw, 42px)', fontWeight: 400, lineHeight: 1.15, color: '#3B2F1E', marginBottom: '20px', marginTop: 0 }}>
-              Cute enough for brunch & <br />functional enough for the summit.
-            </h2>
-            <p style={{ fontFamily: sans, fontSize: 'clamp(13px, 1.5vw, 15px)', lineHeight: 1.9, color: '#6B5C4C', fontWeight: 300, maxWidth: '540px', margin: 0 }}>
-              We made the clothes we wish existed. Patagonia is built for performance. Lululemon is built for workouts. Tualmi is built for girls who want both fashion-forward silhouettes and trail-ready performance, designed by women who actually hike.
-            </p>
-          </div>
+          <h2 style={{ fontFamily: 'var(--font-cedarville), "Cedarville Cursive", cursive', fontSize: 'clamp(26px, 4vw, 48px)', fontWeight: 400, lineHeight: 1.2, color: '#3B2F1E', marginBottom: '20px', marginTop: 0 }}>
+            Actually cute outdoors gear.
+          </h2>
+          <p style={{ fontFamily: sans, fontSize: 'clamp(13px, 1.5vw, 15px)', lineHeight: 1.9, color: '#6B5C4C', fontWeight: 300, maxWidth: '680px', margin: 0 }}>
+            We made the clothes we wish existed. Patagonia is built for performance. Lululemon is built for workouts. Tualmi is built for girls who want both fashion-forward silhouettes and trail-ready performance, designed by women who actually hike.
+          </p>
         </section>
 
         {/* ── MARQUEE BANNER ── */}
@@ -150,49 +177,162 @@ export default async function Home() {
         {/* ── COLLECTION ── */}
         <section id="collection" style={{
           padding: 'clamp(48px, 7vw, 80px) clamp(20px, 3vw, 40px)',
-          backgroundColor: '#7a8c3f',
-          backgroundImage: 'radial-gradient(circle, #f2d4cc 14%, transparent 14%), radial-gradient(circle, #f2d4cc 14%, transparent 14%)',
-          backgroundSize: '80px 80px',
-          backgroundPosition: '0 0, 40px 40px',
+          backgroundImage: 'url(/images-2/yellow-pattern.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}>
-          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-              {/* 4 cards in one row */}
+          <div style={{ maxWidth: '720px', margin: '0 auto' }}>
             <div className="product-grid" style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(4, minmax(0, 280px))',
-              gap: 'clamp(10px, 2vw, 20px)',
-              justifyContent: 'center',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: 'clamp(16px, 3vw, 36px)',
             }}>
               {collectionProducts.map((product) => (
                 <div key={product.id} style={{
                   backgroundColor: '#FAFAF7',
                   border: '3.5px solid #B84A5E',
-                  padding: '16px 16px 20px',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
                 }}>
-                  <ProductCard product={product} showPrice={true} />
+                  <ProductCard
+                    product={product}
+                    showPrice={true}
+                    imageAspectRatio={
+                      product.handle === 'horizon-shorts' || product.handle === 'alpine-baby-tee'
+                        ? '1'
+                        : '2/3'
+                    }
+                    imageFit={
+                      product.handle === 'horizon-shorts' || product.handle === 'alpine-baby-tee'
+                        ? 'contain'
+                        : 'cover'
+                    }
+                  />
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── SIGNUP ── */}
+        {/* ── SOCIAL ── */}
         <section style={{
-          backgroundColor: '#FAFAF7',
-          padding: 'clamp(56px, 8vw, 96px) clamp(24px, 5vw, 48px)',
-          borderTop: '1px solid #E8E2D8',
+          backgroundColor: '#C94468',
+          padding: 'clamp(56px, 8vw, 96px) clamp(24px, 5vw, 60px)',
         }}>
-          <div style={{ maxWidth: '540px', margin: '0 auto', textAlign: 'left' }}>
-            <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.4em', textTransform: 'uppercase', color: '#A89080', marginBottom: '20px', marginTop: 0 }}>
-              {"Trailblazing Club"}
+          <div style={{ marginBottom: 'clamp(32px, 5vw, 52px)' }}>
+            <p style={{
+              fontFamily: sans,
+              fontSize: '9px',
+              fontWeight: 600,
+              letterSpacing: '0.3em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.6)',
+              margin: '0 0 6px',
+            }}>
+              get to know
             </p>
-            <h2 style={{ fontFamily: serif, fontSize: 'clamp(24px, 3.5vw, 38px)', fontWeight: 400, color: '#3B2F1E', marginBottom: '16px', marginTop: 0, lineHeight: 1.2 }}>
-              Join our early community!
+            <h2 style={{
+              fontFamily: "var(--font-cedarville), 'Cedarville Cursive', cursive",
+              fontSize: 'clamp(32px, 5vw, 58px)',
+              fontWeight: 400,
+              color: 'white',
+              margin: 0,
+              lineHeight: 1.1,
+            }}>
+              @tualmioutdoors
             </h2>
-            <p style={{ fontFamily: sans, fontSize: 'clamp(13px, 1.5vw, 14px)', lineHeight: 1.85, color: '#6B5C4C', fontWeight: 300, marginBottom: '40px', marginTop: 0 }}>
-              You'll get founding member pricing, first pick of every drop, and we'll ask for your input on what we make next.
-            </p>
-            <TrailblazerSignup />
+          </div>
+
+          {/* 4 TikTok thumbnail cards */}
+          <div className="social-reel-grid" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 'clamp(10px, 2vw, 16px)',
+            maxWidth: '1100px',
+            margin: '0 auto',
+          }}>
+            {tiktokVideos.map(({ id, url }, i) => (
+              <a
+                key={id}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="reel-card"
+                style={{
+                  aspectRatio: '9/16',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  display: 'block',
+                  position: 'relative',
+                  backgroundImage: tiktokThumbnails[i] ? `url(${tiktokThumbnails[i]})` : undefined,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  textDecoration: 'none',
+                }}
+              >
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(0,0,0,0.18)',
+                }}>
+                  <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+                    <circle cx="22" cy="22" r="21" stroke="white" strokeWidth="1.5" fill="rgba(0,0,0,0.3)"/>
+                    <polygon points="18,14 34,22 18,30" fill="white"/>
+                  </svg>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          {/* Follow links */}
+          <div style={{
+            marginTop: 'clamp(28px, 4vw, 44px)',
+            display: 'flex',
+            gap: '16px',
+            flexWrap: 'wrap',
+          }}>
+            <a
+              href="https://www.instagram.com/tualmioutdoors"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: sans,
+                fontSize: '9px',
+                fontWeight: 600,
+                letterSpacing: '0.25em',
+                textTransform: 'uppercase',
+                color: 'white',
+                textDecoration: 'none',
+                padding: '11px 28px',
+                border: '1.5px solid rgba(255,255,255,0.6)',
+                borderRadius: '100px',
+              }}
+            >
+              Instagram
+            </a>
+            <a
+              href="https://www.tiktok.com/@tualmi.outdoors"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: sans,
+                fontSize: '9px',
+                fontWeight: 600,
+                letterSpacing: '0.25em',
+                textTransform: 'uppercase',
+                color: 'white',
+                textDecoration: 'none',
+                padding: '11px 28px',
+                border: '1.5px solid rgba(255,255,255,0.6)',
+                borderRadius: '100px',
+              }}
+            >
+              TikTok
+            </a>
           </div>
         </section>
 

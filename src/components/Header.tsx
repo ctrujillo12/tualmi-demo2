@@ -32,15 +32,11 @@ export default function Header() {
   const textColor   = isScrolled ? 'text-[#3B2F1E]' : 'text-white';
   const hoverColor  = isScrolled ? 'hover:text-[#8C7B6B]' : 'hover:text-white/60';
   const borderColor = isScrolled ? 'border-[#DDD5C8]/40' : 'border-white/20';
-  const bg          = isScrolled ? 'bg-[#FAFAF7]' : 'bg-transparent';
+  const bg          = 'bg-transparent';
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 border-b ${borderColor} ${bg} transition-all duration-300`}
-      style={{
-        opacity: isScrolled ? 1 : 0,
-        pointerEvents: isScrolled ? 'auto' : 'none',
-      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">

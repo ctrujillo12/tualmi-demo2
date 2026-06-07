@@ -7,9 +7,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid email.' }, { status: 400 });
   }
 
-  if (!name || name.trim() === '') {
-    return NextResponse.json({ error: 'Name is required.' }, { status: 400 });
-  }
 
   const res = await fetch('https://sheetdb.io/api/v1/9550th9aimf6t', {
     method: 'POST',

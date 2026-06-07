@@ -178,7 +178,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               overflow: 'hidden',
               backgroundColor: bgAlt,
               opacity: isPurchasable ? 1 : 0.8,
-              aspectRatio: '3/4',
+              aspectRatio: '2/3',
               maxHeight: '75vh',
             }}>
               <Image
@@ -204,7 +204,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       if (matchingColor) setSelectedColor(matchingColor);
                     }}
                     style={{
-                      aspectRatio: '3/4',
+                      aspectRatio: '2/3',
                       position: 'relative',
                       overflow: 'hidden',
                       opacity: selectedImage === index ? 1 : 0.4,

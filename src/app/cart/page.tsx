@@ -17,7 +17,8 @@ export default function CartPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const total = getTotal();
+  const totalCents = getTotal();
+  const total = totalCents / 100;
   const tax = total * 0.08;
   const grandTotal = total + tax;
   const containsPreorder = hasPreorderItems();
@@ -66,116 +67,82 @@ export default function CartPage() {
           </h1>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '48px' }} className="lg:cart-grid">
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr)', gap: '0' }} className="cart-layout">
+        {/* Two-column layout: items left, summary right */}
+        <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '64px', alignItems: 'start' }}>
 
-            {/* ── Items + Summary two-column on desktop ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '48px' }}>
-              <div style={{ display: 'grid', gap: '48px' }} className="cart-two-col">
+          {/* Left: items */}
+          <div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+              {items.map((item, index) => (
+                <CartItem
+                  key={`${item.product.id}-${item.selectedSize}-${item.selectedColor}-${index}`}
+                  item={item}
+                />
+              ))}
+            </div>
+            <Link
+              href="/"
+              style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.25em', textTransform: 'uppercase', color: muted, textDecoration: 'none', display: 'inline-block', marginTop: '24px' }}
+            >
+              ← Continue Shopping
+            </Link>
+          </div>
 
-                {/* Left: items */}
-                <div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-                    {items.map((item, index) => (
-                      <CartItem
-                        key={`${item.product.id}-${item.selectedSize}-${item.selectedColor}-${index}`}
-                        item={item}
-                      />
-                    ))}
-                  </div>
-                  <Link
-                    href="/"
-                    style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.25em', textTransform: 'uppercase', color: muted, textDecoration: 'none', display: 'inline-block', marginTop: '24px' }}
-                  >
-                    ← Continue Shopping
-                  </Link>
-                </div>
+          {/* Right: order summary */}
+          <div style={{ borderLeft: `1px solid ${rule}`, paddingLeft: '48px' }}>
+            <h2 style={{ fontFamily: serif, fontSize: '22px', fontWeight: 400, color: brown, margin: '0 0 24px' }}>
+              Order Summary
+            </h2>
 
-                {/* Right: order summary */}
-                <div style={{ borderTop: `1px solid ${rule}`, paddingTop: '28px' }} className="summary-panel">
-                  <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, marginBottom: '24px', marginTop: 0 }}>
-                    Order Summary
-                  </p>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid }}>Subtotal</span>
-                      <span style={{ fontFamily: sans, fontSize: '12px', color: brown }}>${(total / 100).toFixed(2)}</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid }}>Shipping</span>
-                      <span style={{ fontFamily: sans, fontSize: '12px', color: mid }}>Calculated at checkout</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid }}>Est. Tax</span>
-                      <span style={{ fontFamily: sans, fontSize: '12px', color: brown }}>${(tax / 100).toFixed(2)}</span>
-                    </div>
-                  </div>
-
-                  <div style={{ borderTop: `1px solid ${rule}`, paddingTop: '16px', display: 'flex', justifyContent: 'space-between', marginBottom: '28px' }}>
-                    <span style={{ fontFamily: sans, fontSize: '11px', fontWeight: 500, letterSpacing: '0.15em', textTransform: 'uppercase', color: brown }}>Total</span>
-                    <span style={{ fontFamily: sans, fontSize: '14px', color: brown }}>${(grandTotal / 100).toFixed(2)}</span>
-                  </div>
-
-                  {containsPreorder && (
-                    <p style={{ fontFamily: sans, fontSize: '11px', fontWeight: 300, color: muted, lineHeight: 1.7, marginBottom: '20px' }}>
-                      Your cart contains pre-order items. You'll be charged at checkout, and pre-order items will ship when the collection drops.
-                    </p>
-                  )}
-
-                  {error && (
-                    <p style={{ fontFamily: sans, fontSize: '11px', color: '#9B4040', marginBottom: '16px' }}>{error}</p>
-                  )}
-
-                  <button
-                    onClick={handleCheckout}
-                    disabled={isLoading}
-                    style={{
-                      width: '100%',
-                      backgroundColor: brown,
-                      color: '#FAFAF7',
-                      padding: '14px',
-                      fontFamily: sans,
-                      fontSize: '9px',
-                      fontWeight: 600,
-                      letterSpacing: '0.28em',
-                      textTransform: 'uppercase',
-                      border: 'none',
-                      cursor: isLoading ? 'not-allowed' : 'pointer',
-                      opacity: isLoading ? 0.6 : 1,
-                      transition: 'opacity 0.2s',
-                      marginBottom: '12px',
-                    }}
-                    onMouseEnter={e => { if (!isLoading) e.currentTarget.style.opacity = '0.85'; }}
-                    onMouseLeave={e => { e.currentTarget.style.opacity = isLoading ? '0.6' : '1'; }}
-                  >
-                    {isLoading ? 'Redirecting…' : 'Checkout'}
-                  </button>
-
-                  <p style={{ fontFamily: sans, fontSize: '10px', fontWeight: 300, color: muted, textAlign: 'center', margin: 0 }}>
-                    Secure checkout powered by Shopify
-                  </p>
-                </div>
-
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontFamily: sans, fontSize: '12px', color: mid }}>Subtotal</span>
+                <span style={{ fontFamily: sans, fontSize: '12px', color: brown }}>${total.toFixed(2)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontFamily: sans, fontSize: '12px', color: mid }}>Est. Tax (8%)</span>
+                <span style={{ fontFamily: sans, fontSize: '12px', color: brown }}>${tax.toFixed(2)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: `1px solid ${rule}`, paddingTop: '12px' }}>
+                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: brown }}>Total</span>
+                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: brown }}>${grandTotal.toFixed(2)}</span>
               </div>
             </div>
+
+            {containsPreorder && (
+              <p style={{ fontFamily: sans, fontSize: '11px', color: muted, marginBottom: '16px', lineHeight: 1.6 }}>
+                Your order contains pre-order items. Payment will be collected now and items will ship when available.
+              </p>
+            )}
+
+            {error && (
+              <p style={{ fontFamily: sans, fontSize: '11px', color: '#A87060', marginBottom: '16px' }}>{error}</p>
+            )}
+
+            <button
+              onClick={handleCheckout}
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                padding: '15px 32px',
+                backgroundColor: brown,
+                color: '#FAFAF7',
+                fontFamily: sans,
+                fontSize: '9px',
+                fontWeight: 600,
+                letterSpacing: '0.28em',
+                textTransform: 'uppercase',
+                border: 'none',
+                cursor: isLoading ? 'default' : 'pointer',
+                opacity: isLoading ? 0.7 : 1,
+              }}
+            >
+              {isLoading ? 'Redirecting…' : 'Checkout'}
+            </button>
           </div>
+
         </div>
       </div>
-
-      <style>{`
-        @media (min-width: 768px) {
-          .cart-two-col {
-            grid-template-columns: 3fr 2fr !important;
-          }
-          .summary-panel {
-            border-top: none !important;
-            padding-top: 0 !important;
-            border-left: 1px solid #E8E2D8;
-            padding-left: 40px;
-          }
-        }
-      `}</style>
     </main>
   );
 }

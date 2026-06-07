@@ -20,6 +20,7 @@
 body {
   @apply bg-sand-50 text-sand-900;
   cursor: auto;
+  overflow-x: hidden;
 }
 
 @layer utilities {
@@ -44,6 +45,11 @@ body {
 /* ── Mobile responsive ── */
 @media (max-width: 768px) {
 
+  /* Hide the decorative hiker overlay — too large on small screens */
+  .hiker-overlay {
+    display: none !important;
+  }
+
   /* Hero: shorter, not full-screen */
   .hero-section {
     height: 65vh !important;
@@ -61,45 +67,30 @@ body {
 
   /* Hero text block: right side, tighter gap */
   .hero-text-block {
-    width: 65% !important;
-    padding-right: 20px !important;
+    width: 68% !important;
+    padding-right: 16px !important;
     padding-left: 0 !important;
     align-items: flex-start !important;
-    gap: 10px !important;
-  }
-
-  /* Hide tagline on mobile */
-  .hero-tagline {
-    display: none !important;
-  }
-
-  /* Tighten gap so title and button sit close together */
-  .hero-text-block {
     gap: 8px !important;
   }
 
-  /* CTA button: full width on mobile so it matches the width of the Tualmi heading */
+  /* CTA button: full width so it matches the logo+text row */
   .hero-cta {
     width: 100% !important;
-    text-align: center !important;
-    padding: 11px 0 !important;
-    font-size: 8px !important;
-    letter-spacing: 0.22em !important;
-    margin-top: 2px !important;
     box-sizing: border-box !important;
   }
 
-  /* Product page image: let it fill the full column width naturally */
+  /* Product page image: let it fill naturally */
   .product-main-image {
     max-height: none !important;
   }
 
-  /* Product thumbnails: slightly smaller */
+  /* Product thumbnails */
   .product-thumbnails {
     gap: 6px !important;
   }
 
-  /* Size buttons: no scrollbar showing */
+  /* Size buttons: no scrollbar */
   .product-sizes {
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
@@ -108,19 +99,14 @@ body {
     display: none !important;
   }
 
-  /* Product pill: 25% smaller */
+  /* Pre-order / coming soon pill */
   .product-pill {
     font-size: 7px !important;
     padding: 3px 7px !important;
     letter-spacing: 0.15em !important;
   }
 
-  /* Product grid: 2 columns */
-  .product-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-
-  /* Footer: hide desktop grid, show accordion */
+  /* Footer: accordion replaces desktop grid */
   .footer-links-grid {
     display: none !important;
   }
@@ -128,15 +114,40 @@ body {
     display: block !important;
   }
 
-  /* Footer overlay: slightly lighter on mobile */
-  .footer-overlay {
-    background-color: rgba(10, 8, 5, 0.55) !important;
+  /* Footer wordmark: smaller on mobile */
+  .footer-wordmark {
+    font-size: 28px !important;
   }
+
+}
+
+
+.reel-card {
+  display: block;
+  aspect-ratio: 9 / 16;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid white;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.2s;
+}
+.reel-card:hover {
+  background-color: rgba(255, 255, 255, 0.22);
 }
 
 @media (max-width: 480px) {
   .product-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
+  }
+  .social-reel-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 380px) {
+  /* Single-column product cards on very small phones */
+  .product-grid {
+    grid-template-columns: 1fr !important;
   }
 }

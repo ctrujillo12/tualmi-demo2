@@ -8,6 +8,8 @@ import { Product } from '@/types';
 interface ProductCardProps {
   product: Product;
   showPrice?: boolean;
+  imageAspectRatio?: string;
+  imageFit?: 'cover' | 'contain';
 }
 
 // Same gating rules as ProductDetailClient — keep these in sync.
@@ -77,7 +79,7 @@ function ColorSwatch({
 const sans = "'Jost', 'DM Sans', system-ui, sans-serif";
 const serif = "'Cormorant Garamond', Georgia, serif";
 
-export default function ProductCard({ product, showPrice = true }: ProductCardProps) {
+export default function ProductCard({ product, showPrice = true, imageAspectRatio = '2/3', imageFit = 'cover' }: ProductCardProps) {
   const handle        = product.handle ?? '';
   const colors        = PRODUCT_COLORS[handle] ?? [];
 
@@ -134,25 +136,24 @@ export default function ProductCard({ product, showPrice = true }: ProductCardPr
       <Link href={`/products/${product.handle ?? product.id}`} style={{ textDecoration: 'none' }}>
         {/* Image */}
         <div style={{
-          aspectRatio: '1',
+          aspectRatio: imageAspectRatio,
           position: 'relative',
           overflow: 'hidden',
-          backgroundColor: '#F2F0EB',
-          marginBottom: '14px',
+          backgroundColor: imageFit === 'contain' ? '#F2F0EB' : undefined,
         }}>
           {cornerPill}
           <Image
             src={product.images[selectedImageIndex]}
             alt={product.name}
             fill
-            style={{ objectFit: 'contain', transition: 'transform 0.3s ease' }}
+            style={{ objectFit: imageFit, transition: 'transform 0.3s ease' }}
             onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.04)')}
             onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
           />
         </div>
 
         {/* Text */}
-        <div style={{ marginBottom: '10px' }}>
+        <div style={{ padding: '12px 14px 10px', marginBottom: '0' }}>
           <h3 style={{
             fontSize: '13px',
             fontWeight: 400,
@@ -176,7 +177,7 @@ export default function ProductCard({ product, showPrice = true }: ProductCardPr
 
       {/* Swatches — outside the Link so clicks don't navigate */}
       {colors.length > 0 && (
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '0 14px 14px' }}>
           {colors.map(({ name, value }, index) => (
             <ColorSwatch
               key={name}
