@@ -154,6 +154,7 @@ export default function Footer() {
               <img
                 src="/images-2/logo2-brown.png"
                 alt=""
+                className="footer-logo-img"
                 style={{ height: '38px', width: 'auto', objectFit: 'contain', marginBottom: '3px', filter: 'brightness(0) saturate(100%) invert(15%) sepia(25%) saturate(600%) hue-rotate(330deg) brightness(80%)' }}
               />
               <span className="footer-wordmark" style={{ fontFamily: serif, fontSize: '44px', fontWeight: 400, color: '#3B2F1E', lineHeight: 1 }}>

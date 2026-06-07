@@ -92,6 +92,7 @@ export default async function Home() {
                 alt="Tualmi"
                 width={80}
                 height={80}
+                className="hero-logo"
                 style={{
                   objectFit: 'contain',
                   height: 'clamp(32px, 5.6vw, 67px)',
@@ -99,7 +100,7 @@ export default async function Home() {
                   filter: 'brightness(0) invert(1)',
                 }}
               />
-              <h1 style={{
+              <h1 className="hero-title" style={{
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
                 fontSize: 'clamp(38px, 6.4vw, 80px)',
                 fontWeight: 400,

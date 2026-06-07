@@ -74,6 +74,26 @@ body {
     gap: 8px !important;
   }
 
+  /* Right-align hero content within the block */
+  .hero-text-block {
+    align-items: flex-end !important;
+  }
+
+  /* Logo: 25% bigger on mobile (32px * 1.25) */
+  .hero-logo {
+    height: 40px !important;
+  }
+
+  /* "Tualmi" title: 25% bigger on mobile (38px * 1.25) */
+  .hero-title {
+    font-size: 48px !important;
+  }
+
+  /* Button image: 25% taller on mobile (26px * 1.25) */
+  .hero-cta img {
+    height: 33px !important;
+  }
+
   /* CTA button: full width so it matches the logo+text row */
   .hero-cta {
     width: 100% !important;
@@ -117,6 +137,13 @@ body {
   /* Footer wordmark: smaller on mobile */
   .footer-wordmark {
     font-size: 28px !important;
+    line-height: 1 !important;
+  }
+
+  /* Footer logo: match wordmark size and remove the nudge offset */
+  .footer-logo-img {
+    height: 28px !important;
+    margin-bottom: 0 !important;
   }
 
 }
