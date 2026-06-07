@@ -1,9 +1,7 @@
 import { notFound } from 'next/navigation';
-
 import ProductDetailClient from '@/components/ProductDetailClient';
 import { getProduct, getProducts } from '@/lib/products';
 
-// Pre-render all product pages at build time
 export async function generateStaticParams() {
   const products = await getProducts();
   return products.map((product) => ({
@@ -27,10 +25,8 @@ export default async function ProductPage({
   }
 
   return (
-    <>
-      <main className="pt-16">
-        <ProductDetailClient product={product} initialColor={color} />
-      </main>
-    </>
+    <main className="pt-16">
+      <ProductDetailClient product={product!} initialColor={color} />
+    </main>
   );
 }

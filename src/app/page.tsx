@@ -3,21 +3,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getProducts } from '@/lib/products';
 import ProductCard from '@/components/ProductCard';
-import TrailblazerSignup from '@/components/TrailblazerSignup';
 import HikerOverlay from '@/components/HikerOverlay';
 import WelcomePopup from '@/components/WelcomePopup';
 import type { Product } from '@/types';
 import { PRODUCT_COLORS } from '@/lib/productColors';
 
-const serif  = 'var(--font-playfair)';
-const script = 'var(--font-script)';
 const sans   = 'var(--font-montserrat)';
 
 const PRODUCT_ORDER = ['trailblazing-fleece', 'summit-pant', 'horizon-shorts', 'alpine-baby-tee', 'trailblazing-tote'];
 
 export default async function Home() {
   const products = await getProducts();
-  const tote = products.find((p) => p.handle === 'trailblazing-tote');
   const heroImage = '/images-2/hero_anna.JPG';
 
   const collectionProducts = PRODUCT_ORDER
@@ -69,13 +65,13 @@ export default async function Home() {
   return (
     <div style={{ backgroundColor: '#FAFAF7' }}>
 
-      {/* ── WELCOME POPUP ── */}
+      {/* WELCOME POPUP */}
       <WelcomePopup />
 
-      {/* ── HIKER OVERLAY — fixed so z-index is root-level, JS tracks border position ── */}
+      {/* HIKER OVERLAY */}
       <HikerOverlay />
 
-      {/* ── FIXED HERO BACKGROUND ── */}
+      {/* FIXED HERO BACKGROUND */}
       <div className="hero-bg" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
         <Image
           src={heroImage}
@@ -88,7 +84,7 @@ export default async function Home() {
         <div className="hero-overlay" style={{ position: 'absolute', inset: 0, background: 'rgba(10,8,5,0.38)' }} />
       </div>
 
-      {/* ── HERO VIEWPORT ── */}
+      {/* HERO VIEWPORT */}
       <section className="hero-section" style={{
         position: 'relative', zIndex: 1,
         height: '100vh',
@@ -106,7 +102,6 @@ export default async function Home() {
           alignItems: 'flex-start',
           gap: '18px',
         }}>
-          {/* Wrapper keeps button same width as logo+text row */}
           <div className="hero-inner-wrap" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'stretch', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1vw, 12px)' }}>
               <Image
@@ -171,10 +166,10 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── SCROLLABLE CONTENT ── */}
+      {/* SCROLLABLE CONTENT */}
       <div style={{ position: 'relative', zIndex: 2 }}>
 
-        {/* ── ABOUT ── */}
+        {/* ABOUT */}
         <section style={{
           backgroundColor: '#dad082',
           padding: 'clamp(48px, 7vw, 80px) clamp(24px, 6vw, 80px)',
@@ -191,7 +186,7 @@ export default async function Home() {
           </p>
         </section>
 
-        {/* ── MARQUEE BANNER ── */}
+        {/* MARQUEE BANNER */}
         <div style={{ backgroundColor: '#C94468', overflow: 'hidden', padding: '9px 0' }}>
           <div className="marquee-track">
             <span style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'white', whiteSpace: 'nowrap' }}>
@@ -200,7 +195,7 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* ── COLLECTION ── */}
+        {/* COLLECTION */}
         <section id="collection" style={{
           padding: 'clamp(48px, 7vw, 80px) clamp(20px, 3vw, 40px)',
           backgroundImage: 'url(/images-2/yellow-pattern.png)',
@@ -235,7 +230,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ── SOCIAL ── */}
+        {/* SOCIAL */}
         <section style={{
           backgroundColor: '#C94468',
           padding: 'clamp(56px, 8vw, 96px) clamp(24px, 5vw, 60px)',
@@ -264,7 +259,6 @@ export default async function Home() {
             </h2>
           </div>
 
-          {/* 4 TikTok thumbnail cards */}
           <div className="social-reel-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
@@ -285,3 +279,78 @@ export default async function Home() {
                   overflow: 'hidden',
                   display: 'block',
                   position: 'relative',
+                  backgroundImage: tiktokThumbnails[i] ? `url(${tiktokThumbnails[i]})` : undefined,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  textDecoration: 'none',
+                }}
+              >
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(0,0,0,0.18)',
+                }}>
+                  <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+                    <circle cx="22" cy="22" r="21" stroke="white" strokeWidth="1.5" fill="rgba(0,0,0,0.3)"/>
+                    <polygon points="18,14 34,22 18,30" fill="white"/>
+                  </svg>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <div style={{
+            marginTop: 'clamp(28px, 4vw, 44px)',
+            display: 'flex',
+            gap: '16px',
+            flexWrap: 'wrap',
+          }}>
+            <a
+              href="https://www.instagram.com/tualmioutdoors"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: sans,
+                fontSize: '9px',
+                fontWeight: 600,
+                letterSpacing: '0.25em',
+                textTransform: 'uppercase',
+                color: 'white',
+                textDecoration: 'none',
+                padding: '11px 28px',
+                border: '1.5px solid rgba(255,255,255,0.6)',
+                borderRadius: '100px',
+              }}
+            >
+              Instagram
+            </a>
+            <a
+              href="https://www.tiktok.com/@tualmi.outdoors"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: sans,
+                fontSize: '9px',
+                fontWeight: 600,
+                letterSpacing: '0.25em',
+                textTransform: 'uppercase',
+                color: 'white',
+                textDecoration: 'none',
+                padding: '11px 28px',
+                border: '1.5px solid rgba(255,255,255,0.6)',
+                borderRadius: '100px',
+              }}
+            >
+              TikTok
+            </a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  );
+}
