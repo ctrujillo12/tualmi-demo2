@@ -18,11 +18,27 @@ export default function WelcomePopup() {
   const [errMsg, setErrMsg]     = useState('');
 
   useEffect(() => {
-    // Small delay so it doesn't flash before the page renders
-    const timer = setTimeout(() => {
-      if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
-    }, 1200);
-    return () => clearTimeout(timer);
+    if (localStorage.getItem(STORAGE_KEY)) return;
+
+    const isMobile = window.innerWidth < 768;
+
+    if (isMobile) {
+      // On mobile: show after user scrolls past the hero
+      const onScroll = () => {
+        if (window.scrollY > window.innerHeight * 0.4) {
+          setVisible(true);
+          window.removeEventListener('scroll', onScroll);
+        }
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      return () => window.removeEventListener('scroll', onScroll);
+    } else {
+      // On desktop: show after 1.2s
+      const timer = setTimeout(() => {
+        if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
+      }, 1200);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   const dismiss = () => {
