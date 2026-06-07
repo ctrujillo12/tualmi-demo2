@@ -167,7 +167,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#FAFAF7' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '48px clamp(20px, 4vw, 48px) 80px' }}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16">
 
           {/* ── Left: images ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -269,7 +269,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.35em', textTransform: 'uppercase', color: muted, marginBottom: '10px', marginTop: 0 }}>
                   Size
                 </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <div className="product-sizes" style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', overflowX: 'auto' }}>
                   {product.sizes.map((size) => (
                     <button
                       key={size}

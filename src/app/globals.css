@@ -78,22 +78,34 @@ body {
     gap: 8px !important;
   }
 
-  /* CTA button: smaller on mobile, minimal top margin */
+  /* CTA button: full width on mobile so it matches the width of the Tualmi heading */
   .hero-cta {
-    padding: 9px 22px !important;
+    width: 100% !important;
+    text-align: center !important;
+    padding: 11px 0 !important;
     font-size: 8px !important;
-    letter-spacing: 0.2em !important;
-    margin-top: 4px !important;
+    letter-spacing: 0.22em !important;
+    margin-top: 2px !important;
+    box-sizing: border-box !important;
   }
 
-  /* Product page: smaller main image on mobile */
+  /* Product page image: let it fill the full column width naturally */
   .product-main-image {
-    max-height: 52vh !important;
+    max-height: none !important;
   }
 
   /* Product thumbnails: slightly smaller */
   .product-thumbnails {
     gap: 6px !important;
+  }
+
+  /* Size buttons: no scrollbar showing */
+  .product-sizes {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  .product-sizes::-webkit-scrollbar {
+    display: none !important;
   }
 
   /* Product pill: 25% smaller */
@@ -108,9 +120,17 @@ body {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 
-  /* Footer: 2 columns */
+  /* Footer: hide desktop grid, show accordion */
   .footer-links-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
+    display: none !important;
+  }
+  .footer-accordion {
+    display: block !important;
+  }
+
+  /* Footer overlay: slightly lighter on mobile */
+  .footer-overlay {
+    background-color: rgba(10, 8, 5, 0.55) !important;
   }
 }
 
