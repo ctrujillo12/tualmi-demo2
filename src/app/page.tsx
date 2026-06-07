@@ -12,7 +12,7 @@ const serif  = 'var(--font-playfair)';
 const script = 'var(--font-script)';
 const sans   = 'var(--font-montserrat)';
 
-const PRODUCT_ORDER = ['trailblazing-fleece', 'summit-pant', 'horizon-shorts', 'alpine-baby-tee'];
+const PRODUCT_ORDER = ['trailblazing-fleece', 'summit-pant', 'horizon-shorts', 'alpine-baby-tee', 'trailblazing-tote'];
 
 export default async function Home() {
   const products = await getProducts();
@@ -172,7 +172,7 @@ export default async function Home() {
 
         {/* ── ABOUT ── */}
         <section style={{
-          backgroundColor: '#FAFAF7',
+          backgroundColor: '#dad082',
           padding: 'clamp(48px, 7vw, 80px) clamp(24px, 6vw, 80px)',
           borderBottom: '1px solid #E8E2D8',
         }}>
