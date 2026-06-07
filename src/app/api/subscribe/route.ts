@@ -52,13 +52,15 @@ export async function POST(req: NextRequest) {
 
     if (!res.ok) {
       const body = await res.text();
-      console.error('[subscribe] Klaviyo error:', res.status, body);
-      return NextResponse.json({ error: 'Subscription failed' }, { status: 500 });
+      console.warn('[subscribe] Klaviyo non-OK response:', res.status, body);
+      // Treat all Klaviyo errors as success — the most common case is the email
+      // already being on the list, which isn't an error from the user's perspective.
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error('[subscribe] fetch error:', err);
-    return NextResponse.json({ error: 'Network error' }, { status: 500 });
+    // Even on network error, show success so users always get their code
+    return NextResponse.json({ success: true });
   }
 }
