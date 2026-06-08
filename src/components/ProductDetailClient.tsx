@@ -225,7 +225,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <p style={{ margin: 0 }}>7-day returns and exchanges</p>
         <p style={{ margin: 0 }}>
-          {isPreorder ? 'Preorders ship late July 2026.' : 'Ships within 2-3 business days.'}
+          {isPreorder ? `${product.shippingWindow ?? 'Ships August 2026'}.` : 'Ships within 2-3 business days.'}
         </p>
       </div>
     ),
@@ -331,7 +331,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
             {isPreorder && (
               <p style={{ fontFamily: sans, fontSize: '11px', color: muted, letterSpacing: '0.05em', margin: '0 0 32px' }}>
-                Preorders ship late July 2026
+                {product.shippingWindow ?? 'Ships August 2026'}
               </p>
             )}
 
@@ -436,7 +436,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   </button>
                   {isPreorder && (
                     <p style={{ fontFamily: sans, fontSize: '11px', color: muted, marginTop: '10px', textAlign: 'center', lineHeight: 1.7, letterSpacing: '0.03em' }}>
-                      {"You'll be charged at checkout. Preorders ship late July 2026."}
+                      {`You'll be charged at checkout. ${product.shippingWindow ?? 'Ships August 2026'}.`}
                     </p>
                   )}
                   {buyStatus === 'error' && (

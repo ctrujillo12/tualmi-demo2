@@ -37,7 +37,7 @@ export default async function Home() {
     });
   });
 
-  const marqueeText = 'Free Tote with $150 Purchase • Ships July 2026 • Limited Quantities • ';
+  const marqueeText = 'Free Tote with $150 Purchase • Fleece, Pants & Shorts Ship Late July 2026 • Baby Tee Ships August 2026 • Limited Quantities • ';
 
   const tiktokVideos = [
     { id: '7625759601576660238' },
@@ -182,7 +182,7 @@ export default async function Home() {
             We made the clothes we wish existed. Patagonia is built for performance. Lululemon is built for workouts. Tualmi is built for girls who want both fashion-forward silhouettes and trail-ready performance, designed by women who actually hike.
           </p>
           <p style={{ fontFamily: sans, fontSize: 'clamp(10px, 1.2vw, 12px)', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#A89880', marginTop: '16px', marginBottom: 0 }}>
-            Preorder ships July 2026
+            Fleece, Pants & Shorts ship late July 2026 — Baby Tee ships August 2026
           </p>
         </section>
 

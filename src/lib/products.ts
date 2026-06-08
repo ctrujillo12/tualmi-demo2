@@ -20,7 +20,7 @@ export const localProducts: Product[] = [
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Ships August 2026',
+    shippingWindow: 'Ships Late July 2026',
   },
   {
     id: 'summit-pant',
@@ -36,7 +36,7 @@ export const localProducts: Product[] = [
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Ships August 2026',
+    shippingWindow: 'Ships Late July 2026',
   },
   {
     id: 'alpine-baby-tee',
@@ -72,7 +72,7 @@ export const localProducts: Product[] = [
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Ships August 2026',
+    shippingWindow: 'Ships Late July 2026',
   },
   {
     id: 'carabiner',
