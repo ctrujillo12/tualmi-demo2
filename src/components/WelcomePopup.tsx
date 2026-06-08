@@ -24,6 +24,7 @@ export default function WelcomePopup() {
     const show = () => {
       if (firedRef.current) return;
       firedRef.current = true;
+      localStorage.setItem(STORAGE_KEY, '1'); // mark as seen immediately so it never repeats
       setVisible(true);
     };
 
