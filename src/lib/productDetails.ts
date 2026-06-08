@@ -63,10 +63,10 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     shell: '100% Recycled Nylon',
     weight: '130-140 GSM',
     features: [
-      '4-way stretch',
+      'Waterproof',
       'Moisture-wicking + quick-dry',
       'Mid-rise waistband',
-      'Side zip pockets',
+      'Side pockets',
       'Relaxed fit',
     ],
     care: [
