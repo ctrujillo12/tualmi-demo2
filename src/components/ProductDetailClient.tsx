@@ -192,6 +192,21 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     });
   }
 
+  if (fabricDetail?.tempGuide) {
+    accordionItems.push({
+      key: 'temp',
+      label: 'Temperature Guide',
+      content: (
+        <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', rowGap: '8px', columnGap: '12px' }}>
+          <span style={{ color: muted, fontWeight: 400, fontSize: '11px', letterSpacing: '0.05em' }}>Standalone ideal for</span>
+          <span>{fabricDetail.tempGuide.standalone}</span>
+          <span style={{ color: muted, fontWeight: 400, fontSize: '11px', letterSpacing: '0.05em' }}>Layered use</span>
+          <span>{fabricDetail.tempGuide.layered}</span>
+        </div>
+      ),
+    });
+  }
+
   accordionItems.push({
     key: 'care',
     label: 'Care',

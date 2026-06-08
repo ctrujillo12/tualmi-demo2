@@ -10,18 +10,19 @@ export interface FabricDetail {
   care?: string[];
   fit?: string;
   origin?: string;
+  tempGuide?: { standalone: string; layered: string };
 }
 
 export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
   'trailblazing-fleece': {
     shell: '100% Recycled Polyester',
     pocketLining: 'Cotton Jersey',
-    weight: '290–300 GSM',
+    weight: '290-300 GSM',
     features: [
       '100% recycled polyester construction',
       'Double-sided brushed fleece interior',
       'Chest zip pocket',
-      'Snap collar with kangaroo pocket',
+      'Button collar with kangaroo pocket',
       'Cinch hem',
     ],
     care: [
@@ -31,6 +32,10 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not iron',
     ],
     fit: 'Relaxed fit. Size up for a boxy look, true to size for a fitted silhouette.',
+    tempGuide: {
+      standalone: '40-65 degrees F (4-18 degrees C)',
+      layered: 'Down to ~20 degrees F (-7 degrees C)',
+    },
   },
 
   'summit-pant': {
@@ -51,17 +56,18 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'High-rise with a relaxed flared leg. True to size — size up if between sizes.',
+    fit: 'High-rise with a relaxed flared leg. True to size - size up if between sizes.',
   },
 
   'horizon-shorts': {
     shell: '100% Recycled Nylon',
-    weight: '130–140 GSM',
+    weight: '130-140 GSM',
     features: [
-      '100% recycled nylon faille',
-      'Lightweight + quick-dry',
-      'Printed and solid colorways available',
-      'Zip side pockets',
+      '4-way stretch',
+      'Moisture-wicking + quick-dry',
+      'Mid-rise waistband',
+      'Side zip pockets',
+      'Relaxed fit',
     ],
     care: [
       'Machine wash cold',
@@ -87,6 +93,6 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Cropped, fitted cut. True to size — size up if you prefer a relaxed fit.',
+    fit: 'Fitted. Size up for a relaxed look.',
   },
 };
