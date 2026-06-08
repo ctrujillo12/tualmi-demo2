@@ -24,3 +24,4 @@ export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> =
     { name: 'Natural',     value: '#D6C9B0' },
   ],
 };
+};

@@ -87,6 +87,9 @@ const compTableByHandle: Record<string, CompTable> = {
 
 export default function ProductDetailClient({ product, initialColor }: ProductDetailClientProps) {
   const handle        = product.handle ?? '';
+  const shippingLabel = handle === 'alpine-baby-tee'
+    ? 'Ships August 2026'
+    : (product.shippingWindow ?? 'Ships Late July 2026');
   const isInStock     = AVAILABLE_HANDLES.includes(handle);
   const isPreviewOnly = PREVIEW_ONLY_HANDLES.includes(handle);
   const isPreorder    = !isInStock && !isPreviewOnly;
@@ -129,7 +132,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     try {
       addItem(product, selectedSize, selectedColor, 1, {
         isPreorder,
-        shippingWindow: product.shippingWindow,
+        shippingWindow: shippingLabel,
       });
       setBuyStatus('added');
       setTimeout(() => setBuyStatus('idle'), 2000);
@@ -225,7 +228,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <p style={{ margin: 0 }}>7-day returns and exchanges</p>
         <p style={{ margin: 0 }}>
-          {isPreorder ? `${product.shippingWindow ?? 'Ships August 2026'}.` : 'Ships within 2-3 business days.'}
+          {isPreorder ? `${shippingLabel}.` : 'Ships within 2-3 business days.'}
         </p>
       </div>
     ),
@@ -331,7 +334,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
             {isPreorder && (
               <p style={{ fontFamily: sans, fontSize: '11px', color: muted, letterSpacing: '0.05em', margin: '0 0 32px' }}>
-                {product.shippingWindow ?? 'Ships August 2026'}
+                {shippingLabel}
               </p>
             )}
 
@@ -436,7 +439,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   </button>
                   {isPreorder && (
                     <p style={{ fontFamily: sans, fontSize: '11px', color: muted, marginTop: '10px', textAlign: 'center', lineHeight: 1.7, letterSpacing: '0.03em' }}>
-                      {`You'll be charged at checkout. ${product.shippingWindow ?? 'Ships August 2026'}.`}
+                      {`You'll be charged at checkout. ${shippingLabel}.`}
                     </p>
                   )}
                   {buyStatus === 'error' && (
