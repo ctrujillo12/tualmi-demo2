@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import CartItem from '@/components/CartItem';
@@ -17,7 +17,7 @@ const FREE_TOTE_THRESHOLD = 149; // matches Shopify automatic discount
 
 const TOTE_BASE = {
   id: 'trailblazing-tote', handle: 'trailblazing-tote', name: 'Trailblazing Tote',
-  category: 'Accessories', images: ['/images-2/tote-main.png'],
+  category: 'Accessories', images: ['/images-2/tote_hp_bg.png'], // image overridden at runtime from Shopify
   colors: [], sizes: ['One Size'], variants: [], description: '',
 };
 const TOTE_PAID = { ...TOTE_BASE, price: 1800 };
@@ -28,6 +28,14 @@ export default function CartPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError]         = useState<string | null>(null);
   const [toteAdded, setToteAdded] = useState(false);
+  const [toteImage, setToteImage]   = useState('/images-2/tote_hp_bg.png');
+
+  useEffect(() => {
+    fetch('/api/product-image?handle=trailblazing-tote')
+      .then(r => r.json())
+      .then(d => { if (d.image) setToteImage(d.image); })
+      .catch(() => {});
+  }, []);
 
   const totalCents       = getTotal();
   const total            = totalCents / 100;
@@ -114,7 +122,7 @@ export default function CartPage() {
                 border: `1.5px solid ${toteFree ? '#B8D4A0' : '#E4D9C8'}`,
               }}>
                 <div style={{ flexShrink: 0, width: '56px', height: '56px', position: 'relative', backgroundColor: '#EDE8DF' }}>
-                  <Image src="/images-2/tote-main.png" alt="Trailblazing Tote" fill style={{ objectFit: 'contain' }} />
+                  <Image src={toteImage} alt="Trailblazing Tote" fill style={{ objectFit: 'contain' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: sans, fontSize: '10px', fontWeight: 600, color: brown, margin: '0 0 2px', letterSpacing: '0.04em' }}>
