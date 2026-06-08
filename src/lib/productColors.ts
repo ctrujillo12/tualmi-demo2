@@ -13,7 +13,6 @@ export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> =
   'alpine-baby-tee': [
     { name: 'Petal',       value: '#F2C4CE' },
     { name: 'Solstice',    value: '#D4A843' },
-    
   ],
   'horizon-shorts': [
     { name: 'Meadow',      value: 'linear-gradient(135deg, #A8C484 50%, #7A9E6A 50%)' },
@@ -23,5 +22,4 @@ export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> =
   'trailblazing-tote': [
     { name: 'Natural',     value: '#D6C9B0' },
   ],
-};
 };
