@@ -179,7 +179,7 @@ export default async function Home() {
             Actually cute outdoors gear.
           </h2>
           <p style={{ fontFamily: sans, fontSize: 'clamp(13px, 1.5vw, 15px)', lineHeight: 1.9, color: '#6B5C4C', fontWeight: 300, maxWidth: '680px', margin: 0 }}>
-            We made the clothes we wish existed. Patagonia is built for performance. Lululemon is built for workouts. Tualmi is built for girls who want both fashion-forward silhouettes and trail-ready performance, designed by women who actually hike.
+            We made the clothes we wish existed. Patagonia is built for performance. Lululemon is built for workouts. Tualmi is built for girls who want both fashion-forward silhouettes and trail-ready performance, designed by women who actually hike. And we're sustainable too. Every piece is made from 100% recycled materials, produced by a WRAP-certified manufacturer. 
           </p>
           <p style={{ fontFamily: sans, fontSize: 'clamp(10px, 1.2vw, 12px)', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#A89880', marginTop: '16px', marginBottom: 0 }}>
             Fleece, Pants & Shorts ship late July 2026 — Baby Tee ships August 2026
