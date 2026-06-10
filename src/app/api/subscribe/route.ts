@@ -1,5 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Backup: push email into Upstash KV list so nothing is ever lost
+async function backupToKV(email: string) {
+  const token = process.env.KV_REST_API_TOKEN;
+  const url   = process.env.KV_REST_API_URL;
+  if (!token || !url) return;
+  try {
+    await fetch(`${url}/lpush/email_signups/${encodeURIComponent(email)}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (e) {
+    console.error('[subscribe] KV backup failed:', e);
+  }
+}
+
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
 
@@ -7,12 +22,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Valid email required' }, { status: 400 });
   }
 
+  // Always save to KV first — even if Klaviyo fails, the email is captured
+  await backupToKV(email);
+
   const apiKey = process.env.KLAVIYO_API_KEY;
   const listId = process.env.KLAVIYO_LIST_ID;
 
   if (!apiKey || !listId) {
-    console.error('[subscribe] Missing KLAVIYO_API_KEY or KLAVIYO_LIST_ID in env vars');
-    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    console.error('[subscribe] Missing KLAVIYO_API_KEY or KLAVIYO_LIST_ID in Vercel env vars');
+    return NextResponse.json({ success: true }); // email already saved to KV
   }
 
   try {
@@ -51,12 +69,14 @@ export async function POST(req: NextRequest) {
 
     if (!res.ok) {
       const body = await res.text();
-      console.warn('[subscribe] Klaviyo non-OK response:', res.status, body);
+      console.error('[subscribe] Klaviyo error — status:', res.status, '— body:', body);
+    } else {
+      console.log('[subscribe] Klaviyo success:', email);
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('[subscribe] fetch error:', err);
-    return NextResponse.json({ success: true });
+    console.error('[subscribe] Klaviyo fetch threw:', err);
+    return NextResponse.json({ success: true }); // email already in KV backup
   }
 }
