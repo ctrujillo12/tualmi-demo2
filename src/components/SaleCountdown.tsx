@@ -48,7 +48,7 @@ export default function SaleCountdown() {
         fontFamily: sans,
         margin: 0,
       }}>
-        Trailblazer's Club — 50% off ends tonight
+        Trailblazing Club — 50% off ends tonight
       </p>
 
       <p style={{

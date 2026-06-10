@@ -28,7 +28,7 @@ export default function InvitePage() {
           marginBottom: '28px',
           fontFamily: sans,
         }}>
-          Trailblazer's Club
+          Trailblazing Club
         </p>
 
         <h1 style={{

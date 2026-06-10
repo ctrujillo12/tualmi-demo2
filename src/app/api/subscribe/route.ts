@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
   const listId = process.env.KLAVIYO_LIST_ID;
 
   if (!apiKey || !listId) {
-    console.warn('[subscribe] Missing KLAVIYO_API_KEY or KLAVIYO_LIST_ID');
-    return NextResponse.json({ success: true });
+    console.error('[subscribe] Missing KLAVIYO_API_KEY or KLAVIYO_LIST_ID in env vars');
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
   }
 
   try {
