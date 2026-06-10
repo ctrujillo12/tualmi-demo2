@@ -556,18 +556,3 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     </div>
   );
 }
-
-                    <div style={{ paddingBottom: '16px', fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid, lineHeight: 1.8 }}>
-                      {content}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
