@@ -18,10 +18,10 @@ export default function TrailblazerSignup({ light = false }: { light?: boolean }
     setStatus('loading');
     setErrorMsg('');
     try {
-      const res = await fetch('/api/invite', {
+      const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: '', email }),
+        body: JSON.stringify({ email }),
       });
       const data = await res.json();
       if (!res.ok) {
