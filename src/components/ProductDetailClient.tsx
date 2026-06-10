@@ -130,7 +130,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
   const handleAddToCart = () => {
     try {
-      addItem(product, selectedSize, selectedColor, 1, {
+      // Pass only the selected colorway's images so the cart shows the right photo
+      const colorIdx    = swatchColors.length > 0
+        ? swatchColors.findIndex(s => s.name === selectedColor)
+        : product.colors.indexOf(selectedColor);
+      const colorImages = getColorImages(Math.max(0, colorIdx));
+      addItem({ ...product, images: colorImages }, selectedSize, selectedColor, 1, {
         isPreorder,
         shippingWindow: shippingLabel,
       });
@@ -537,6 +542,21 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                     <span style={{ fontSize: '16px', color: muted, fontWeight: 300 }}>{expandedSection === key ? '-' : '+'}</span>
                   </button>
                   {expandedSection === key && (
+                    <div style={{ paddingBottom: '16px', fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid, lineHeight: 1.8 }}>
+                      {content}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
                     <div style={{ paddingBottom: '16px', fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid, lineHeight: 1.8 }}>
                       {content}
                     </div>
