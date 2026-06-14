@@ -190,6 +190,13 @@ export default function CartPage() {
             >
               {isLoading ? 'Redirecting…' : 'Checkout'}
             </button>
+
+            <p style={{ fontFamily: sans, fontSize: '10px', color: muted, textAlign: 'center', margin: '16px 0 0' }}>
+              Need help?{' '}
+              <a href="mailto:hello@tualmi.com" style={{ color: mid, textDecoration: 'underline' }}>
+                hello@tualmi.com
+              </a>
+            </p>
           </div>
 
         </div>

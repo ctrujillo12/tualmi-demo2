@@ -15,6 +15,7 @@ const SECTIONS = [
       { name: 'Size + Fit',   href: '/footer-pages/size-fit' },
       { name: 'Garment Care', href: '/footer-pages/garment-care' },
       { name: 'FAQ',          href: '/footer-pages/faq' },
+      { name: 'hello@tualmi.com', href: 'mailto:hello@tualmi.com' },
     ],
   },
   {
