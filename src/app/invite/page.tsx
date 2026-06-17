@@ -12,12 +12,14 @@ const muted = '#8C7B6B';
 export default function InvitePage() {
   return (
     <div style={{
-      minHeight: '100%',
+      marginTop: '64px',
+      minHeight: 'calc(100vh - 64px)',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 'clamp(48px, 8vw, 96px) clamp(20px, 5vw, 32px)',
+      padding: 'clamp(32px, 5vw, 64px) clamp(20px, 5vw, 32px)',
+      boxSizing: 'border-box',
     }}>
       <main style={{
         maxWidth: '640px',
