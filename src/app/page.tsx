@@ -186,31 +186,21 @@ export default async function Home() {
           </p>
           <a
             href="https://tualmi.com/invite"
-            style={{ display: 'inline-block', position: 'relative', textDecoration: 'none', cursor: 'pointer' }}
-          >
-            <svg viewBox="0 0 250 68" width="222" height="60" style={{ display: 'block' }}>
-              <path
-                d="M 125,6 L 144.1,14.4 L 170.2,8.1 L 179.4,17.4 L 208.4,14.2 L 206.5,22.9 L 234,23.3 L 221.1,30.1 L 243,34 L 221.1,37.9 L 234,44.7 L 206.5,45.1 L 208.4,53.8 L 179.4,50.6 L 170.2,59.9 L 144.1,53.6 L 125,62 L 105.9,53.6 L 79.8,59.9 L 70.6,50.6 L 41.6,53.8 L 43.5,45.1 L 16,44.7 L 28.9,37.9 L 7,34 L 28.9,30.1 L 16,23.3 L 43.5,22.9 L 41.6,14.2 L 70.6,17.4 L 79.8,8.1 L 105.9,14.4 Z"
-                fill="transparent"
-                stroke="#C94468"
-                strokeWidth="1.5"
-              />
-            </svg>
-            <span style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              color: '#C94468',
+            style={{
+              display: 'inline-block',
+              backgroundColor: '#C94468',
+              color: 'white',
               fontFamily: sans,
-              fontSize: '8px',
+              fontSize: '11px',
               fontWeight: 500,
-              letterSpacing: '0.14em',
+              letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              whiteSpace: 'nowrap',
-            }}>
-              Join the Trailblazing Club
-            </span>
+              padding: '14px 32px',
+              borderRadius: '6px',
+              textDecoration: 'none',
+            }}
+          >
+            Join the Trailblazing Club
           </a>
         </section>
 
