@@ -43,7 +43,7 @@ export default async function Home() {
     { id: '7625759601576660238' },
     { id: '7611273720295984398' },
     { id: '7638058106563349774' },
-    { id: '7634715220631424270' },
+    { id: '7651370811806272782' },
   ].map((v) => ({ ...v, url: `https://www.tiktok.com/@tualmi.outdoors/video/${v.id}` }));
 
   const tiktokThumbnails = await Promise.all(
