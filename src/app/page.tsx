@@ -195,12 +195,12 @@ export default async function Home() {
               fontWeight: 500,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              padding: '14px 32px',
-              borderRadius: '6px',
+              padding: '14px 28px',
+              borderRadius: '30px',
               textDecoration: 'none',
             }}
           >
-            Join the Trailblazing Club
+            Join the Trailblazing Club!
           </a>
         </section>
 
