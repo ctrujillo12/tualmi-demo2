@@ -188,9 +188,9 @@ export default async function Home() {
             href="https://tualmi.com/invite"
             style={{ display: 'inline-block', position: 'relative', textDecoration: 'none', cursor: 'pointer' }}
           >
-            <svg viewBox="0 0 180 48" width="162" height="43" style={{ display: 'block' }}>
+            <svg viewBox="0 0 240 52" width="210" height="45" style={{ display: 'block' }}>
               <path
-                d="M 175,24 L 165,28 L 164,35 L 145,36 L 133,43 L 110,40 L 90,46 L 70,40 L 47,43 L 35,36 L 16,35 L 15,28 L 5,24 L 15,20 L 16,13 L 35,12 L 47,5 L 70,8 L 90,2 L 110,8 L 133,5 L 145,12 L 164,13 L 165,20 Z"
+                d="M 230,26 L 220,30 L 215,37 L 193,37 L 175,45 L 147,41 L 120,48 L 93,41 L 65,45 L 47,37 L 25,37 L 20,30 L 10,26 L 20,22 L 25,15 L 47,15 L 65,7 L 93,11 L 120,4 L 147,11 L 175,7 L 193,15 L 215,15 L 220,22 Z"
                 fill="transparent"
                 stroke="#C94468"
                 strokeWidth="1.5"
