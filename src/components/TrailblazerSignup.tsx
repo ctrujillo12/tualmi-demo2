@@ -54,6 +54,7 @@ export default function TrailblazerSignup({ light = false }: { light?: boolean }
         overflow: 'hidden',
         backgroundColor: light ? 'rgba(255,255,255,0.12)' : 'white',
         maxWidth: '480px',
+        margin: '0 auto',
       }}>
         <input
           type="email"

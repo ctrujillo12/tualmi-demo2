@@ -28,16 +28,16 @@ export default function InvitePage() {
           marginBottom: '28px',
           fontFamily: sans,
         }}>
-          Trailblazing Club
+          Join the Trailblazing Club
         </p>
 
         <h1 style={{
           fontSize: 'clamp(24px, 5vw, 48px)',
           fontWeight: 400,
-          lineHeight: 1.15,
+          lineHeight: 1.3,
           color: black,
           marginBottom: '20px',
-          fontFamily: serif,
+          fontFamily: 'var(--font-cedarville), cursive',
         }}>
           You found us <em>before everyone else.</em>
         </h1>
@@ -51,20 +51,9 @@ export default function InvitePage() {
           fontWeight: 300,
           letterSpacing: '0.015em',
         }}>
-          Be the first to join the club. Special perks and early access to limited drops.
+          Be part of our early community — new drops, trail guides, and a vote on what we make next. (plus special perks!!)
         </p>
 
-        <p style={{
-          fontSize: 'clamp(13px, 2vw, 14px)',
-          lineHeight: 1.9,
-          color: mid,
-          marginBottom: '48px',
-          fontFamily: sans,
-          fontWeight: 300,
-          letterSpacing: '0.015em',
-        }}>
-          No noise. Just your spot.
-        </p>
 
         <TrailblazerSignup />
       </main>
