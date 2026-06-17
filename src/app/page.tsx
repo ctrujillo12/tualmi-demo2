@@ -66,7 +66,7 @@ export default async function Home() {
     <div style={{ backgroundColor: '#FAFAF7' }}>
 
       {/* WELCOME POPUP */}
-      <WelcomePopup />
+      {/* <WelcomePopup /> */}
 
       {/* HIKER OVERLAY */}
       <HikerOverlay />
