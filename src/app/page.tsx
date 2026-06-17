@@ -182,26 +182,35 @@ export default async function Home() {
             We made the clothes we wish existed. Patagonia is built for performance. Lululemon is built for workouts. Tualmi is built for girls who want both fashion-forward silhouettes and trail-ready performance, designed by women who actually hike. And every piece is produced from 100% recycled materials by a WRAP-certified manufacturer. 
           </p>
           <p style={{ fontFamily: sans, fontSize: 'clamp(10px, 1.2vw, 12px)', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#A89880', marginTop: '16px', marginBottom: '28px' }}>
-            Ships July 2026
+            We ship July 2026!
           </p>
           <a
             href="https://tualmi.com/invite"
-            style={{
-              display: 'inline-block',
-              backgroundColor: 'transparent',
-              color: '#C94468',
-              border: '1.5px solid #C94468',
-              borderRadius: '6px',
-              fontFamily: sans,
-              fontSize: 'clamp(10px, 1.2vw, 12px)',
-              fontWeight: 500,
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              padding: '14px 28px',
-              textDecoration: 'none',
-            }}
+            style={{ display: 'inline-block', position: 'relative', textDecoration: 'none', cursor: 'pointer' }}
           >
-            Join the Trailblazing Club!
+            <svg viewBox="0 0 180 48" width="162" height="43" style={{ display: 'block' }}>
+              <path
+                d="M 175,24 L 165,28 L 164,35 L 145,36 L 133,43 L 110,40 L 90,46 L 70,40 L 47,43 L 35,36 L 16,35 L 15,28 L 5,24 L 15,20 L 16,13 L 35,12 L 47,5 L 70,8 L 90,2 L 110,8 L 133,5 L 145,12 L 164,13 L 165,20 Z"
+                fill="transparent"
+                stroke="#C94468"
+                strokeWidth="1.5"
+              />
+            </svg>
+            <span style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              color: '#C94468',
+              fontFamily: sans,
+              fontSize: '8.5px',
+              fontWeight: 500,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
+            }}>
+              Join the Trailblazing Club
+            </span>
           </a>
         </section>
 
