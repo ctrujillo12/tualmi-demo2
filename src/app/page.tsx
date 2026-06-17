@@ -188,8 +188,10 @@ export default async function Home() {
             href="https://tualmi.com/invite"
             style={{
               display: 'inline-block',
-              backgroundColor: '#C94468',
-              color: 'white',
+              backgroundColor: 'transparent',
+              color: '#C94468',
+              border: '1.5px solid #C94468',
+              borderRadius: '6px',
               fontFamily: sans,
               fontSize: 'clamp(10px, 1.2vw, 12px)',
               fontWeight: 500,
