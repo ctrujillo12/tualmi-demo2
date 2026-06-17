@@ -11,13 +11,17 @@ const muted = '#8C7B6B';
 
 export default function InvitePage() {
   return (
-    <>
-
-
+    <div style={{
+      minHeight: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 'clamp(48px, 8vw, 96px) clamp(20px, 5vw, 32px)',
+    }}>
       <main style={{
         maxWidth: '640px',
-        margin: '0 auto',
-        padding: 'clamp(64px, 10vw, 120px) clamp(20px, 5vw, 32px)',
+        width: '100%',
         textAlign: 'center',
       }}>
         <p style={{
@@ -57,6 +61,6 @@ export default function InvitePage() {
 
         <TrailblazerSignup />
       </main>
-    </>
+    </div>
   );
 }
