@@ -70,31 +70,14 @@ export default function Header() {
             </nav>
           </div>
 
-          {/* RIGHT — CART */}
+          {/* RIGHT — JOIN CTA */}
           <div className="flex items-center space-x-6">
-            <Link href="/cart" className="relative group">
-              <svg
-                className={`w-5 h-5 ${textColor} ${hoverColor} transition-colors`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                />
-              </svg>
-              {isMounted && itemCount > 0 && (
-                <span
-                  className={`absolute -top-2 -right-2 h-4 w-4 rounded-full text-xs flex items-center justify-center transition-colors duration-300 ${
-                    isScrolled ? 'bg-[#3B2F1E] text-[#FAFAF7]' : 'bg-white text-[#3B2F1E]'
-                  }`}
-                >
-                  {itemCount}
-                </span>
-              )}
+            <Link
+              href="/invite"
+              className={`${textColor} ${hoverColor} transition-colors`}
+              style={{ fontFamily: 'var(--font-montserrat)', fontSize: '9px', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', textDecoration: 'none' }}
+            >
+              Join the Club
             </Link>
           </div>
 

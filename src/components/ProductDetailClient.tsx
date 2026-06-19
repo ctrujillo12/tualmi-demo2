@@ -93,7 +93,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   const isInStock     = AVAILABLE_HANDLES.includes(handle);
   const isPreviewOnly = PREVIEW_ONLY_HANDLES.includes(handle);
   const isPreorder    = !isInStock && !isPreviewOnly;
-  const isPurchasable = isInStock || isPreorder;
+  const isPurchasable = false; // Preorders disabled — view only
 
   const addItem = useCartStore((state) => state.addItem);
 
@@ -232,14 +232,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     content: (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <p style={{ margin: 0 }}>7-day returns and exchanges</p>
-        <p style={{ margin: 0 }}>
-          {isPreorder ? `${shippingLabel}.` : 'Ships within 2-3 business days.'}
-        </p>
+        <p style={{ margin: 0 }}>{shippingLabel}.</p>
       </div>
     ),
   });
 
-  const statusLabel = isInStock ? 'Available Now' : isPreorder ? 'Pre-Order' : 'Spring 2026';
+  const statusLabel = isPreviewOnly ? 'Coming Soon' : 'Early Access';
 
   const imageOverlay = isPreviewOnly ? (
     <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -416,51 +414,35 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               </div>
             )}
 
-            {/* CTA */}
+            {/* CTA — view only, preorders disabled */}
             <div style={{ marginBottom: '32px' }}>
-              {isPurchasable ? (
-                <>
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={buyStatus === 'added'}
-                    style={{
-                      width: '100%',
-                      backgroundColor: brown,
-                      color: '#FAFAF7',
-                      padding: '14px',
-                      fontFamily: sans,
-                      fontSize: '9px',
-                      fontWeight: 600,
-                      letterSpacing: '0.28em',
-                      textTransform: 'uppercase',
-                      border: 'none',
-                      cursor: buyStatus === 'added' ? 'default' : 'pointer',
-                      transition: 'opacity 0.2s',
-                    }}
-                    onMouseEnter={e => { if (buyStatus !== 'added') e.currentTarget.style.opacity = '0.85'; }}
-                    onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-                  >
-                    {buyStatus === 'added' ? 'Added to Cart' : isPreorder ? 'Pre-Order Now' : 'Add to Cart'}
-                  </button>
-                  {isPreorder && (
-                    <p style={{ fontFamily: sans, fontSize: '11px', color: muted, marginTop: '10px', textAlign: 'center', lineHeight: 1.7, letterSpacing: '0.03em' }}>
-                      {`You'll be charged at checkout. ${shippingLabel}.`}
-                    </p>
-                  )}
-                  {buyStatus === 'error' && (
-                    <p style={{ fontFamily: sans, fontSize: '12px', color: '#9B4040', marginTop: '8px', textAlign: 'center' }}>{buyError}</p>
-                  )}
-                </>
-              ) : (
-                <>
-                  <button disabled style={{ width: '100%', backgroundColor: bgAlt, color: muted, padding: '14px', fontFamily: sans, fontSize: '9px', fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', border: 'none', cursor: 'not-allowed', marginBottom: '8px' }}>
-                    Coming Soon
-                  </button>
-                  <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: muted, textAlign: 'center' }}>
-                    Sign up on our homepage to get early access when this drops.
-                  </p>
-                </>
-              )}
+              <a
+                href="/invite"
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  backgroundColor: '#C94468',
+                  color: '#FAFAF7',
+                  padding: '14px',
+                  fontFamily: sans,
+                  fontSize: '9px',
+                  fontWeight: 600,
+                  letterSpacing: '0.28em',
+                  textTransform: 'uppercase',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  textDecoration: 'none',
+                  transition: 'opacity 0.2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+              >
+                Join the Trailblazing Club
+              </a>
+              <p style={{ fontFamily: sans, fontSize: '11px', color: muted, marginTop: '10px', textAlign: 'center', lineHeight: 1.7, letterSpacing: '0.03em' }}>
+                Members get early access when we launch. {shippingLabel}.
+              </p>
             </div>
 
             {/* Description */}

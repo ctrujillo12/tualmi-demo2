@@ -86,24 +86,8 @@ export default function ProductCard({
     setSelectedColor(colors[index]?.name ?? null);
   };
 
-  // Pill shown in top-left corner of image. Tote = no pill (it's just available).
-  const cornerPill = isPreorder ? (
-    <div className="product-pill" style={{
-      position: 'absolute',
-      top: '10px',
-      left: '10px',
-      backgroundColor: '#FAFAF7',
-      color: '#3B2F1E',
-      fontSize: '9px',
-      letterSpacing: '0.2em',
-      textTransform: 'uppercase',
-      padding: '4px 10px',
-      border: '1px solid #DDD5C8',
-      zIndex: 1,
-    }}>
-      Pre-Order
-    </div>
-  ) : isPreviewOnly ? (
+  // Pill shown in top-left corner of image.
+  const cornerPill = isPreviewOnly ? (
     <div className="product-pill" style={{
       position: 'absolute',
       top: '10px',

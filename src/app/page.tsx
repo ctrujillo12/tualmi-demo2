@@ -130,7 +130,7 @@ export default async function Home() {
               </h1>
             </div>
             <a
-              href="#collection"
+              href="/invite"
               className="hero-cta"
               style={{
                 display: 'block',
@@ -143,23 +143,26 @@ export default async function Home() {
               <img
                 src="/images-2/hero-button.png?v=2"
                 alt=""
-                style={{ display: 'block', height: 'clamp(26px, 3.2vw, 35px)', width: '100%', objectFit: 'fill' }}
+                style={{ display: 'block', height: 'clamp(26px, 3.2vw, 40px)', width: '100%', objectFit: 'fill' }}
               />
               <span style={{
                 position: 'absolute',
                 inset: 0,
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
+                gap: '2px',
                 fontFamily: sans,
-                fontSize: '8px',
-                fontWeight: 600,
-                letterSpacing: '0.28em',
-                textTransform: 'uppercase',
                 color: 'white',
                 textShadow: '0 1px 3px rgba(0,0,0,0.2)',
               }}>
-                Pre-order Now
+                <span style={{ fontSize: '8px', fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase' }}>
+                  Join the Trailblazing Club
+                </span>
+                <span style={{ fontSize: '6.5px', fontWeight: 400, letterSpacing: '0.18em', textTransform: 'uppercase', opacity: 0.85 }}>
+                  Members get early access
+                </span>
               </span>
             </a>
           </div>
