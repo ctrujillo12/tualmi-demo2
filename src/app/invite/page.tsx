@@ -57,7 +57,7 @@ export default function InvitePage() {
           fontWeight: 300,
           letterSpacing: '0.015em',
         }}>
-          Be part of our early community — new drops, trail guides, and a vote on what we make next. (plus special perks!!)
+          Help us build the Tualmi community 💗 — you'll get first access to our launch (24hrs before anyone else!!), and a vote on what we make next.
         </p>
 
 
