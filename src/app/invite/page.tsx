@@ -64,7 +64,7 @@ export default function InvitePage() {
           listStyle: 'none',
           padding: 0,
           margin: '0 0 28px',
-          display: 'flex',
+          display: 'inline-flex',
           flexDirection: 'column',
           gap: '10px',
           textAlign: 'left',
@@ -84,7 +84,7 @@ export default function InvitePage() {
               lineHeight: 1.7,
               letterSpacing: '0.015em',
             }}>
-              <span style={{ color: '#C94468', fontSize: '16px', lineHeight: 1.4, flexShrink: 0 }}>✦</span>
+              <span style={{ color: mid, fontSize: '16px', lineHeight: 1.4, flexShrink: 0 }}>✦</span>
               {item}
             </li>
           ))}
