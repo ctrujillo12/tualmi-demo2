@@ -420,9 +420,10 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                 style={{
                   display: 'block',
                   width: '100%',
+                  boxSizing: 'border-box',
                   backgroundColor: '#C94468',
                   color: '#FAFAF7',
-                  padding: '14px',
+                  padding: '16px 28px',
                   fontFamily: sans,
                   fontSize: '9px',
                   fontWeight: 600,

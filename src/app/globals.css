@@ -84,9 +84,9 @@ body {
     font-size: 48px !important;
   }
 
-  /* Button image: 25% taller on mobile (26px * 1.25) */
+  /* Button image: comfortable single-line height on mobile */
   .hero-cta img {
-    height: 33px !important;
+    height: 36px !important;
   }
 
   /* CTA button: full width so it matches the logo+text row */

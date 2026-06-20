@@ -143,28 +143,38 @@ export default async function Home() {
               <img
                 src="/images-2/hero-button.png?v=2"
                 alt=""
-                style={{ display: 'block', height: 'clamp(26px, 3.2vw, 40px)', width: '100%', objectFit: 'fill' }}
+                style={{ display: 'block', height: 'clamp(30px, 3.2vw, 38px)', width: '100%', objectFit: 'fill' }}
               />
               <span style={{
                 position: 'absolute',
                 inset: 0,
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '2px',
                 fontFamily: sans,
                 color: 'white',
                 textShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                fontSize: '8px',
+                fontWeight: 600,
+                letterSpacing: '0.28em',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
               }}>
-                <span style={{ fontSize: '8px', fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase' }}>
-                  Join the Trailblazing Club
-                </span>
-                <span style={{ fontSize: '6.5px', fontWeight: 400, letterSpacing: '0.18em', textTransform: 'uppercase', opacity: 0.85 }}>
-                  Members get early access
-                </span>
+                Join the Trailblazing Club
               </span>
             </a>
+            <p style={{
+              fontFamily: sans,
+              fontSize: '7px',
+              fontWeight: 400,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.75)',
+              margin: '6px 0 0',
+              textAlign: 'center',
+            }}>
+              Members get early access
+            </p>
           </div>
         </div>
       </section>
@@ -198,9 +208,10 @@ export default async function Home() {
               fontWeight: 500,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              padding: '14px 28px',
+              padding: '14px 36px',
               borderRadius: '30px',
               textDecoration: 'none',
+              whiteSpace: 'nowrap',
             }}
           >
             Join the Trailblazing Club!
