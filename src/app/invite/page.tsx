@@ -70,8 +70,8 @@ export default function InvitePage() {
           textAlign: 'left',
         }}>
           {[
-            '24-hour early access to our launch before anyone else',
-            'A vote on what we make for our next collection',
+            '24-hour early access to our launch before anyone else 🤫',
+            'A vote on what we make for our next collection !!',
           ].map((item) => (
             <li key={item} style={{
               display: 'flex',
