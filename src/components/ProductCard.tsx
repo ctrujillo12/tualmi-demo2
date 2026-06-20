@@ -148,8 +148,13 @@ export default function ProductCard({
             {product.category}
           </p>
           {showPrice && (
-            <p style={{ fontSize: '13px', color: '#111110', fontFamily: serif }}>
+            <p style={{ fontSize: '13px', color: '#111110', fontFamily: serif, marginBottom: product.shippingWindow?.includes('August') ? '4px' : undefined }}>
               ${(product.price / 100).toFixed(2)}
+            </p>
+          )}
+          {product.shippingWindow?.includes('August') && (
+            <p style={{ fontSize: '9px', fontFamily: sans, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#C94468', margin: 0 }}>
+              Ships August 2026
             </p>
           )}
         </div>

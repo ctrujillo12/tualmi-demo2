@@ -236,7 +236,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     ),
   });
 
-  const statusLabel = isPreviewOnly ? 'Coming Soon' : 'Early Access';
+  const statusLabel = isPreviewOnly ? 'Coming Soon' : shippingLabel;
 
   const imageOverlay = isPreviewOnly ? (
     <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

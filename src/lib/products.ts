@@ -27,7 +27,7 @@ export const localProducts: Product[] = [
     handle: 'summit-pant',
     name: 'Summit Pant',
     description:
-      'Flare cargo pants that are also actually good for hiking. We know. The Summit Pant has the fold-over waist you love, cargo pockets that fit your actual stuff, and a flared leg that hits different at the trailhead. Moss is olive green because you have taste. Birch is the neutral you\'ve been reaching for since Patagonia stopped trying — the cargo flare that goes with everything, from weekend trip to campus to coffee. Cinch hem because the trail is real.',
+      'Flare cargo pants that are also actually good for hiking. The fold-over waist you love, cargo pockets that fit your stuff, and a flared leg that that goes with everything. Cinch hem because the trail is real.',
     price: 9900,
     images: ['/images-2/pants-olive.png', '/images-2/pants-white-bg.png'],
     category: 'Bottoms',
@@ -43,7 +43,7 @@ export const localProducts: Product[] = [
     handle: 'alpine-baby-tee',
     name: 'Alpine Baby Tee',
     description:
-      'The layer you actually want under your fleece — and the top you wear when you ditch it. UPF 40 protection, second-skin fit, and the kind of cut that makes your shoulders look good on the summit. Solstice is your golden-hour yellow. Petal is the pink that goes with everything. Light, breathable, and designed for the girl who doesn\'t leave her style at the trailhead.',
+      'The layer you actually want under your fleece — and the top you wear when you ditch it. UPF 40 protection, second-skin fit, and the kind of cut that makes your shoulders look good on the summit. Light, breathable, and designed for the girl who doesn\'t leave her style at the trailhead.',
     price: 6900,
     images: ['/images-2/shirt-yellow-bg.png', '/images-2/shirt-pink-bg.png'],
     category: 'Tops',
