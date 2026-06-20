@@ -52,13 +52,43 @@ export default function InvitePage() {
           fontSize: 'clamp(13px, 2vw, 14px)',
           lineHeight: 1.9,
           color: mid,
-          marginBottom: '12px',
+          marginBottom: '16px',
           fontFamily: sans,
           fontWeight: 300,
           letterSpacing: '0.015em',
         }}>
-          Help us build the Tualmi community 💗 — you'll get first access to our launch (24hrs before anyone else!!), and a vote on what we make next.
+          Help us build the Tualmi community from the ground up 💗
         </p>
+
+        <ul style={{
+          listStyle: 'none',
+          padding: 0,
+          margin: '0 0 28px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+          textAlign: 'left',
+        }}>
+          {[
+            '24-hour early access to our launch before anyone else',
+            'A vote on what we make for our next collection',
+          ].map((item) => (
+            <li key={item} style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '10px',
+              fontFamily: sans,
+              fontSize: 'clamp(13px, 2vw, 14px)',
+              fontWeight: 300,
+              color: mid,
+              lineHeight: 1.7,
+              letterSpacing: '0.015em',
+            }}>
+              <span style={{ color: '#C94468', fontSize: '16px', lineHeight: 1.4, flexShrink: 0 }}>✦</span>
+              {item}
+            </li>
+          ))}
+        </ul>
 
 
         <TrailblazerSignup />
