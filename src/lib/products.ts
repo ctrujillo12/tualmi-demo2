@@ -11,7 +11,7 @@ export const localProducts: Product[] = [
     handle: 'trailblazing-fleece',
     name: 'Trailblazing Fleece',
     description:
-      'You know that feeling when your outfit is too cute to stay on the trail? That\'s this fleece. The Wildflower colorway is a butter-yellow daisy print that looks like it was pulled from your dream vintage shop, except it\'s actually built for the mountain. Chest zip pocket, snap collar, kangaroo pocket — everything you need for the ridge, the trailhead coffee stop, and wherever the day takes you after. The Golden Hour stripe? Pink stripes shouldn\'t be this functional, but here we are. Made by women. Finally fits like it.',
+      'A mid-weight fleece — think Patagonia Synchilla -- but with the patterns and fit that brand never figured out. Chest zip pocket, snap collar, kangaroo pocket. The Wildflower daisy print looks vintage-shop, the Golden Hour stripe is pink stripes that are somehow also functional. Made by women. Finally fits like it.',
     price: 14900,
     images: ['/images-2/fleece-pink-bg.png', '/images-2/fleece-yellow-bg.png'],
     category: 'Outerwear',
@@ -59,7 +59,7 @@ export const localProducts: Product[] = [
     handle: 'horizon-shorts',
     name: 'Horizon Shorts',
     description:
-      'Three colorways, one pair of shorts that becomes your whole summer. Canyon is a deep raspberry-red that shows up in every great photo from every great trip — wear it with the Wildflower fleece or literally nothing else and it still works. Dusk is the pink gingham situation: picnic energy meets trail energy, the shorts you wear on a Zion trip and refuse to take off for the rest of the summer. Meadow is the retro circle print — green, pink, brown, and cream — the pair people are going to ask about. Mid-rise, relaxed fit, made for moving.',
+      'Inspired by the Patagonia Barely Baggies Shorts — but with the colorways they never made. Mid-rise, relaxed fit, with deep pockets big enough for your whole phone. Canyon is the raspberry-red that shows up in every good hiking photo. Dusk is pink gingham — picnic energy meets trail energy. Meadow is the retro circle print people will ask you about at the trailhead.',
     price: 7200,
     images: [
       '/images-2/shorts-red-bg.png',

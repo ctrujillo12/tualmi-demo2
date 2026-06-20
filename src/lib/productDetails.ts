@@ -31,7 +31,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Relaxed fit. Size up for a boxy look, true to size for a fitted silhouette.',
+    fit: 'Relaxed fit. Size up for a boxy look, true to size for a fitted silhouette.\n\nFull size guide coming before launch. Our size S fit model: 5\'7" height · 15" shoulder · 33" chest · 26" waist · 37" hip.',
     tempGuide: {
       standalone: '40-65 degrees F (4-18 degrees C)',
       layered: 'Down to ~20 degrees F (-7 degrees C)',
@@ -56,17 +56,18 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'High-rise with a relaxed flared leg. True to size - size up if between sizes.',
+    fit: 'High-rise with a relaxed flared leg. True to size — size up if between sizes.\n\nFull size guide coming before launch. Our size S fit model: 5\'7" height · 15" shoulder · 33" chest · 26" waist · 37" hip.',
   },
 
   'horizon-shorts': {
     shell: '100% Recycled Nylon',
     weight: '130-140 GSM',
     features: [
-      'Waterproof',
+      'Inspired by the Patagonia Barely Baggy Shorts silhouette',
+      'Deep side pockets — big enough for your whole phone',
+      'Waterproof shell',
       'Moisture-wicking + quick-dry',
       'Mid-rise waistband',
-      'Side pockets',
       'Relaxed fit',
     ],
     care: [
@@ -75,7 +76,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Mid-rise with a relaxed fit. True to size.',
+    fit: 'Mid-rise, relaxed fit — inspired by the Patagonia Barely Baggy Shorts. True to size.\n\nFull size guide coming before launch. Our size S fit model: 5\'7" height · 15" shoulder · 33" chest · 26" waist · 37" hip.',
   },
 
   'alpine-baby-tee': {
@@ -93,6 +94,6 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Fitted. Size up for a relaxed look.',
+    fit: 'Fitted. Size up for a relaxed look.\n\nFull size guide coming before launch. Our size S fit model: 5\'7" height · 15" shoulder · 33" chest · 26" waist · 37" hip.',
   },
 };

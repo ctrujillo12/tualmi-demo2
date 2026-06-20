@@ -109,6 +109,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     return product.images.slice(start, end);
   };
 
+  const [copied, setCopied] = useState(false);
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText('hello@tualmi.com');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const [selectedImage, setSelectedImage]     = useState(0);
   const [selectedSize, setSelectedSize]       = useState(product.sizes[0] || '');
   const [selectedColor, setSelectedColor]     = useState(() => {
@@ -189,14 +196,6 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
           )}
         </div>
       ),
-    });
-  }
-
-  if (fabricDetail?.fit) {
-    accordionItems.push({
-      key: 'fit',
-      label: 'Fit & Sizing',
-      content: <p style={{ margin: 0 }}>{fabricDetail.fit}</p>,
     });
   }
 
@@ -451,6 +450,45 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                 {product.description}
               </p>
             </div>
+
+            {/* Fit & Sizing — always visible */}
+            {fabricDetail?.fit && (
+              <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
+                <p style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.35em', textTransform: 'uppercase', color: muted, marginBottom: '12px', marginTop: 0 }}>
+                  Fit & Sizing
+                </p>
+                {fabricDetail.fit.split('\n\n').map((block, i) => (
+                  <p key={i} style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid, lineHeight: 1.85, margin: i > 0 ? '10px 0 0' : 0 }}>
+                    {block}
+                  </p>
+                ))}
+                <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <span style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid }}>
+                    Fit question? Email{' '}
+                    <span style={{ color: brown, fontWeight: 400 }}>hello@tualmi.com</span>
+                  </span>
+                  <button
+                    onClick={handleCopyEmail}
+                    style={{
+                      fontFamily: sans,
+                      fontSize: '9px',
+                      fontWeight: 500,
+                      letterSpacing: '0.18em',
+                      textTransform: 'uppercase',
+                      color: copied ? '#5A8A5A' : muted,
+                      background: 'none',
+                      border: `1px solid ${copied ? '#5A8A5A' : rule}`,
+                      borderRadius: '100px',
+                      padding: '5px 12px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {copied ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* COMPARISON MATRIX — hidden, keep for later
             {compTable && (
