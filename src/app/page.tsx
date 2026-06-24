@@ -195,7 +195,7 @@ export default async function Home() {
             Tualmi is built for the girls who want both fashion-forward silhouettes and trail-ready performance, designed by women who actually hike. Every piece is produced from 100% recycled materials by a WRAP-certified manufacturer. 
           </p>
           <p style={{ fontFamily: sans, fontSize: 'clamp(10px, 1.2vw, 12px)', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#A89880', marginTop: '16px', marginBottom: '28px' }}>
-            We launch July 2026!
+            We launch July 2026
           </p>
           <a
             href="https://tualmi.com/invite"
