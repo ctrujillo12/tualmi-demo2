@@ -57,7 +57,7 @@ export default function InvitePage() {
           fontWeight: 300,
           letterSpacing: '0.015em',
         }}>
-          Help us build the Tualmi community from the ground up 💗
+          Get first access to gear built for women who actually spend time outside.
         </p>
 
         <ul style={{
@@ -70,8 +70,8 @@ export default function InvitePage() {
           textAlign: 'left',
         }}>
           {[
-            '24-hour early access to our launch before anyone else!',
             'Vote on what we make for our next collection',
+            '24-hour early access to our launch before anyone else',
           ].map((item) => (
             <li key={item} style={{
               display: 'flex',
