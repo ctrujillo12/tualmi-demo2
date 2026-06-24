@@ -13,6 +13,7 @@ interface ProductCardProps {
   hideSwatches?: boolean;
   colorLabel?: string;
   colorQuery?: string;
+  disableLink?: boolean;
 }
 
 // Same gating rules as ProductDetailClient — keep these in sync.
@@ -68,6 +69,7 @@ export default function ProductCard({
   hideSwatches = false,
   colorLabel,
   colorQuery,
+  disableLink = false,
 }: ProductCardProps) {
   const handle        = product.handle ?? '';
   const colors        = PRODUCT_COLORS[handle] ?? [];
@@ -106,9 +108,13 @@ export default function ProductCard({
 
   const href = `/products/${product.handle ?? product.id}${colorQuery ? `?color=${encodeURIComponent(colorQuery)}` : ''}`;
 
+  const CardWrapper = disableLink
+    ? ({ children }: { children: React.ReactNode }) => <div style={{ textDecoration: 'none', cursor: 'default' }}>{children}</div>
+    : ({ children }: { children: React.ReactNode }) => <Link href={href} style={{ textDecoration: 'none' }}>{children}</Link>;
+
   return (
     <div>
-      <Link href={href} style={{ textDecoration: 'none' }}>
+      <CardWrapper>
         {/* Image */}
         <div style={{
           aspectRatio: imageAspectRatio,
@@ -158,7 +164,7 @@ export default function ProductCard({
             </p>
           )}
         </div>
-      </Link>
+      </CardWrapper>
 
       {/* Swatches — outside the Link so clicks don't navigate */}
       {!hideSwatches && colors.length > 0 && (

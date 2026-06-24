@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 const sans  = "var(--font-montserrat), system-ui, sans-serif";
 const serif = "'Cormorant Garamond', Georgia, serif";
@@ -42,11 +43,13 @@ const SECTIONS = [
 
 export default function Footer() {
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const pathname = usePathname();
+  const footerBg = '#f9d6dd';
   const toggle = (title: string) =>
     setOpenSection(prev => (prev === title ? null : title));
 
   return (
-    <footer style={{ backgroundColor: '#dad082', position: 'relative', zIndex: 3, paddingTop: 'clamp(20px, 3vw, 36px)' }}>
+    <footer style={{ backgroundColor: footerBg, position: 'relative', zIndex: 3, paddingTop: 'clamp(20px, 3vw, 36px)' }}>
       {/* Ribbon trim — tiled at half scale so it's thinner */}
       <div style={{
         width: '100%',

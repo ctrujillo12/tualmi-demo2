@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 const STORAGE_KEY = 'tualmi_welcome_shown';
 const CODE  = 'TRAILBLAZING15';
-const green = '#dad082';
+const green = '#f9d6dd';
 const brown = '#3B2F1E';
 const mid   = '#6B5C4C';
 const muted = '#7A6A4A';

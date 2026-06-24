@@ -10,7 +10,7 @@ import { PRODUCT_COLORS } from '@/lib/productColors';
 
 const sans   = 'var(--font-montserrat)';
 
-const PRODUCT_ORDER = ['trailblazing-fleece', 'summit-pant', 'horizon-shorts', 'alpine-baby-tee', 'trailblazing-tote'];
+const PRODUCT_ORDER = ['trailblazing-fleece', 'summit-pant', 'horizon-shorts', 'alpine-baby-tee'];
 
 export default async function Home() {
   const products = await getProducts();
@@ -184,7 +184,7 @@ export default async function Home() {
 
         {/* ABOUT */}
         <section style={{
-          backgroundColor: '#dad082',
+          backgroundColor: '#f9d6dd',
           padding: 'clamp(48px, 7vw, 80px) clamp(24px, 6vw, 80px)',
           borderBottom: '1px solid #E8E2D8',
         }}>
@@ -195,7 +195,7 @@ export default async function Home() {
             We made the clothes we wish existed. Tualmi is built for girls who want both fashion-forward silhouettes and trail-ready performance, designed by women who actually hike. Every piece is produced from 100% recycled materials by a WRAP-certified manufacturer. 
           </p>
           <p style={{ fontFamily: sans, fontSize: 'clamp(10px, 1.2vw, 12px)', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#A89880', marginTop: '16px', marginBottom: '28px' }}>
-            We ship July 2026!
+            We launch July 2026!
           </p>
           <a
             href="https://tualmi.com/invite"
@@ -218,15 +218,6 @@ export default async function Home() {
           </a>
         </section>
 
-        {/* MARQUEE BANNER */}
-        <div style={{ backgroundColor: '#C94468', overflow: 'hidden', padding: '9px 0' }}>
-          <div className="marquee-track">
-            <span style={{ fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'white', whiteSpace: 'nowrap' }}>
-              {marqueeText}{marqueeText}{marqueeText}{marqueeText}{marqueeText}{marqueeText}{marqueeText}{marqueeText}
-            </span>
-          </div>
-        </div>
-
         {/* COLLECTION */}
         <section id="collection" style={{
           padding: 'clamp(48px, 7vw, 80px) clamp(20px, 3vw, 40px)',
@@ -246,6 +237,7 @@ export default async function Home() {
                   border: '3.5px solid #B84A5E',
                   borderRadius: '12px',
                   overflow: 'hidden',
+                  position: 'relative',
                 }}>
                   <ProductCard
                     product={product}
@@ -255,7 +247,31 @@ export default async function Home() {
                     hideSwatches
                     colorLabel={colorLabel}
                     colorQuery={colorLabel}
+                    disableLink
                   />
+                  {/* Coming Soon overlay */}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '44px',
+                    left: 0,
+                    right: 0,
+                    backgroundColor: 'rgba(250,250,247,0.82)',
+                    backdropFilter: 'blur(6px)',
+                    padding: '10px 0',
+                    pointerEvents: 'none',
+                    textAlign: 'center',
+                  }}>
+                    <span style={{
+                      fontFamily: sans,
+                      fontSize: '8px',
+                      fontWeight: 600,
+                      letterSpacing: '0.32em',
+                      textTransform: 'uppercase',
+                      color: '#3B2F1E',
+                    }}>
+                      Coming Soon
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
