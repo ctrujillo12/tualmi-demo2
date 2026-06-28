@@ -38,7 +38,7 @@ export default function VotePage() {
           marginBottom: '24px',
           fontFamily: 'var(--font-cedarville), cursive',
         }}>
-          Thank u for voting 
+          Thank u for voting
         </h1>
 
         <p style={{
@@ -51,6 +51,8 @@ export default function VotePage() {
           letterSpacing: '0.015em',
         }}>
           We love hearing from you and read every single response!
+        </p>
+
         <p style={{
           fontSize: 'clamp(13px, 2vw, 15px)',
           lineHeight: 1.9,
@@ -61,7 +63,7 @@ export default function VotePage() {
           letterSpacing: '0.015em',
           fontStyle: 'italic',
         }}>
-          Lauching July 31
+          Launching July 31
         </p>
 
         <Link
