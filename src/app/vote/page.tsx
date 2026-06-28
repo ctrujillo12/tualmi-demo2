@@ -38,7 +38,7 @@ export default function VotePage() {
           marginBottom: '24px',
           fontFamily: 'var(--font-cedarville), cursive',
         }}>
-          Thank u for voting
+          thank u for voting 💗
         </h1>
 
         <p style={{
