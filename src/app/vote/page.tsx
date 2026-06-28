@@ -38,7 +38,7 @@ export default function VotePage() {
           marginBottom: '24px',
           fontFamily: 'var(--font-cedarville), cursive',
         }}>
-          thanks for voting, we love hearing from y&apos;all.
+          Thank u for voting 
         </h1>
 
         <p style={{
@@ -50,9 +50,7 @@ export default function VotePage() {
           fontWeight: 300,
           letterSpacing: '0.015em',
         }}>
-          We actually read every single response. Your vote helps shape what we make next — that&apos;s not just something we say.
-        </p>
-
+          We love hearing from you and read every single response!
         <p style={{
           fontSize: 'clamp(13px, 2vw, 15px)',
           lineHeight: 1.9,
@@ -63,7 +61,7 @@ export default function VotePage() {
           letterSpacing: '0.015em',
           fontStyle: 'italic',
         }}>
-          First drop ships July 2026.
+          Lauching July 31
         </p>
 
         <Link
