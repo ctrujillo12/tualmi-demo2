@@ -18,7 +18,7 @@ interface ProductCardProps {
 
 // Same gating rules as ProductDetailClient — keep these in sync.
 const AVAILABLE_HANDLES = ['trailblazing-tote'];
-const PREVIEW_ONLY_HANDLES = ['carabiner'];
+const PREVIEW_ONLY_HANDLES: string[] = [];
 
 import { PRODUCT_COLORS } from '@/lib/productColors';
 

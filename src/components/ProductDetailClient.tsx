@@ -13,7 +13,7 @@ interface ProductDetailClientProps {
 }
 
 const AVAILABLE_HANDLES = ['trailblazing-tote'];
-const PREVIEW_ONLY_HANDLES = ['carabiner'];
+const PREVIEW_ONLY_HANDLES: string[] = [];
 
 const brown = '#3B2F1E';
 const mid   = '#6B5C4C';
@@ -50,7 +50,7 @@ const compTableByHandle: Record<string, CompTable> = {
       { label: 'Chest zip pocket',          tualmi: true,  patagonia: true,  vuori: false, comp4: false },
     ],
   },
-  'summit-pant': {
+  'pinnacles-pant': {
     price:  { tualmi: '$99',  patagonia: '$99',  vuori: '$118', comp4: '$128' },
     labels: { tualmi: 'Tualmi', patagonia: 'Patago.', vuori: 'Vuori', comp4: 'Lulu' },
     rows: [
@@ -61,7 +61,7 @@ const compTableByHandle: Record<string, CompTable> = {
       { label: 'Flare silhouette',          tualmi: true,  patagonia: false, vuori: false, comp4: false },
     ],
   },
-  'horizon-shorts': {
+  'sierra-shorts': {
     price:  { tualmi: '$72',  patagonia: '$75',  vuori: '$74',  comp4: '$68'  },
     labels: { tualmi: 'Tualmi', patagonia: 'Patago.', vuori: 'Vuori', comp4: 'Lulu' },
     rows: [
@@ -463,6 +463,38 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                     {block}
                   </p>
                 ))}
+                {fabricDetail.sizeChart && (
+                  <div style={{ marginTop: '20px', overflowX: 'auto' }}>
+                    {/* Size chart — data lives in src/lib/productDetails.ts */}
+                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '480px' }}>
+                      <thead>
+                        <tr>
+                          <th style={{ padding: '6px 8px 8px 0', textAlign: 'left', fontFamily: sans, fontSize: '9px', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: muted, borderBottom: `1px solid ${rule}` }}> </th>
+                          {fabricDetail.sizeChart.sizes.map((s) => (
+                            <th key={s} style={{ padding: '6px 4px 8px', textAlign: 'center', fontFamily: sans, fontSize: '10px', fontWeight: 600, letterSpacing: '0.08em', color: brown, borderBottom: `1px solid ${rule}` }}>
+                              {s}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {fabricDetail.sizeChart.rows.map((row, i) => (
+                          <tr key={row.label} style={{ backgroundColor: i % 2 === 0 ? 'transparent' : bgAlt }}>
+                            <td style={{ padding: '7px 8px 7px 0', fontFamily: sans, fontSize: '11px', fontWeight: 300, color: mid, whiteSpace: 'nowrap' }}>{row.label}</td>
+                            {row.values.map((v, j) => (
+                              <td key={j} style={{ padding: '7px 4px', textAlign: 'center', fontFamily: sans, fontSize: '11px', fontWeight: 300, color: mid }}>{v}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {fabricDetail.sizeChart.note && (
+                      <p style={{ fontFamily: sans, fontSize: '10px', fontWeight: 300, color: muted, margin: '8px 0 0', letterSpacing: '0.03em' }}>
+                        {fabricDetail.sizeChart.note}
+                      </p>
+                    )}
+                  </div>
+                )}
                 <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                   <span style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid }}>
                     Fit question? Email{' '}

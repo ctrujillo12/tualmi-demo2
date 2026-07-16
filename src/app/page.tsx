@@ -10,7 +10,7 @@ import { PRODUCT_COLORS } from '@/lib/productColors';
 
 const sans   = 'var(--font-montserrat)';
 
-const PRODUCT_ORDER = ['trailblazing-fleece', 'summit-pant', 'horizon-shorts', 'alpine-baby-tee'];
+const PRODUCT_ORDER = ['trailblazing-fleece', 'pinnacles-pant', 'sierra-shorts', 'alpine-baby-tee'];
 
 export default async function Home() {
   const products = await getProducts();
