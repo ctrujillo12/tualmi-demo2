@@ -271,7 +271,7 @@ export default function Home() {
                 className="panel-photo"
                 style={{
                   position: 'relative',
-                  width: 'clamp(240px, 30vw, 340px)',
+                  width: 'clamp(280px, 38vw, 460px)',
                   aspectRatio: '4 / 5',
                   borderRadius: '6px',
                   overflow: 'hidden',
@@ -302,19 +302,37 @@ export default function Home() {
                 >
                   {panel.availability}
                 </p>
-                <h3
-                  style={{
-                    fontFamily: sans,
-                    fontWeight: 700,
-                    fontSize: 'clamp(24px, 3vw, 34px)',
-                    letterSpacing: '-0.02em',
-                    color: panel.accent,
-                    margin: '0 0 clamp(20px, 3vw, 32px)',
-                    textTransform: 'lowercase',
-                  }}
-                >
-                  {panel.title}
-                </h3>
+                {panel.handle === 'trailblazing-tote' ? (
+                  <Link href="/products/trailblazing-tote" style={{ textDecoration: 'none' }}>
+                    <h3
+                      style={{
+                        fontFamily: sans,
+                        fontWeight: 700,
+                        fontSize: 'clamp(24px, 3vw, 34px)',
+                        letterSpacing: '-0.02em',
+                        color: panel.accent,
+                        margin: '0 0 clamp(20px, 3vw, 32px)',
+                        textTransform: 'lowercase',
+                      }}
+                    >
+                      {panel.title}
+                    </h3>
+                  </Link>
+                ) : (
+                  <h3
+                    style={{
+                      fontFamily: sans,
+                      fontWeight: 700,
+                      fontSize: 'clamp(24px, 3vw, 34px)',
+                      letterSpacing: '-0.02em',
+                      color: panel.accent,
+                      margin: '0 0 clamp(20px, 3vw, 32px)',
+                      textTransform: 'lowercase',
+                    }}
+                  >
+                    {panel.title}
+                  </h3>
+                )}
                 <p
                   style={{
                     fontFamily: sans,
@@ -328,7 +346,7 @@ export default function Home() {
                   {panel.copy}
                 </p>
                 <Link
-                  href="/invite"
+                  href={panel.handle === 'trailblazing-tote' ? '/products/trailblazing-tote' : '/invite'}
                   style={{
                     fontFamily: sans,
                     fontSize: '13px',
@@ -338,7 +356,7 @@ export default function Home() {
                     textUnderlineOffset: '4px',
                   }}
                 >
-                  join the club
+                  {panel.handle === 'trailblazing-tote' ? 'shop the tote →' : 'join the club'}
                 </Link>
               </div>
             </div>

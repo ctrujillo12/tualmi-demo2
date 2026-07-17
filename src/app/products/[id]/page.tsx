@@ -1,12 +1,13 @@
-import { notFound } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
 import ProductDetailClient from '@/components/ProductDetailClient';
-import { getProduct, getProducts } from '@/lib/products';
+import { getProduct } from '@/lib/products';
 
-export async function generateStaticParams() {
-  const products = await getProducts();
-  return products.map((product) => ({
-    id: product.handle ?? product.id,
-  }));
+// Only the tote has a live product page right now — everything else
+// redirects to the product preview on the landing page.
+const LIVE_HANDLES = ['trailblazing-tote', '11'];
+
+export function generateStaticParams() {
+  return [{ id: 'trailblazing-tote' }];
 }
 
 export default async function ProductPage({
@@ -18,14 +19,18 @@ export default async function ProductPage({
 }) {
   const { id } = await params;
   const { color } = await searchParams;
-  const product = await getProduct(id);
 
+  if (!LIVE_HANDLES.includes(id)) {
+    redirect('/#collection');
+  }
+
+  const product = await getProduct(id);
   if (!product) {
     notFound();
   }
 
   return (
-    <main className="pt-16">
+    <main>
       <ProductDetailClient product={product!} initialColor={color} />
     </main>
   );
