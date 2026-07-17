@@ -42,7 +42,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#D9DFC5',
     accent: '#7C8A55',
     body: '#96A26D',
-    image: '/images-2/pants-olive-good.png',
+    image: '/images-2/running-shorts0.png',
     fit: 'contain',
   },
   {
@@ -53,7 +53,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#FBE9EF',
     accent: '#EC9DBC',
     body: '#F2B7CD',
-    image: '/images-2/shirt-yellow.png',
+    image: '/images-2/shorts-holdinghands.png',
     fit: 'contain',
   },
   {
@@ -64,7 +64,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#FCF8E3',
     accent: '#D2BE35',
     body: '#DBCB6A',
-    image: '/images-2/fleece-pink.png',
+    image: '/images-2/cayla-redshorts.png',
     fit: 'contain',
   },
   {
