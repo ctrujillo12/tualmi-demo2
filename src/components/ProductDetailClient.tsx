@@ -50,7 +50,7 @@ const compTableByHandle: Record<string, CompTable> = {
       { label: 'Chest zip pocket',          tualmi: true,  patagonia: true,  vuori: false, comp4: false },
     ],
   },
-  'pinnacles-pant': {
+  'juniper-pant': {
     price:  { tualmi: '$99',  patagonia: '$99',  vuori: '$118', comp4: '$128' },
     labels: { tualmi: 'Tualmi', patagonia: 'Patago.', vuori: 'Vuori', comp4: 'Lulu' },
     rows: [

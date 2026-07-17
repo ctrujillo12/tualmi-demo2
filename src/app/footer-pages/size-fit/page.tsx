@@ -23,7 +23,7 @@ export default function SizeFitPage() {
       <Section heading="product fit notes">
         <P>Fit may vary slightly depending on the style. Below is guidance for select pieces.</P>
         <P>Trailblazer Fleece — Runs true to size with minimal coverage.</P>
-        <P>Pinnacles Pant — Designed for a more relaxed fit. Size down for a tighter feel.</P>
+        <P>Juniper Pant — Designed for a more relaxed fit. Size down for a tighter feel.</P>
         <P>Sierra Shorts — Adjustable ties allow for a flexible fit across sizes.</P>
       </Section>
 

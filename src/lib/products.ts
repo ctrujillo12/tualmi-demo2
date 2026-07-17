@@ -23,9 +23,9 @@ export const localProducts: Product[] = [
     shippingWindow: 'Ships Late July 2026',
   },
   {
-    id: 'pinnacles-pant',
-    handle: 'pinnacles-pant',
-    name: 'Pinnacles Pant',
+    id: 'juniper-pant',
+    handle: 'juniper-pant',
+    name: 'Juniper Pant',
     description:
       'Flare cargo pants that are also actually good for hiking. The fold-over waist you love, cargo pockets that fit your stuff, and a flared leg that that goes with everything. Cinch hem because the trail is real.',
     price: 9900,
@@ -96,14 +96,16 @@ export const localProducts: Product[] = [
 // so the rest of the site only ever sees the new ones.
 
 const HANDLE_RENAMES: Record<string, { id: string; handle: string; name: string }> = {
-  'summit-pant': { id: 'pinnacles-pant', handle: 'pinnacles-pant', name: 'Pinnacles Pant' },
+  'summit-pant': { id: 'juniper-pant', handle: 'juniper-pant', name: 'Juniper Pant' },
+  'pinnacles-pant': { id: 'juniper-pant', handle: 'juniper-pant', name: 'Juniper Pant' },
+  'juniper-pants': { id: 'juniper-pant', handle: 'juniper-pant', name: 'Juniper Pant' },
   'horizon-shorts': { id: 'sierra-shorts', handle: 'sierra-shorts', name: 'Sierra Shorts' },
 };
 
-// New handle → old Shopify handle (for fetching until Shopify is updated)
-const OLD_SHOPIFY_HANDLES: Record<string, string> = {
-  'pinnacles-pant': 'summit-pant',
-  'sierra-shorts': 'horizon-shorts',
+// Site handle → alternate Shopify handles to try, in order
+const ALT_SHOPIFY_HANDLES: Record<string, string[]> = {
+  'juniper-pant': ['juniper-pants', 'summit-pant', 'pinnacles-pant'],
+  'sierra-shorts': ['horizon-shorts'],
 };
 
 // Products removed from the site entirely (may still exist in Shopify)
@@ -134,8 +136,8 @@ export async function getProducts(): Promise<Product[]> {
 const legacyIdMap: Record<string, string> = {
   '1': 'trailblazing-fleece',
   '2': 'trailblazing-fleece',
-  '3': 'pinnacles-pant',
-  '4': 'pinnacles-pant',
+  '3': 'juniper-pant',
+  '4': 'juniper-pant',
   '5': 'alpine-baby-tee',
   '6': 'alpine-baby-tee',
   '7': 'sierra-shorts',
@@ -143,7 +145,9 @@ const legacyIdMap: Record<string, string> = {
   '9': 'sierra-shorts',
   '11': 'trailblazing-tote',
   // Old handles — keeps existing links working after the renames
-  'summit-pant': 'pinnacles-pant',
+  'summit-pant': 'juniper-pant',
+  'pinnacles-pant': 'juniper-pant',
+  'juniper-pants': 'juniper-pant',
   'horizon-shorts': 'sierra-shorts',
 };
 
@@ -153,10 +157,11 @@ export async function getProduct(id: string): Promise<Product | null> {
   if (REMOVED_HANDLES.includes(handle)) return null;
 
   try {
-    // Try the new handle first, then fall back to the old Shopify handle
+    // Try the site handle first, then any alternate Shopify handles
     let sp = await getProductByHandle(handle);
-    if (!sp && OLD_SHOPIFY_HANDLES[handle]) {
-      sp = await getProductByHandle(OLD_SHOPIFY_HANDLES[handle]);
+    for (const alt of ALT_SHOPIFY_HANDLES[handle] ?? []) {
+      if (sp) break;
+      sp = await getProductByHandle(alt);
     }
     if (sp) return normalizeProduct(toProduct(sp));
   } catch (err) {

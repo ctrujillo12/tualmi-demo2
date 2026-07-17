@@ -6,7 +6,7 @@ export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> =
     { name: 'Wildflower',  value: '#E8A0B8' },
     { name: 'Golden Hour', value: '#E8C84A' },
   ],
-  'pinnacles-pant': [
+  'juniper-pant': [
     { name: 'Moss',        value: '#7A8C52' },
     { name: 'Birch',       value: '#EDE8DF' },
   ],

@@ -20,6 +20,7 @@ interface ProductPanel {
   accent: string;  // heading color
   body: string;    // paragraph color
   image: string;
+  fit?: 'cover' | 'contain';
 }
 
 const PRODUCT_PANELS: ProductPanel[] = [
@@ -34,14 +35,15 @@ const PRODUCT_PANELS: ProductPanel[] = [
     image: '/images-2/shorts-fish.jpg',
   },
   {
-    handle: 'pinnacles-pant',
-    title: 'the pinnacles pant:',
+    handle: 'juniper-pant',
+    title: 'the juniper pant:',
     copy: 'Flare cargo pants that are also actually good for hiking. The fold-over waist you love, cargo pockets that fit your stuff, and a flared leg that goes with everything. Cinch hem because the trail is real.',
     availability: 'dropping july 31st',
     bg: '#D9DFC5',
     accent: '#7C8A55',
     body: '#96A26D',
-    image: '/images-2/running-shorts1.jpg',
+    image: '/images-2/pants-olive-good.png',
+    fit: 'contain',
   },
   {
     handle: 'alpine-baby-tee',
@@ -51,7 +53,8 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#FBE9EF',
     accent: '#EC9DBC',
     body: '#F2B7CD',
-    image: '/images-2/cayla-redshorts.jpg',
+    image: '/images-2/shirt-yellow.png',
+    fit: 'contain',
   },
   {
     handle: 'trailblazing-fleece',
@@ -61,7 +64,8 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#FCF8E3',
     accent: '#D2BE35',
     body: '#DBCB6A',
-    image: '/images-2/shorts-holdinghands.jpg',
+    image: '/images-2/fleece-pink.png',
+    fit: 'contain',
   },
   {
     handle: 'trailblazing-tote',
@@ -286,7 +290,7 @@ export default function Home() {
                   alt={panel.title}
                   fill
                   sizes="(max-width: 768px) 80vw, 340px"
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: panel.fit ?? 'cover' }}
                 />
               </div>
 

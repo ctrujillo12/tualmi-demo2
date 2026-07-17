@@ -46,7 +46,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     },
   },
 
-  'pinnacles-pant': {
+  'juniper-pant': {
     shell: '90% Nylon, 10% Spandex',
     lining: '84% Nylon, 16% Spandex',
     weight: '200 GSM',
