@@ -396,7 +396,7 @@ export default function Home() {
                 textTransform: 'lowercase',
               }}
             >
-              @tualmi.outdoors
+              @tualmioutdoors
             </h2>
           </a>
 
