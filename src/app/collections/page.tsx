@@ -1,18 +1,25 @@
+import { redirect } from 'next/navigation';
+
 import Link from 'next/link';
 import Image from 'next/image';
-
 import { getProducts } from '@/lib/products';
 import CollectionsFilters from '@/components/CollectionsFilters';
 import type { Product } from '@/types';
 
-export default async function CollectionsPage() {
+// The collections page is hidden for now — the product preview lives in the
+// sticky scroll section on the landing page. Anyone hitting /collections gets
+// sent there. The original page is preserved below as HiddenCollectionsGrid;
+// swap the default export back when it's time to re-enable it.
+export default function CollectionsPage() {
+  redirect('/#collection');
+}
+
+export async function HiddenCollectionsGrid() {
   const allProducts = await getProducts();
   const products = allProducts.filter((p) => p.handle !== 'trailblazing-tote');
 
   return (
     <>
-
-
       <main className="px-6 pt-28 pb-15 max-w-[1200px] mx-auto">
         {/* Title */}
         <div className="text-center">

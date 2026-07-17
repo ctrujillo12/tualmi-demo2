@@ -1,88 +1,95 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { useCartStore } from '@/store/cartStore';
-import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
+const sans   = 'var(--font-montserrat), system-ui, sans-serif';
+const maroon = '#A9445C';
+
+const LEFT_LINKS = [
+  { name: 'our story', href: '/story' },
+  { name: 'preview the first collection', href: '/#collection' },
+];
+
+const RIGHT_LINKS = [
+  { name: 'socials', href: '/#socials' },
+  { name: 'the club', href: '/invite' },
+];
+
+/**
+ * Global site nav — rendered once from layout.tsx on every page.
+ * White while over the homepage hero, maroon everywhere else
+ * (and after scrolling past the hero on the homepage).
+ */
 export default function Header() {
-  const itemCount = useCartStore(state => state.getItemCount());
-  const [hasScrolled, setHasScrolled] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === '/';
-
-  // On non-home pages, always show in "scrolled" state
-  const isScrolled = !isHome || hasScrolled;
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const [pastHero, setPastHero] = useState(false);
 
   useEffect(() => {
     if (!isHome) return;
-    const handleScroll = () => {
-      setHasScrolled(window.scrollY > window.innerHeight);
+    const onScroll = () => {
+      // Hero is 100vh — switch color once its bottom clears the nav.
+      setPastHero(window.scrollY > window.innerHeight - 60);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, [isHome]);
 
-  const textColor   = isScrolled ? 'text-[#3B2F1E]' : 'text-white';
-  const hoverColor  = isScrolled ? 'hover:text-[#8C7B6B]' : 'hover:text-white/60';
-  const borderColor = isScrolled ? 'border-[#DDD5C8]/40' : 'border-white/20';
-  const bg          = 'bg-transparent';
+  const color = isHome && !pastHero ? 'white' : maroon;
+
+  const linkStyle: React.CSSProperties = {
+    fontFamily: sans,
+    fontSize: 'clamp(12px, 1.3vw, 15px)',
+    fontWeight: 500,
+    color,
+    textDecoration: 'none',
+    textTransform: 'lowercase',
+    letterSpacing: '0.01em',
+    transition: 'color 0.3s ease',
+  };
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 border-b ${borderColor} ${bg} transition-all duration-300`}
+      className="site-nav"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: '14px clamp(20px, 3vw, 40px)',
+        zIndex: 50,
+      }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-
-          {/* LEFT — LOGO + NAV */}
-          <div className="flex items-center space-x-6">
-            <Link href="/">
-              <Image
-                src="/images-2/logo2-brown.png"
-                alt="Tualmi"
-                width={70}
-                height={20}
-                style={{
-                  objectFit: 'contain',
-                  height: '20px',
-                  width: 'auto',
-                  filter: isScrolled
-                    ? 'brightness(0) saturate(100%) invert(15%) sepia(25%) saturate(600%) hue-rotate(330deg) brightness(80%)'
-                    : 'brightness(0) invert(1)',
-                  transition: 'filter 0.3s',
-                }}
-              />
-            </Link>
-            <nav className="hidden md:flex text-xs">
-              <Link
-                href="/story"
-                className={`${textColor} ${hoverColor} transition-colors uppercase tracking-widest`}
-              >
-                Our Story
-              </Link>
-            </nav>
-          </div>
-
-          {/* RIGHT — JOIN CTA */}
-          <div className="flex items-center space-x-6">
-            <Link
-              href="/invite"
-              className={`${textColor} ${hoverColor} transition-colors`}
-              style={{ fontFamily: 'var(--font-montserrat)', fontSize: '9px', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', textDecoration: 'none' }}
-            >
-              Join the Club
-            </Link>
-          </div>
-
-        </div>
-      </div>
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 3vw, 44px)' }}>
+        {/* Home link — small logo, only shown off the landing page */}
+        {!isHome && (
+          <Link href="/" aria-label="Home" style={{ display: 'flex', alignItems: 'center' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images-2/logo2-maroon.png"
+              alt=""
+              style={{ height: '24px', width: 'auto', objectFit: 'contain' }}
+            />
+          </Link>
+        )}
+        {LEFT_LINKS.map((l) => (
+          <Link key={l.name} href={l.href} style={linkStyle}>
+            {l.name}
+          </Link>
+        ))}
+      </nav>
+      <nav style={{ display: 'flex', gap: 'clamp(20px, 3vw, 44px)' }}>
+        {RIGHT_LINKS.map((l) => (
+          <Link key={l.name} href={l.href} style={linkStyle}>
+            {l.name}
+          </Link>
+        ))}
+      </nav>
     </header>
   );
 }

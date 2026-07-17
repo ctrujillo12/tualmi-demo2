@@ -1,97 +1,233 @@
 'use client';
 
+import { useState } from 'react';
 
-import TrailblazerSignup from '@/components/TrailblazerSignup';
+// ─── Landing-page design tokens ───────────────────────────────────────────────
+const sans    = 'var(--font-montserrat), system-ui, sans-serif';
+const maroon  = '#A9445C';
+const blushBg = '#FBF1F5';
+const soft    = '#C9849A';
 
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans  = "'Jost', 'DM Sans', system-ui, sans-serif";
-const black = '#3B2F1E';
-const mid   = '#6B5C4C';
-const muted = '#8C7B6B';
+type Step = 'email' | 'source' | 'loading' | 'success' | 'error';
 
 export default function InvitePage() {
+  const [step, setStep]         = useState<Step>('email');
+  const [email, setEmail]       = useState('');
+  const [source, setSource]     = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const validEmail = email.includes('@');
+
+  async function handleSubmit() {
+    setStep('loading');
+    setErrorMsg('');
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || 'something went wrong.');
+        setStep('error');
+      } else {
+        setStep('success');
+      }
+    } catch {
+      setErrorMsg('something went wrong — please try again.');
+      setStep('error');
+    }
+  }
+
+  const pillStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    border: `1.5px solid ${maroon}`,
+    borderRadius: '100px',
+    overflow: 'hidden',
+    backgroundColor: 'white',
+    maxWidth: '460px',
+    margin: '0 auto',
+  };
+
+  const inputStyle: React.CSSProperties = {
+    flex: 1,
+    padding: '13px 22px',
+    border: 'none',
+    outline: 'none',
+    background: 'transparent',
+    fontFamily: sans,
+    fontSize: '14px',
+    fontWeight: 500,
+    color: maroon,
+  };
+
+  const buttonStyle = (active: boolean): React.CSSProperties => ({
+    padding: '13px 26px',
+    background: 'none',
+    border: 'none',
+    fontFamily: sans,
+    fontSize: '14px',
+    fontWeight: 700,
+    color: maroon,
+    cursor: active ? 'pointer' : 'default',
+    opacity: active ? 1 : 0.5,
+    textTransform: 'lowercase',
+    whiteSpace: 'nowrap',
+  });
+
   return (
-    <div style={{
-      marginTop: '64px',
-      minHeight: 'calc(100vh - 64px)',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 'clamp(32px, 5vw, 64px) clamp(20px, 5vw, 32px)',
-      boxSizing: 'border-box',
-    }}>
-      <main style={{
-        maxWidth: '640px',
-        width: '100%',
-        textAlign: 'center',
-      }}>
-        <p style={{
-          fontSize: '10px',
-          letterSpacing: '0.4em',
-          textTransform: 'uppercase',
-          color: muted,
-          marginBottom: '28px',
-          fontFamily: sans,
-        }}>
-          Join the Trailblazing Club
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: blushBg,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 'clamp(96px, 14vw, 160px) clamp(24px, 6vw, 72px) clamp(64px, 9vw, 120px)',
+        boxSizing: 'border-box',
+      }}
+    >
+      <main style={{ maxWidth: '680px', width: '100%', textAlign: 'center' }}>
+        {/* Eyebrow */}
+        <p
+          style={{
+            fontFamily: sans,
+            fontWeight: 700,
+            fontSize: '13px',
+            letterSpacing: '0.14em',
+            color: soft,
+            margin: '0 0 18px',
+            textTransform: 'lowercase',
+          }}
+        >
+          the trailblazing club
         </p>
 
-        <h1 style={{
-          fontSize: 'clamp(24px, 5vw, 48px)',
-          fontWeight: 400,
-          lineHeight: 1.3,
-          color: black,
-          marginBottom: '20px',
-          fontFamily: 'var(--font-cedarville), cursive',
-        }}>
-          You found us <em>before everyone else.</em>
+        {/* Heading — centered, like the landing page */}
+        <h1
+          style={{
+            fontFamily: sans,
+            fontWeight: 700,
+            fontSize: 'clamp(30px, 5vw, 54px)',
+            letterSpacing: '-0.03em',
+            lineHeight: 1.15,
+            color: maroon,
+            margin: '0 0 clamp(24px, 4vw, 36px)',
+            textTransform: 'lowercase',
+          }}
+        >
+          you found us before everyone else.
         </h1>
 
-        <p style={{
-          fontSize: 'clamp(13px, 2vw, 14px)',
-          lineHeight: 1.9,
-          color: mid,
-          marginBottom: '16px',
-          fontFamily: sans,
-          fontWeight: 300,
-          letterSpacing: '0.015em',
-        }}>
+        {/* Body copy — left-aligned */}
+        <p
+          style={{
+            fontFamily: sans,
+            fontWeight: 500,
+            fontSize: 'clamp(14px, 1.6vw, 16px)',
+            lineHeight: 2,
+            color: soft,
+            margin: '0 0 20px',
+            textAlign: 'left',
+          }}
+        >
           Get first access to gear built for women who actually spend time outside.
         </p>
 
-        <ul style={{
-          listStyle: 'none',
-          padding: 0,
-          margin: '0 0 28px',
-          display: 'inline-flex',
-          flexDirection: 'column',
-          gap: '10px',
-          textAlign: 'left',
-        }}>
+        {/* Perks — left-aligned */}
+        <ul
+          style={{
+            listStyle: 'none',
+            padding: 0,
+            margin: '0 0 clamp(32px, 5vw, 44px)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            textAlign: 'left',
+          }}
+        >
           {[
-            'Vote on what we make for our next collection',
+            'vote on what we make for our next collection',
             '24-hour early access to our launch before anyone else',
           ].map((item) => (
-            <li key={item} style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '10px',
-              fontFamily: sans,
-              fontSize: 'clamp(13px, 2vw, 14px)',
-              fontWeight: 300,
-              color: mid,
-              lineHeight: 1.7,
-              letterSpacing: '0.015em',
-            }}>
-              <span style={{ color: mid, fontSize: '16px', lineHeight: 1.4, flexShrink: 0 }}>✦</span>
+            <li
+              key={item}
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '10px',
+                fontFamily: sans,
+                fontSize: 'clamp(14px, 1.6vw, 16px)',
+                fontWeight: 500,
+                color: soft,
+                lineHeight: 1.8,
+              }}
+            >
+              <span style={{ color: maroon, flexShrink: 0 }}>✦</span>
               {item}
             </li>
           ))}
         </ul>
 
+        {/* Signup — same pill style as the footer */}
+        {step === 'success' && (
+          <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: maroon, margin: 0, textTransform: 'lowercase' }}>
+            you&apos;re in — we&apos;ll be in touch ✦
+          </p>
+        )}
 
-        <TrailblazerSignup />
+        {step === 'loading' && (
+          <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: soft, margin: 0, textTransform: 'lowercase' }}>
+            joining…
+          </p>
+        )}
+
+        {step === 'email' && (
+          <div style={pillStyle}>
+            <input
+              type="email"
+              placeholder="your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && validEmail && setStep('source')}
+              style={inputStyle}
+            />
+            <button onClick={() => validEmail && setStep('source')} disabled={!validEmail} style={buttonStyle(validEmail)}>
+              join
+            </button>
+          </div>
+        )}
+
+        {(step === 'source' || step === 'error') && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
+            <p style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: soft, margin: 0, textTransform: 'lowercase' }}>
+              one more thing — how did you find us?
+            </p>
+            <div style={{ ...pillStyle, width: '100%' }}>
+              <select
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
+                style={{ ...inputStyle, appearance: 'none', cursor: 'pointer', color: source ? maroon : soft }}
+              >
+                <option value="" disabled>select one</option>
+                <option value="instagram">instagram</option>
+                <option value="tiktok">tiktok</option>
+                <option value="friend">a friend</option>
+                <option value="other">other</option>
+              </select>
+              <button onClick={() => source && handleSubmit()} disabled={!source} style={buttonStyle(!!source)}>
+                {step === 'error' ? 'retry' : 'submit'}
+              </button>
+            </div>
+            {step === 'error' && (
+              <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: '#B85C49', margin: 0 }}>
+                {errorMsg}
+              </p>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );

@@ -212,3 +212,57 @@ body {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ══ Redesign — mobile optimization ══════════════════════════════════════ */
+
+/* Full-viewport sections: prefer svh so mobile browser chrome doesn't clip */
+.panel-viewport {
+  height: 100vh;
+  height: 100svh;
+}
+
+/* Hero: taller than the viewport so more of the image shows before
+   the about section arrives */
+.hero-viewport {
+  height: 130vh;
+  height: 130svh;
+}
+
+@media (max-width: 768px) {
+  /* Product panels: let content define height so long copy never clips;
+     sticky stacking still works because panels stay >= 1 viewport tall */
+  .panel-viewport {
+    height: auto !important;
+    min-height: 100svh !important;
+    padding-top: 84px !important;
+    padding-bottom: 56px !important;
+  }
+  .panel-photo {
+    width: min(72vw, 300px) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Nav: tighter, smaller, allowed to wrap to a second row */
+  .site-nav {
+    padding: 10px 14px !important;
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .site-nav nav {
+    gap: 14px !important;
+  }
+  .site-nav a {
+    font-size: 11px !important;
+  }
+
+  /* Hero: drop the EST / 2026 flanks on small screens */
+  .hero-est {
+    display: none !important;
+  }
+
+  /* Socials: 2-up video grid on phones */
+  .socials-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}

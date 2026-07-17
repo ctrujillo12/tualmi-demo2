@@ -1,63 +1,94 @@
+// ─── Landing-page design tokens ───────────────────────────────────────────────
+const sans    = 'var(--font-montserrat), system-ui, sans-serif';
+const maroon  = '#A9445C';
+const blushBg = '#FBF1F5';
+const soft    = '#C9849A';
 
-
-const serif = "'Cormorant Garamond', Georgia, serif";
-const sans = "'Jost', 'DM Sans', system-ui, sans-serif";
-
-const bg    = '#FAFAF7';
-const black = '#3B2F1E';
-const mid   = '#6B5C4C';
-const muted = '#8C7B6B';
+const bodyStyle = {
+  fontFamily: sans,
+  fontWeight: 500,
+  fontSize: 'clamp(14px, 1.6vw, 16px)',
+  lineHeight: 2,
+  color: soft,
+  margin: 0,
+  textAlign: 'left' as const,
+};
 
 export default function StoryPage() {
   return (
-    <div style={{ backgroundColor: bg, minHeight: '100vh' }}>
-
-
+    <div style={{ backgroundColor: blushBg, minHeight: '100vh' }}>
       <main
         style={{
           maxWidth: '720px',
           margin: '0 auto',
-          padding: 'clamp(80px, 12vw, 120px) clamp(20px, 5vw, 32px) clamp(64px, 10vw, 96px)',
+          padding: 'clamp(96px, 14vw, 160px) clamp(24px, 5vw, 32px) clamp(64px, 10vw, 120px)',
         }}
       >
-        <p style={{ fontSize: '10px', letterSpacing: '0.4em', textTransform: 'uppercase', color: muted, marginBottom: '20px', fontFamily: sans }}>
-          Our Story
+        {/* Eyebrow */}
+        <p
+          style={{
+            fontFamily: sans,
+            fontWeight: 700,
+            fontSize: '13px',
+            letterSpacing: '0.14em',
+            color: soft,
+            margin: '0 0 18px',
+            textTransform: 'lowercase',
+            textAlign: 'center',
+          }}
+        >
+          our story
         </p>
-        <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 400, color: black, marginBottom: 'clamp(40px, 6vw, 64px)', fontFamily: 'var(--font-cedarville), cursive', lineHeight: 1.3 }}>
-          For girls who love the outdoors <em>AND</em> their outfits.
+
+        {/* Heading — centered, lowercase, maroon */}
+        <h1
+          style={{
+            fontFamily: sans,
+            fontWeight: 700,
+            fontSize: 'clamp(28px, 4.5vw, 48px)',
+            letterSpacing: '-0.03em',
+            lineHeight: 1.2,
+            color: maroon,
+            margin: '0 0 clamp(40px, 6vw, 64px)',
+            textTransform: 'lowercase',
+            textAlign: 'center',
+          }}
+        >
+          for girls who love the outdoors <em>and</em> their outfits.
         </h1>
 
+        {/* Body — left-aligned */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-          <p style={{ fontSize: 'clamp(13px, 2vw, 15px)', lineHeight: 1.9, color: mid, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-            Rachel was backpacking through Yosemite, surrounded by mountains & doing exactly what she loves, when she
-            looked down at her outfit and realized it just didn't feel like her at all.
+          <p style={bodyStyle}>
+            Rachel was backpacking through Yosemite, surrounded by mountains &amp; doing exactly what she loves, when she
+            looked down at her outfit and realized it just didn&apos;t feel like her at all.
           </p>
 
-          <p style={{ fontSize: 'clamp(13px, 2vw, 15px)', lineHeight: 1.9, color: mid, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-            We're two college girls who clicked immediately over one shared opinion: outdoor gear for women
-            is functional but completely forgettable. Like, it works, but it wasn't made <em>for</em> us.
+          <p style={bodyStyle}>
+            We&apos;re two college girls who clicked immediately over one shared opinion: outdoor gear for women
+            is functional but completely forgettable. Like, it works, but it wasn&apos;t made <em>for</em> us.
             Not really. Rachel brings the trail cred and vision. Cheyenne is obsessed with how things are made
-            and has strong opinions about every product she's ever owned. Together we're the perfect team.
+            and has strong opinions about every product she&apos;s ever owned. Together we&apos;re the perfect team.
           </p>
 
-          <p style={{ fontSize: 'clamp(13px, 2vw, 15px)', lineHeight: 1.9, color: mid, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
+          <p style={bodyStyle}>
             So we made Tualmi. Because we think the more you feel like yourself outside,
-            the more you actually want to be out there. 
+            the more you actually want to be out there.
           </p>
 
-          <p style={{ fontSize: 'clamp(13px, 2vw, 15px)', lineHeight: 1.9, color: mid, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-            We make everything from 100% recycled materials using a WRAP-certified manufacturing process, 
-            and designed to last because we're not interested in adding to the pile. 
-            We'd rather make a few things you actually reach for
+          <p style={bodyStyle}>
+            We make everything from 100% recycled materials using a WRAP-certified manufacturing process,
+            and designed to last because we&apos;re not interested in adding to the pile.
+            We&apos;d rather make a few things you actually reach for
             than ten you forget you own.
           </p>
 
-          <p style={{ fontSize: 'clamp(13px, 2vw, 15px)', lineHeight: 1.9, color: muted, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em', fontStyle: 'italic' }}>
-           Our first collection ships July 2026!
+          <p style={{ ...bodyStyle, color: maroon, fontWeight: 600 }}>
+            Our first collection ships July 2026!
           </p>
 
-          <p style={{ fontSize: 'clamp(13px, 2vw, 15px)', lineHeight: 1.9, color: mid, fontFamily: sans, fontWeight: 300, letterSpacing: '0.015em' }}>
-            Love, Rachel &amp; Cheyenne🌸
+          <p style={bodyStyle}>
+            Love, Rachel & Cheyenne🌸
           </p>
         </div>
       </main>

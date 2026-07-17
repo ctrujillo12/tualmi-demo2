@@ -1,210 +1,49 @@
-
+import { PolicyPage, Section, P, DataTable } from '@/components/PolicyPage';
 
 export default function SizeFitPage() {
   return (
-    <>
+    <PolicyPage title="size + fit">
+      <Section>
+        <P>For any sizing questions, please email us at hello@tualmi.com</P>
+        <P>All measurements are taken in centimeters (cm).</P>
+      </Section>
 
+      <Section heading="general size guide">
+        <DataTable
+          headers={['size', 'bust', 'waist', 'hips']}
+          rows={[
+            ['XS', '32–34" A–B', '23–25"', '32–34"'],
+            ['S', '34–36" B–C', '25–27"', '34–36"'],
+            ['M', '36–38" C–D', '27–29"', '36–38"'],
+            ['L', '38–40" D–DD', '29–31"', '38–40"'],
+          ]}
+        />
+      </Section>
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <h1 className="text-lg font-normal tracking-[0.3em] uppercase mb-12">
-          Size + Fit
-        </h1>
+      <Section heading="product fit notes">
+        <P>Fit may vary slightly depending on the style. Below is guidance for select pieces.</P>
+        <P>Trailblazer Fleece — Runs true to size with minimal coverage.</P>
+        <P>Pinnacles Pant — Designed for a more relaxed fit. Size down for a tighter feel.</P>
+        <P>Sierra Shorts — Adjustable ties allow for a flexible fit across sizes.</P>
+      </Section>
 
-        <div className="space-y-10 text-sm leading-relaxed">
-
-          {/* Intro */}
-          <div className="space-y-4">
-            <p>
-              For any sizing questions, please email us at hello@tualmi.com
-            </p>
-            <p>All measurements are taken in centimeters (cm).</p>
-          </div>
-
-          {/* General Size Guide */}
-          <div className="space-y-4">
-            <h2 className="uppercase tracking-widest text-xs">
-              General Size Guide
-            </h2>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm">
-                <thead>
-                  <tr className="border-b border-sand-300">
-                    <th className="py-2 font-normal">Size</th>
-                    <th className="py-2 font-normal">Bust</th>
-                    <th className="py-2 font-normal">Waist</th>
-                    <th className="py-2 font-normal">Hips</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-sand-200">
-                  <tr>
-                    <td className="py-2">XS</td>
-                    <td>32–34" A–B</td>
-                    <td>23–25"</td>
-                    <td>32–34"</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">S</td>
-                    <td>34–36" B–C</td>
-                    <td>25–27"</td>
-                    <td>34–36"</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">M</td>
-                    <td>36–38" C–D</td>
-                    <td>27–29"</td>
-                    <td>36–38"</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">L</td>
-                    <td>38–40" D–DD</td>
-                    <td>29–31"</td>
-                    <td>38–40"</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Product-Specific Fit */}
-          <div className="space-y-4">
-            <h2 className="uppercase tracking-widest text-xs">
-              Product Fit Notes
-            </h2>
-
-            <p>
-              Fit may vary slightly depending on the style. Below is guidance for select pieces.
-            </p>
-
-            <div className="space-y-3">
-              {/* Replace these with your actual 4 products */}
-              <p><span className="tracking-wide">Trailblazer Fleece</span> — Runs true to size with minimal coverage.</p>
-              <p><span className="tracking-wide">Pinnacles Pant</span> — Designed for a more relaxed fit. Size down for a tighter feel.</p>
-              <p><span className="tracking-wide">Sierra Shorts</span> — Adjustable ties allow for a flexible fit across sizes.</p>
-              {/* <p><span className="tracking-wide">Product 4</span> — Offers moderate coverage with a supportive structure.</p> */}
-            </div>
-          </div>
-
-          {/* Sierra Shorts — Garment Measurements */}
-          <div className="space-y-4">
-            <h2 className="uppercase tracking-widest text-xs">
-              Sierra Shorts — Garment Measurements
-            </h2>
-
-            <p>All measurements taken flat on the garment, in centimeters (cm).</p>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-sm min-w-[560px]">
-                <thead>
-                  <tr className="border-b border-sand-300">
-                    <th className="py-2 font-normal">Point of Measure</th>
-                    <th className="py-2 font-normal text-center">XXS</th>
-                    <th className="py-2 font-normal text-center">XS</th>
-                    <th className="py-2 font-normal text-center">S</th>
-                    <th className="py-2 font-normal text-center">M</th>
-                    <th className="py-2 font-normal text-center">L</th>
-                    <th className="py-2 font-normal text-center">XL</th>
-                    <th className="py-2 font-normal text-center">XXL</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-sand-200">
-                  <tr>
-                    <td className="py-2">Waist (relaxed)</td>
-                    <td className="text-center">62</td>
-                    <td className="text-center">67</td>
-                    <td className="text-center">72</td>
-                    <td className="text-center">77</td>
-                    <td className="text-center">82</td>
-                    <td className="text-center">87</td>
-                    <td className="text-center">92</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">Hip</td>
-                    <td className="text-center">100.5</td>
-                    <td className="text-center">105.5</td>
-                    <td className="text-center">110.5</td>
-                    <td className="text-center">115.5</td>
-                    <td className="text-center">120.5</td>
-                    <td className="text-center">125.5</td>
-                    <td className="text-center">130.5</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">Thigh</td>
-                    <td className="text-center">66</td>
-                    <td className="text-center">69</td>
-                    <td className="text-center">72</td>
-                    <td className="text-center">75</td>
-                    <td className="text-center">78</td>
-                    <td className="text-center">81</td>
-                    <td className="text-center">84</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">Length</td>
-                    <td className="text-center">26</td>
-                    <td className="text-center">27</td>
-                    <td className="text-center">28</td>
-                    <td className="text-center">29</td>
-                    <td className="text-center">30</td>
-                    <td className="text-center">31</td>
-                    <td className="text-center">32</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">Front rise (excl. waistband)</td>
-                    <td className="text-center">21.6</td>
-                    <td className="text-center">22.8</td>
-                    <td className="text-center">24</td>
-                    <td className="text-center">25.2</td>
-                    <td className="text-center">26.4</td>
-                    <td className="text-center">27.6</td>
-                    <td className="text-center">28.8</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">Back rise (excl. waistband)</td>
-                    <td className="text-center">30.6</td>
-                    <td className="text-center">31.8</td>
-                    <td className="text-center">33</td>
-                    <td className="text-center">34.2</td>
-                    <td className="text-center">35.4</td>
-                    <td className="text-center">36.6</td>
-                    <td className="text-center">37.8</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">Leg opening</td>
-                    <td className="text-center">66</td>
-                    <td className="text-center">69</td>
-                    <td className="text-center">72</td>
-                    <td className="text-center">75</td>
-                    <td className="text-center">78</td>
-                    <td className="text-center">81</td>
-                    <td className="text-center">84</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">Waistband height</td>
-                    <td className="text-center">3.8</td>
-                    <td className="text-center">3.8</td>
-                    <td className="text-center">3.8</td>
-                    <td className="text-center">3.8</td>
-                    <td className="text-center">3.8</td>
-                    <td className="text-center">3.8</td>
-                    <td className="text-center">3.8</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2">Drawcord (exposed, per side)</td>
-                    <td className="text-center">23</td>
-                    <td className="text-center">23</td>
-                    <td className="text-center">23</td>
-                    <td className="text-center">23</td>
-                    <td className="text-center">23</td>
-                    <td className="text-center">23</td>
-                    <td className="text-center">23</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-      </main>
-    </>
+      <Section heading="sierra shorts — garment measurements">
+        <P>All measurements taken flat on the garment, in centimeters (cm).</P>
+        <DataTable
+          headers={['point of measure', 'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl']}
+          rows={[
+            ['Waist (relaxed)', 62, 67, 72, 77, 82, 87, 92],
+            ['Hip', 100.5, 105.5, 110.5, 115.5, 120.5, 125.5, 130.5],
+            ['Thigh', 66, 69, 72, 75, 78, 81, 84],
+            ['Length', 26, 27, 28, 29, 30, 31, 32],
+            ['Front rise (excl. waistband)', 21.6, 22.8, 24, 25.2, 26.4, 27.6, 28.8],
+            ['Back rise (excl. waistband)', 30.6, 31.8, 33, 34.2, 35.4, 36.6, 37.8],
+            ['Leg opening', 66, 69, 72, 75, 78, 81, 84],
+            ['Waistband height', 3.8, 3.8, 3.8, 3.8, 3.8, 3.8, 3.8],
+            ['Drawcord (exposed, per side)', 23, 23, 23, 23, 23, 23, 23],
+          ]}
+        />
+      </Section>
+    </PolicyPage>
   );
 }

@@ -1,404 +1,443 @@
-import React from 'react';
+import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getProducts } from '@/lib/products';
-import ProductCard from '@/components/ProductCard';
-import HikerOverlay from '@/components/HikerOverlay';
-import WelcomePopup from '@/components/WelcomePopup';
-import type { Product } from '@/types';
-import { PRODUCT_COLORS } from '@/lib/productColors';
 
-const sans   = 'var(--font-montserrat)';
+// ─── Design tokens (modeled after gorpgirls.com — clean, lowercase, roomy) ────
+const sans   = 'var(--font-montserrat), system-ui, sans-serif';
+const serif  = "'Cormorant Garamond', Georgia, serif";
+const maroon = '#A9445C';
+const blushBg = '#FBF1F5';
 
-const PRODUCT_ORDER = ['trailblazing-fleece', 'pinnacles-pant', 'sierra-shorts', 'alpine-baby-tee'];
+// ─── PLACEHOLDER IMAGES ───────────────────────────────────────────────────────
+// Cheyenne: swap these paths for the final photos whenever you're ready.
+// Everything lives in /public/images-2/.
+const HERO_IMAGE = '/images-2/funky-rock0.jpg'; // PLACEHOLDER — final hero photo TBD
 
-export default async function Home() {
-  const products = await getProducts();
-  const heroImage = '/images-2/hero_anna.JPG';
+// ─── Product scroll panels (Gorp Girls-style sticky color sections) ──────────
+// Each panel: full-screen, sticks in place while the next scrolls up over it.
+interface ProductPanel {
+  handle: string;
+  title: string;
+  copy: string;
+  availability: string; // launch date or "coming soon"
+  bg: string;      // section background
+  accent: string;  // heading color
+  body: string;    // paragraph color
+  image: string;   // PLACEHOLDER photos — swap freely
+}
 
-  const collectionProducts = PRODUCT_ORDER
-    .map((h) => products.find((p) => p.handle === h))
-    .filter((p): p is Product => !!p);
+// Order = launch order: shorts + pants drop July 31st, then top, then fleece.
+const PRODUCT_PANELS: ProductPanel[] = [
+  {
+    handle: 'sierra-shorts',
+    title: 'the sierra shorts:',
+    copy: 'Mid-rise, relaxed fit, with deep pockets big enough for your whole phone. Prints people will ask you about at the trailhead.',
+    availability: 'dropping july 31st',
+    bg: '#F6E3DC',
+    accent: '#B85C49',
+    body: '#CC8271',
+    image: '/images-2/shorts-fish.jpg', // PLACEHOLDER
+  },
+  {
+    handle: 'pinnacles-pant',
+    title: 'the pinnacles pant:',
+    copy: 'Flare cargo pants that are also actually good for hiking. The fold-over waist you love, cargo pockets that fit your stuff, and a flared leg that goes with everything. Cinch hem because the trail is real.',
+    availability: 'dropping july 31st',
+    bg: '#D9DFC5',
+    accent: '#7C8A55',
+    body: '#96A26D',
+    image: '/images-2/running-shorts1.jpg', // PLACEHOLDER
+  },
+  {
+    handle: 'alpine-baby-tee',
+    title: 'the alpine baby tee:',
+    copy: 'UPF 40 protection, second-skin fit, and the kind of cut that makes your shoulders look good on the summit.',
+    availability: 'coming soon',
+    bg: '#FBE9EF',
+    accent: '#EC9DBC',
+    body: '#F2B7CD',
+    image: '/images-2/cayla-redshorts.jpg', // PLACEHOLDER
+  },
+  {
+    handle: 'trailblazing-fleece',
+    title: 'the trailblazing fleece:',
+    copy: 'A mid-weight fleece with a chest zip pocket, snap collar, and kangaroo pocket.',
+    availability: 'coming soon',
+    bg: '#FCF8E3',
+    accent: '#D2BE35',
+    body: '#DBCB6A',
+    image: '/images-2/shorts-holdinghands.jpg', // PLACEHOLDER
+  },
+  {
+    handle: 'trailblazing-tote',
+    title: 'the trailblazing club tote:',
+    copy: 'The tote that goes everywhere you do. Made from 100% organic cotton canvas. Looks good on the trail, at the farmers market, and in every photo in between.',
+    availability: 'available now',
+    bg: '#F5F0E2',
+    accent: '#C4AC72',
+    body: '#D3C08F',
+    image: '/images-2/IMG_0443.jpeg', // PLACEHOLDER
+  },
+];
 
-  // Expand each product into one card per colorway
-  type ColorwayCard = { product: Product; colorLabel: string };
-  const colorwayCards: ColorwayCard[] = collectionProducts.flatMap((product) => {
-    const colors = PRODUCT_COLORS[product.handle ?? ''] ?? [];
-    if (colors.length === 0) return [{ product, colorLabel: '' }];
-    const imgsPerColor = Math.max(1, Math.floor(product.images.length / colors.length));
-    return colors.map((color, idx) => {
-      const start = idx * imgsPerColor;
-      const end = idx === colors.length - 1 ? product.images.length : start + imgsPerColor;
-      const sliced = product.images.slice(start, end);
-      return {
-        product: { ...product, images: sliced.length > 0 ? sliced : [product.images[0]] },
-        colorLabel: color.name,
-      };
-    });
-  });
+// ─── Social TikToks ───────────────────────────────────────────────────────────
+// ▸ PASTE YOUR TIKTOK LINKS in the `url` fields below — one per video card.
+//   (Format: https://www.tiktok.com/@tualmi.outdoors/video/1234567890)
+// ▸ Drop the video files in /public/videos/ as tiktok-1.mp4 … tiktok-4.mp4
+//   (TikTok's official embeds force their chrome and can't autoplay, so we
+//   self-host the clips — download your own videos from the TikTok app).
+const TIKTOKS = [
+  {
+    video: '/videos/clip-1.mp4',
+    poster: '/images-2/collec5.jpg', // PLACEHOLDER poster
+    url: 'https://www.tiktok.com/@tualmi.outdoors/video/7625759601576660238',
+  },
+  {
+    video: '/videos/clip-2.mp4',
+    poster: '/images-2/collec3.jpg', // PLACEHOLDER poster
+    url: 'https://www.tiktok.com/@tualmi.outdoors/video/7611273720295984398',
+  },
+  {
+    video: '/videos/clip-3.mp4',
+    poster: '/images-2/cool8.jpg', // PLACEHOLDER poster
+    url: 'https://www.tiktok.com/@tualmi.outdoors/video/7638058106563349774',
+  },
+  {
+    video: '/videos/clip-4.mp4',
+    poster: '/images-2/collec4.jpg', // PLACEHOLDER poster
+    url: 'https://www.tiktok.com/@tualmi.outdoors', // TODO: paste 4th TikTok link
+  },
+];
 
-  const marqueeText = 'Free Tote with $150 Purchase • Fleece, Pants & Shorts Ship Late July 2026 • Baby Tee Ships August 2026 • Limited Quantities • ';
+const TIKTOK_URL = 'https://www.tiktok.com/@tualmi.outdoors';
 
-  const tiktokVideos = [
-    { id: '7625759601576660238' },
-    { id: '7611273720295984398' },
-    { id: '7638058106563349774' },
-    { id: '7651370811806272782' },
-  ].map((v) => ({ ...v, url: `https://www.tiktok.com/@tualmi.outdoors/video/${v.id}` }));
-
-  const tiktokThumbnails = await Promise.all(
-    tiktokVideos.map(async ({ url }) => {
-      try {
-        const res = await fetch(`https://www.tiktok.com/oembed?url=${url}`, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1)' },
-          next: { revalidate: 86400 },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          return (data.thumbnail_url as string) ?? '';
-        }
-      } catch {}
-      return '';
-    })
-  );
-
+// ─── Page ─────────────────────────────────────────────────────────────────────
+export default function Home() {
   return (
-    <div style={{ backgroundColor: '#FAFAF7' }}>
-
-      {/* WELCOME POPUP */}
-      {/* <WelcomePopup /> */}
-
-      {/* HIKER OVERLAY */}
-      <HikerOverlay />
-
-      {/* FIXED HERO BACKGROUND */}
-      <div className="hero-bg" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+    <>
+      {/* ══ 1 · HERO ══════════════════════════════════════════════════════ */}
+      <section className="hero-viewport" style={{ position: 'relative', minHeight: '560px', overflow: 'hidden' }}>
         <Image
-          src={heroImage}
-          alt="Tualmi"
+          src={HERO_IMAGE}
+          alt="Tualmi Outdoors"
           fill
           priority
-          quality={90}
-          style={{ objectFit: 'cover', objectPosition: 'center' }}
+          style={{ objectFit: 'cover', objectPosition: 'center 33%' }}
         />
-        <div className="hero-overlay" style={{ position: 'absolute', inset: 0, background: 'rgba(10,8,5,0.38)' }} />
-      </div>
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,12,8,0.18)' }} />
 
-      {/* HERO VIEWPORT */}
-      <section className="hero-section" style={{
-        position: 'relative', zIndex: 1,
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        padding: '0 clamp(16px, 4vw, 40px)',
-      }}>
-        <div className="hero-text-block" style={{
-          width: '50%',
-          paddingRight: 'clamp(40px, 7vw, 100px)',
-          paddingLeft: '24px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: '18px',
-        }}>
-          <div className="hero-inner-wrap" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'stretch', gap: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1vw, 12px)' }}>
-              <Image
-                src="/images-2/logo2-brown.png"
-                alt="Tualmi"
-                width={80}
-                height={80}
-                className="hero-logo"
-                style={{
-                  objectFit: 'contain',
-                  height: 'clamp(32px, 5.6vw, 67px)',
-                  width: 'auto',
-                  filter: 'brightness(0) invert(1)',
-                }}
-              />
-              <h1 className="hero-title" style={{
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontSize: 'clamp(38px, 6.4vw, 80px)',
+        {/* Nav comes from the global layout (see components/Header.tsx) */}
+
+        {/* Centered logo lockup */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 'clamp(20px, 4vw, 56px)',
+            zIndex: 1,
+          }}
+        >
+          <span className="hero-est" style={heroEstStyle}>EST</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images-2/logo2-brown.png"
+              alt=""
+              style={{ height: 'clamp(60px, 9vw, 120px)', width: 'auto', filter: 'brightness(0) invert(1)' }}
+            />
+            <span
+              style={{
+                fontFamily: serif,
+                fontSize: 'clamp(64px, 10vw, 140px)',
                 fontWeight: 400,
                 color: 'white',
-                margin: 0,
                 lineHeight: 1,
-                textShadow: '0 2px 48px rgba(0,0,0,0.15)',
-              }}>
-                Tualmi
-              </h1>
-            </div>
-            <a
-              href="/invite"
-              className="hero-cta"
-              style={{
-                display: 'block',
-                position: 'relative',
-                textDecoration: 'none',
-                transition: 'opacity 0.2s',
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images-2/hero-button.png?v=2"
-                alt=""
-                style={{ display: 'block', height: 'clamp(30px, 3.2vw, 38px)', width: '100%', objectFit: 'fill' }}
-              />
-              <span style={{
-                position: 'absolute',
-                inset: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontFamily: sans,
-                color: 'white',
-                textShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                fontSize: '8px',
-                fontWeight: 600,
-                letterSpacing: '0.28em',
-                textTransform: 'uppercase',
-                whiteSpace: 'nowrap',
-              }}>
-                Join the Trailblazing Club
-              </span>
-            </a>
-            <p style={{
-              fontFamily: sans,
-              fontSize: '7px',
-              fontWeight: 400,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.75)',
-              margin: '6px 0 0',
-              textAlign: 'center',
-            }}>
-              Members get early access
-            </p>
+              Tualmi
+            </span>
           </div>
+          <span className="hero-est" style={heroEstStyle}>2026</span>
         </div>
       </section>
 
-      {/* SCROLLABLE CONTENT */}
-      <div style={{ position: 'relative', zIndex: 2 }}>
-
-        {/* ABOUT */}
-        <section style={{
-          backgroundColor: '#f9d6dd',
-          padding: 'clamp(48px, 7vw, 80px) clamp(24px, 6vw, 80px)',
-          borderBottom: '1px solid #E8E2D8',
-        }}>
-          <h2 style={{ fontFamily: 'var(--font-cedarville), "Cedarville Cursive", cursive', fontSize: 'clamp(26px, 4vw, 48px)', fontWeight: 400, lineHeight: 1.2, color: '#3B2F1E', marginBottom: '20px', marginTop: 0 }}>
-            Actually cute outdoors gear.
-          </h2>
-          <p style={{ fontFamily: sans, fontSize: 'clamp(13px, 1.5vw, 15px)', lineHeight: 1.9, color: '#6B5C4C', fontWeight: 300, maxWidth: '680px', margin: 0 }}>
-            Tualmi is built for the girls who want both fashion-forward silhouettes and trail-ready performance, designed by women who actually hike. Every piece is produced from 100% recycled materials by a WRAP-certified manufacturer. 
-          </p>
-          <p style={{ fontFamily: sans, fontSize: 'clamp(10px, 1.2vw, 12px)', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#A89880', marginTop: '16px', marginBottom: '28px' }}>
-            We launch July 2026
-          </p>
-          <a
-            href="https://tualmi.com/invite"
+      {/* ══ 2 · ABOUT ═════════════════════════════════════════════════════ */}
+      <section style={{ backgroundColor: blushBg, padding: 'clamp(80px, 12vw, 160px) clamp(24px, 6vw, 72px)', position: 'relative' }}>
+        <div style={{ maxWidth: '860px', margin: '0 auto', textAlign: 'center' }}>
+          <h2
             style={{
-              display: 'inline-block',
-              backgroundColor: '#C94468',
-              color: 'white',
               fontFamily: sans,
-              fontSize: '11px',
-              fontWeight: 500,
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              padding: '14px 36px',
-              borderRadius: '30px',
-              textDecoration: 'none',
+              fontWeight: 700,
+              fontSize: 'clamp(16px, 5vw, 64px)', // scales down far enough to stay one line on phones
+              letterSpacing: '-0.03em',
+              color: maroon,
+              margin: '0 0 clamp(32px, 5vw, 56px)',
+              textTransform: 'lowercase',
               whiteSpace: 'nowrap',
             }}
           >
-            Join the Trailblazing Club!
-          </a>
-        </section>
+            actually cute outdoors gear.
+          </h2>
 
-        {/* COLLECTION */}
-        <section id="collection" style={{
-          padding: 'clamp(48px, 7vw, 80px) clamp(20px, 3vw, 40px)',
-          backgroundImage: 'url(/images-2/yellow-pattern.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}>
-          <div style={{ maxWidth: '1060px', margin: '0 auto' }}>
-            <div className="product-grid" style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 'clamp(12px, 2.5vw, 28px)',
-            }}>
-              {colorwayCards.map(({ product, colorLabel }) => (
-                <div key={`${product.id}-${colorLabel}`} style={{
-                  backgroundColor: '#FAFAF7',
-                  border: '3.5px solid #B84A5E',
-                  borderRadius: '12px',
-                  overflow: 'hidden',
-                  position: 'relative',
-                }}>
-                  <ProductCard
-                    product={product}
-                    showPrice={true}
-                    imageAspectRatio="2/3"
-                    imageFit="contain"
-                    hideSwatches
-                    colorLabel={colorLabel}
-                    colorQuery={colorLabel}
-                    disableLink
-                  />
-                  {/* Coming Soon overlay */}
-                  <div style={{
-                    position: 'absolute',
-                    bottom: '44px',
-                    left: 0,
-                    right: 0,
-                    backgroundColor: 'rgba(250,250,247,0.82)',
-                    backdropFilter: 'blur(6px)',
-                    padding: '10px 0',
-                    pointerEvents: 'none',
-                    textAlign: 'center',
-                  }}>
-                    <span style={{
-                      fontFamily: sans,
-                      fontSize: '8px',
-                      fontWeight: 600,
-                      letterSpacing: '0.32em',
-                      textTransform: 'uppercase',
-                      color: '#3B2F1E',
-                    }}>
-                      Coming Soon
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+          {/* Heading stays centered; body copy is left-aligned */}
+          <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(28px, 4vw, 44px)', textAlign: 'left' }}>
+            Tualmi is outdoor clothing made by women, for women — pieces that work as hard on
+            the trail as they look good off it. Technical fabrics, women-specific fits, and the
+            colorways and patterns the legacy brands never made. Based in California, built for
+            everywhere the trail takes you.
+          </p>
+
+          <div style={{ textAlign: 'left' }}>
+            <Link href="/invite" style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: maroon, textTransform: 'lowercase', textDecorationThickness: '1px', textUnderlineOffset: '4px' }}>
+              join the club
+            </Link>
           </div>
-        </section>
+        </div>
 
-        {/* SOCIAL */}
-        <section style={{
-          backgroundColor: '#C94468',
-          padding: 'clamp(56px, 8vw, 96px) clamp(24px, 5vw, 60px)',
-        }}>
-          <div style={{ marginBottom: 'clamp(32px, 5vw, 52px)' }}>
-            <p style={{
-              fontFamily: sans,
-              fontSize: '9px',
-              fontWeight: 600,
-              letterSpacing: '0.3em',
-              textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.6)',
-              margin: '0 0 6px',
-            }}>
-              get to know
-            </p>
-            <h2 style={{
-              fontFamily: "var(--font-cedarville), 'Cedarville Cursive', cursive",
-              fontSize: 'clamp(32px, 5vw, 58px)',
-              fontWeight: 400,
-              color: 'white',
-              margin: 0,
-              lineHeight: 1.1,
-            }}>
-              @tualmioutdoors
-            </h2>
-          </div>
+        {/* small side link, like the mockup */}
+        <Link
+          href="/story"
+          style={{
+            position: 'absolute',
+            left: 'clamp(20px, 4vw, 56px)',
+            top: '50%',
+            fontFamily: sans,
+            fontSize: '13px',
+            fontWeight: 500,
+            color: maroon,
+            textDecoration: 'none',
+            textTransform: 'lowercase',
+          }}
+          className="hidden md:block"
+        >
+          our story
+        </Link>
+      </section>
 
-          <div className="social-reel-grid" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 'clamp(10px, 2vw, 16px)',
-            maxWidth: '1100px',
-            margin: '0 auto',
-          }}>
-            {tiktokVideos.map(({ id, url }, i) => (
-              <a
-                key={id}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="reel-card"
+      {/* ══ 3 · PREVIEW OUR COLLECTION ════════════════════════════════════ */}
+      <section style={{ backgroundColor: maroon, padding: 'clamp(64px, 9vw, 120px) clamp(24px, 6vw, 72px)', textAlign: 'center' }}>
+        <h2
+          style={{
+            fontFamily: sans,
+            fontWeight: 700,
+            fontSize: 'clamp(36px, 6vw, 72px)',
+            letterSpacing: '-0.03em',
+            lineHeight: 1.15,
+            color: 'white',
+            margin: 0,
+            textTransform: 'lowercase',
+          }}
+        >
+          the first collection,
+          <br />
+          coming this july
+        </h2>
+        <Link
+          href="#collection"
+          style={{
+            display: 'inline-block',
+            marginTop: 'clamp(24px, 3.5vw, 40px)',
+            fontFamily: sans,
+            fontSize: '14px',
+            fontWeight: 600,
+            color: 'white',
+            textTransform: 'lowercase',
+            textUnderlineOffset: '4px',
+          }}
+        >
+          preview our collection →
+        </Link>
+      </section>
+
+      {/* ══ 4 · STICKY PRODUCT SCROLL (Gorp Girls-style) ══════════════════ */}
+      {/* Each panel is full-screen and position:sticky, so it holds still
+          while the next one scrolls up over it — the screen appears to
+          change color with every product. */}
+      <div id="collection">
+        {PRODUCT_PANELS.map((panel) => (
+          <section
+            key={panel.handle}
+            className="panel-viewport"
+            style={{
+              position: 'sticky',
+              top: 0,
+              minHeight: '560px',
+              backgroundColor: panel.bg,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 'clamp(24px, 5vw, 64px)',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'clamp(32px, 6vw, 96px)',
+                maxWidth: '1040px',
+                width: '100%',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+              }}
+            >
+              {/* Photo */}
+              <div
+                className="panel-photo"
                 style={{
-                  aspectRatio: '9/16',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  display: 'block',
                   position: 'relative',
-                  backgroundImage: tiktokThumbnails[i] ? `url(${tiktokThumbnails[i]})` : undefined,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  textDecoration: 'none',
+                  width: 'clamp(240px, 30vw, 340px)',
+                  aspectRatio: '4 / 5',
+                  borderRadius: '6px',
+                  overflow: 'hidden',
+                  flexShrink: 0,
                 }}
               >
-                <div style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(0,0,0,0.18)',
-                }}>
-                  <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-                    <circle cx="22" cy="22" r="21" stroke="white" strokeWidth="1.5" fill="rgba(0,0,0,0.3)"/>
-                    <polygon points="18,14 34,22 18,30" fill="white"/>
-                  </svg>
+                <Image
+                  src={panel.image}
+                  alt={panel.title}
+                  fill
+                  sizes="(max-width: 768px) 80vw, 340px"
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+
+              {/* Copy — left-aligned (image sits left, text right).
+                  No product-page links for now — display only. */}
+              <div style={{ maxWidth: '440px', textAlign: 'left' }}>
+                <p
+                  style={{
+                    fontFamily: sans,
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    letterSpacing: '0.14em',
+                    color: panel.accent,
+                    margin: '0 0 10px',
+                    textTransform: 'lowercase',
+                  }}
+                >
+                  {panel.availability}
+                </p>
+                <h3
+                  style={{
+                    fontFamily: sans,
+                    fontWeight: 700,
+                    fontSize: 'clamp(24px, 3vw, 34px)',
+                    letterSpacing: '-0.02em',
+                    color: panel.accent,
+                    margin: '0 0 clamp(20px, 3vw, 32px)',
+                    textTransform: 'lowercase',
+                  }}
+                >
+                  {panel.title}
+                </h3>
+                <p
+                  style={{
+                    fontFamily: sans,
+                    fontWeight: 600,
+                    fontSize: 'clamp(14px, 2vw, 22px)',
+                    lineHeight: 1.75,
+                    color: panel.body,
+                    margin: '0 0 clamp(20px, 3vw, 28px)',
+                  }}
+                >
+                  {panel.copy}
+                </p>
+                <Link
+                  href="/invite"
+                  style={{
+                    fontFamily: sans,
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: panel.accent,
+                    textTransform: 'lowercase',
+                    textUnderlineOffset: '4px',
+                  }}
+                >
+                  join the club
+                </Link>
+              </div>
+            </div>
+          </section>
+        ))}
+      </div>
+
+      {/* ══ 5 · SOCIALS ═══════════════════════════════════════════════════ */}
+      <section
+        id="socials"
+        style={{
+          position: 'relative',
+          zIndex: 1, // sits above the last sticky panel
+          backgroundColor: '#F79EC6',
+          padding: 'clamp(56px, 8vw, 96px) clamp(24px, 6vw, 72px) clamp(64px, 9vw, 110px)',
+        }}
+      >
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <a href={TIKTOK_URL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+            <p style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: sans, fontWeight: 600, fontSize: '14px', color: 'white', margin: '0 0 6px', textTransform: 'lowercase', letterSpacing: '0.02em' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images-2/instagram-white-icon.webp"
+                alt=""
+                style={{ height: '18px', width: '18px', objectFit: 'contain' }}
+              />
+              get to know
+            </p>
+            <h2
+              style={{
+                fontFamily: sans,
+                fontWeight: 800,
+                fontSize: 'clamp(38px, 6vw, 72px)',
+                letterSpacing: '-0.02em',
+                color: 'white',
+                margin: '0 0 clamp(32px, 4vw, 48px)',
+                textTransform: 'lowercase',
+              }}
+            >
+              @tualmi.outdoors
+            </h2>
+          </a>
+
+          <div
+            className="socials-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: 'clamp(16px, 2.5vw, 32px)',
+            }}
+          >
+            {TIKTOKS.map((reel) => (
+              <a key={reel.video} href={reel.url} target="_blank" rel="noopener noreferrer" aria-label="Watch on TikTok">
+                <div style={{ position: 'relative', aspectRatio: '9 / 16', borderRadius: '14px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.25)' }}>
+                  <video
+                    src={reel.video}
+                    poster={reel.poster}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
                 </div>
               </a>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div style={{
-            marginTop: 'clamp(28px, 4vw, 44px)',
-            display: 'flex',
-            gap: '16px',
-            flexWrap: 'wrap',
-          }}>
-            <a
-              href="https://www.instagram.com/tualmioutdoors"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontFamily: sans,
-                fontSize: '9px',
-                fontWeight: 600,
-                letterSpacing: '0.25em',
-                textTransform: 'uppercase',
-                color: 'white',
-                textDecoration: 'none',
-                padding: '11px 28px',
-                border: '1.5px solid rgba(255,255,255,0.6)',
-                borderRadius: '100px',
-              }}
-            >
-              Instagram
-            </a>
-            <a
-              href="https://www.tiktok.com/@tualmi.outdoors"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontFamily: sans,
-                fontSize: '9px',
-                fontWeight: 600,
-                letterSpacing: '0.25em',
-                textTransform: 'uppercase',
-                color: 'white',
-                textDecoration: 'none',
-                padding: '11px 28px',
-                border: '1.5px solid rgba(255,255,255,0.6)',
-                borderRadius: '100px',
-              }}
-            >
-              TikTok
-            </a>
-          </div>
-        </section>
-
-      </div>
-    </div>
+      {/* Footer (section 6) renders globally from layout.tsx */}
+    </>
   );
 }
+
+// ─── Small helpers ────────────────────────────────────────────────────────────
+const heroEstStyle: CSSProperties = {
+  fontFamily: sans,
+  fontSize: 'clamp(14px, 1.8vw, 22px)',
+  fontWeight: 500,
+  letterSpacing: '0.2em',
+  color: 'white',
+};
