@@ -2,31 +2,26 @@ import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-// ─── Design tokens (modeled after gorpgirls.com — clean, lowercase, roomy) ────
+// ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
 const serif  = "'Cormorant Garamond', Georgia, serif";
 const maroon = '#A9445C';
 const blushBg = '#FBF1F5';
 
-// ─── PLACEHOLDER IMAGES ───────────────────────────────────────────────────────
-// Cheyenne: swap these paths for the final photos whenever you're ready.
-// Everything lives in /public/images-2/.
-const HERO_IMAGE = '/images-2/funky-rock0.jpg'; // PLACEHOLDER — final hero photo TBD
+const HERO_IMAGE = '/images-2/funky-rock0.jpg';
 
-// ─── Product scroll panels (Gorp Girls-style sticky color sections) ──────────
-// Each panel: full-screen, sticks in place while the next scrolls up over it.
+// ─── Product scroll panels ────────────────────────────────────────────────────
 interface ProductPanel {
   handle: string;
   title: string;
   copy: string;
-  availability: string; // launch date or "coming soon"
+  availability: string;
   bg: string;      // section background
   accent: string;  // heading color
   body: string;    // paragraph color
-  image: string;   // PLACEHOLDER photos — swap freely
+  image: string;
 }
 
-// Order = launch order: shorts + pants drop July 31st, then top, then fleece.
 const PRODUCT_PANELS: ProductPanel[] = [
   {
     handle: 'sierra-shorts',
@@ -36,7 +31,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#F6E3DC',
     accent: '#B85C49',
     body: '#CC8271',
-    image: '/images-2/shorts-fish.jpg', // PLACEHOLDER
+    image: '/images-2/shorts-fish.jpg',
   },
   {
     handle: 'pinnacles-pant',
@@ -46,7 +41,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#D9DFC5',
     accent: '#7C8A55',
     body: '#96A26D',
-    image: '/images-2/running-shorts1.jpg', // PLACEHOLDER
+    image: '/images-2/running-shorts1.jpg',
   },
   {
     handle: 'alpine-baby-tee',
@@ -56,7 +51,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#FBE9EF',
     accent: '#EC9DBC',
     body: '#F2B7CD',
-    image: '/images-2/cayla-redshorts.jpg', // PLACEHOLDER
+    image: '/images-2/cayla-redshorts.jpg',
   },
   {
     handle: 'trailblazing-fleece',
@@ -66,7 +61,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#FCF8E3',
     accent: '#D2BE35',
     body: '#DBCB6A',
-    image: '/images-2/shorts-holdinghands.jpg', // PLACEHOLDER
+    image: '/images-2/shorts-holdinghands.jpg',
   },
   {
     handle: 'trailblazing-tote',
@@ -76,36 +71,31 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#F5F0E2',
     accent: '#C4AC72',
     body: '#D3C08F',
-    image: '/images-2/IMG_0443.jpeg', // PLACEHOLDER
+    image: '/images-2/IMG_0443.jpeg',
   },
 ];
 
 // ─── Social TikToks ───────────────────────────────────────────────────────────
-// ▸ PASTE YOUR TIKTOK LINKS in the `url` fields below — one per video card.
-//   (Format: https://www.tiktok.com/@tualmi.outdoors/video/1234567890)
-// ▸ Drop the video files in /public/videos/ as tiktok-1.mp4 … tiktok-4.mp4
-//   (TikTok's official embeds force their chrome and can't autoplay, so we
-//   self-host the clips — download your own videos from the TikTok app).
 const TIKTOKS = [
   {
     video: '/videos/clip-1.mp4',
-    poster: '/images-2/collec5.jpg', // PLACEHOLDER poster
+    poster: '/videos/poster-1.jpg',
     url: 'https://www.tiktok.com/@tualmi.outdoors/video/7625759601576660238',
   },
   {
     video: '/videos/clip-2.mp4',
-    poster: '/images-2/collec3.jpg', // PLACEHOLDER poster
+    poster: '/videos/poster-2.jpg',
     url: 'https://www.tiktok.com/@tualmi.outdoors/video/7611273720295984398',
   },
   {
     video: '/videos/clip-3.mp4',
-    poster: '/images-2/cool8.jpg', // PLACEHOLDER poster
+    poster: '/videos/poster-3.jpg',
     url: 'https://www.tiktok.com/@tualmi.outdoors/video/7638058106563349774',
   },
   {
     video: '/videos/clip-4.mp4',
-    poster: '/images-2/collec4.jpg', // PLACEHOLDER poster
-    url: 'https://www.tiktok.com/@tualmi.outdoors', // TODO: paste 4th TikTok link
+    poster: '/videos/poster-4.jpg',
+    url: 'https://www.tiktok.com/@tualmi.outdoors',
   },
 ];
 
@@ -126,10 +116,9 @@ export default function Home() {
         />
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,12,8,0.18)' }} />
 
-        {/* Nav comes from the global layout (see components/Header.tsx) */}
-
         {/* Centered logo lockup */}
         <div
+          className="hero-center"
           style={{
             position: 'absolute',
             inset: 0,
@@ -141,7 +130,7 @@ export default function Home() {
           }}
         >
           <span className="hero-est" style={heroEstStyle}>EST</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="hero-lockup" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images-2/logo2-brown.png"
@@ -149,6 +138,7 @@ export default function Home() {
               style={{ height: 'clamp(60px, 9vw, 120px)', width: 'auto', filter: 'brightness(0) invert(1)' }}
             />
             <span
+              className="hero-wordmark"
               style={{
                 fontFamily: serif,
                 fontSize: 'clamp(64px, 10vw, 140px)',
@@ -171,7 +161,7 @@ export default function Home() {
             style={{
               fontFamily: sans,
               fontWeight: 700,
-              fontSize: 'clamp(16px, 5vw, 64px)', // scales down far enough to stay one line on phones
+              fontSize: 'clamp(16px, 5vw, 64px)',
               letterSpacing: '-0.03em',
               color: maroon,
               margin: '0 0 clamp(32px, 5vw, 56px)',
@@ -182,9 +172,8 @@ export default function Home() {
             actually cute outdoors gear.
           </h2>
 
-          {/* Heading stays centered; body copy is left-aligned */}
           <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(28px, 4vw, 44px)', textAlign: 'left' }}>
-            Tualmi is outdoor clothing made by women, for women — pieces that work as hard on
+            Tualmi is outdoors gear made by women, for women — pieces that work as hard on
             the trail as they look good off it. Technical fabrics, women-specific fits, and the
             colorways and patterns the legacy brands never made. Based in California, built for
             everywhere the trail takes you.
@@ -197,7 +186,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* small side link, like the mockup */}
         <Link
           href="/story"
           style={{
@@ -252,10 +240,8 @@ export default function Home() {
         </Link>
       </section>
 
-      {/* ══ 4 · STICKY PRODUCT SCROLL (Gorp Girls-style) ══════════════════ */}
-      {/* Each panel is full-screen and position:sticky, so it holds still
-          while the next one scrolls up over it — the screen appears to
-          change color with every product. */}
+      {/* ══ 4 · STICKY PRODUCT SCROLL ═════════════════════════════════════ */}
+      {/* Each panel sticks while the next scrolls up over it */}
       <div id="collection">
         {PRODUCT_PANELS.map((panel) => (
           <section
@@ -304,8 +290,7 @@ export default function Home() {
                 />
               </div>
 
-              {/* Copy — left-aligned (image sits left, text right).
-                  No product-page links for now — display only. */}
+              {/* Copy */}
               <div style={{ maxWidth: '440px', textAlign: 'left' }}>
                 <p
                   style={{
@@ -427,13 +412,10 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer (section 6) renders globally from layout.tsx */}
     </>
   );
 }
 
-// ─── Small helpers ────────────────────────────────────────────────────────────
 const heroEstStyle: CSSProperties = {
   fontFamily: sans,
   fontSize: 'clamp(14px, 1.8vw, 22px)',

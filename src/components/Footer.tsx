@@ -9,7 +9,6 @@ const maroon = '#A9445C';
 const blushBg = '#FBF1F5';
 const soft   = '#C9849A'; // lighter maroon for body text
 
-// Same destinations as before — just restyled.
 const LINK_COL_1 = [
   { name: 'shipping',     href: '/footer-pages/shipping' },
   { name: 'returns',      href: '/footer-pages/returns' },

@@ -9,7 +9,7 @@ const maroon = '#A9445C';
 
 const LEFT_LINKS = [
   { name: 'our story', href: '/story' },
-  { name: 'preview the first collection', href: '/#collection' },
+  { name: 'preview drop one', href: '/#collection' },
 ];
 
 const RIGHT_LINKS = [

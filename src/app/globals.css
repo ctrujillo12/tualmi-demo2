@@ -256,9 +256,22 @@ body {
     font-size: 11px !important;
   }
 
-  /* Hero: drop the EST / 2026 flanks on small screens */
+  /* Hero: keep EST / 2026 on mobile — just scale the lockup down to fit */
   .hero-est {
-    display: none !important;
+    font-size: 11px !important;
+    letter-spacing: 0.15em !important;
+  }
+  .hero-center {
+    gap: 14px !important;
+  }
+  .hero-lockup {
+    gap: 8px !important;
+  }
+  .hero-lockup img {
+    height: 44px !important;
+  }
+  .hero-lockup .hero-wordmark {
+    font-size: 48px !important;
   }
 
   /* Socials: 2-up video grid on phones */
