@@ -20,7 +20,6 @@ interface ProductPanel {
   accent: string;  // heading color
   body: string;    // paragraph color
   image: string;
-  fit?: 'cover' | 'contain';
 }
 
 const PRODUCT_PANELS: ProductPanel[] = [
@@ -42,9 +41,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#D9DFC5',
     accent: '#7C8A55',
     body: '#96A26D',
-    image: '/images-2/running-shorts0.jpg',
-    fit: 'contain',
-  },
+    image: '/images-2/running-shorts0.jpg',  },
   {
     handle: 'alpine-baby-tee',
     title: 'the alpine baby tee:',
@@ -53,9 +50,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#FBE9EF',
     accent: '#EC9DBC',
     body: '#F2B7CD',
-    image: '/images-2/shorts-holdinghands.jpg',
-    fit: 'contain',
-  },
+    image: '/images-2/shorts-holdinghands.jpg',  },
   {
     handle: 'trailblazing-fleece',
     title: 'the trailblazing fleece:',
@@ -64,9 +59,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#FCF8E3',
     accent: '#D2BE35',
     body: '#DBCB6A',
-    image: '/images-2/cayla-redshorts.jpg',
-    fit: 'contain',
-  },
+    image: '/images-2/cayla-redshorts.jpg',  },
   {
     handle: 'trailblazing-tote',
     title: 'the trailblazing club tote:',
@@ -290,7 +283,7 @@ export default function Home() {
                   alt={panel.title}
                   fill
                   sizes="(max-width: 768px) 80vw, 340px"
-                  style={{ objectFit: panel.fit ?? 'cover' }}
+                  style={{ objectFit: 'cover' }}
                 />
               </div>
 
