@@ -32,7 +32,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#F6E3DC',
     accent: '#B85C49',
     body: '#CC8271',
-    image: '/images-2/shorts-fish.jpg',
+    image: '/images-2/shortsandshoes.jpg',
   },
   {
     handle: 'juniper-pant',
