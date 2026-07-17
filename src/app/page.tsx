@@ -218,7 +218,7 @@ export default function Home() {
         >
           the first collection,
           <br />
-          coming this july
+          coming this summer
         </h2>
         <Link
           href="#collection"
