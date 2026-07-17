@@ -28,7 +28,7 @@ export default function ReturnsPage() {
             </p>
 
             <ul className="space-y-2 list-disc list-inside">
-              <li>Items are unworn, unwashed, and in original packaging including swing tags and eco cotton bag</li>
+              <li>Items are unworn, unwashed, and in original packaging including hang tags and eco cotton bag</li>
               <li>Your order number is included for return or exchange</li>
               <li>Items are shipped for return within 2 weeks of receiving your order</li>
             </ul>
@@ -50,13 +50,13 @@ export default function ReturnsPage() {
 
             <div className="space-y-1">
               <p className="tracking-wide">Tualmi Outdoors Returns</p>
-              <p>340 E Foothill Blvd '#'660</p>
+              <p>340 E Foothill Blvd #660</p>
               <p>Claremont CA 91711</p>
               <p>USA</p>
             </div>
 
             <p>
-              We strongly advise using a track and trace postal service. We are not responsible for any return parcels that are lost or damaged.
+              We strongly advise using a shipping service with tracking. We are not responsible for any return packages that are lost or damaged.
             </p>
 
             <p>
@@ -64,7 +64,7 @@ export default function ReturnsPage() {
             </p>
 
             <p>
-              For assistance, contact tualmioutdoors@gmail.com
+              For assistance, contact hello@tualmi.com
             </p>
           </div>
 
@@ -95,7 +95,7 @@ export default function ReturnsPage() {
             <h2 className="uppercase tracking-widest text-xs">Faulty or Damaged Items</h2>
 
             <p>
-              If you receive an order with faulty or damaged goods, please contact tualmioutdoors@gmail.com as soon as possible.
+              If you receive an order with faulty or damaged goods, please contact hello@tualmi.com as soon as possible.
             </p>
 
             <p>
@@ -107,7 +107,7 @@ export default function ReturnsPage() {
             </p>
 
             <p>
-              For further information, please contact tualmioutdoors@gmail.com
+              For further information, please contact hello@tualmi.com
             </p>
           </div>
 

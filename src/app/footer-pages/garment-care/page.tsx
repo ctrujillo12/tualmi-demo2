@@ -32,7 +32,7 @@ export default function GarmentCarePage() {
             </h2>
 
             <p>
-              Wash in cold water with like colours using a mild detergent. This helps preserve fabric integrity and colour.
+              Wash in cold water with like colors using a mild detergent. This helps preserve fabric integrity and color.
             </p>
 
             <p>
@@ -51,7 +51,7 @@ export default function GarmentCarePage() {
             </h2>
 
             <p>
-              Air dry in the shade whenever possible. Heat and direct sunlight can weaken fibres and cause fading over time.
+              Air dry in the shade whenever possible. Heat and direct sunlight can weaken fibers and cause fading over time.
             </p>
 
             <p>
@@ -70,7 +70,7 @@ export default function GarmentCarePage() {
             </p>
 
             <p>
-              Avoid fabric softeners, as they can coat fibres and reduce breathability.
+              Avoid fabric softeners, as they can coat fibers and reduce breathability.
             </p>
 
             <p>

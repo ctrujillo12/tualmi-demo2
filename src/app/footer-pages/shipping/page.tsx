@@ -18,11 +18,11 @@ export default function ShippingPage() {
               Shipping is available worldwide.
             </p>
             <p>
-              We aim to process and dispatch all orders within 1–2 business days.
+              We aim to process and ship all orders within 1–2 business days.
             </p>
             <p>
               <span className="italic">
-                During busy sale periods, we aim to dispatch all orders within 3–5 business days. Thank you for your patience.
+                During busy sale periods, we aim to ship all orders within 3–5 business days. Thank you for your patience.
               </span>
             </p>
           </div>
@@ -52,7 +52,7 @@ export default function ShippingPage() {
             </div>
 
             <p>
-              Please note that some items have weight-based shipping rates and may incur a higher postage cost. You will be notified at checkout.
+              Please note that some items have weight-based shipping rates and may incur a higher shipping cost. You will be notified at checkout.
             </p>
           </div>
 
@@ -85,7 +85,7 @@ export default function ShippingPage() {
             <h2 className="uppercase tracking-widest text-xs">Pre-Orders</h2>
 
             <p>
-              If you ordered a pre-order item along with in-stock items, we will wait to receive your full order before dispatching.
+              If you ordered a pre-order item along with in-stock items, we will wait to receive your full order before shipping.
             </p>
 
             <p>
@@ -93,11 +93,11 @@ export default function ShippingPage() {
             </p>
 
             <p>
-              Alternatively, you can request split shipping by emailing us at tualmioutdoors@gmail.com.
+              Alternatively, you can request split shipping by emailing us at hello@tualmi.com.
             </p>
 
             <p>
-              Please allow 2–3 business days for dispatch once the pre-order shipment is delivered to us.
+              Please allow 2–3 business days for shipping once the pre-order shipment is delivered to us.
             </p>
 
             <p>
@@ -127,7 +127,7 @@ export default function ShippingPage() {
             </p>
 
             <p>
-              To avoid any issues, we recommend requesting signature on delivery.
+              To avoid any issues, we recommend requesting signature confirmation on delivery.
             </p>
           </div>
 

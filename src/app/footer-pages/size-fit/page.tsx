@@ -15,9 +15,9 @@ export default function SizeFitPage() {
           {/* Intro */}
           <div className="space-y-4">
             <p>
-              For any sizing questions, please email us at tualmioutdoors@gmail.com
+              For any sizing questions, please email us at hello@tualmi.com
             </p>
-            <p>All measurements are taken in centimetres (cm).</p>
+            <p>All measurements are taken in centimeters (cm).</p>
           </div>
 
           {/* General Size Guide */}
@@ -91,7 +91,7 @@ export default function SizeFitPage() {
               Sierra Shorts — Garment Measurements
             </h2>
 
-            <p>All measurements taken flat on the garment, in centimetres (cm).</p>
+            <p>All measurements taken flat on the garment, in centimeters (cm).</p>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-sm min-w-[560px]">

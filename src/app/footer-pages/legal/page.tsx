@@ -17,7 +17,7 @@ export default function StoryPage() {
           {/* INTRO */}
           <section className="space-y-4">
             <p>
-              These Terms of Use (“Terms”) govern your access and use of our website at tualmi.com and services provided by LAPK Pty Ltd (trading as Tualmi Outdoors). By using this site, you agree to these Terms.
+              These Terms of Use (“Terms”) govern your access and use of our website at tualmi.com and services provided by LAPK Pty Ltd (doing business as Tualmi Outdoors). By using this site, you agree to these Terms.
             </p>
           </section>
 
@@ -25,7 +25,7 @@ export default function StoryPage() {
           <section className="space-y-4">
             <h2 className="font-semibold">Terms of Use</h2>
             <p>
-              Welcome to our website. These Terms of Use ("Terms") govern your access and use of the website located at tualmi.com and related services ("Services") provided by LAPK Pty Ltd trading as Tualmi Outdoors.
+              Welcome to our website. These Terms of Use ("Terms") govern your access and use of the website located at tualmi.com and related services ("Services") provided by LAPK Pty Ltd doing business as Tualmi Outdoors.
             </p>
             <p>
               By accessing or using the site, you agree to be bound by these Terms.
@@ -96,7 +96,7 @@ export default function StoryPage() {
           <section className="space-y-4">
             <h2 className="font-semibold">Site Use</h2>
             <p>
-              We grant a limited, non-transferable licence for personal use of the Site. Commercial use or redistribution is prohibited.
+              We grant a limited, non-transferable license for personal use of the Site. Commercial use or redistribution is prohibited.
             </p>
           </section>
 
@@ -168,16 +168,16 @@ export default function StoryPage() {
           <section className="space-y-4">
             <h2 className="font-semibold">Governing Law</h2>
             <p>
-              These Terms are governed by the laws of Western Australia. By using this Site, you agree to submit to the exclusive jurisdiction of the courts of Western Australia.
+              These Terms are governed by the laws of the State of California. By using this Site, you agree to submit to the exclusive jurisdiction of the state and federal courts located in California.
             </p>
           </section>
 
           {/* CONTACT */}
           <section className="space-y-4">
             <h2 className="font-semibold">Contact</h2>
-            <p>340 E Foothill Blvd 660</p>
+            <p>340 E Foothill Blvd #660</p>
             <p>Claremont, CA 91711 United States</p>
-            <p>Email: tualmioutdoors@gmail.com</p>
+            <p>Email: hello@tualmi.com</p>
           </section>
 
           {/* LAST UPDATED */}

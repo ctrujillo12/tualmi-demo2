@@ -86,7 +86,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     ],
     fit: 'Mid-rise, relaxed fit — inspired by the Patagonia Barely Baggy Shorts. True to size.\n\nOur size S fit model: 5\'7" height · 15" shoulder · 33" chest · 26" waist · 37" hip.',
     sizeChart: {
-      note: 'Garment measurements in centimetres (cm).',
+      note: 'Garment measurements in centimeters (cm).',
       sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
       rows: [
         { label: 'Waist (relaxed)',              values: [62, 67, 72, 77, 82, 87, 92] },

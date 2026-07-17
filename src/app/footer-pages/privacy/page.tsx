@@ -41,7 +41,7 @@ export default function StoryPage() {
 
             <p className="font-medium">How do I withdraw my consent?</p>
             <p>
-              If after you opt-in, you change your mind, you may withdraw your consent for us to contact you, for the continued collection, use or disclosure of your information, at anytime, by contacting us at tualmioutdoors@gmail.com
+              If after you opt-in, you change your mind, you may withdraw your consent for us to contact you, for the continued collection, use or disclosure of your information, at any time, by contacting us at hello@tualmi.com
             </p>
           </section>
 
@@ -151,7 +151,7 @@ export default function StoryPage() {
           <section className="space-y-4">
             <h2 className="font-semibold">QUESTIONS AND CONTACT INFORMATION</h2>
             <p>
-              If you would like to access, correct, amend or delete any personal information, contact us at tualmioutdoors@gmail.com
+              If you would like to access, correct, amend or delete any personal information, contact us at hello@tualmi.com
             </p>
             <p>[Re: Privacy Compliance Officer]</p>
           </section>

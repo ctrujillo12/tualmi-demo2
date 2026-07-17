@@ -91,13 +91,39 @@ export const localProducts: Product[] = [
   },
 ];
 
+// ─── Renames & removals ───────────────────────────────────────────────────────
+// Shopify may still use the old handles/names — normalize whatever it returns
+// so the rest of the site only ever sees the new ones.
+
+const HANDLE_RENAMES: Record<string, { id: string; handle: string; name: string }> = {
+  'summit-pant': { id: 'pinnacles-pant', handle: 'pinnacles-pant', name: 'Pinnacles Pant' },
+  'horizon-shorts': { id: 'sierra-shorts', handle: 'sierra-shorts', name: 'Sierra Shorts' },
+};
+
+// New handle → old Shopify handle (for fetching until Shopify is updated)
+const OLD_SHOPIFY_HANDLES: Record<string, string> = {
+  'pinnacles-pant': 'summit-pant',
+  'sierra-shorts': 'horizon-shorts',
+};
+
+// Products removed from the site entirely (may still exist in Shopify)
+const REMOVED_HANDLES = ['carabiner'];
+
+function normalizeProduct(p: Product): Product {
+  const rename = HANDLE_RENAMES[p.handle ?? p.id];
+  return rename ? { ...p, ...rename } : p;
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function getProducts(): Promise<Product[]> {
   try {
     const shopifyProducts = await shopifyGetAll();
     if (shopifyProducts.length > 0) {
-      return shopifyProducts.map(toProduct);
+      return shopifyProducts
+        .map(toProduct)
+        .map(normalizeProduct)
+        .filter((p) => !REMOVED_HANDLES.includes(p.handle ?? p.id));
     }
   } catch (err) {
     console.warn('[products] Shopify fetch failed, using local data:', err);
@@ -124,9 +150,15 @@ const legacyIdMap: Record<string, string> = {
 export async function getProduct(id: string): Promise<Product | null> {
   const handle = legacyIdMap[id] ?? id;
 
+  if (REMOVED_HANDLES.includes(handle)) return null;
+
   try {
-    const sp = await getProductByHandle(handle);
-    if (sp) return toProduct(sp);
+    // Try the new handle first, then fall back to the old Shopify handle
+    let sp = await getProductByHandle(handle);
+    if (!sp && OLD_SHOPIFY_HANDLES[handle]) {
+      sp = await getProductByHandle(OLD_SHOPIFY_HANDLES[handle]);
+    }
+    if (sp) return normalizeProduct(toProduct(sp));
   } catch (err) {
     console.warn('[products] Shopify product fetch failed, using local data:', err);
   }
