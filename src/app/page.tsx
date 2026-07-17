@@ -36,7 +36,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
   {
     handle: 'juniper-pant',
     title: 'the juniper pant:',
-    copy: 'Flare cargo pants that are also actually good for hiking. The fold-over waist you love, cargo pockets that fit your stuff, and a flared leg that goes with everything. Cinch hem because the trail is real.',
+    copy: 'Pics coming soon! Flare cargo pants that are also actually good for hiking. The fold-over waist you love, cargo pockets that fit your stuff, and a flared leg that goes with everything and also cinches.',
     availability: 'dropping july 31st',
     bg: '#D9DFC5',
     accent: '#7C8A55',
