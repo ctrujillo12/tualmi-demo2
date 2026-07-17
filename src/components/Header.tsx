@@ -48,6 +48,7 @@ export default function Header() {
     textDecoration: 'none',
     textTransform: 'lowercase',
     letterSpacing: '0.01em',
+    lineHeight: 1,
     transition: 'color 0.3s ease',
   };
 
@@ -61,6 +62,7 @@ export default function Header() {
         right: 0,
         display: 'flex',
         justifyContent: 'space-between',
+        alignItems: 'center',
         padding: '14px clamp(20px, 3vw, 40px)',
         zIndex: 50,
       }}
@@ -83,7 +85,7 @@ export default function Header() {
           </Link>
         ))}
       </nav>
-      <nav style={{ display: 'flex', gap: 'clamp(20px, 3vw, 44px)' }}>
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 3vw, 44px)' }}>
         {RIGHT_LINKS.map((l) => (
           <Link key={l.name} href={l.href} style={linkStyle}>
             {l.name}
