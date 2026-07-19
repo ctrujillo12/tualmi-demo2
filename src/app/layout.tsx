@@ -13,14 +13,52 @@ const codystar = Codystar({ subsets: ['latin'], weight: '400', variable: '--font
 const cedarvilleCursive = Cedarville_Cursive({ subsets: ['latin'], weight: '400', variable: '--font-cedarville', display: 'swap' });
 
 export const metadata: Metadata = {
-  title: 'Tualmi Outdoors',
-  description: 'Actually cute outdoors gear.',
+  metadataBase: new URL('https://tualmi.com'),
+  title: {
+    default: 'Tualmi — actually cute hiking apparel',
+    template: '%s | Tualmi',
+  },
+  description:
+    'Hiking apparel made by women, for women — the fits, prints, and colorways the legacy brands never made. Built for the trail, cute everywhere else.',
+  openGraph: {
+    siteName: 'Tualmi',
+    type: 'website',
+    title: 'Tualmi — actually cute hiking apparel',
+    description:
+      'Hiking apparel made by women, for women — the fits, prints, and colorways the legacy brands never made.',
+    images: ['/images-2/funky-rock0.jpg'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Tualmi — actually cute hiking apparel',
+    description:
+      'Hiking apparel made by women, for women — the fits, prints, and colorways the legacy brands never made.',
+    images: ['/images-2/funky-rock0.jpg'],
+  },
+};
+
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Tualmi',
+  url: 'https://tualmi.com',
+  logo: 'https://tualmi.com/images-2/logo2-maroon.png',
+  description:
+    'Tualmi designs whimsical, feminine hiking apparel for women who care as much about style as performance — technical fabrics and women-specific fits made from recycled materials in a WRAP-certified facility.',
+  sameAs: [
+    'https://www.tiktok.com/@tualmi.outdoors',
+    'https://www.instagram.com/tualmioutdoors',
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable} ${montserrat.variable} ${greatVibes.variable} ${ballet.variable} ${codystar.variable} ${cedarvilleCursive.variable}`}>
       <body className="font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <Header />
         <main className="min-h-screen">
           {children}

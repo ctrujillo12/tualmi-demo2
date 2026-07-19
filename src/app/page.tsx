@@ -154,7 +154,7 @@ export default function Home() {
       {/* ══ 2 · ABOUT ═════════════════════════════════════════════════════ */}
       <section style={{ backgroundColor: blushBg, padding: 'clamp(80px, 12vw, 160px) clamp(24px, 6vw, 72px)', position: 'relative' }}>
         <div style={{ maxWidth: '860px', margin: '0 auto', textAlign: 'center' }}>
-          <h2
+          <h1
             style={{
               fontFamily: sans,
               fontWeight: 700,
@@ -167,7 +167,7 @@ export default function Home() {
             }}
           >
             actually cute outdoors gear.
-          </h2>
+          </h1>
 
           <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(28px, 4vw, 44px)', textAlign: 'left' }}>
             Tualmi is outdoors gear made by women, for women — pieces that work as hard on
