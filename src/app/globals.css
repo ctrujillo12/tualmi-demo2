@@ -215,10 +215,12 @@ body {
 
 /* ══ Redesign — mobile optimization ══════════════════════════════════════ */
 
-/* Full-viewport sections: prefer svh so mobile browser chrome doesn't clip */
+/* Product panels: at least one screen tall, but allowed to grow if the
+   content is taller than the viewport (short windows, small laptops) —
+   this keeps the image inside the colored background on every machine */
 .panel-viewport {
-  height: 100vh;
-  height: 100svh;
+  min-height: 100vh;
+  min-height: 100svh;
 }
 
 /* Hero: taller than the viewport so more of the image shows before

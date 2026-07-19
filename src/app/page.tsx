@@ -271,7 +271,9 @@ export default function Home() {
                 className="panel-photo"
                 style={{
                   position: 'relative',
-                  width: 'clamp(280px, 38vw, 460px)',
+                  // Capped by viewport height too, so the 4:5 card always fits
+                  // on shorter screens (Windows laptops etc.)
+                  width: 'min(clamp(280px, 38vw, 460px), 58svh)',
                   aspectRatio: '4 / 5',
                   borderRadius: '6px',
                   overflow: 'hidden',
