@@ -302,8 +302,8 @@ export default function Home() {
                 >
                   {panel.availability}
                 </p>
-                {panel.handle === 'trailblazing-tote' ? (
-                  <Link href="/products/trailblazing-tote" style={{ textDecoration: 'none' }}>
+                {['trailblazing-tote', 'sierra-shorts', 'juniper-pant'].includes(panel.handle) ? (
+                  <Link href={`/products/${panel.handle}`} style={{ textDecoration: 'none' }}>
                     <h3
                       style={{
                         fontFamily: sans,

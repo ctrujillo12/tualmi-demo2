@@ -5,7 +5,7 @@ export default function SizeFitPage() {
     <PolicyPage title="size + fit">
       <Section>
         <P>For any sizing questions, please email us at hello@tualmi.com</P>
-        <P>All measurements are taken in centimeters (cm).</P>
+        <P>All measurements are in inches.</P>
       </Section>
 
       <Section heading="general size guide">
@@ -28,19 +28,19 @@ export default function SizeFitPage() {
       </Section>
 
       <Section heading="sierra shorts — garment measurements">
-        <P>All measurements taken flat on the garment, in centimeters (cm).</P>
+        <P>All measurements taken flat on the garment, in inches.</P>
         <DataTable
           headers={['point of measure', 'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl']}
           rows={[
-            ['Waist (relaxed)', 62, 67, 72, 77, 82, 87, 92],
-            ['Hip', 100.5, 105.5, 110.5, 115.5, 120.5, 125.5, 130.5],
-            ['Thigh', 66, 69, 72, 75, 78, 81, 84],
-            ['Length', 26, 27, 28, 29, 30, 31, 32],
-            ['Front rise (excl. waistband)', 21.6, 22.8, 24, 25.2, 26.4, 27.6, 28.8],
-            ['Back rise (excl. waistband)', 30.6, 31.8, 33, 34.2, 35.4, 36.6, 37.8],
-            ['Leg opening', 66, 69, 72, 75, 78, 81, 84],
-            ['Waistband height', 3.8, 3.8, 3.8, 3.8, 3.8, 3.8, 3.8],
-            ['Drawcord (exposed, per side)', 23, 23, 23, 23, 23, 23, 23],
+            ['Waist (relaxed)', '24.5"', '26.5"', '28.25"', '30.25"', '32.25"', '34.25"', '36.25"'],
+            ['Hip', '39.5"', '41.5"', '43.5"', '45.5"', '47.5"', '49.5"', '51.5"'],
+            ['Thigh', '26"', '27.25"', '28.25"', '29.5"', '30.75"', '32"', '33"'],
+            ['Length', '10.25"', '10.75"', '11"', '11.5"', '11.75"', '12.25"', '12.5"'],
+            ['Front rise (excl. waistband)', '8.5"', '9"', '9.5"', '10"', '10.5"', '10.75"', '11.25"'],
+            ['Back rise (excl. waistband)', '12"', '12.5"', '13"', '13.5"', '14"', '14.5"', '15"'],
+            ['Leg opening', '26"', '27.25"', '28.25"', '29.5"', '30.75"', '32"', '33"'],
+            ['Waistband height', '1.5"', '1.5"', '1.5"', '1.5"', '1.5"', '1.5"', '1.5"'],
+            ['Drawcord (exposed, per side)', '9"', '9"', '9"', '9"', '9"', '9"', '9"'],
           ]}
         />
       </Section>
