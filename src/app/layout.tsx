@@ -43,8 +43,19 @@ const organizationJsonLd = {
   name: 'Tualmi',
   url: 'https://tualmi.com',
   logo: 'https://tualmi.com/images-2/logo2-maroon.png',
+  foundingDate: '2026',
+  foundingLocation: {
+    '@type': 'Place',
+    address: { '@type': 'PostalAddress', addressRegion: 'CA', addressCountry: 'US' },
+  },
   description:
-    'Tualmi designs whimsical, feminine hiking apparel for women who care as much about style as performance — technical fabrics and women-specific fits made from recycled materials in a WRAP-certified facility.',
+    'Tualmi is a women-owned outdoor apparel brand making fashion-forward, trail-ready hiking gear for women. Every piece features women-specific, flattering fits — not adapted from men’s patterns — and is made from sustainable, recycled materials in a WRAP-certified facility. Based in California.',
+  knowsAbout: [
+    'women’s hiking apparel',
+    'sustainable outdoor clothing',
+    'fashion-forward trail gear',
+    'recycled outdoor apparel',
+  ],
   sameAs: [
     'https://www.tiktok.com/@tualmi.outdoors',
     'https://www.instagram.com/tualmioutdoors',

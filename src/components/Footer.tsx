@@ -91,8 +91,9 @@ export default function Footer() {
               join the trailblazing club!
             </h3>
             <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 500, lineHeight: 1.9, color: soft, margin: '0 0 20px' }}>
-              First looks, early access when the shop opens, and the occasional trail
-              recommendation. No spam — just the good stuff.
+              For style-conscious women who don&apos;t compromise on the trail. First eyes
+              on our new designs, early access when we drop July 31st, 
+              and the occasional trail recommendation! 
             </p>
 
             {status === 'success' ? (

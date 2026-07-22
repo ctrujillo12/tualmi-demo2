@@ -10,6 +10,79 @@ const blushBg = '#FBF1F5';
 
 const HERO_IMAGE = '/images-2/funky-rock0.jpg';
 
+// Product structured data — all items are shown on this page. Availability +
+// verified fabric per item; PreOrder for the drop, InStock for the tote.
+const SITE = 'https://tualmi.com';
+const productsJsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Product',
+      name: 'Sierra Shorts',
+      brand: { '@type': 'Brand', name: 'Tualmi' },
+      category: 'Women’s Hiking Apparel',
+      material: '100% recycled nylon',
+      description:
+        'Mid-rise, relaxed-fit women’s hiking shorts with a flattering, women-engineered cut, deep pockets sized for a full phone, and bold, print-forward colorways. Made from 100% recycled nylon.',
+      image: `${SITE}/images-2/shortsandshoes.jpg`,
+      offers: {
+        '@type': 'Offer', price: '72.00', priceCurrency: 'USD',
+        availability: 'https://schema.org/PreOrder', url: `${SITE}/products/sierra-shorts`,
+      },
+    },
+    {
+      '@type': 'Product',
+      name: 'Juniper Pant',
+      brand: { '@type': 'Brand', name: 'Tualmi' },
+      category: 'Women’s Hiking Apparel',
+      material: 'Sustainable, recycled materials',
+      description:
+        'Fashion-forward flare cargo pants that are genuinely trail-ready — a flattering fold-over waist, functional cargo pockets, and a flared leg crafted for women’s proportions, not scaled down from a men’s pattern. Made from sustainable, recycled materials.',
+      image: `${SITE}/images-2/running-shorts1.jpg`,
+      offers: {
+        '@type': 'Offer', price: '99.00', priceCurrency: 'USD',
+        availability: 'https://schema.org/PreOrder', url: `${SITE}/products/juniper-pant`,
+      },
+    },
+    {
+      '@type': 'Product',
+      name: 'Alpine Baby Tee',
+      brand: { '@type': 'Brand', name: 'Tualmi' },
+      category: 'Women’s Hiking Apparel',
+      material: 'Sustainable, recycled materials',
+      description:
+        'A flattering, second-skin women’s hiking tee with UPF 40 sun protection and a women-specific cut. Sustainably made from recycled materials.',
+      image: `${SITE}/images-2/shirt-yellow-bg.png`,
+      offers: { '@type': 'Offer', availability: 'https://schema.org/PreOrder', priceCurrency: 'USD' },
+    },
+    {
+      '@type': 'Product',
+      name: 'Trailblazing Fleece',
+      brand: { '@type': 'Brand', name: 'Tualmi' },
+      category: 'Women’s Hiking Apparel',
+      material: '100% recycled polyester',
+      description:
+        'A fashion-forward, mid-weight women’s hiking fleece with a chest zip pocket, snap collar, and kangaroo pocket. Made from 100% recycled polyester in prints the legacy brands never made.',
+      image: `${SITE}/images-2/fleece-pink-bg.png`,
+      offers: { '@type': 'Offer', availability: 'https://schema.org/PreOrder', priceCurrency: 'USD' },
+    },
+    {
+      '@type': 'Product',
+      name: 'Trailblazing Club Tote',
+      brand: { '@type': 'Brand', name: 'Tualmi' },
+      category: 'Accessories',
+      material: '100% organic cotton canvas',
+      description:
+        'An elevated everyday tote in 100% organic cotton canvas — sturdy enough for the trail, cute enough for the farmers market.',
+      image: `${SITE}/images-2/IMG_0443.jpeg`,
+      offers: {
+        '@type': 'Offer', price: '25.00', priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock', url: `${SITE}/products/trailblazing-tote`,
+      },
+    },
+  ],
+};
+
 // ─── Product scroll panels ────────────────────────────────────────────────────
 interface ProductPanel {
   handle: string;
@@ -26,7 +99,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
   {
     handle: 'sierra-shorts',
     title: 'the sierra shorts:',
-    copy: 'Mid-rise, relaxed fit, with deep pockets big enough for your whole phone. Prints people will ask you about at the trailhead.',
+    copy: 'Moisture-wicking, water-resistant, and ultra-light, with roomy, wide-leg room. Made from 100% recycled material in patterns people will ask you about on the trail.',
     availability: 'dropping july 31st',
     bg: '#F6E3DC',
     accent: '#B85C49',
@@ -36,7 +109,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
   {
     handle: 'juniper-pant',
     title: 'the juniper pant:',
-    copy: 'Pics coming soon! Flare cargo pants that are also actually good for hiking. The fold-over waist you love, cargo pockets that fit your stuff, and a flared leg that goes with everything and also cinches.',
+    copy: "Pics loading! Flare cargo hiking pants with ag fold-over waist, cargo pockets, and a flattering flared leg. The hiking pants you've been dreaming of.",
     availability: 'dropping july 31st',
     bg: '#D9DFC5',
     accent: '#7C8A55',
@@ -45,7 +118,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
   {
     handle: 'alpine-baby-tee',
     title: 'the alpine baby tee:',
-    copy: 'UPF 40 protection, second-skin fit, and the kind of cut that makes your shoulders look good on the summit.',
+    copy: 'A flattering, second-skin hiking tee with UPF 40 sun protection and a women-specific cut that looks good on the summit. Sustainably made from recycled materials.',
     availability: 'coming soon',
     bg: '#FBE9EF',
     accent: '#EC9DBC',
@@ -102,6 +175,10 @@ const TIKTOK_URL = 'https://www.tiktok.com/@tualmi.outdoors';
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productsJsonLd) }}
+      />
       {/* ══ 1 · HERO ══════════════════════════════════════════════════════ */}
       <section className="hero-viewport" style={{ position: 'relative', minHeight: '560px', overflow: 'hidden' }}>
         <Image
@@ -169,11 +246,14 @@ export default function Home() {
             actually cute outdoors gear.
           </h1>
 
+          <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
+            Tualmi is a women-owned outdoor apparel brand built on a simple idea: women deserve
+            fashion-forward hiking gear engineered for their bodies — not scaled down from men&apos;s
+            patterns. Every piece pairs technical, trail-ready performance with a flattering,
+            women-specific fit and bold, print-forward colorways.
+          </p>
           <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(28px, 4vw, 44px)', textAlign: 'left' }}>
-            Tualmi is outdoors gear made by women, for women — pieces that work as hard on
-            the trail as they look good off it. Technical fabrics, women-specific fits, and the
-            colorways and patterns the legacy brands never made. Based in California, built for
-            everywhere the trail takes you.
+            Sustainably made in a WRAP-certified facility.
           </p>
 
           <div style={{ textAlign: 'left' }}>

@@ -59,7 +59,7 @@ export const localProducts: Product[] = [
     handle: 'sierra-shorts',
     name: 'Sierra Shorts',
     description:
-      'Inspired by the Patagonia Barely Baggies Shorts — but with the colorways they never made. Mid-rise, relaxed fit, with deep pockets big enough for your whole phone. Canyon is the raspberry-red that shows up in every good hiking photo. Dusk is pink gingham — picnic energy meets trail energy. Meadow is the retro circle print people will ask you about at the trailhead.',
+      'Mid-rise, relaxed fit with a flattering, women-engineered cut and deep pockets big enough for your whole phone. Made from 100% recycled nylon, in bold, print-forward colorways the legacy brands never made. Canyon is the raspberry-red that shows up in every good hiking photo. Dusk is pink gingham — picnic energy meets trail energy. Meadow is the retro circle print people will ask you about at the trailhead.',
     price: 7200,
     images: [
       '/images-2/shorts-red-bg.png',
