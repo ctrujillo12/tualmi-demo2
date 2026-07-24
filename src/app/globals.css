@@ -251,8 +251,12 @@ body {
 /* ── Product page layout ── */
 .pdp-layout {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr); /* minmax(0,..) lets wide children shrink instead of overflowing */
   gap: clamp(28px, 5vw, 40px);
+}
+/* Both columns must be allowed to shrink below their content width */
+.pdp-layout > * {
+  min-width: 0;
 }
 @media (min-width: 1024px) {
   /* Gallery gets the larger share so the photos read big on desktop */
@@ -283,7 +287,7 @@ body {
 }
 
 /* ── Product page gallery: mobile (3 big + tappable thumbnails) ── */
-.pdp-gallery--mobile { display: none; }
+.pdp-gallery--mobile { display: none; max-width: 100%; }
 @media (max-width: 767px) {
   .pdp-gallery { display: none; }          /* hide the desktop grid */
   .pdp-gallery--mobile { display: block; }
@@ -305,6 +309,7 @@ body {
   display: flex;
   gap: 8px;
   overflow-x: auto;
+  max-width: 100%;
   margin-top: 10px;
   padding-bottom: 4px;
   -webkit-overflow-scrolling: touch;
