@@ -336,6 +336,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
             {/* Feature highlights — Halfday-style icon strip */}
             {fabricDetail?.highlights && fabricDetail.highlights.length > 0 && (
               <div
+                className="pdp-highlights"
                 style={{
                   display: 'flex',
                   flexWrap: 'wrap',
@@ -350,7 +351,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                 }}
               >
                 {fabricDetail.highlights.map((h) => (
-                  <div key={h.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', width: '56px', textAlign: 'center' }}>
+                  <div key={h.label} className="pdp-hl" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', width: '56px', textAlign: 'center' }}>
                     <HighlightGlyph icon={h.icon} />
                     <span style={{ fontFamily: sans, fontSize: '9.5px', fontWeight: 600, color: maroon, lineHeight: 1.2, textTransform: 'lowercase' }}>
                       {h.label}
