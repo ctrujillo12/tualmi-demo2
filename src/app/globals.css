@@ -231,9 +231,13 @@ body {
 }
 
 @media (max-width: 768px) {
-  /* Product panels: let content define height so long copy never clips;
-     sticky stacking still works because panels stay >= 1 viewport tall */
+  /* On mobile, drop the sticky scroll-over behavior entirely. The panels
+     become normal stacked sections, so the next product no longer slides
+     over the buttons before you can tap them. (The color-change-on-scroll
+     effect stays on desktop, where a cursor makes the links easy to hit.) */
   .panel-viewport {
+    position: relative !important;
+    top: auto !important;
     height: auto !important;
     min-height: 100svh !important;
     padding-top: 84px !important;
