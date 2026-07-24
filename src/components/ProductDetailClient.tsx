@@ -45,7 +45,7 @@ const bodyStyle: React.CSSProperties = {
 
 // ─── Feature-highlight icons (Halfday-style strip) ────────────────────────────
 function HighlightGlyph({ icon }: { icon: HighlightIcon }) {
-  const common = { width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none', stroke: maroon, strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  const common = { width: 21, height: 21, viewBox: '0 0 24 24', fill: 'none', stroke: maroon, strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   switch (icon) {
     case 'moisture': // single water drop
       return <svg {...common}><path d="M12 3.5c2.8 3 5 5.6 5 8.5a5 5 0 0 1-10 0c0-2.9 2.2-5.5 5-8.5Z" /></svg>;
@@ -96,6 +96,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     return product.images.slice(start, end);
   };
 
+  const [focusIdx, setFocusIdx]           = useState(0); // mobile hero photo
   const [selectedSize, setSelectedSize]   = useState(product.sizes[0] || '');
   const [selectedColor, setSelectedColor] = useState(() => {
     const fallback = swatchColors.length > 0 ? swatchColors[0].name : (product.colors[0] || '');
@@ -109,6 +110,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
+    setFocusIdx(0);
     // Persist the choice in the URL so a refresh keeps the same colorway
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
@@ -247,26 +249,21 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   return (
     <div style={{ minHeight: '100vh', backgroundColor: blushBg }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(88px, 12vw, 130px) clamp(20px, 4vw, 48px) clamp(64px, 9vw, 110px)' }}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+        <div className="pdp-layout">
 
-          {/* ── Left: gallery — 2-up (full-width hero on mobile) ── */}
+          {/* ── Left: gallery ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* Desktop: uniform 2-up grid */}
             <div className="pdp-gallery">
               {gallery.map((image, i) => {
-                // Odd trailing photo spans full width on desktop; first photo is
-                // the full-width hero on mobile (see globals.css)
                 const isLastOdd = gallery.length % 2 === 1 && i === gallery.length - 1;
-                const cls = 'pdp-tile'
-                  + (isLastOdd ? ' pdp-tile--wide' : '')
-                  + (i === 0 ? ' pdp-tile--hero' : '');
                 return (
-                  <div key={image} className={cls}>
+                  <div key={image} className={'pdp-tile' + (isLastOdd ? ' pdp-tile--wide' : '')}>
                     <Image
                       src={image}
                       alt={`${product.name} — ${selectedColor} ${i + 1}`}
                       fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      priority={i === 0}
+                      sizes="(max-width: 1024px) 50vw, 25vw"
                       style={{ objectFit: 'cover' }}
                     />
                   </div>
@@ -274,9 +271,41 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               })}
             </div>
 
-            <p style={{ ...bodyStyle, fontSize: '12px', lineHeight: 1.7, opacity: 0.85 }}>
-              Photos show pre-production samples. Final color and fit may vary slightly.
-            </p>
+            {/* Mobile: hero + 2 big supporting, then a tappable thumbnail strip */}
+            <div className="pdp-gallery--mobile">
+              <div className="pdp-m-hero">
+                <Image
+                  src={gallery[focusIdx] ?? gallery[0]}
+                  alt={`${product.name} — ${selectedColor}`}
+                  fill
+                  sizes="100vw"
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+              {(gallery[1] || gallery[2]) && (
+                <div className="pdp-m-big2">
+                  {[1, 2].map((i) => gallery[i] && (
+                    <div key={gallery[i]} className="pdp-tile">
+                      <Image src={gallery[i]} alt={`${product.name} — ${selectedColor} ${i + 1}`} fill sizes="50vw" style={{ objectFit: 'cover' }} />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {gallery.length > 1 && (
+                <div className="pdp-m-thumbs">
+                  {gallery.map((image, i) => (
+                    <button
+                      key={image}
+                      className={i === focusIdx ? 'active' : ''}
+                      onClick={() => setFocusIdx(i)}
+                      aria-label={`View photo ${i + 1}`}
+                    >
+                      <Image src={image} alt="" fill sizes="58px" style={{ objectFit: 'cover' }} />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* ── Right: details ── */}
@@ -311,19 +340,19 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   display: 'flex',
                   flexWrap: 'wrap',
                   justifyContent: 'center',
-                  gap: '18px 22px',
-                  padding: '20px',
-                  marginBottom: '28px',
+                  gap: '12px 16px',
+                  padding: '14px 16px',
+                  marginBottom: '26px',
                   backgroundColor: 'white',
-                  borderRadius: '14px',
+                  borderRadius: '12px',
                   width: 'fit-content',
                   maxWidth: '100%',
                 }}
               >
                 {fabricDetail.highlights.map((h) => (
-                  <div key={h.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '7px', width: '72px', textAlign: 'center' }}>
+                  <div key={h.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', width: '56px', textAlign: 'center' }}>
                     <HighlightGlyph icon={h.icon} />
-                    <span style={{ fontFamily: sans, fontSize: '11px', fontWeight: 600, color: maroon, lineHeight: 1.25, textTransform: 'lowercase' }}>
+                    <span style={{ fontFamily: sans, fontSize: '9.5px', fontWeight: 600, color: maroon, lineHeight: 1.2, textTransform: 'lowercase' }}>
                       {h.label}
                     </span>
                   </div>
@@ -335,7 +364,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
             {product.sizes.length > 0 && product.sizes[0] !== 'One Size' && (
               <div style={{ marginBottom: '20px' }}>
                 <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '10px' }}>size</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <div className="pdp-sizes">
                   {product.sizes.map((size) => (
                     <button
                       key={size}

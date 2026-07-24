@@ -248,7 +248,22 @@ body {
   }
 }
 
-/* ── Product page gallery ── */
+/* ── Product page layout ── */
+.pdp-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(28px, 5vw, 40px);
+}
+@media (min-width: 1024px) {
+  /* Gallery gets the larger share so the photos read big on desktop */
+  .pdp-layout {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: clamp(40px, 5vw, 72px);
+    align-items: start;
+  }
+}
+
+/* ── Product page gallery: desktop 2-up grid ── */
 .pdp-gallery {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -266,17 +281,63 @@ body {
   grid-column: 1 / -1;
   aspect-ratio: 3 / 2;
 }
-@media (max-width: 768px) {
-  /* On phones the lead shot gets a full-width hero moment,
-     the rest stay 2-up so you still see angles at a glance */
-  .pdp-tile--hero {
-    grid-column: 1 / -1;
-    aspect-ratio: 3 / 4;
-  }
-  /* Don't let the desktop "wide last" override the mobile layout */
-  .pdp-tile--wide {
-    grid-column: auto;
-    aspect-ratio: 3 / 4;
+
+/* ── Product page gallery: mobile (3 big + tappable thumbnails) ── */
+.pdp-gallery--mobile { display: none; }
+@media (max-width: 767px) {
+  .pdp-gallery { display: none; }          /* hide the desktop grid */
+  .pdp-gallery--mobile { display: block; }
+}
+.pdp-m-hero {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #fff;
+}
+.pdp-m-big2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+.pdp-m-thumbs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-top: 10px;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+.pdp-m-thumbs button {
+  position: relative;
+  flex: 0 0 auto;
+  width: 58px;
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid transparent;
+  padding: 0;
+  background-color: #fff;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.15s, border-color 0.15s;
+}
+.pdp-m-thumbs button.active {
+  opacity: 1;
+  border-color: #A9445C;
+}
+
+/* ── Size selector: keep all pills on one row on mobile ── */
+.pdp-sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 767px) {
+  .pdp-sizes { flex-wrap: nowrap; gap: 5px; }
+  .pdp-sizes > button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    font-size: 11px !important;
   }
 }
 
