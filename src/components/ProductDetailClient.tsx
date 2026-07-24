@@ -5,8 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
-import { PRODUCT_DETAILS } from '@/lib/productDetails';
-import { PRODUCT_COLORS } from '@/lib/productColors';
+import { PRODUCT_DETAILS, type HighlightIcon } from '@/lib/productDetails';
+import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 
 interface ProductDetailClientProps {
   product: Product;
@@ -43,6 +43,33 @@ const bodyStyle: React.CSSProperties = {
   textAlign: 'left',
 };
 
+// ─── Feature-highlight icons (Halfday-style strip) ────────────────────────────
+function HighlightGlyph({ icon }: { icon: HighlightIcon }) {
+  const common = { width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none', stroke: maroon, strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  switch (icon) {
+    case 'moisture': // single water drop
+      return <svg {...common}><path d="M12 3.5c2.8 3 5 5.6 5 8.5a5 5 0 0 1-10 0c0-2.9 2.2-5.5 5-8.5Z" /></svg>;
+    case 'water': // water-resistant — drop with a slash
+      return <svg {...common}><path d="M12 3.5c2.8 3 5 5.6 5 8.5a5 5 0 0 1-10 0c0-2.9 2.2-5.5 5-8.5Z" /><path d="M5.5 5.5 18.5 18.5" /></svg>;
+    case 'feather': // ultra-light
+      return <svg {...common}><path d="M19 5a7 7 0 0 0-9.9 0L5 9.1a5.5 5.5 0 0 0 0 7.8L19 5Z" /><path d="M5 19 12 12" /><path d="M15.5 8.5 11 13" /></svg>;
+    case 'recycled': // clean circular recycle / renew loop
+      return <svg {...common}><path d="M20.5 8V3.5H16" /><path d="M20.5 3.5 16.5 7.5A7 7 0 0 0 5.2 9.6" /><path d="M3.5 16v4.5H8" /><path d="M3.5 20.5 7.5 16.5A7 7 0 0 0 18.8 14.4" /></svg>;
+    case 'uv': // sun
+      return <svg {...common}><circle cx="12" cy="12" r="3.8" /><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6" /></svg>;
+    case 'pocket': // pocket
+      return <svg {...common}><rect x="4.5" y="4.5" width="15" height="15" rx="2.5" /><path d="M8.5 4.5v3a3.5 3.5 0 0 0 7 0v-3" /></svg>;
+    case 'stretch': // expand both ways
+      return <svg {...common}><path d="M3.5 12h17" /><path d="M7 8.5 3.5 12 7 15.5" /><path d="M17 8.5 20.5 12 17 15.5" /></svg>;
+    case 'women': // female symbol
+      return <svg {...common}><circle cx="12" cy="8" r="4.5" /><path d="M12 12.5v8M8.75 17.5h6.5" /></svg>;
+    case 'cinch': // cinched hem / drawstring
+      return <svg {...common}><path d="M8 4v6M16 4v6" /><path d="M8 10c1.3 1.3 2.5 1.3 4 1.3s2.7 0 4-1.3" /><path d="M9.5 11.2 8 20M14.5 11.2 16 20" /></svg>;
+    default:
+      return null;
+  }
+}
+
 export default function ProductDetailClient({ product, initialColor }: ProductDetailClientProps) {
   const handle       = product.handle ?? '';
   const isInStock    = AVAILABLE_HANDLES.includes(handle);
@@ -53,16 +80,22 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   const addItem = useCartStore((state) => state.addItem);
 
   const swatchColors = PRODUCT_COLORS[handle] ?? [];
+  const colorImageMap = PRODUCT_COLOR_IMAGES[handle];
   const colorCount   = Math.max(1, swatchColors.length || product.colors.length);
   const imgsPerColor = Math.max(1, Math.floor(product.images.length / colorCount));
 
   const getColorImages = (colorIdx: number): string[] => {
+    // Prefer an explicit per-color image list (handles uneven photo counts)
+    const colorName = swatchColors[colorIdx]?.name ?? product.colors[colorIdx];
+    if (colorImageMap && colorName && colorImageMap[colorName]?.length) {
+      return colorImageMap[colorName];
+    }
+    // Fallback: split product.images evenly across colors
     const start = colorIdx * imgsPerColor;
     const end   = colorIdx === colorCount - 1 ? product.images.length : start + imgsPerColor;
     return product.images.slice(start, end);
   };
 
-  const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize]   = useState(product.sizes[0] || '');
   const [selectedColor, setSelectedColor] = useState(() => {
     const fallback = swatchColors.length > 0 ? swatchColors[0].name : (product.colors[0] || '');
@@ -76,7 +109,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
-    setSelectedImage(0);
+    // Persist the choice in the URL so a refresh keeps the same colorway
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('color', color);
+      window.history.replaceState(null, '', url.toString());
+    }
   };
 
   const handleAddToCart = () => {
@@ -106,18 +144,19 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   if (fabricDetail) {
     accordionItems.push({
       key: 'material',
-      label: 'material',
+      label: 'the technical stuff',
       content: (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <p style={{ margin: 0, opacity: 0.85 }}>For the gear nerds — here&apos;s exactly what you&apos;re getting.</p>
           <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', rowGap: '6px', columnGap: '12px' }}>
-            <span style={{ color: soft, opacity: 0.8 }}>Shell</span>
+            <span style={{ color: soft, opacity: 0.8 }}>Fabric</span>
             <span>{fabricDetail.shell}</span>
             {fabricDetail.lining && (<><span style={{ color: soft, opacity: 0.8 }}>Lining</span><span>{fabricDetail.lining}</span></>)}
             {fabricDetail.pocketLining && (<><span style={{ color: soft, opacity: 0.8 }}>Pocket lining</span><span>{fabricDetail.pocketLining}</span></>)}
             {fabricDetail.weight && (<><span style={{ color: soft, opacity: 0.8 }}>Weight</span><span>{fabricDetail.weight}</span></>)}
           </div>
           {fabricDetail.features && fabricDetail.features.length > 0 && (
-            <ul style={{ margin: '6px 0 0', padding: '0 0 0 14px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <ul style={{ margin: '2px 0 0', padding: '0 0 0 14px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
               {fabricDetail.features.map((f, i) => <li key={i}>{f}</li>)}
             </ul>
           )}
@@ -152,6 +191,43 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     ),
   });
 
+  if (fabricDetail?.sizeChart) {
+    const chart = fabricDetail.sizeChart;
+    accordionItems.push({
+      key: 'sizeguide',
+      label: 'size guide',
+      content: (
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '480px' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '6px 8px 8px 0', borderBottom: `1.5px solid ${maroon}` }}> </th>
+                {chart.sizes.map((s) => (
+                  <th key={s} style={{ padding: '6px 4px 8px', textAlign: 'center', fontFamily: sans, fontSize: '12px', fontWeight: 700, color: maroon, textTransform: 'lowercase', borderBottom: `1.5px solid ${maroon}` }}>
+                    {s}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {chart.rows.map((row) => (
+                <tr key={row.label} style={{ borderBottom: `1px solid ${rule}` }}>
+                  <td style={{ padding: '7px 8px 7px 0', fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft, whiteSpace: 'nowrap' }}>{row.label}</td>
+                  {row.values.map((v, j) => (
+                    <td key={j} style={{ padding: '7px 4px', textAlign: 'center', fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft }}>{v}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {chart.note && (
+            <p style={{ ...bodyStyle, fontSize: '12px', margin: '8px 0 0' }}>{chart.note}</p>
+          )}
+        </div>
+      ),
+    });
+  }
+
   accordionItems.push({
     key: 'shipping',
     label: 'shipping & returns',
@@ -167,51 +243,36 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     ? swatchColors.findIndex((s) => s.name === selectedColor)
     : product.colors.indexOf(selectedColor);
   const gallery     = getColorImages(Math.max(0, activeColorIdx));
-  const activeImage = gallery[selectedImage] ?? gallery[0] ?? product.images[0];
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: blushBg }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(88px, 12vw, 130px) clamp(20px, 4vw, 48px) clamp(64px, 9vw, 110px)' }}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
 
-          {/* ── Left: gallery ── */}
+          {/* ── Left: gallery — 2-up (full-width hero on mobile) ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ position: 'relative', lineHeight: 0, borderRadius: '10px', overflow: 'hidden' }}>
-              <Image
-                src={activeImage}
-                alt={product.name}
-                width={800}
-                height={1200}
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                priority
-                style={{ width: '100%', height: 'auto', display: 'block' }}
-              />
+            <div className="pdp-gallery">
+              {gallery.map((image, i) => {
+                // Odd trailing photo spans full width on desktop; first photo is
+                // the full-width hero on mobile (see globals.css)
+                const isLastOdd = gallery.length % 2 === 1 && i === gallery.length - 1;
+                const cls = 'pdp-tile'
+                  + (isLastOdd ? ' pdp-tile--wide' : '')
+                  + (i === 0 ? ' pdp-tile--hero' : '');
+                return (
+                  <div key={image} className={cls}>
+                    <Image
+                      src={image}
+                      alt={`${product.name} — ${selectedColor} ${i + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      priority={i === 0}
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                );
+              })}
             </div>
-
-            {gallery.length > 1 && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-                {gallery.map((image, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedImage(i)}
-                    style={{
-                      position: 'relative',
-                      overflow: 'hidden',
-                      borderRadius: '8px',
-                      opacity: selectedImage === i ? 1 : 0.45,
-                      border: selectedImage === i ? `1.5px solid ${maroon}` : '1.5px solid transparent',
-                      background: 'none',
-                      cursor: 'pointer',
-                      transition: 'opacity 0.2s, border-color 0.2s',
-                      lineHeight: 0,
-                      padding: 0,
-                    }}
-                  >
-                    <Image src={image} alt={`${product.name} ${i + 1}`} width={200} height={300} sizes="25vw" style={{ width: '100%', height: 'auto', display: 'block' }} />
-                  </button>
-                ))}
-              </div>
-            )}
 
             <p style={{ ...bodyStyle, fontSize: '12px', lineHeight: 1.7, opacity: 0.85 }}>
               Photos show pre-production samples. Final color and fit may vary slightly.
@@ -239,9 +300,36 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               {product.name}
             </h1>
 
-            <p style={{ ...bodyStyle, fontWeight: 600, color: maroon, marginBottom: '28px' }}>
+            <p style={{ ...bodyStyle, fontWeight: 600, color: maroon, marginBottom: '24px' }}>
               ${(product.price / 100).toFixed(2)}
             </p>
+
+            {/* Feature highlights — Halfday-style icon strip */}
+            {fabricDetail?.highlights && fabricDetail.highlights.length > 0 && (
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  justifyContent: 'center',
+                  gap: '18px 22px',
+                  padding: '20px',
+                  marginBottom: '28px',
+                  backgroundColor: 'white',
+                  borderRadius: '14px',
+                  width: 'fit-content',
+                  maxWidth: '100%',
+                }}
+              >
+                {fabricDetail.highlights.map((h) => (
+                  <div key={h.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '7px', width: '72px', textAlign: 'center' }}>
+                    <HighlightGlyph icon={h.icon} />
+                    <span style={{ fontFamily: sans, fontSize: '11px', fontWeight: 600, color: maroon, lineHeight: 1.25, textTransform: 'lowercase' }}>
+                      {h.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Sizes */}
             {product.sizes.length > 0 && product.sizes[0] !== 'One Size' && (
@@ -370,10 +458,10 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                       textDecoration: 'none',
                     }}
                   >
-                    join the trailblazing club
+                    join the club for early access
                   </Link>
                   <p style={{ ...bodyStyle, fontSize: '12px', textAlign: 'center', marginTop: '10px', lineHeight: 1.7 }}>
-                    Members get early access when we launch. {shippingLabel}.
+                    Trailblazers get 24-hour early access before anyone else.
                   </p>
                 </>
               )}
@@ -392,33 +480,9 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   <p key={i} style={{ ...bodyStyle, margin: i > 0 ? '10px 0 0' : 0 }}>{block}</p>
                 ))}
                 {fabricDetail.sizeChart && (
-                  <div style={{ marginTop: '20px', overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '480px' }}>
-                      <thead>
-                        <tr>
-                          <th style={{ padding: '6px 8px 8px 0', borderBottom: `1.5px solid ${maroon}` }}> </th>
-                          {fabricDetail.sizeChart.sizes.map((s) => (
-                            <th key={s} style={{ padding: '6px 4px 8px', textAlign: 'center', fontFamily: sans, fontSize: '12px', fontWeight: 700, color: maroon, textTransform: 'lowercase', borderBottom: `1.5px solid ${maroon}` }}>
-                              {s}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {fabricDetail.sizeChart.rows.map((row) => (
-                          <tr key={row.label} style={{ borderBottom: `1px solid ${rule}` }}>
-                            <td style={{ padding: '7px 8px 7px 0', fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft, whiteSpace: 'nowrap' }}>{row.label}</td>
-                            {row.values.map((v, j) => (
-                              <td key={j} style={{ padding: '7px 4px', textAlign: 'center', fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft }}>{v}</td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {fabricDetail.sizeChart.note && (
-                      <p style={{ ...bodyStyle, fontSize: '12px', margin: '8px 0 0' }}>{fabricDetail.sizeChart.note}</p>
-                    )}
-                  </div>
+                  <p style={{ ...bodyStyle, fontSize: '13px', marginTop: '12px' }}>
+                    Full measurements in the <span style={{ color: maroon, fontWeight: 600 }}>size guide</span> below.
+                  </p>
                 )}
                 <p style={{ ...bodyStyle, marginTop: '16px' }}>
                   Fit question? Email <span style={{ color: maroon, fontWeight: 600 }}>hello@tualmi.com</span>

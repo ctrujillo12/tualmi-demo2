@@ -188,7 +188,7 @@ export default function CartPage() {
 
             {containsPreorder && (
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, marginBottom: '16px', lineHeight: 1.7 }}>
-                Your order contains pre-order items. Payment is collected at checkout — fleece, pants &amp; shorts ship late July — baby tee ships August 2026.
+                Your order contains pre-order items. Payment is collected at checkout — the first collection is available 7/31.
               </p>
             )}
 

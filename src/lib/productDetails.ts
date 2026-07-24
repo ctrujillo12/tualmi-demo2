@@ -8,12 +8,22 @@ export interface SizeChart {
   rows: { label: string; values: (string | number)[] }[];
 }
 
+export type HighlightIcon =
+  | 'moisture' | 'water' | 'feather' | 'recycled' | 'uv' | 'pocket' | 'stretch' | 'women' | 'cinch';
+
+export interface Highlight {
+  icon: HighlightIcon;
+  label: string;
+}
+
 export interface FabricDetail {
   shell: string;
   lining?: string;
   pocketLining?: string;
   weight?: string;
   features?: string[];
+  /** Short, icon-backed selling points shown as a strip near the top */
+  highlights?: Highlight[];
   care?: string[];
   fit?: string;
   origin?: string;
@@ -31,7 +41,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Double-sided brushed fleece interior',
       'Chest zip pocket',
       'Button collar with kangaroo pocket',
-      'Cinch hem',
+      'Adjustable drawcord hem',
     ],
     care: [
       'Machine wash cold, gentle cycle',
@@ -39,7 +49,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Relaxed, oversized fit. Size up for a boxy look, true to size for a more fitted silhouette.\n\nFull size guide coming before launch. Our size S fit model: 5\'7" height · 15" shoulder · 33" chest · 26" waist · 37" hip.',
+    fit: 'Relaxed, oversized fit. Size up for a boxy look, true to size for a more fitted silhouette.',
     tempGuide: {
       standalone: '40-65 degrees F (4-18 degrees C)',
       layered: 'Down to ~20 degrees F (-7 degrees C)',
@@ -50,13 +60,20 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     shell: '90% Nylon, 10% Spandex',
     lining: '84% Nylon, 16% Spandex',
     weight: '200 GSM',
+    highlights: [
+      { icon: 'moisture', label: 'Moisture-wicking' },
+      { icon: 'stretch',  label: '4-way stretch' },
+      { icon: 'pocket',   label: 'Cargo pockets' },
+      { icon: 'cinch',    label: 'Drawcord hem' },
+      { icon: 'recycled', label: 'Recycled materials' },
+    ],
     features: [
-      '4-way stretch shell',
+      '4-way stretch shell for full range of motion',
       'Moisture-wicking + quick-dry',
-      'Fold-over waistband',
-      'Cargo side pockets',
-      'Cinch ankle hem',
-      'Flared leg silhouette',
+'Fold-over-style waistband',
+      'Two cargo side pockets',
+      'Adjustable drawcord at each hem',
+      'Relaxed flared leg silhouette',
     ],
     care: [
       'Machine wash cold',
@@ -64,19 +81,40 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Low rise with a relaxed flared leg. True to size — size up if between sizes.\n\nFull size guide coming before launch. Our size S fit model: 5\'7" height · 15" shoulder · 33" chest · 26" waist · 37" hip.',
+    fit: 'Low rise with a relaxed flared leg. True to size — size up if between sizes.',
+    sizeChart: {
+      note: 'Garment measurements in inches, taken flat.',
+      sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
+      rows: [
+        { label: 'Length (top to hem)',        values: ['36.5"', '36.75"', '37.25"', '37.5"', '38"', '38.5"', '38.75"'] },
+        { label: 'Waist',                       values: ['22.75"', '24.75"', '26.75"', '28.75"', '30.75"', '32.75"', '34.75"'] },
+        { label: 'Hip',                         values: ['33.75"', '35.75"', '37.75"', '39.75"', '41.75"', '43.75"', '45.75"'] },
+        { label: 'Thigh',                       values: ['20"', '21.25"', '22.5"', '23.5"', '24.75"', '26"', '27.25"'] },
+        { label: 'Front rise',                  values: ['8.25"', '8.5"', '8.75"', '9.25"', '9.5"', '9.75"', '10"'] },
+        { label: 'Back rise',                   values: ['11.5"', '12"', '12.25"', '12.5"', '12.75"', '13.25"', '13.5"'] },
+        { label: 'Waistband height',            values: ['4.5"', '4.5"', '4.5"', '4.5"', '4.5"', '4.5"', '4.5"'] },
+        { label: 'Leg opening (½)',             values: ['10.25"', '10.75"', '11.25"', '11.75"', '12.25"', '12.75"', '13.25"'] },
+        { label: 'Drawcord (exposed, per side)',values: ['10"', '10"', '10"', '10"', '10"', '10"', '10"'] },
+      ],
+    },
   },
 
   'sierra-shorts': {
     shell: '100% Recycled Nylon',
     weight: '130-140 GSM',
+    highlights: [
+      { icon: 'moisture', label: 'Moisture-wicking' },
+      { icon: 'water',    label: 'Water-resistant' },
+      { icon: 'feather',  label: 'Ultra-light' },
+      { icon: 'recycled', label: '100% recycled' },
+      { icon: 'pocket',   label: 'Deep phone pockets' },
+    ],
     features: [
-      'Inspired by the Patagonia Barely Baggy Shorts silhouette',
       'Deep side pockets — big enough for your whole phone',
-      'Waterproof shell',
+      'Water-resistant shell',
       'Moisture-wicking + quick-dry',
       'Mid-rise waistband',
-      'Relaxed fit',
+      'Roomy, relaxed fit',
     ],
     care: [
       'Machine wash cold',
@@ -84,7 +122,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Mid-rise, relaxed fit — inspired by the Patagonia Barely Baggy Shorts. True to size.\n\nOur size S fit model: 5\'7" height · 15" shoulder · 33" chest · 26" waist · 37" hip.',
+    fit: 'Mid-rise, relaxed fit. True to size.',
     sizeChart: {
       note: 'Garment measurements in inches, taken flat.',
       sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
@@ -117,6 +155,6 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Fitted. Size up for a relaxed look.\n\nFull size guide coming before launch. Our size S fit model: 5\'7" height · 15" shoulder · 33" chest · 26" waist · 37" hip.',
+    fit: 'Fitted. Size up for a relaxed look.',
   },
 };

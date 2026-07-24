@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'our story',
   description:
-    'Two college friends who love the outdoors and their outfits — making hiking apparel from recycled materials in a WRAP-certified facility. First collection ships July 2026.',
+    'Two college friends who love the outdoors and their outfits — making hiking apparel from recycled materials in a WRAP-certified facility. First collection available 7/31.',
   alternates: { canonical: '/story' },
 };
 
@@ -93,7 +93,7 @@ export default function StoryPage() {
           </p>
 
           <p style={{ ...bodyStyle, color: maroon, fontWeight: 600 }}>
-            Our first collection ships July 2026!
+            Our first collection is available 7/31!
           </p>
 
           <p style={bodyStyle}>

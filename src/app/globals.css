@@ -248,6 +248,38 @@ body {
   }
 }
 
+/* ── Product page gallery ── */
+.pdp-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(8px, 1vw, 12px);
+}
+.pdp-tile {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #fff;
+}
+/* Odd trailing photo spans the full row on desktop */
+.pdp-tile--wide {
+  grid-column: 1 / -1;
+  aspect-ratio: 3 / 2;
+}
+@media (max-width: 768px) {
+  /* On phones the lead shot gets a full-width hero moment,
+     the rest stay 2-up so you still see angles at a glance */
+  .pdp-tile--hero {
+    grid-column: 1 / -1;
+    aspect-ratio: 3 / 4;
+  }
+  /* Don't let the desktop "wide last" override the mobile layout */
+  .pdp-tile--wide {
+    grid-column: auto;
+    aspect-ratio: 3 / 4;
+  }
+}
+
 @media (max-width: 640px) {
   /* Nav: tighter, smaller, allowed to wrap to a second row */
   .site-nav {

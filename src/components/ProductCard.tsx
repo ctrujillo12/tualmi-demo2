@@ -160,7 +160,7 @@ export default function ProductCard({
           )}
           {product.shippingWindow?.includes('August') && (
             <p style={{ fontSize: '9px', fontFamily: sans, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#C94468', margin: 0 }}>
-              Ships August 2026
+              Available 7/31
             </p>
           )}
         </div>

@@ -100,7 +100,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     handle: 'sierra-shorts',
     title: 'the sierra shorts:',
     copy: 'Moisture-wicking, water-resistant, and ultra-light, with roomy, wide-leg room. Made from 100% recycled material in patterns people will ask you about on the trail.',
-    availability: 'dropping july 31st',
+    availability: 'available july 31',
     bg: '#F6E3DC',
     accent: '#B85C49',
     body: '#CC8271',
@@ -110,7 +110,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     handle: 'juniper-pant',
     title: 'the juniper pant:',
     copy: "Flare cargo hiking pants with a fold-over waist, cargo pockets, and a flattering flared leg. The hiking pants you've been dreaming of.",
-    availability: 'dropping july 31st',
+    availability: 'available july 31',
     bg: '#D9DFC5',
     accent: '#7C8A55',
     body: '#96A26D',
@@ -428,7 +428,11 @@ export default function Home() {
                   {panel.copy}
                 </p>
                 <Link
-                  href={panel.handle === 'trailblazing-tote' ? '/products/trailblazing-tote' : '/invite'}
+                  href={
+                    panel.handle === 'trailblazing-tote' ? '/products/trailblazing-tote'
+                    : ['sierra-shorts', 'juniper-pant'].includes(panel.handle) ? `/products/${panel.handle}`
+                    : '/invite'
+                  }
                   style={{
                     fontFamily: sans,
                     fontSize: '13px',
@@ -438,7 +442,9 @@ export default function Home() {
                     textUnderlineOffset: '4px',
                   }}
                 >
-                  {panel.handle === 'trailblazing-tote' ? 'shop the tote →' : 'join the club'}
+                  {panel.handle === 'trailblazing-tote' ? 'shop the tote →'
+                    : ['sierra-shorts', 'juniper-pant'].includes(panel.handle) ? 'preview →'
+                    : 'join the club'}
                 </Link>
               </div>
             </div>

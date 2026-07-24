@@ -1,4 +1,4 @@
-const MESSAGE = 'Pre-order now — ships August 2026! ★ ';
+const MESSAGE = 'The first collection is available 7/31 — join the club for early access! ★ ';
 
 export default function AnnouncementBar() {
   const repeated = MESSAGE.repeat(12);

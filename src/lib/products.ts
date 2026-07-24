@@ -20,23 +20,24 @@ export const localProducts: Product[] = [
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Ships Late July 2026',
+    shippingWindow: 'Coming soon',
   },
   {
     id: 'juniper-pant',
     handle: 'juniper-pant',
     name: 'Juniper Pant',
     description:
-      'Flare cargo pants that are also actually good for hiking. The fold-over waist you love, cargo pockets that fit your stuff, and a flared leg that that goes with everything. Cinch hem because the trail is real.',
+      'Meet the Juniper — the most flattering hiking pants you’ll own. They feel like your favorite pair of everyday pants, just built for the trail. Fold-over waist, real cargo pockets, and a flared leg in colorways that go with everything. Cinch hem for when the trail gets muddy.',
     price: 9900,
-    images: ['/images-2/pants-olive.png', '/images-2/pants-white-bg.png'],
+    // Gallery driven by PRODUCT_COLOR_IMAGES; lead shot per colorway
+    images: ['/images-2/product-photos/juniper4.jpg', '/images-2/product-photos/olive1.jpg'],
     category: 'Bottoms',
     sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Moss', 'Birch'],
+    colors: ['Birch', 'Olive'],
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Ships Late July 2026',
+    shippingWindow: 'Available July 31',
   },
   {
     id: 'alpine-baby-tee',
@@ -52,27 +53,29 @@ export const localProducts: Product[] = [
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Ships August 2026',
+    shippingWindow: 'Coming soon',
   },
   {
     id: 'sierra-shorts',
     handle: 'sierra-shorts',
     name: 'Sierra Shorts',
     description:
-      'Mid-rise, relaxed fit with a flattering, women-engineered cut and deep pockets big enough for your whole phone. Made from 100% recycled nylon, in bold, print-forward colorways the legacy brands never made. Canyon is the raspberry-red that shows up in every good hiking photo. Dusk is pink gingham — picnic energy meets trail energy. Meadow is the retro circle print people will ask you about at the trailhead.',
+      'Our no-fuss, perfect hiking shorts. Comfy enough to live in all summer, with deep pockets that can fit your whole phone. And the prints? People stop us to ask about them — every single time.',
     price: 7200,
+    // Gallery is driven per-colorway by PRODUCT_COLOR_IMAGES; these are the
+    // lead shots (also used for the cart thumbnail + schema image)
     images: [
-      '/images-2/shorts-red-bg.png',
-      '/images-2/shorts-pink-bg.png',
-      '/images-2/shorts-pattern-bg.png',
+      '/images-2/product-photos/jam1.jpg',
+      '/images-2/product-photos/picnic1.jpg',
+      '/images-2/product-photos/confetti5.jpg',
     ],
     category: 'Bottoms',
     sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Canyon', 'Dusk', 'Meadow'],
+    colors: ['Jam', 'Picnic', 'Confetti'],
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Ships Late July 2026',
+    shippingWindow: 'Available July 31',
   },
   {
     id: 'trailblazing-tote',
@@ -111,9 +114,21 @@ const ALT_SHOPIFY_HANDLES: Record<string, string[]> = {
 // Products removed from the site entirely (may still exist in Shopify)
 const REMOVED_HANDLES = ['carabiner'];
 
+// Our curated copy, keyed by handle — always wins over whatever Shopify returns
+const localByHandle: Record<string, Product> = Object.fromEntries(
+  localProducts.map((p) => [p.handle ?? p.id, p]),
+);
+
 function normalizeProduct(p: Product): Product {
   const rename = HANDLE_RENAMES[p.handle ?? p.id];
-  return rename ? { ...p, ...rename } : p;
+  let out = rename ? { ...p, ...rename } : p;
+
+  // Force our own name + description (Shopify's copy shouldn't override the site)
+  const local = localByHandle[out.handle ?? ''];
+  if (local) {
+    out = { ...out, name: local.name, description: local.description };
+  }
+  return out;
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
