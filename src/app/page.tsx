@@ -114,7 +114,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#D9DFC5',
     accent: '#7C8A55',
     body: '#96A26D',
-    image: '/images-2/product-photos/juniper1.jpg',  },
+    image: '/images-2/product-photos/juniper.jpeg',  },
   {
     handle: 'alpine-baby-tee',
     title: 'the alpine baby tee:',
