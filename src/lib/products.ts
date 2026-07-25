@@ -123,10 +123,10 @@ function normalizeProduct(p: Product): Product {
   const rename = HANDLE_RENAMES[p.handle ?? p.id];
   let out = rename ? { ...p, ...rename } : p;
 
-  // Force our own name + description (Shopify's copy shouldn't override the site)
+  // Force our own name + description + price (Shopify shouldn't override the site)
   const local = localByHandle[out.handle ?? ''];
   if (local) {
-    out = { ...out, name: local.name, description: local.description };
+    out = { ...out, name: local.name, description: local.description, price: local.price };
   }
   return out;
 }
