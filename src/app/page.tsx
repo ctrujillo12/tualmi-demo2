@@ -26,7 +26,7 @@ const productsJsonLd = {
         'Mid-rise, relaxed-fit women’s hiking shorts with a flattering, women-engineered cut, deep pockets sized for a full phone, and bold, print-forward colorways. Made from 100% recycled nylon.',
       image: `${SITE}/images-2/shortsandshoes.jpg`,
       offers: {
-        '@type': 'Offer', price: '72.00', priceCurrency: 'USD',
+        '@type': 'Offer', price: '68.00', priceCurrency: 'USD',
         availability: 'https://schema.org/PreOrder', url: `${SITE}/products/sierra-shorts`,
       },
     },
@@ -40,7 +40,7 @@ const productsJsonLd = {
         'Fashion-forward flare cargo pants that are genuinely trail-ready — a flattering fold-over waist, functional cargo pockets, and a flared leg crafted for women’s proportions, not scaled down from a men’s pattern. Made from sustainable, recycled materials.',
       image: `${SITE}/images-2/running-shorts1.jpg`,
       offers: {
-        '@type': 'Offer', price: '99.00', priceCurrency: 'USD',
+        '@type': 'Offer', price: '108.00', priceCurrency: 'USD',
         availability: 'https://schema.org/PreOrder', url: `${SITE}/products/juniper-pant`,
       },
     },

@@ -28,7 +28,7 @@ export const localProducts: Product[] = [
     name: 'Juniper Pant',
     description:
       'Meet the Juniper — the most flattering hiking pants you’ll own. They feel like your favorite pair of everyday pants, just built for the trail. Fold-over waist, real cargo pockets, and a flared leg in colorways that go with everything. Cinch hem for when the trail gets muddy.',
-    price: 9900,
+    price: 10800,
     // Gallery driven by PRODUCT_COLOR_IMAGES; lead shot per colorway
     images: ['/images-2/product-photos/juniper4.jpg', '/images-2/product-photos/olive1.jpg'],
     category: 'Bottoms',
@@ -61,7 +61,7 @@ export const localProducts: Product[] = [
     name: 'Sierra Shorts',
     description:
       'Our no-fuss, perfect hiking shorts. Comfy enough to live in all summer, with deep pockets that can fit your whole phone. And the prints? People stop us to ask about them — every single time.',
-    price: 7200,
+    price: 6800,
     // Gallery is driven per-colorway by PRODUCT_COLOR_IMAGES; these are the
     // lead shots (also used for the cart thumbnail + schema image)
     images: [
