@@ -37,7 +37,7 @@ export const localProducts: Product[] = [
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Available July 31',
+    shippingWindow: 'Preorder July 31 · ships late August',
   },
   {
     id: 'alpine-baby-tee',

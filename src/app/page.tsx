@@ -89,6 +89,7 @@ interface ProductPanel {
   title: string;
   copy: string;
   availability: string;
+  note?: string;   // small line under availability (e.g. ship delay)
   bg: string;      // section background
   accent: string;  // heading color
   body: string;    // paragraph color
@@ -110,7 +111,8 @@ const PRODUCT_PANELS: ProductPanel[] = [
     handle: 'juniper-pant',
     title: 'the juniper pant:',
     copy: "Flare cargo hiking pants with a fold-over waist, cargo pockets, and a flattering flared leg. The hiking pants you've been dreaming of.",
-    availability: 'available july 31',
+    availability: 'preorder july 31',
+    note: 'ships late august — small manufacturing delay, worth the wait',
     bg: '#D9DFC5',
     accent: '#7C8A55',
     body: '#96A26D',
@@ -384,6 +386,21 @@ export default function Home() {
                 >
                   {panel.availability}
                 </p>
+                {panel.note && (
+                  <p
+                    style={{
+                      fontFamily: sans,
+                      fontWeight: 600,
+                      fontSize: '11px',
+                      lineHeight: 1.5,
+                      color: panel.body,
+                      margin: '-4px 0 14px',
+                      textTransform: 'lowercase',
+                    }}
+                  >
+                    {panel.note}
+                  </p>
+                )}
                 {['trailblazing-tote', 'sierra-shorts', 'juniper-pant'].includes(panel.handle) ? (
                   <Link href={`/products/${panel.handle}`} style={{ textDecoration: 'none' }}>
                     <h3

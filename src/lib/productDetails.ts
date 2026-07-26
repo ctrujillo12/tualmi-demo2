@@ -29,6 +29,8 @@ export interface FabricDetail {
   origin?: string;
   tempGuide?: { standalone: string; layered: string };
   sizeChart?: SizeChart;
+  /** Optional highlighted note near the CTA — e.g. a ship-date delay */
+  shipNote?: string;
 }
 
 export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
@@ -82,6 +84,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not iron',
     ],
     fit: 'Low rise with a relaxed flared leg. True to size — size up if between sizes.',
+    shipNote: 'Preorder opens July 31. Due to a small manufacturing delay, the pants ship in late August — order now to lock in your size and colorway.',
     sizeChart: {
       note: 'Garment measurements in inches, taken flat.',
       sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],

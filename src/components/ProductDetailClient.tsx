@@ -427,6 +427,23 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               </div>
             )}
 
+            {/* Ship-date / delay note */}
+            {fabricDetail?.shipNote && (
+              <div
+                style={{
+                  marginBottom: '20px',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  backgroundColor: 'white',
+                  border: `1px solid ${rule}`,
+                }}
+              >
+                <p style={{ ...bodyStyle, fontSize: '13px', lineHeight: 1.6, color: maroon, fontWeight: 500 }}>
+                  ✦ {fabricDetail.shipNote}
+                </p>
+              </div>
+            )}
+
             {/* CTA */}
             <div style={{ marginBottom: '36px' }}>
               {isInStock ? (
