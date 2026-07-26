@@ -112,7 +112,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     title: 'the juniper pant:',
     copy: "Flare cargo hiking pants with a fold-over waist, cargo pockets, and a flattering flared leg. The hiking pants you've been dreaming of.",
     availability: 'preorder july 31',
-    note: 'ships late august — small manufacturing delay, worth the wait',
+    note: 'ships late august — small delay, worth the wait',
     bg: '#D9DFC5',
     accent: '#7C8A55',
     body: '#96A26D',
