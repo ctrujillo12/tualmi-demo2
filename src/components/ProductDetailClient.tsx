@@ -236,7 +236,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     content: (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <p style={{ margin: 0 }}>7-day returns and exchanges</p>
-        <p style={{ margin: 0 }}>{shippingLabel}.</p>
+        {shippingLabel && <p style={{ margin: 0 }}>{shippingLabel}.</p>}
       </div>
     ),
   });
@@ -310,9 +310,11 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
           {/* ── Right: details ── */}
           <div>
-            <p style={{ ...eyebrowStyle, marginBottom: '12px' }}>
-              {isInStock ? 'available now' : shippingLabel.toLowerCase()}
-            </p>
+            {(isInStock || shippingLabel) && (
+              <p style={{ ...eyebrowStyle, marginBottom: '12px' }}>
+                {isInStock ? 'available now' : shippingLabel.toLowerCase()}
+              </p>
+            )}
 
             <h1
               style={{

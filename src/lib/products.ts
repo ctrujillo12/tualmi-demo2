@@ -37,7 +37,7 @@ export const localProducts: Product[] = [
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Preorder July 31 · ships late August',
+    shippingWindow: 'Ships August',
   },
   {
     id: 'alpine-baby-tee',
@@ -75,7 +75,7 @@ export const localProducts: Product[] = [
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Available July 31',
+    shippingWindow: '',
   },
   {
     id: 'trailblazing-tote',
@@ -123,10 +123,16 @@ function normalizeProduct(p: Product): Product {
   const rename = HANDLE_RENAMES[p.handle ?? p.id];
   let out = rename ? { ...p, ...rename } : p;
 
-  // Force our own name + description + price (Shopify shouldn't override the site)
+  // Force our own name + description + price + ship window (Shopify shouldn't override the site)
   const local = localByHandle[out.handle ?? ''];
   if (local) {
-    out = { ...out, name: local.name, description: local.description, price: local.price };
+    out = {
+      ...out,
+      name: local.name,
+      description: local.description,
+      price: local.price,
+      shippingWindow: local.shippingWindow,
+    };
   }
   return out;
 }
