@@ -46,7 +46,7 @@ const productsJsonLd = {
     },
     {
       '@type': 'Product',
-      name: 'Alpine Baby Tee',
+      name: 'Tioga Tee',
       brand: { '@type': 'Brand', name: 'Tualmi' },
       category: 'Women’s Hiking Apparel',
       material: 'Sustainable, recycled materials',
@@ -57,7 +57,7 @@ const productsJsonLd = {
     },
     {
       '@type': 'Product',
-      name: 'Trailblazing Fleece',
+      name: 'Frolic Fleece',
       brand: { '@type': 'Brand', name: 'Tualmi' },
       category: 'Women’s Hiking Apparel',
       material: '100% recycled polyester',
@@ -119,7 +119,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     image: '/images-2/product-photos/juniper.jpeg',  },
   {
     handle: 'alpine-baby-tee',
-    title: 'the alpine baby tee:',
+    title: 'the tioga tee:',
     copy: 'A flattering, second-skin hiking tee with UPF 40 sun protection and a women-specific cut that looks good on the summit. Sustainably made from recycled materials.',
     availability: 'coming soon',
     bg: '#FBE9EF',
@@ -128,7 +128,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     image: '/images-2/shorts-holdinghands.jpg',  },
   {
     handle: 'trailblazing-fleece',
-    title: 'the trailblazing fleece:',
+    title: 'the frolic fleece:',
     copy: 'A mid-weight fleece with a chest zip pocket, snap collar, and kangaroo pocket.',
     availability: 'coming soon',
     bg: '#FCF8E3',

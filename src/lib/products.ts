@@ -9,7 +9,7 @@ export const localProducts: Product[] = [
   {
     id: 'trailblazing-fleece',
     handle: 'trailblazing-fleece',
-    name: 'Trailblazing Fleece',
+    name: 'Frolic Fleece',
     description:
       'A mid-weight fleece — think Patagonia Synchilla -- but with the patterns and fit that brand never figured out. Chest zip pocket, snap collar, kangaroo pocket. The Wildflower daisy print looks vintage-shop, the Golden Hour stripe is pink stripes that are somehow also functional. Made by women. Finally fits like it.',
     price: 14900,
@@ -42,7 +42,7 @@ export const localProducts: Product[] = [
   {
     id: 'alpine-baby-tee',
     handle: 'alpine-baby-tee',
-    name: 'Alpine Baby Tee',
+    name: 'Tioga Tee',
     description:
       'The layer you actually want under your fleece — and the top you wear when you ditch it. UPF 40 protection, second-skin fit, and the kind of cut that makes your shoulders look good on the summit. Light, breathable, and designed for the girl who doesn\'t leave her style at the trailhead.',
     price: 6900,

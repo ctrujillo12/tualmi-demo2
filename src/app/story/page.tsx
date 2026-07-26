@@ -86,7 +86,7 @@ export default function StoryPage() {
           </p>
 
           <p style={bodyStyle}>
-            We make everything from 100% recycled materials using a WRAP-certified manufacturing process,
+            We make everything with a certified sustainable, WRAP-certified manufacturer,
             and designed to last because we&apos;re not interested in adding to the pile.
             We&apos;d rather make a few things you actually reach for
             than ten you forget you own.
