@@ -11,7 +11,7 @@ const PAGE_METADATA: Record<string, Metadata> = {
   'sierra-shorts': {
     title: 'sierra shorts — mid-rise hiking shorts',
     description:
-      'Mid-rise, relaxed-fit women’s hiking shorts in 100% recycled nylon — moisture-wicking, water-resistant, and ultra-light. Dropping July 31st in Jam, Picnic, and Confetti.',
+      'Mid-rise, relaxed-fit women’s hiking shorts in 100% recycled nylon — fast-dry and water-repellent performance, ultra-light. Dropping July 31st in Jam, Picnic, and Confetti.',
     alternates: { canonical: '/products/sierra-shorts' },
   },
   'juniper-pant': {

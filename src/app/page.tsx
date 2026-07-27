@@ -100,7 +100,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
   {
     handle: 'sierra-shorts',
     title: 'the sierra shorts:',
-    copy: 'Moisture-wicking, water-resistant, and ultra-light, with roomy, wide-leg room. Made from 100% recycled material in patterns people will ask you about on the trail.',
+    copy: 'Fast-dry and water-repellent performance, ultra-light, with roomy, wide-leg room. Made from 100% recycled material in patterns people will ask you about on the trail.',
     availability: 'available july 31',
     bg: '#F6E3DC',
     accent: '#B85C49',
