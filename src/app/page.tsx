@@ -162,7 +162,7 @@ const TIKTOKS = [
   {
     video: '/videos/clip-3.mp4',
     poster: '/videos/poster-3.jpg',
-    url: 'https://www.tiktok.com/@tualmi.outdoors/video/7638058106563349774',
+    url: 'https://www.tiktok.com/@tualmi.outdoors/video/7666576797592456461',
   },
   {
     video: '/videos/clip-4.mp4',
