@@ -24,15 +24,16 @@ export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> =
 
 // Explicit gallery images per colorway (used when a product has different
 // numbers of photos per color). Lead/front shot first.
-const PP = '/images-2/product-photos';
+const PP = '/images-2/model';
 export const PRODUCT_COLOR_IMAGES: Record<string, Record<string, string[]>> = {
   'sierra-shorts': {
-    Jam:      [`${PP}/jam1.jpg`, `${PP}/jam2.jpg`, `${PP}/jam3.jpg`, `${PP}/jam4.jpg`, `${PP}/jam5.jpg`, `${PP}/jam6.jpg`],
-    Picnic:   [`${PP}/picnic1.jpg`, `${PP}/picnic2.jpg`, `${PP}/picnic3.jpg`, `${PP}/picnic4.jpg`],
-    Confetti: [`${PP}/confetti5.jpg`, `${PP}/confetti1.jpg`, `${PP}/confetti2.jpg`, `${PP}/confetti3.jpg`],
+    // Lead shot first (clean full-body front), then back / lifestyle / detail.
+    Jam:      [`${PP}/jam-4.jpg`, `${PP}/jam-6.jpg`, `${PP}/jam-3.jpg`, `${PP}/jam-5.jpg`, `${PP}/jam-1.jpg`, `${PP}/jam-2.jpg`],
+    Picnic:   [`${PP}/picnic-2.jpg`, `${PP}/picnic-3.jpg`, `${PP}/picnic-1.jpg`],
+    Confetti: [`${PP}/confetti-3.jpg`, `${PP}/confetti-5.jpg`, `${PP}/confetti-2.jpg`, `${PP}/confetti-4.jpg`, `${PP}/confetti-1.jpg`],
   },
   'juniper-pant': {
-    Birch: [`${PP}/juniper4.jpg`, `${PP}/juniper3.jpg`, `${PP}/juniper2.jpg`, `${PP}/juniper1.jpg`],
-    Olive: [`${PP}/olive1.jpg`, `${PP}/olive2.jpg`, `${PP}/olive3.jpg`, `${PP}/olive4.jpg`],
+    Birch: [`${PP}/birch-3.jpg`, `${PP}/birch-7.jpg`, `${PP}/birch-4.jpg`, `${PP}/birch-1.jpg`, `${PP}/birch-2.jpg`],
+    Olive: [`${PP}/olive-2.jpg`, `${PP}/olive-1.jpg`, `${PP}/olive-4.jpg`, `${PP}/olive-3.jpg`],
   },
 };

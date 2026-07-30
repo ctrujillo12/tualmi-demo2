@@ -246,6 +246,64 @@ body {
   }
 }
 
+/* ── Landing "the drop" — colorways side by side inside a product panel ── */
+.colorway-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  gap: clamp(8px, 1.4vw, 20px);
+  width: 100%;
+}
+.colorway-tile {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  /* Big on desktop. Shrinks to share the row on mobile. */
+  max-width: 400px;
+}
+.colorway-photo {
+  position: relative;
+  /* Match the frame to the 2:3 photos so nothing gets cropped and every
+     tile is framed identically. */
+  aspect-ratio: 2 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.45);
+}
+.colorway-photo img {
+  transition: transform 0.5s ease;
+}
+.colorway-tile:hover .colorway-photo img {
+  transform: scale(1.04);
+}
+
+/* ── Landing collection grid (one tile per colorway) ── */
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(14px, 2.2vw, 30px);
+}
+.collection-card-photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #fff;
+}
+.collection-card-photo img {
+  transition: transform 0.5s ease;
+}
+.collection-card:hover .collection-card-photo img {
+  transform: scale(1.04);
+}
+@media (max-width: 768px) {
+  .collection-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
 /* ── Product page layout ── */
 .pdp-layout {
   display: grid;

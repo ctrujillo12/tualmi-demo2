@@ -283,7 +283,8 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                       src={image}
                       alt={`${product.name} — ${selectedColor} ${i + 1}`}
                       fill
-                      sizes="(max-width: 1024px) 50vw, 25vw"
+                      quality={90}
+                      sizes={isLastOdd ? '(max-width: 1024px) 100vw, 50vw' : '(max-width: 1024px) 50vw, 30vw'}
                       style={{ objectFit: 'cover' }}
                     />
                   </div>

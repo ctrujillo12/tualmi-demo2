@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import LaunchCountdown from '@/components/LaunchCountdown';
 import PanelShopLink from '@/components/PanelShopLink';
+import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
@@ -26,7 +27,7 @@ const productsJsonLd = {
       material: '100% recycled nylon',
       description:
         'Mid-rise, relaxed-fit women’s hiking shorts with a flattering, women-engineered cut, deep pockets sized for a full phone, and bold, print-forward colorways. Made from 100% recycled nylon.',
-      image: `${SITE}/images-2/cayla-redshorts.jpg`,
+      image: `${SITE}/images-2/model/jam-2.jpg`,
       offers: {
         '@type': 'Offer', price: '68.00', priceCurrency: 'USD',
         availability: 'https://schema.org/PreOrder', url: `${SITE}/products/sierra-shorts`,
@@ -40,7 +41,7 @@ const productsJsonLd = {
       material: 'Sustainable, recycled materials',
       description:
         'Fashion-forward flare cargo pants that are genuinely trail-ready, with a flattering fold-over waist, functional cargo pockets, and a flared leg crafted for women’s proportions, not scaled down from a men’s pattern. Made from sustainable, recycled materials.',
-      image: `${SITE}/images-2/running-shorts1.jpg`,
+      image: `${SITE}/images-2/model/birch-3.jpg`,
       offers: {
         '@type': 'Offer', price: '108.00', priceCurrency: 'USD',
         availability: 'https://schema.org/PreOrder', url: `${SITE}/products/juniper-pant`,
@@ -50,58 +51,65 @@ const productsJsonLd = {
   ],
 };
 
-// ─── Product scroll panels ────────────────────────────────────────────────────
-interface ProductPanel {
+// ─── Collection: one sticky panel per product, showing all its colorways ───────
+interface DropProduct {
   handle: string;
-  title: string;
-  copy: string;
+  name: string;
   availability: string;
-  note?: string;   // small line under availability (e.g. ship delay)
-  bg: string;      // section background
-  accent: string;  // heading color
-  body: string;    // paragraph color
-  image: string;
+  bg: string;      // panel background (drives the scroll color-change)
+  accent: string;  // heading / text color
+  colorways: { color: string; swatch: string; image: string }[];
 }
 
-const PRODUCT_PANELS: ProductPanel[] = [
+// Landing-page cover shot per colorway. Kept separate from the product-page
+// gallery order (PRODUCT_COLOR_IMAGES) so the landing can lead with a different
+// photo than the PDP. Falls back to the gallery lead if unset.
+const MP = '/images-2/model';
+const LANDING_COVERS: Record<string, Record<string, string>> = {
+  'sierra-shorts': {
+    Jam:      `${MP}/jam-5.jpg`,
+    Picnic:   `${MP}/picnic-2.jpg`,
+    Confetti: `${MP}/confetti-1.jpg`,
+  },
+  'juniper-pant': {
+    Birch: `${MP}/birch-4.jpg`,
+    Olive: `${MP}/olive-3.jpg`,
+  },
+};
+
+const coverFor = (handle: string, color: string) =>
+  LANDING_COVERS[handle]?.[color] ?? PRODUCT_COLOR_IMAGES[handle]?.[color]?.[0] ?? '';
+
+const DROP_PRODUCTS: DropProduct[] = [
   {
     handle: 'sierra-shorts',
-    title: 'the sierra shorts:',
-    copy: 'Fast-dry and water-repellent performance, ultra-light, with roomy, wide-leg room. Made from 100% recycled material in patterns people will ask you about on the trail.',
+    name: 'the sierra shorts',
     availability: 'available july 31',
-    bg: '#F6E3DC',
-    accent: '#B85C49',
-    body: '#CC8271',
-    image: '/images-2/cayla-redshorts.jpg',
+    bg: '#EED0C1',
+    accent: '#A94E38',
+    colorways: (PRODUCT_COLORS['sierra-shorts'] ?? []).map((c) => ({
+      color: c.name,
+      swatch: c.value,
+      image: coverFor('sierra-shorts', c.name),
+    })),
   },
   {
     handle: 'juniper-pant',
-    title: 'the juniper pant:',
-    copy: "Flare cargo hiking pants with a fold-over waist, cargo pockets, and a flattering flared leg. The hiking pants you've been dreaming of.",
-    availability: 'preorder july 31',
-    note: 'ships late august (small delay, worth the wait)',
-    bg: '#D9DFC5',
-    accent: '#7C8A55',
-    body: '#96A26D',
-    image: '/images-2/product-photos/juniper.jpeg',  },
-  {
-    handle: 'alpine-baby-tee',
-    title: 'the tioga tee:',
-    copy: 'A flattering, second-skin hiking tee with UPF 40 sun protection and a women-specific cut that looks good on the summit. Sustainably made from recycled materials.',
-    availability: 'coming soon',
-    bg: '#FBE9EF',
-    accent: '#EC9DBC',
-    body: '#F2B7CD',
-    image: '/images-2/top-comingsoon.png',  },
-  {
-    handle: 'trailblazing-fleece',
-    title: 'the frolic fleece:',
-    copy: 'A mid-weight fleece with a chest zip pocket, button collar, and kangaroo pocket.',
-    availability: 'coming soon',
-    bg: '#FCF8E3',
-    accent: '#D2BE35',
-    body: '#DBCB6A',
-    image: '/images-2/fleece-comingsoon.png',  },
+    name: 'the juniper pant',
+    availability: 'preorder · ships late aug',
+    bg: '#C9D3AC',
+    accent: '#68764A',
+    colorways: (PRODUCT_COLORS['juniper-pant'] ?? []).map((c) => ({
+      color: c.name,
+      swatch: c.value,
+      image: coverFor('juniper-pant', c.name),
+    })),
+  },
+];
+
+const COMING_SOON = [
+  { name: 'tioga tee', image: '/images-2/model/tioga-1.jpg' },
+  { name: 'frolic fleece', image: '/images-2/model/frolic-1.jpg' },
 ];
 
 // ─── Social TikToks ───────────────────────────────────────────────────────────
@@ -253,188 +261,90 @@ export default function Home() {
         </Link>
       </section>
 
-      {/* ══ 3 · PREVIEW OUR COLLECTION ════════════════════════════════════ */}
-      <section style={{ backgroundColor: maroon, padding: 'clamp(64px, 9vw, 120px) clamp(24px, 6vw, 72px)', textAlign: 'center' }}>
-        <h2
-          style={{
-            fontFamily: sans,
-            fontWeight: 700,
-            fontSize: 'clamp(36px, 6vw, 72px)',
-            letterSpacing: '-0.03em',
-            lineHeight: 1.15,
-            color: 'white',
-            margin: 0,
-            textTransform: 'lowercase',
-          }}
-        >
-          the first collection,
-          <br />
-          coming this summer
-        </h2>
-        <Link
-          href="#collection"
-          style={{
-            display: 'inline-block',
-            marginTop: 'clamp(24px, 3.5vw, 40px)',
-            fontFamily: sans,
-            fontSize: '14px',
-            fontWeight: 600,
-            color: 'white',
-            textTransform: 'lowercase',
-            textUnderlineOffset: '4px',
-          }}
-        >
-          preview our collection →
-        </Link>
-      </section>
-
-      {/* ══ 4 · STICKY PRODUCT SCROLL ═════════════════════════════════════ */}
-      {/* Each panel sticks while the next scrolls up over it */}
+      {/* ══ 3 · THE DROP — one panel per product, all colorways shown ═════ */}
+      {/* Two stacked colored bands; the background changes from the shorts
+          panel to the pants panel as you scroll between them. */}
       <div id="collection">
-        {PRODUCT_PANELS.map((panel) => (
+        {DROP_PRODUCTS.map((p) => (
           <section
-            key={panel.handle}
+            key={p.handle}
             className="panel-viewport"
             style={{
-              position: 'sticky',
-              top: 0,
-              minHeight: '560px',
-              backgroundColor: panel.bg,
+              // Normal stacked sections (no sticky overlap), so nothing ever
+              // slides up over the preview button. Each colored band is shorter
+              // than a screen; the color just changes as you scroll between them.
+              position: 'relative',
+              minHeight: '72svh',
+              backgroundColor: p.bg,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: 'clamp(24px, 5vw, 64px)',
+              padding: 'clamp(56px, 7vh, 84px) clamp(16px, 4vw, 48px) clamp(48px, 6vh, 72px)',
             }}
           >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'clamp(32px, 6vw, 96px)',
-                maxWidth: '1040px',
-                width: '100%',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-              }}
-            >
-              {/* Photo */}
-              <div
-                className="panel-photo"
-                style={{
-                  position: 'relative',
-                  // Capped by viewport height too, so the 4:5 card always fits
-                  // on shorter screens (Windows laptops etc.)
-                  width: 'min(clamp(280px, 38vw, 460px), 58svh)',
-                  aspectRatio: '4 / 5',
-                  borderRadius: '6px',
-                  overflow: 'hidden',
-                  flexShrink: 0,
-                }}
-              >
-                <Image
-                  src={panel.image}
-                  alt={panel.title}
-                  fill
-                  sizes="(max-width: 768px) 80vw, 340px"
-                  style={{ objectFit: 'cover' }}
-                />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 'clamp(16px, 2.4vh, 26px)', maxWidth: '1240px', width: '100%' }}>
+              <div>
+                <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '12px', letterSpacing: '0.18em', color: p.accent, margin: '0 0 8px', textTransform: 'lowercase' }}>
+                  {p.availability}
+                </p>
+                <h3 style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(26px, 3.4vw, 40px)', letterSpacing: '-0.02em', color: p.accent, margin: 0, textTransform: 'lowercase' }}>
+                  {p.name}
+                </h3>
               </div>
 
-              {/* Copy */}
-              <div style={{ maxWidth: '440px', textAlign: 'left' }}>
-                <p
-                  style={{
-                    fontFamily: sans,
-                    fontWeight: 700,
-                    fontSize: '13px',
-                    letterSpacing: '0.14em',
-                    color: panel.accent,
-                    margin: '0 0 10px',
-                    textTransform: 'lowercase',
-                  }}
-                >
-                  {panel.availability}
-                </p>
-                {panel.note && (
-                  <p
-                    style={{
-                      fontFamily: sans,
-                      fontWeight: 600,
-                      fontSize: '11px',
-                      lineHeight: 1.5,
-                      color: panel.body,
-                      margin: '-4px 0 14px',
-                      textTransform: 'lowercase',
-                    }}
-                  >
-                    {panel.note}
-                  </p>
-                )}
-                {['sierra-shorts', 'juniper-pant'].includes(panel.handle) ? (
-                  <Link href={`/products/${panel.handle}`} style={{ textDecoration: 'none' }}>
-                    <h3
-                      style={{
-                        fontFamily: sans,
-                        fontWeight: 700,
-                        fontSize: 'clamp(24px, 3vw, 34px)',
-                        letterSpacing: '-0.02em',
-                        color: panel.accent,
-                        margin: '0 0 clamp(20px, 3vw, 32px)',
-                        textTransform: 'lowercase',
-                      }}
-                    >
-                      {panel.title}
-                    </h3>
-                  </Link>
-                ) : (
-                  <h3
-                    style={{
-                      fontFamily: sans,
-                      fontWeight: 700,
-                      fontSize: 'clamp(24px, 3vw, 34px)',
-                      letterSpacing: '-0.02em',
-                      color: panel.accent,
-                      margin: '0 0 clamp(20px, 3vw, 32px)',
-                      textTransform: 'lowercase',
-                    }}
-                  >
-                    {panel.title}
-                  </h3>
-                )}
-                <p
-                  style={{
-                    fontFamily: sans,
-                    fontWeight: 600,
-                    fontSize: 'clamp(14px, 2vw, 22px)',
-                    lineHeight: 1.75,
-                    color: panel.body,
-                    margin: '0 0 clamp(20px, 3vw, 28px)',
-                  }}
-                >
-                  {panel.copy}
-                </p>
-                {['sierra-shorts', 'juniper-pant'].includes(panel.handle) ? (
-                  <PanelShopLink handle={panel.handle} accent={panel.accent} />
-                ) : (
+              {/* All colorways, side by side */}
+              <div className="colorway-row">
+                {p.colorways.map((cw) => (
                   <Link
-                    href="/invite"
-                    style={{
-                      fontFamily: sans,
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      color: panel.accent,
-                      textTransform: 'lowercase',
-                      textUnderlineOffset: '4px',
-                    }}
+                    key={cw.color}
+                    href={`/products/${p.handle}?color=${encodeURIComponent(cw.color)}`}
+                    className="colorway-tile"
+                    style={{ textDecoration: 'none' }}
                   >
-                    join the club
+                    <div className="colorway-photo">
+                      <Image
+                        src={cw.image}
+                        alt={`${p.name} in ${cw.color}`}
+                        fill
+                        quality={90}
+                        sizes="(max-width: 768px) 33vw, 420px"
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </div>
+                    <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontFamily: sans, fontWeight: 600, fontSize: '13px', color: p.accent, margin: '9px 0 0', textTransform: 'lowercase' }}>
+                      <span style={{ width: '11px', height: '11px', borderRadius: '50%', background: cw.swatch, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.12)', flexShrink: 0 }} />
+                      {cw.color.toLowerCase()}
+                    </p>
                   </Link>
-                )}
+                ))}
               </div>
+
+              <PanelShopLink handle={p.handle} accent={p.accent} />
             </div>
           </section>
         ))}
       </div>
+
+      {/* ══ 4b · COMING SOON (afterthought) ═══════════════════════════════ */}
+      <section style={{ position: 'relative', zIndex: 1, backgroundColor: blushBg, padding: 'clamp(56px, 8vw, 96px) clamp(24px, 6vw, 72px)' }}>
+        <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '12px', letterSpacing: '0.22em', color: '#C9849A', margin: '0 0 20px', textTransform: 'lowercase' }}>
+            also coming soon
+          </p>
+          <div style={{ display: 'inline-flex', gap: 'clamp(18px, 4vw, 40px)', flexWrap: 'wrap', justifyContent: 'center' }}>
+            {COMING_SOON.map((cs) => (
+              <div key={cs.name} style={{ width: 'clamp(120px, 30vw, 180px)' }}>
+                <div style={{ position: 'relative', aspectRatio: '4 / 5', borderRadius: '10px', overflow: 'hidden', backgroundColor: 'white', opacity: 0.75 }}>
+                  <Image src={cs.image} alt={cs.name} fill sizes="180px" style={{ objectFit: 'cover' }} />
+                </div>
+                <p style={{ fontFamily: sans, fontWeight: 600, fontSize: '13px', color: '#C9849A', margin: '10px 0 0', textTransform: 'lowercase' }}>
+                  {cs.name}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ══ 5 · SOCIALS ═══════════════════════════════════════════════════ */}
       <section

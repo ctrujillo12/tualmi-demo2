@@ -9,23 +9,35 @@ const sans = 'var(--font-montserrat), system-ui, sans-serif';
  * Landing-panel CTA for the shorts & pant. Reads "shop them →" once the shop is
  * open for this visitor, "preview →" otherwise.
  */
-export default function PanelShopLink({ handle, accent }: { handle: string; accent: string }) {
+export default function PanelShopLink({
+  handle,
+  accent,
+  color,
+}: {
+  handle: string;
+  accent: string;
+  color?: string;
+}) {
   const { canShop, ready } = useShopAccess();
   const open = ready && isBuyable(handle, canShop);
+  const href = color
+    ? `/products/${handle}?color=${encodeURIComponent(color)}`
+    : `/products/${handle}`;
 
   return (
     <Link
-      href={`/products/${handle}`}
+      href={href}
       style={{
         fontFamily: sans,
         fontSize: '13px',
-        fontWeight: 600,
+        fontWeight: 700,
         color: accent,
         textTransform: 'lowercase',
+        letterSpacing: '0.04em',
         textUnderlineOffset: '4px',
       }}
     >
-      {open ? 'shop them →' : 'preview →'}
+      {open ? 'shop this →' : 'preview →'}
     </Link>
   );
 }
