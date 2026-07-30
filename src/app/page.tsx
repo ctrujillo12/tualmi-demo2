@@ -46,28 +46,7 @@ const productsJsonLd = {
         availability: 'https://schema.org/PreOrder', url: `${SITE}/products/juniper-pant`,
       },
     },
-    {
-      '@type': 'Product',
-      name: 'Tioga Tee',
-      brand: { '@type': 'Brand', name: 'Tualmi' },
-      category: 'Women’s Hiking Apparel',
-      material: 'Sustainable, recycled materials',
-      description:
-        'A flattering, second-skin women’s hiking tee with UPF 40 sun protection and a women-specific cut. Sustainably made from recycled materials.',
-      image: `${SITE}/images-2/shirt-yellow-bg.png`,
-      offers: { '@type': 'Offer', availability: 'https://schema.org/PreOrder', priceCurrency: 'USD' },
-    },
-    {
-      '@type': 'Product',
-      name: 'Frolic Fleece',
-      brand: { '@type': 'Brand', name: 'Tualmi' },
-      category: 'Women’s Hiking Apparel',
-      material: '100% recycled polyester',
-      description:
-        'A fashion-forward, mid-weight women’s hiking fleece with a chest zip pocket, snap collar, and kangaroo pocket. Made from 100% recycled polyester in prints the legacy brands never made.',
-      image: `${SITE}/images-2/fleece-pink-bg.png`,
-      offers: { '@type': 'Offer', availability: 'https://schema.org/PreOrder', priceCurrency: 'USD' },
-    },
+    // Tioga Tee & Frolic Fleece are "coming soon" — not listed as products yet.
   ],
 };
 
@@ -113,7 +92,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#FBE9EF',
     accent: '#EC9DBC',
     body: '#F2B7CD',
-    image: '/images-2/shorts-holdinghands.jpg',  },
+    image: '/images-2/top-comingsoon.png',  },
   {
     handle: 'trailblazing-fleece',
     title: 'the frolic fleece:',
@@ -122,7 +101,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     bg: '#FCF8E3',
     accent: '#D2BE35',
     body: '#DBCB6A',
-    image: '/images-2/cayla-redshorts.jpg',  },
+    image: '/images-2/fleece-comingsoon.png',  },
 ];
 
 // ─── Social TikToks ───────────────────────────────────────────────────────────
