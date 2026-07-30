@@ -79,7 +79,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   const shippingLabel = isPreorder
     ? (product.shippingWindow || 'Ships August')
     : buyable
-      ? 'In stock — ships in 1–2 business days'
+      ? 'In stock, ships in 1–2 business days'
       : (product.shippingWindow ?? 'Coming soon');
 
   const addItem = useCartStore((state) => state.addItem);
@@ -169,7 +169,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
       label: 'the technical stuff',
       content: (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <p style={{ margin: 0, opacity: 0.85 }}>For the gear nerds — here&apos;s exactly what you&apos;re getting.</p>
+          <p style={{ margin: 0, opacity: 0.85 }}>For the gear nerds, here&apos;s exactly what you&apos;re getting.</p>
           <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', rowGap: '6px', columnGap: '12px' }}>
             <span style={{ color: soft, opacity: 0.8 }}>Fabric</span>
             <span>{fabricDetail.shell}</span>
@@ -420,7 +420,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
             {swatchColors.length > 0 && (
               <div style={{ marginBottom: '28px' }}>
                 <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '10px' }}>
-                  color — {selectedColor.toLowerCase()}
+                  color · {selectedColor.toLowerCase()}
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                   {swatchColors.map((swatch) => {
@@ -524,7 +524,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   )}
                   {buyStatus === 'error' && (
                     <p style={{ ...bodyStyle, color: '#B85C49', textAlign: 'center', marginTop: '12px' }}>
-                      something went wrong — please try again.
+                      something went wrong. please try again.
                     </p>
                   )}
                 </>

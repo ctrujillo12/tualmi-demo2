@@ -39,7 +39,7 @@ const productsJsonLd = {
       category: 'Women’s Hiking Apparel',
       material: 'Sustainable, recycled materials',
       description:
-        'Fashion-forward flare cargo pants that are genuinely trail-ready — a flattering fold-over waist, functional cargo pockets, and a flared leg crafted for women’s proportions, not scaled down from a men’s pattern. Made from sustainable, recycled materials.',
+        'Fashion-forward flare cargo pants that are genuinely trail-ready, with a flattering fold-over waist, functional cargo pockets, and a flared leg crafted for women’s proportions, not scaled down from a men’s pattern. Made from sustainable, recycled materials.',
       image: `${SITE}/images-2/running-shorts1.jpg`,
       offers: {
         '@type': 'Offer', price: '108.00', priceCurrency: 'USD',
@@ -100,7 +100,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
     title: 'the juniper pant:',
     copy: "Flare cargo hiking pants with a fold-over waist, cargo pockets, and a flattering flared leg. The hiking pants you've been dreaming of.",
     availability: 'preorder july 31',
-    note: 'ships late august — small delay, worth the wait',
+    note: 'ships late august (small delay, worth the wait)',
     bg: '#D9DFC5',
     accent: '#7C8A55',
     body: '#96A26D',
@@ -240,7 +240,7 @@ export default function Home() {
 
           <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
             Tualmi is a women-owned outdoor apparel brand built on a simple idea: women deserve
-            fashion-forward hiking gear engineered for their bodies — not scaled down from men&apos;s
+            fashion-forward hiking gear engineered for their bodies, not scaled down from men&apos;s
             patterns. Every piece pairs technical, trail-ready performance with a flattering,
             women-specific fit and bold, print-forward colorways.
           </p>

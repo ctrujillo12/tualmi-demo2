@@ -83,8 +83,8 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Low rise with a relaxed flared leg. True to size — size up if between sizes.',
-    shipNote: 'Preorder opens July 31. Due to a small manufacturing delay, the pants ship in late August — order now to lock in your size and colorway.',
+    fit: 'Low rise with a relaxed flared leg. True to size. If you’re between sizes, size down.',
+    shipNote: 'Preorder opens July 31. Due to a small manufacturing delay, the pants ship in late August. Order now to lock in your size and colorway.',
     sizeChart: {
       note: 'Garment measurements in inches, taken flat.',
       sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
@@ -113,7 +113,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       { icon: 'pocket',   label: 'Deep phone pockets' },
     ],
     features: [
-      'Deep side pockets — big enough for your whole phone',
+      'Deep side pockets, big enough for your whole phone',
       'Water-repellent shell',
       'Fast-dry performance',
       'Mid-rise waistband',

@@ -11,7 +11,7 @@ export const localProducts: Product[] = [
     handle: 'trailblazing-fleece',
     name: 'Frolic Fleece',
     description:
-      'A mid-weight fleece — think Patagonia Synchilla -- but with the patterns and fit that brand never figured out. Chest zip pocket, snap collar, kangaroo pocket. The Wildflower daisy print looks vintage-shop, the Golden Hour stripe is pink stripes that are somehow also functional. Made by women. Finally fits like it.',
+      'A mid-weight fleece with the patterns and fit the big brands never figured out. Chest zip pocket, snap collar, kangaroo pocket. The Wildflower daisy print looks vintage-shop, and the Golden Hour stripe is pink stripes that are somehow also functional. Made by women. It finally fits like it should.',
     price: 14900,
     images: ['/images-2/fleece-pink-bg.png', '/images-2/fleece-yellow-bg.png'],
     category: 'Outerwear',
@@ -27,7 +27,7 @@ export const localProducts: Product[] = [
     handle: 'juniper-pant',
     name: 'Juniper Pant',
     description:
-      'Meet the Juniper — the most flattering hiking pants you’ll own. They feel like your favorite pair of everyday pants, just built for the trail. Fold-over waist, real cargo pockets, and a flared leg in colorways that go with everything. Cinch hem for when the trail gets muddy.',
+      'Meet the Juniper, the most flattering hiking pants you’ll own. They feel like your favorite pair of everyday pants, just built for the trail. Fold-over waist, real cargo pockets, and a flared leg in colorways that go with everything. Cinch hem for when the trail gets muddy.',
     price: 10800,
     // Gallery driven by PRODUCT_COLOR_IMAGES; lead shot per colorway
     images: ['/images-2/product-photos/juniper4.jpg', '/images-2/product-photos/olive1.jpg'],
@@ -44,7 +44,7 @@ export const localProducts: Product[] = [
     handle: 'alpine-baby-tee',
     name: 'Tioga Tee',
     description:
-      'The layer you actually want under your fleece — and the top you wear when you ditch it. UPF 40 protection, second-skin fit, and the kind of cut that makes your shoulders look good on the summit. Light, breathable, and designed for the girl who doesn\'t leave her style at the trailhead.',
+      'The layer you actually want under your fleece, and the top you wear when you ditch it. UPF 40 protection, second-skin fit, and the kind of cut that makes your shoulders look good on the summit. Light, breathable, and designed for the girl who doesn\'t leave her style at the trailhead.',
     price: 6900,
     images: ['/images-2/shirt-yellow-bg.png', '/images-2/shirt-pink-bg.png'],
     category: 'Tops',
@@ -60,7 +60,7 @@ export const localProducts: Product[] = [
     handle: 'sierra-shorts',
     name: 'Sierra Shorts',
     description:
-      'Our no-fuss, perfect hiking shorts. Comfy enough to live in all summer, with deep pockets that can fit your whole phone. And the prints? People stop us to ask about them — every single time.',
+      'Our no-fuss, perfect hiking shorts. Comfy enough to live in all summer, with deep pockets that can fit your whole phone. And the prints? People stop us to ask about them every single time.',
     price: 6800,
     // Gallery is driven per-colorway by PRODUCT_COLOR_IMAGES; these are the
     // lead shots (also used for the cart thumbnail + schema image)
