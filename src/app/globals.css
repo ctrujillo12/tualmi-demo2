@@ -342,11 +342,13 @@ body {
   aspect-ratio: 3 / 2;
 }
 
-/* ── Product page gallery: mobile (3 big + tappable thumbnails) ── */
+/* ── Product page gallery: mobile ── */
 .pdp-gallery--mobile { display: none; max-width: 100%; }
 @media (max-width: 767px) {
-  .pdp-gallery { display: none; }          /* hide the desktop grid */
-  .pdp-gallery--mobile { display: block; }
+  /* Stack every product photo full-width so they're big on phones.
+     Desktop (>=768px) keeps the 2-up grid untouched. */
+  .pdp-gallery { grid-template-columns: 1fr; gap: 10px; }
+  .pdp-gallery--mobile { display: none; }
 }
 .pdp-m-hero {
   position: relative;

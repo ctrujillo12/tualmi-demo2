@@ -282,7 +282,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                     alt={`${product.name} — ${selectedColor} ${i + 1}`}
                     fill
                     quality={90}
-                    sizes="(max-width: 1024px) 50vw, 30vw"
+                    sizes="(max-width: 767px) 100vw, (max-width: 1024px) 50vw, 30vw"
                     style={{ objectFit: 'cover' }}
                   />
                 </div>
