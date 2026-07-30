@@ -48,7 +48,9 @@ export interface ShopAccess {
  * Client hook for soft early-access gating.
  * - Reads a `?access=CODE` param and unlocks early access (persisted).
  * - Computes whether gated products are buyable right now.
- * - `NEXT_PUBLIC_SHOP_OPEN=true|false` force-overrides (testing / manual open).
+ * - `NEXT_PUBLIC_SHOP_OPEN=false` is a kill switch that re-locks the shop.
+ *   (There is no force-open flag — access comes only from the link + time,
+ *   so a stray env var can't open the shop to everyone.)
  */
 export function useShopAccess(): ShopAccess {
   const [state, setState] = useState<ShopAccess>({
@@ -82,8 +84,11 @@ export function useShopAccess(): ShopAccess {
       const publicOpen = now >= PUBLIC_LAUNCH_MS;
       const earlyOpen = hasEarly && now >= EARLY_ACCESS_MS;
 
+      // Access is granted ONLY by the time logic: trailblazers (early link)
+      // after EARLY_ACCESS_MS, everyone after PUBLIC_LAUNCH_MS. The env flag is
+      // a one-way kill switch — it can re-lock the shop, but it can NEVER force
+      // it open to the public (that footgun opened the shop to everyone once).
       let canShop = publicOpen || earlyOpen;
-      if (flag === 'open') canShop = true;
       if (flag === 'closed') canShop = false;
 
       return {
