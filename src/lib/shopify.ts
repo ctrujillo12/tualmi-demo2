@@ -29,6 +29,7 @@ export interface ShopifyVariant {
   price: { amount: string; currencyCode: string };
   availableForSale: boolean;
   selectedOptions: { name: string; value: string }[];
+  image?: { url: string; altText: string | null } | null;
 }
 
 export interface ShopifyProduct {
@@ -80,6 +81,7 @@ const PRODUCT_FIELDS = `
           price { amount currencyCode }
           availableForSale
           selectedOptions { name value }
+          image { url altText }
         }
       }
     }
@@ -119,7 +121,9 @@ export async function getProductById(shopifyId: string): Promise<ShopifyProduct 
   return data.node ?? null;
 }
 
-export async function createCheckout(lines: { variantId: string; quantity: number }[]): Promise<string> {
+export async function createCheckout(
+  lines: { variantId: string; quantity: number; attributes?: { key: string; value: string }[] }[],
+): Promise<string> {
   const data = await shopifyFetch<CartCreateResult>(`
     mutation CartCreate($input: CartInput!) {
       cartCreate(input: $input) {
@@ -129,7 +133,12 @@ export async function createCheckout(lines: { variantId: string; quantity: numbe
     }
   `, {
     input: {
-      lines: lines.map(({ variantId, quantity }) => ({ merchandiseId: variantId, quantity })),
+      lines: lines.map(({ variantId, quantity, attributes }) => ({
+        merchandiseId: variantId,
+        quantity,
+        // Line-item note (shows on cart, checkout, and the order confirmation)
+        ...(attributes && attributes.length ? { attributes } : {}),
+      })),
     },
   });
 

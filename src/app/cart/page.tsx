@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import CartItem from '@/components/CartItem';
 import { useCartStore } from '@/store/cartStore';
+import { useShopAccess } from '@/lib/useShopAccess';
 
 // Landing-page design tokens
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
@@ -13,42 +13,20 @@ const blushBg = '#FBF1F5';
 const soft    = '#C9849A';
 const rule    = '#F0D9E1';
 
-const FREE_TOTE_THRESHOLD = 149; // matches Shopify automatic discount
-
-const TOTE_BASE = {
-  id: 'trailblazing-tote', handle: 'trailblazing-tote', name: 'Trailblazing Tote',
-  category: 'Accessories', images: ['/images-2/tote_hp_bg.png'], // image overridden at runtime from Shopify
-  colors: [], sizes: ['One Size'], variants: [], description: '',
-};
-const TOTE_PAID = { ...TOTE_BASE, price: 1800 };
-const TOTE_FREE = { ...TOTE_BASE, price: 0 };
-
 export default function CartPage() {
-  const { items, addItem, getTotal, hasPreorderItems, redirectToShopifyCheckout } = useCartStore();
+  const { items, getTotal, hasPreorderItems, redirectToShopifyCheckout, refreshFromShopify } = useCartStore();
+  const { canShop, ready } = useShopAccess();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError]         = useState<string | null>(null);
-  const [toteAdded, setToteAdded] = useState(false);
-  const [toteImage, setToteImage] = useState('/images-2/tote_hp_bg.png');
 
-  useEffect(() => {
-    fetch('/api/product-image?handle=trailblazing-tote')
-      .then(r => r.json())
-      .then(d => { if (d.image) setToteImage(d.image); })
-      .catch(() => {});
-  }, []);
+  // Re-sync prices + photos from Shopify on load so the cart is never stale
+  useEffect(() => { refreshFromShopify(); }, [refreshFromShopify]);
 
   const totalCents       = getTotal();
   const total            = totalCents / 100;
   const tax              = total * 0.08;
   const grandTotal       = total + tax;
   const containsPreorder = hasPreorderItems();
-  const hasTote          = items.some(i => i.product.handle === 'trailblazing-tote');
-  const toteFree         = total >= FREE_TOTE_THRESHOLD;
-
-  const handleAddTote = () => {
-    addItem((toteFree ? TOTE_FREE : TOTE_PAID) as never, 'One Size', 'Natural', 1);
-    setToteAdded(true);
-  };
 
   const handleCheckout = async () => {
     setIsLoading(true);
@@ -132,44 +110,6 @@ export default function CartPage() {
               order summary
             </h2>
 
-            {/* Tote upsell */}
-            {!hasTote && (
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '14px',
-                padding: '14px', marginBottom: '24px',
-                backgroundColor: blushBg,
-                border: `1.5px solid ${toteFree ? maroon : rule}`,
-                borderRadius: '12px',
-              }}>
-                <div style={{ flexShrink: 0, width: '56px', height: '56px', position: 'relative', backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden' }}>
-                  <Image src={toteImage} alt="Trailblazing Tote" fill style={{ objectFit: 'contain' }} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 700, color: maroon, margin: '0 0 2px', textTransform: 'lowercase' }}>
-                    {toteFree ? 'you unlocked a free tote!' : 'add the trailblazing tote'}
-                  </p>
-                  <p style={{ fontFamily: sans, fontSize: '12px', color: soft, fontWeight: toteFree ? 700 : 500, margin: 0 }}>
-                    {toteFree ? 'FREE — applied at checkout' : `$18.00 — spend $${FREE_TOTE_THRESHOLD}+ to get it free`}
-                  </p>
-                </div>
-                <button
-                  onClick={handleAddTote}
-                  disabled={toteAdded}
-                  aria-label="Add tote to cart"
-                  style={{
-                    flexShrink: 0, width: '32px', height: '32px', borderRadius: '50%',
-                    backgroundColor: toteAdded ? soft : maroon,
-                    color: 'white', border: 'none', fontSize: '18px', lineHeight: 1,
-                    cursor: toteAdded ? 'default' : 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'background-color 0.2s',
-                  }}
-                >
-                  {toteAdded ? '✓' : '+'}
-                </button>
-              </div>
-            )}
-
             {/* Price breakdown */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -198,20 +138,25 @@ export default function CartPage() {
 
             <button
               onClick={handleCheckout}
-              disabled={isLoading}
+              disabled={isLoading || (ready && !canShop)}
               style={{
                 width: '100%', padding: '15px 32px',
                 backgroundColor: maroon, color: 'white',
                 fontFamily: sans, fontSize: '14px', fontWeight: 700,
                 textTransform: 'lowercase',
                 border: 'none', borderRadius: '100px',
-                cursor: isLoading ? 'default' : 'pointer',
-                opacity: isLoading ? 0.7 : 1,
+                cursor: (isLoading || (ready && !canShop)) ? 'default' : 'pointer',
+                opacity: (isLoading || (ready && !canShop)) ? 0.6 : 1,
                 transition: 'opacity 0.2s',
               }}
             >
-              {isLoading ? 'redirecting…' : 'checkout'}
+              {isLoading ? 'redirecting…' : (ready && !canShop ? 'opens friday · 11am pt' : 'checkout')}
             </button>
+            {ready && !canShop && (
+              <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, textAlign: 'center', margin: '12px 0 0', lineHeight: 1.6 }}>
+                Checkout opens Friday at 11am PT. Club members get 24-hour early access.
+              </p>
+            )}
 
             <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, textAlign: 'center', margin: '16px 0 0' }}>
               Need help?{' '}

@@ -3,6 +3,7 @@ import { Inter, Playfair_Display, Montserrat, Great_Vibes, Ballet, Codystar, Ced
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import AccessBanner from '@/components/AccessBanner';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair', display: 'swap' });
@@ -75,6 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <Footer />
+        <AccessBanner />
       </body>
     </html>
   );

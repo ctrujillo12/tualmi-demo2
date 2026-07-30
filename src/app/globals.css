@@ -154,25 +154,23 @@ body {
 /* ── Cart page ── */
 .cart-grid {
   display: grid;
-  grid-template-columns: 3fr 2fr;
-  gap: 64px;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: clamp(28px, 4vw, 56px);
   align-items: start;
 }
+/* Summary panel is a self-contained white card (styled inline) */
 .cart-summary-panel {
-  border-left: 1px solid #E8E2D8;
-  padding-left: 48px;
+  position: sticky;
+  top: 88px; /* sit below the fixed nav while items scroll on desktop */
 }
 
 @media (max-width: 768px) {
   .cart-grid {
-    grid-template-columns: 1fr;
-    gap: 32px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
   }
   .cart-summary-panel {
-    border-left: none;
-    padding-left: 0;
-    border-top: 1px solid #E8E2D8;
-    padding-top: 32px;
+    position: static; /* no sticky on mobile — it sits after the items */
   }
 }
 

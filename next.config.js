@@ -19,6 +19,7 @@ const nextConfig = {
       { source: '/products/summit-pant', destination: '/products/juniper-pant', permanent: true },
       { source: '/products/pinnacles-pant', destination: '/products/juniper-pant', permanent: true },
       { source: '/products/carabiner', destination: '/', permanent: true },
+      { source: '/products/trailblazing-tote', destination: '/', permanent: true },
       { source: '/collections', destination: '/#collection', permanent: false },
     ];
   },

@@ -21,6 +21,8 @@ interface CartStore {
   getTotal: () => number;
   getItemCount: () => number;
   hasPreorderItems: () => boolean;
+  /** Re-sync each item's price + image from Shopify (kills stale snapshots). */
+  refreshFromShopify: () => Promise<void>;
   /**
    * Builds a Shopify cart from the current items and navigates to the hosted
    * Shopify checkout. Throws if a variant can't be resolved.
@@ -129,11 +131,48 @@ export const useCartStore = create<CartStore>()(
       hasPreorderItems: () =>
         get().items.some((i) => i.isPreorder),
 
+      refreshFromShopify: async () => {
+        const { items } = get();
+        if (items.length === 0) return;
+
+        const handles = [...new Set(items.map((i) => i.product.handle ?? i.product.id))];
+        const results = await Promise.all(
+          handles.map(async (h) => {
+            try {
+              const res = await fetch(`/api/product-refresh?handle=${encodeURIComponent(h)}`);
+              const data = await res.json();
+              return [h, data] as const;
+            } catch {
+              return [h, { ok: false }] as const;
+            }
+          }),
+        );
+        const byHandle = Object.fromEntries(results);
+
+        set({
+          items: get().items.map((item) => {
+            const key = item.product.handle ?? item.product.id;
+            const d = byHandle[key];
+            if (!d || !d.ok) return item;
+            const colorImg =
+              d.imageByColor?.[(item.selectedColor || '').toLowerCase()] ?? d.featured ?? item.product.images[0];
+            return {
+              ...item,
+              product: {
+                ...item.product,
+                price: typeof d.price === 'number' ? d.price : item.product.price,
+                images: colorImg ? [colorImg] : item.product.images,
+              },
+            };
+          }),
+        });
+      },
+
       redirectToShopifyCheckout: async () => {
         const { items, clearCart } = get();
         if (items.length === 0) throw new Error('Cart is empty');
 
-        const lines: { variantId: string; quantity: number }[] = [];
+        const lines: { variantId: string; quantity: number; attributes?: { key: string; value: string }[] }[] = [];
 
         for (const item of items) {
           const variantId = resolveVariantId(item);
@@ -144,7 +183,13 @@ export const useCartStore = create<CartStore>()(
             );
             continue;
           }
-          lines.push({ variantId, quantity: item.quantity });
+          // Preorder items carry their ship window onto the Shopify order.
+          // Strip a leading "Ships " so the note reads e.g. "Ships: August".
+          const attributes =
+            item.isPreorder && item.shippingWindow
+              ? [{ key: 'Ships', value: item.shippingWindow.replace(/^ships\s+/i, '') }]
+              : undefined;
+          lines.push({ variantId, quantity: item.quantity, attributes });
         }
 
         if (lines.length === 0) {
@@ -160,7 +205,9 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: 'tualmi-cart',
+      // Bumped to -v2 to discard old saved carts that snapshotted stale
+      // prices/photos from before the Shopify data was updated.
+      name: 'tualmi-cart-v2',
     }
   )
 );

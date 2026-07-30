@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useCartStore } from '@/store/cartStore';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
 const maroon = '#A9445C';
@@ -26,6 +27,11 @@ export default function Header() {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const [pastHero, setPastHero] = useState(false);
+
+  // Cart count — mounted guard avoids hydration mismatch (cart is persisted)
+  const [mounted, setMounted] = useState(false);
+  const itemCount = useCartStore((s) => s.getItemCount());
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (!isHome) return;
@@ -85,12 +91,42 @@ export default function Header() {
           </Link>
         ))}
       </nav>
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 3vw, 44px)' }}>
+      <nav className="site-nav-right" style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 3vw, 44px)' }}>
         {RIGHT_LINKS.map((l) => (
           <Link key={l.name} href={l.href} style={linkStyle}>
             {l.name}
           </Link>
         ))}
+        {/* Cart */}
+        <Link href="/cart" aria-label="Cart" style={{ position: 'relative', display: 'flex', alignItems: 'center', color }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 8h12l-1 12H7L6 8Z" />
+            <path d="M9 8a3 3 0 0 1 6 0" />
+          </svg>
+          {mounted && itemCount > 0 && (
+            <span
+              style={{
+                position: 'absolute',
+                top: '-7px',
+                right: '-9px',
+                minWidth: '16px',
+                height: '16px',
+                padding: '0 4px',
+                boxSizing: 'border-box',
+                borderRadius: '100px',
+                backgroundColor: maroon,
+                color: 'white',
+                fontFamily: sans,
+                fontSize: '10px',
+                fontWeight: 700,
+                lineHeight: '16px',
+                textAlign: 'center',
+              }}
+            >
+              {itemCount}
+            </span>
+          )}
+        </Link>
       </nav>
     </header>
   );

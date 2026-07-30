@@ -4,31 +4,24 @@ export default function GarmentCarePage() {
   return (
     <PolicyPage title="garment care">
       <Section>
-        <P>Our pieces are thoughtfully made using quality fabrics designed to move with you — from trail to everyday wear.</P>
-        <P>The way you wash, dry, and store your garments plays a key role in maintaining their performance, shape, and longevity.</P>
-        <P>Follow the care guidelines below to keep your pieces looking and feeling their best.</P>
+        <P>
+          A little care keeps your pieces looking and performing their best. Always check the label on
+          your garment first — if anything there differs from the below, follow the label.
+        </P>
       </Section>
 
       <Section heading="washing">
-        <P>Wash in cold water with like colors using a mild detergent. This helps preserve fabric integrity and color.</P>
-        <P>Turn garments inside out before washing to reduce surface wear.</P>
-        <P>Avoid bleach, fabric softeners, and harsh chemicals, as they can damage technical fabrics and reduce performance.</P>
+        <P>Machine wash cold with like colors, turned inside out, using a mild detergent.</P>
+        <P>Skip bleach and fabric softener — they break down technical fabrics over time.</P>
       </Section>
 
       <Section heading="drying">
-        <P>Air dry in the shade whenever possible. Heat and direct sunlight can weaken fibers and cause fading over time.</P>
-        <P>Avoid tumble drying unless specifically stated on the garment label.</P>
+        <P>Hang or lay flat to dry. Avoid high heat, which can weaken fibers and cause fading.</P>
+        <P>Do not iron.</P>
       </Section>
 
-      <Section heading="fleece care">
-        <P>To maintain softness and structure, wash fleece garments in cold water on a gentle cycle.</P>
-        <P>Avoid fabric softeners, as they can coat fibers and reduce breathability.</P>
-        <P>Air dry flat to help retain shape and prevent pilling.</P>
-      </Section>
-
-      <Section heading="storage">
-        <P>Store garments folded in a cool, dry place. Avoid hanging heavier items for long periods, as this may stretch the fabric.</P>
-        <P>Ensure items are fully dry before storing to prevent moisture buildup.</P>
+      <Section heading="questions">
+        <P>Not sure how to care for something? Email us at hello@tualmi.com.</P>
       </Section>
     </PolicyPage>
   );

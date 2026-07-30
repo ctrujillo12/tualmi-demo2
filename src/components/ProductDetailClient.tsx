@@ -7,14 +7,12 @@ import { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { PRODUCT_DETAILS, type HighlightIcon } from '@/lib/productDetails';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
+import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 
 interface ProductDetailClientProps {
   product: Product;
   initialColor?: string;
 }
-
-// Products that can actually be purchased right now
-const AVAILABLE_HANDLES = ['trailblazing-tote'];
 
 // ─── Landing-page design tokens ───────────────────────────────────────────────
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
@@ -72,10 +70,17 @@ function HighlightGlyph({ icon }: { icon: HighlightIcon }) {
 
 export default function ProductDetailClient({ product, initialColor }: ProductDetailClientProps) {
   const handle       = product.handle ?? '';
-  const isInStock    = AVAILABLE_HANDLES.includes(handle);
-  const shippingLabel = isInStock
-    ? 'In stock — ships in 1–2 business days'
-    : (product.shippingWindow ?? 'Coming soon');
+  const { canShop, ready } = useShopAccess();
+  const isPreorder = PREORDER_HANDLES.includes(handle);
+  const isGated    = GATED_HANDLES.includes(handle);
+  const buyable    = isBuyable(handle, canShop);   // sellable AND shop open (if gated)
+  const lockedForLaunch = isGated && !canShop;     // sellable but shop not open yet
+
+  const shippingLabel = isPreorder
+    ? (product.shippingWindow || 'Ships August')
+    : buyable
+      ? 'In stock — ships in 1–2 business days'
+      : (product.shippingWindow ?? 'Coming soon');
 
   const addItem = useCartStore((state) => state.addItem);
 
@@ -121,15 +126,30 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
   const handleAddToCart = () => {
     try {
-      // Pass only the selected colorway's images so the cart shows the right photo
       const colorIdx = swatchColors.length > 0
         ? swatchColors.findIndex((s) => s.name === selectedColor)
         : product.colors.indexOf(selectedColor);
       const colorImages = getColorImages(Math.max(0, colorIdx));
-      addItem({ ...product, images: colorImages }, selectedSize, selectedColor, 1, {
-        isPreorder: false,
-        shippingWindow: shippingLabel,
-      });
+
+      // Cart image: prefer the Shopify variant image for the selected color,
+      // then the Shopify product image, then the local gallery as a fallback.
+      const colorLower = selectedColor.toLowerCase();
+      const variantImg = product.variants?.find((v) =>
+        v.image?.url &&
+        v.selectedOptions?.some((o) => o.name.toLowerCase() === 'color' && o.value.toLowerCase() === colorLower),
+      )?.image?.url;
+      const shopifyProductImg = product.images.find((u) => u.startsWith('http'));
+      const cartImg = variantImg ?? shopifyProductImg ?? colorImages[0];
+
+      // Items with a future ship window (e.g. the pant's late-August window)
+      // are flagged as preorder so the date carries onto the Shopify order.
+      const shipWindow = product.shippingWindow ?? '';
+      const shipsLater = !!shipWindow && !shipWindow.toLowerCase().startsWith('in stock');
+      addItem(
+        { ...product, images: cartImg ? [cartImg] : colorImages },
+        selectedSize, selectedColor, 1,
+        { isPreorder: shipsLater, shippingWindow: shipsLater ? shipWindow : undefined },
+      );
       setBuyStatus('added');
     } catch (e) {
       console.error('[addToCart] failed:', e);
@@ -310,9 +330,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
           {/* ── Right: details ── */}
           <div>
-            {(isInStock || shippingLabel) && (
+            {ready && (
               <p style={{ ...eyebrowStyle, marginBottom: '12px' }}>
-                {isInStock ? 'available now' : shippingLabel.toLowerCase()}
+                {lockedForLaunch
+                  ? 'opens friday · 11am pt'
+                  : buyable && !isPreorder
+                    ? 'available now'
+                    : shippingLabel.toLowerCase()}
               </p>
             )}
 
@@ -448,7 +472,8 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
             {/* CTA */}
             <div style={{ marginBottom: '36px' }}>
-              {isInStock ? (
+              {buyable ? (
+                /* ── Buyable: add to cart ── */
                 <>
                   <button
                     onClick={handleAddToCart}
@@ -458,9 +483,9 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                       boxSizing: 'border-box',
                       backgroundColor: maroon,
                       color: 'white',
-                      padding: '15px 28px',
+                      padding: '16px 28px',
                       fontFamily: sans,
-                      fontSize: '14px',
+                      fontSize: '15px',
                       fontWeight: 700,
                       letterSpacing: '0.02em',
                       textTransform: 'lowercase',
@@ -472,14 +497,30 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                     onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                   >
-                    {buyStatus === 'added' ? 'added ✦' : 'add to cart'}
+                    {buyStatus === 'added' ? 'added ✦' : (isPreorder ? 'preorder now' : 'add to cart')}
                   </button>
                   {buyStatus === 'added' && (
-                    <p style={{ ...bodyStyle, textAlign: 'center', marginTop: '12px' }}>
-                      <Link href="/cart" style={{ color: maroon, fontWeight: 600, textUnderlineOffset: '4px' }}>
-                        view cart →
-                      </Link>
-                    </p>
+                    <Link
+                      href="/cart"
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        marginTop: '10px',
+                        padding: '14px 28px',
+                        textAlign: 'center',
+                        border: `1.5px solid ${maroon}`,
+                        borderRadius: '100px',
+                        color: maroon,
+                        fontFamily: sans,
+                        fontSize: '15px',
+                        fontWeight: 700,
+                        textTransform: 'lowercase',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      view cart & check out →
+                    </Link>
                   )}
                   {buyStatus === 'error' && (
                     <p style={{ ...bodyStyle, color: '#B85C49', textAlign: 'center', marginTop: '12px' }}>
@@ -487,7 +528,35 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                     </p>
                   )}
                 </>
+              ) : lockedForLaunch ? (
+                /* ── Sellable but shop not open yet ── */
+                <>
+                  <div
+                    style={{
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      backgroundColor: 'rgba(169,68,92,0.12)',
+                      color: maroon,
+                      padding: '16px 28px',
+                      fontFamily: sans,
+                      fontSize: '15px',
+                      fontWeight: 700,
+                      textTransform: 'lowercase',
+                      borderRadius: '100px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    opens friday · 11am pt
+                  </div>
+                  <p style={{ ...bodyStyle, fontSize: '12px', textAlign: 'center', marginTop: '10px', lineHeight: 1.7 }}>
+                    Club members shop 24 hours early.{' '}
+                    <Link href="/invite" style={{ color: maroon, fontWeight: 600, textUnderlineOffset: '3px' }}>
+                      join the club →
+                    </Link>
+                  </p>
+                </>
               ) : (
+                /* ── Not sellable yet (coming soon) ── */
                 <>
                   <Link
                     href="/invite"
@@ -496,9 +565,9 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                       boxSizing: 'border-box',
                       backgroundColor: maroon,
                       color: 'white',
-                      padding: '15px 28px',
+                      padding: '16px 28px',
                       fontFamily: sans,
-                      fontSize: '14px',
+                      fontSize: '15px',
                       fontWeight: 700,
                       textTransform: 'lowercase',
                       border: 'none',

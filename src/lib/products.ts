@@ -77,21 +77,6 @@ export const localProducts: Product[] = [
     isPreorder: true,
     shippingWindow: '',
   },
-  {
-    id: 'trailblazing-tote',
-    handle: 'trailblazing-tote',
-    name: 'Trailblazing Club Tote',
-    description:
-      'The tote that goes everywhere you do. Made from 100% organic cotton canvas — soft but structured, light but durable, reusable because obviously. The kind of bag that looks good on the trail, at the farmers market, and in every photo in between. Dimensions: 15.5"L x 11.5"H x 6"D, with 6" and 13" handles.',
-    price: 2500,
-    images: ['/images-2/tote_hp_bg.png'],
-    category: 'Accessories',
-    sizes: ['One Size'],
-    colors: ['Natural'],
-    stock: 100,
-    variants: [],
-    // tote is in stock — no preorder fields
-  },
 ];
 
 // ─── Renames & removals ───────────────────────────────────────────────────────
@@ -112,7 +97,7 @@ const ALT_SHOPIFY_HANDLES: Record<string, string[]> = {
 };
 
 // Products removed from the site entirely (may still exist in Shopify)
-const REMOVED_HANDLES = ['carabiner'];
+const REMOVED_HANDLES = ['carabiner', 'trailblazing-tote'];
 
 // Our curated copy, keyed by handle — always wins over whatever Shopify returns
 const localByHandle: Record<string, Product> = Object.fromEntries(
@@ -123,14 +108,14 @@ function normalizeProduct(p: Product): Product {
   const rename = HANDLE_RENAMES[p.handle ?? p.id];
   let out = rename ? { ...p, ...rename } : p;
 
-  // Force our own name + description + price + ship window (Shopify shouldn't override the site)
+  // Curated copy the site controls: name, description, ship window.
+  // Price and images come straight from Shopify (source of truth).
   const local = localByHandle[out.handle ?? ''];
   if (local) {
     out = {
       ...out,
       name: local.name,
       description: local.description,
-      price: local.price,
       shippingWindow: local.shippingWindow,
     };
   }
@@ -164,7 +149,6 @@ const legacyIdMap: Record<string, string> = {
   '7': 'sierra-shorts',
   '8': 'sierra-shorts',
   '9': 'sierra-shorts',
-  '11': 'trailblazing-tote',
   // Old handles — keeps existing links working after the renames
   'summit-pant': 'juniper-pant',
   'pinnacles-pant': 'juniper-pant',

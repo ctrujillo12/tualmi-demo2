@@ -3,9 +3,8 @@ import { redirect, notFound } from 'next/navigation';
 import ProductDetailClient from '@/components/ProductDetailClient';
 import { getProduct } from '@/lib/products';
 
-// Full product pages: the tote (purchasable) plus the shorts and pant
-// (view-only, dropping July 31st). Anything else redirects to the landing preview.
-const DETAIL_HANDLES = ['trailblazing-tote', '11', 'sierra-shorts', 'juniper-pant'];
+// Full product pages: the shorts and pant. Anything else redirects to the preview.
+const DETAIL_HANDLES = ['sierra-shorts', 'juniper-pant'];
 
 const PAGE_METADATA: Record<string, Metadata> = {
   'sierra-shorts': {
@@ -20,17 +19,10 @@ const PAGE_METADATA: Record<string, Metadata> = {
       'Fashion-forward flare cargo hiking pants with a flattering, women-engineered fit and cargo pockets. Made from sustainable, recycled materials. Dropping July 31st.',
     alternates: { canonical: '/products/juniper-pant' },
   },
-  'trailblazing-tote': {
-    title: 'trailblazing club tote — organic cotton canvas',
-    description:
-      'The tote that goes everywhere you do — 100% organic cotton canvas, sturdy enough for the trail, cute enough for the farmers market.',
-    alternates: { canonical: '/products/trailblazing-tote' },
-  },
 };
 
 export function generateStaticParams() {
   return [
-    { id: 'trailblazing-tote' },
     { id: 'sierra-shorts' },
     { id: 'juniper-pant' },
   ];
@@ -38,7 +30,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  return PAGE_METADATA[id] ?? PAGE_METADATA['trailblazing-tote'];
+  return PAGE_METADATA[id] ?? PAGE_METADATA['sierra-shorts'];
 }
 
 export default async function ProductPage({
@@ -56,13 +48,11 @@ export default async function ProductPage({
     redirect('/#collection');
   }
 
-  // ── Full product page: tote (purchasable) + shorts & pant (view-only) ──
+  // ── Full product page: shorts & pant ──
   const product = await getProduct(id);
   if (!product) {
     notFound();
   }
-
-  const isTote = (product!.handle ?? id) === 'trailblazing-tote';
 
   const productJsonLd = {
     '@context': 'https://schema.org',
@@ -75,7 +65,7 @@ export default async function ProductPage({
       '@type': 'Offer',
       price: (product!.price / 100).toFixed(2),
       priceCurrency: 'USD',
-      availability: isTote ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder',
+      availability: 'https://schema.org/PreOrder',
       url: `https://tualmi.com/products/${product!.handle ?? id}`,
     },
   };

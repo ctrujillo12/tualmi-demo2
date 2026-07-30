@@ -20,9 +20,6 @@ export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> =
     { name: 'Picnic',   value: '#E7A6C0' },
     { name: 'Confetti', value: 'linear-gradient(135deg, #F2E9DA 0 25%, #A8C484 25% 50%, #7A5C3E 50% 75%, #E28FB4 75% 100%)' },
   ],
-  'trailblazing-tote': [
-    { name: 'Natural',     value: '#D6C9B0' },
-  ],
 };
 
 // Explicit gallery images per colorway (used when a product has different

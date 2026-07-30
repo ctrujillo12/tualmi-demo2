@@ -1,6 +1,8 @@
 import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import LaunchCountdown from '@/components/LaunchCountdown';
+import PanelShopLink from '@/components/PanelShopLink';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
@@ -66,20 +68,6 @@ const productsJsonLd = {
       image: `${SITE}/images-2/fleece-pink-bg.png`,
       offers: { '@type': 'Offer', availability: 'https://schema.org/PreOrder', priceCurrency: 'USD' },
     },
-    {
-      '@type': 'Product',
-      name: 'Trailblazing Club Tote',
-      brand: { '@type': 'Brand', name: 'Tualmi' },
-      category: 'Accessories',
-      material: '100% organic cotton canvas',
-      description:
-        'An elevated everyday tote in 100% organic cotton canvas — sturdy enough for the trail, cute enough for the farmers market.',
-      image: `${SITE}/images-2/IMG_0443.jpeg`,
-      offers: {
-        '@type': 'Offer', price: '25.00', priceCurrency: 'USD',
-        availability: 'https://schema.org/InStock', url: `${SITE}/products/trailblazing-tote`,
-      },
-    },
   ],
 };
 
@@ -135,16 +123,6 @@ const PRODUCT_PANELS: ProductPanel[] = [
     accent: '#D2BE35',
     body: '#DBCB6A',
     image: '/images-2/cayla-redshorts.jpg',  },
-  {
-    handle: 'trailblazing-tote',
-    title: 'the trailblazing club tote:',
-    copy: 'The tote that goes everywhere you do. Made from 100% organic cotton canvas. Looks good on the trail, at the farmers market, and in every photo in between.',
-    availability: 'available now',
-    bg: '#F5F0E2',
-    accent: '#C4AC72',
-    body: '#D3C08F',
-    image: '/images-2/IMG_0443.jpeg',
-  },
 ];
 
 // ─── Social TikToks ───────────────────────────────────────────────────────────
@@ -192,41 +170,53 @@ export default function Home() {
         />
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,12,8,0.18)' }} />
 
-        {/* Centered logo lockup */}
+        {/* Centered logo lockup + subtle launch countdown */}
         <div
-          className="hero-center"
           style={{
             position: 'absolute',
             inset: 0,
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 'clamp(20px, 4vw, 56px)',
+            gap: 'clamp(18px, 4vh, 32px)',
             zIndex: 1,
           }}
         >
-          <span className="hero-est" style={heroEstStyle}>EST</span>
-          <div className="hero-lockup" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images-2/logo2-brown.png"
-              alt=""
-              style={{ height: 'clamp(60px, 9vw, 120px)', width: 'auto', filter: 'brightness(0) invert(1)' }}
-            />
-            <span
-              className="hero-wordmark"
-              style={{
-                fontFamily: serif,
-                fontSize: 'clamp(64px, 10vw, 140px)',
-                fontWeight: 400,
-                color: 'white',
-                lineHeight: 1,
-              }}
-            >
-              Tualmi
-            </span>
+          <div
+            className="hero-center"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 'clamp(20px, 4vw, 56px)',
+            }}
+          >
+            <span className="hero-est" style={heroEstStyle}>EST</span>
+            <div className="hero-lockup" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images-2/logo2-brown.png"
+                alt=""
+                style={{ height: 'clamp(60px, 9vw, 120px)', width: 'auto', filter: 'brightness(0) invert(1)' }}
+              />
+              <span
+                className="hero-wordmark"
+                style={{
+                  fontFamily: serif,
+                  fontSize: 'clamp(64px, 10vw, 140px)',
+                  fontWeight: 400,
+                  color: 'white',
+                  lineHeight: 1,
+                }}
+              >
+                Tualmi
+              </span>
+            </div>
+            <span className="hero-est" style={heroEstStyle}>2026</span>
           </div>
-          <span className="hero-est" style={heroEstStyle}>2026</span>
+
+          <LaunchCountdown tone="light" />
         </div>
       </section>
 
@@ -401,7 +391,7 @@ export default function Home() {
                     {panel.note}
                   </p>
                 )}
-                {['trailblazing-tote', 'sierra-shorts', 'juniper-pant'].includes(panel.handle) ? (
+                {['sierra-shorts', 'juniper-pant'].includes(panel.handle) ? (
                   <Link href={`/products/${panel.handle}`} style={{ textDecoration: 'none' }}>
                     <h3
                       style={{
@@ -444,25 +434,23 @@ export default function Home() {
                 >
                   {panel.copy}
                 </p>
-                <Link
-                  href={
-                    panel.handle === 'trailblazing-tote' ? '/products/trailblazing-tote'
-                    : ['sierra-shorts', 'juniper-pant'].includes(panel.handle) ? `/products/${panel.handle}`
-                    : '/invite'
-                  }
-                  style={{
-                    fontFamily: sans,
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    color: panel.accent,
-                    textTransform: 'lowercase',
-                    textUnderlineOffset: '4px',
-                  }}
-                >
-                  {panel.handle === 'trailblazing-tote' ? 'shop the tote →'
-                    : ['sierra-shorts', 'juniper-pant'].includes(panel.handle) ? 'preview →'
-                    : 'join the club'}
-                </Link>
+                {['sierra-shorts', 'juniper-pant'].includes(panel.handle) ? (
+                  <PanelShopLink handle={panel.handle} accent={panel.accent} />
+                ) : (
+                  <Link
+                    href="/invite"
+                    style={{
+                      fontFamily: sans,
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      color: panel.accent,
+                      textTransform: 'lowercase',
+                      textUnderlineOffset: '4px',
+                    }}
+                  >
+                    join the club
+                  </Link>
+                )}
               </div>
             </div>
           </section>
