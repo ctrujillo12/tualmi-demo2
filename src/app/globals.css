@@ -277,6 +277,21 @@ body {
 .colorway-tile:hover .colorway-photo img {
   transform: scale(1.04);
 }
+@media (max-width: 767px) {
+  /* Phones: stack the colorways one after another at a readable size,
+     instead of squeezing all of them into a single tiny row.
+     Desktop keeps the side-by-side row. */
+  .colorway-row {
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(20px, 6vw, 32px);
+  }
+  .colorway-tile {
+    flex: 0 0 auto;
+    width: 80%;
+    max-width: 300px;
+  }
+}
 
 /* ── Landing collection grid (one tile per colorway) ── */
 .collection-grid {
@@ -342,13 +357,11 @@ body {
   aspect-ratio: 3 / 2;
 }
 
-/* ── Product page gallery: mobile ── */
+/* ── Product page gallery: mobile (3 big + tappable thumbnails) ── */
 .pdp-gallery--mobile { display: none; max-width: 100%; }
 @media (max-width: 767px) {
-  /* Stack every product photo full-width so they're big on phones.
-     Desktop (>=768px) keeps the 2-up grid untouched. */
-  .pdp-gallery { grid-template-columns: 1fr; gap: 10px; }
-  .pdp-gallery--mobile { display: none; }
+  .pdp-gallery { display: none; }          /* hide the desktop grid */
+  .pdp-gallery--mobile { display: block; }
 }
 .pdp-m-hero {
   position: relative;
