@@ -96,7 +96,7 @@ const PRODUCT_PANELS: ProductPanel[] = [
   {
     handle: 'trailblazing-fleece',
     title: 'the frolic fleece:',
-    copy: 'A mid-weight fleece with a chest zip pocket, snap collar, and kangaroo pocket.',
+    copy: 'A mid-weight fleece with a chest zip pocket, button collar, and kangaroo pocket.',
     availability: 'coming soon',
     bg: '#FCF8E3',
     accent: '#D2BE35',
