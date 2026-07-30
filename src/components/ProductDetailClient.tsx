@@ -275,21 +275,18 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {/* Desktop: uniform 2-up grid */}
             <div className="pdp-gallery">
-              {gallery.map((image, i) => {
-                const isLastOdd = gallery.length % 2 === 1 && i === gallery.length - 1;
-                return (
-                  <div key={image} className={'pdp-tile' + (isLastOdd ? ' pdp-tile--wide' : '')}>
-                    <Image
-                      src={image}
-                      alt={`${product.name} — ${selectedColor} ${i + 1}`}
-                      fill
-                      quality={90}
-                      sizes={isLastOdd ? '(max-width: 1024px) 100vw, 50vw' : '(max-width: 1024px) 50vw, 30vw'}
-                      style={{ objectFit: 'cover' }}
-                    />
-                  </div>
-                );
-              })}
+              {gallery.map((image, i) => (
+                <div key={image} className="pdp-tile">
+                  <Image
+                    src={image}
+                    alt={`${product.name} — ${selectedColor} ${i + 1}`}
+                    fill
+                    quality={90}
+                    sizes="(max-width: 1024px) 50vw, 30vw"
+                    style={{ objectFit: 'cover' }}
+                  />
+                </div>
+              ))}
             </div>
 
             {/* Mobile: hero + 2 big supporting, then a tappable thumbnail strip */}
