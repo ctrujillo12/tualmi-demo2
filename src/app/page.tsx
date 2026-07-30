@@ -26,7 +26,7 @@ const productsJsonLd = {
       material: '100% recycled nylon',
       description:
         'Mid-rise, relaxed-fit women’s hiking shorts with a flattering, women-engineered cut, deep pockets sized for a full phone, and bold, print-forward colorways. Made from 100% recycled nylon.',
-      image: `${SITE}/images-2/shortsandshoes.jpg`,
+      image: `${SITE}/images-2/cayla-redshorts.jpg`,
       offers: {
         '@type': 'Offer', price: '68.00', priceCurrency: 'USD',
         availability: 'https://schema.org/PreOrder', url: `${SITE}/products/sierra-shorts`,
