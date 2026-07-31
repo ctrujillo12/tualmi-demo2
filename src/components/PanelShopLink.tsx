@@ -13,10 +13,12 @@ export default function PanelShopLink({
   handle,
   accent,
   color,
+  label = 'shop this',
 }: {
   handle: string;
   accent: string;
   color?: string;
+  label?: string;
 }) {
   const { canShop, ready } = useShopAccess();
   const open = ready && isBuyable(handle, canShop);
@@ -37,7 +39,7 @@ export default function PanelShopLink({
         textUnderlineOffset: '4px',
       }}
     >
-      {open ? 'shop this →' : 'preview →'}
+      {open ? `${label} →` : 'preview →'}
     </Link>
   );
 }

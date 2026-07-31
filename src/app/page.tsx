@@ -55,7 +55,8 @@ const productsJsonLd = {
 interface DropProduct {
   handle: string;
   name: string;
-  availability: string;
+  availability: string; // small eyebrow above the name ('' = hide it)
+  shopLabel: string;    // CTA text, e.g. 'shop shorts'
   bg: string;      // panel background (drives the scroll color-change)
   accent: string;  // heading / text color
   colorways: { color: string; swatch: string; image: string }[];
@@ -84,7 +85,8 @@ const DROP_PRODUCTS: DropProduct[] = [
   {
     handle: 'sierra-shorts',
     name: 'the sierra shorts',
-    availability: 'available july 31',
+    availability: '',
+    shopLabel: 'shop shorts',
     bg: '#EED0C1',
     accent: '#A94E38',
     colorways: (PRODUCT_COLORS['sierra-shorts'] ?? []).map((c) => ({
@@ -97,6 +99,7 @@ const DROP_PRODUCTS: DropProduct[] = [
     handle: 'juniper-pant',
     name: 'the juniper pant',
     availability: 'preorder · ships late aug',
+    shopLabel: 'shop pants',
     bg: '#C9D3AC',
     accent: '#68764A',
     colorways: (PRODUCT_COLORS['juniper-pant'] ?? []).map((c) => ({
@@ -284,9 +287,11 @@ export default function Home() {
           >
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 'clamp(16px, 2.4vh, 26px)', maxWidth: '1240px', width: '100%' }}>
               <div>
-                <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '12px', letterSpacing: '0.18em', color: p.accent, margin: '0 0 8px', textTransform: 'lowercase' }}>
-                  {p.availability}
-                </p>
+                {p.availability && (
+                  <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '12px', letterSpacing: '0.18em', color: p.accent, margin: '0 0 8px', textTransform: 'lowercase' }}>
+                    {p.availability}
+                  </p>
+                )}
                 <h3 style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(26px, 3.4vw, 40px)', letterSpacing: '-0.02em', color: p.accent, margin: 0, textTransform: 'lowercase' }}>
                   {p.name}
                 </h3>
@@ -319,7 +324,7 @@ export default function Home() {
                 ))}
               </div>
 
-              <PanelShopLink handle={p.handle} accent={p.accent} />
+              <PanelShopLink handle={p.handle} accent={p.accent} label={p.shopLabel} />
             </div>
           </section>
         ))}
