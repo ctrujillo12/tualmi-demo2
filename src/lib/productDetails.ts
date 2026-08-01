@@ -26,6 +26,8 @@ export interface FabricDetail {
   highlights?: Highlight[];
   care?: string[];
   fit?: string;
+  /** Model reference line, e.g. "rachel is 5'6\" and wearing a size small" */
+  modelNote?: string;
   origin?: string;
   tempGuide?: { standalone: string; layered: string };
   sizeChart?: SizeChart;
@@ -84,6 +86,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not iron',
     ],
     fit: 'Low rise with a relaxed flared leg. True to size. If you’re between sizes, size down.',
+    modelNote: 'rachel is 5\'6" and wearing a size small',
     shipNote: 'Preorder opens July 31. Due to a small manufacturing delay, the pants ship in late August. Order now to lock in your size and colorway.',
     sizeChart: {
       note: 'Garment measurements in inches, taken flat.',
@@ -126,6 +129,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not iron',
     ],
     fit: 'Mid-rise, relaxed fit. True to size.',
+    modelNote: 'rachel is 5\'6" and wearing a size small',
     sizeChart: {
       note: 'Garment measurements in inches, taken flat.',
       sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],

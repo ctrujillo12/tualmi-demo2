@@ -414,6 +414,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               </div>
             )}
 
+            {/* Model reference */}
+            {fabricDetail?.modelNote && (
+              <p style={{ fontFamily: sans, fontSize: '12px', fontStyle: 'italic', color: soft, margin: '0 0 24px' }}>
+                {fabricDetail.modelNote}
+              </p>
+            )}
+
             {/* Colors */}
             {swatchColors.length > 0 && (
               <div style={{ marginBottom: '28px' }}>
