@@ -47,7 +47,7 @@ export default function Footer() {
         zIndex: 3,
         // Photo background with a dark maroon-tinted overlay so light text reads.
         backgroundImage:
-          'linear-gradient(rgba(38,18,25,0.58), rgba(30,14,20,0.78)), url(/images-2/shortsandshoes.jpg)',
+          'linear-gradient(rgba(38,18,25,0.4), rgba(30,14,20,0.55)), url(/images-2/shortsandshoes.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         padding: 'clamp(48px, 7vw, 88px) clamp(24px, 6vw, 72px) clamp(28px, 4vw, 44px)',
