@@ -5,9 +5,6 @@ import { useState } from 'react';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
 const serif  = "'Cormorant Garamond', Georgia, serif";
-const maroon = '#A9445C';
-const blushBg = '#FBF1F5';
-const soft   = '#C9849A'; // lighter maroon for body text
 
 const LINK_COL_1 = [
   { name: 'shipping',     href: '/footer-pages/shipping' },
@@ -44,8 +41,19 @@ export default function Footer() {
   }
 
   return (
-    <footer style={{ backgroundColor: blushBg, position: 'relative', zIndex: 3, padding: 'clamp(48px, 7vw, 88px) clamp(24px, 6vw, 72px) clamp(28px, 4vw, 44px)' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <footer
+      style={{
+        position: 'relative',
+        zIndex: 3,
+        // Photo background with a dark maroon-tinted overlay so light text reads.
+        backgroundImage:
+          'linear-gradient(rgba(38,18,25,0.58), rgba(30,14,20,0.78)), url(/images-2/shortsandshoes.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        padding: 'clamp(48px, 7vw, 88px) clamp(24px, 6vw, 72px) clamp(28px, 4vw, 44px)',
+      }}
+    >
+      <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
 
         {/* ── Top row: links left, signup right ── */}
         <div
@@ -65,7 +73,7 @@ export default function Footer() {
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      style={{ fontFamily: sans, fontSize: '14px', fontWeight: 500, color: '#8A6B54', textDecoration: 'none', textTransform: 'lowercase' }}
+                      style={{ fontFamily: sans, fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.92)', textDecoration: 'none', textTransform: 'lowercase', textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}
                     >
                       {link.name}
                     </Link>
@@ -83,21 +91,22 @@ export default function Footer() {
                 fontWeight: 700,
                 fontSize: 'clamp(24px, 3vw, 32px)',
                 letterSpacing: '-0.02em',
-                color: maroon,
+                color: '#fff',
                 margin: '0 0 14px',
                 textTransform: 'lowercase',
+                textShadow: '0 2px 8px rgba(0,0,0,0.4)',
               }}
             >
               join the trailblazing club!
             </h3>
-            <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 500, lineHeight: 1.9, color: soft, margin: '0 0 20px' }}>
-              For style-conscious women who don&apos;t compromise on the trail. First eyes
+            <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 500, lineHeight: 1.9, color: 'rgba(255,255,255,0.9)', margin: '0 0 20px', textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
+              For style-conscious girls who don&apos;t compromise on the trail. First eyes
               on our new designs, early access when we drop July 31st, 
               and the occasional trail recommendation! 
             </p>
 
             {status === 'success' ? (
-              <p style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: maroon, margin: 0, textTransform: 'lowercase' }}>
+              <p style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: '#fff', margin: 0, textTransform: 'lowercase', textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
                 you&apos;re in — we&apos;ll be in touch ✦
               </p>
             ) : (
@@ -106,15 +115,16 @@ export default function Footer() {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    border: `1.5px solid ${maroon}`,
+                    border: '1.5px solid rgba(255,255,255,0.85)',
                     borderRadius: '100px',
                     overflow: 'hidden',
-                    backgroundColor: 'transparent',
+                    backgroundColor: 'rgba(255,255,255,0.08)',
                   }}
                 >
                   <input
                     type="email"
                     placeholder="your email"
+                    className="footer-email-input"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
@@ -127,7 +137,7 @@ export default function Footer() {
                       fontFamily: sans,
                       fontSize: '14px',
                       fontWeight: 500,
-                      color: maroon,
+                      color: '#fff',
                     }}
                   />
                   <button
@@ -140,7 +150,7 @@ export default function Footer() {
                       fontFamily: sans,
                       fontSize: '14px',
                       fontWeight: 700,
-                      color: maroon,
+                      color: '#fff',
                       cursor: validEmail ? 'pointer' : 'default',
                       opacity: validEmail ? 1 : 0.5,
                       textTransform: 'lowercase',
@@ -150,7 +160,7 @@ export default function Footer() {
                   </button>
                 </div>
                 {status === 'error' && (
-                  <p style={{ fontFamily: sans, fontSize: '12px', color: '#B85C49', margin: '10px 0 0' }}>
+                  <p style={{ fontFamily: sans, fontSize: '12px', color: '#FFD8CE', margin: '10px 0 0', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>
                     something went wrong — please try again.
                   </p>
                 )}
@@ -165,15 +175,16 @@ export default function Footer() {
           <img
             src="/images-2/logo2-maroon.png"
             alt=""
-            style={{ height: 'clamp(64px, 9vw, 120px)', width: 'auto', objectFit: 'contain' }}
+            style={{ height: 'clamp(64px, 9vw, 120px)', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
           />
           <span
             style={{
               fontFamily: serif,
               fontSize: 'clamp(56px, 9vw, 110px)',
               fontWeight: 400,
-              color: maroon,
+              color: '#fff',
               lineHeight: 1,
+              textShadow: '0 2px 12px rgba(0,0,0,0.45)',
             }}
           >
             Tualmi
@@ -181,7 +192,7 @@ export default function Footer() {
         </div>
 
         {/* ── Bottom line ── */}
-        <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, textAlign: 'center', margin: 0, textTransform: 'lowercase' }}>
+        <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textAlign: 'center', margin: 0, textTransform: 'lowercase', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>
           @ 2026, tualmi
         </p>
       </div>

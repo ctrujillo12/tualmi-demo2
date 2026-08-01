@@ -319,6 +319,11 @@ body {
   }
 }
 
+/* Footer email input placeholder — light so it reads on the photo background */
+.footer-email-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 /* ── Product page layout ── */
 .pdp-layout {
   display: grid;
