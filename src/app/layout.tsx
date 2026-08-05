@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Inter, Playfair_Display, Montserrat, Great_Vibes, Ballet, Codystar, Cedarville_Cursive } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
@@ -38,6 +39,10 @@ export const metadata: Metadata = {
   },
 };
 
+// Google Analytics 4 measurement ID. Loaded once here in the root layout, which
+// wraps every route — do not add a second gtag snippet anywhere else.
+const GA_MEASUREMENT_ID = 'G-PTRJN12KTL';
+
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
@@ -67,6 +72,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable} ${montserrat.variable} ${greatVibes.variable} ${ballet.variable} ${codystar.variable} ${cedarvilleCursive.variable}`}>
       <body className="font-sans">
+        {/* Google tag (gtag.js) — injected into <head> by next/script */}
+        <Script
+          id="ga4-src"
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
