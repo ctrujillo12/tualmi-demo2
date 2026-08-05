@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import PhoneOptIn, { PHONE_THEMES } from './PhoneOptIn';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
 const serif  = "'Cormorant Garamond', Georgia, serif";
@@ -23,6 +24,9 @@ const LINK_COL_2 = [
 export default function Footer() {
   const [email, setEmail]   = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  // 'phone' = email is already saved, we're just asking for the number.
+  const [stage, setStage]   = useState<'phone' | 'done'>('phone');
+  const [joinedSms, setJoinedSms] = useState(false);
 
   const validEmail = email.includes('@');
 
@@ -106,9 +110,18 @@ export default function Footer() {
               and the occasional trail recommendation! 
             </p>
 
-            {status === 'success' ? (
+            {status === 'success' && stage === 'phone' ? (
+              <PhoneOptIn
+                email={email}
+                source="footer"
+                theme={PHONE_THEMES.dark}
+                onDone={({ joinedSms: j }) => { setJoinedSms(j); setStage('done'); }}
+              />
+            ) : status === 'success' ? (
               <p style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: '#fff', margin: 0, textTransform: 'lowercase', textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
-                you&apos;re in — we&apos;ll be in touch ✦
+                {joinedSms
+                  ? 'you’re in — watch your texts, you’ll hear first ✦'
+                  : 'you’re in — we’ll be in touch ✦'}
               </p>
             ) : (
               <>

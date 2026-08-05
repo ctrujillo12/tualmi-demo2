@@ -1,12 +1,50 @@
-import { PolicyPage, Section, P } from '@/components/PolicyPage';
+import { PolicyPage, Section, P, Bullets, DataTable } from '@/components/PolicyPage';
 
 export default function ShippingPage() {
   return (
     <PolicyPage title="shipping">
       <Section>
         <P>
-          We ship within the United States. Shipping cost and estimated delivery time are calculated
-          at checkout based on your address.
+          We ship worldwide from Los Angeles, California. Shipping cost and estimated delivery time
+          are shown at checkout based on your address and order weight.
+        </P>
+      </Section>
+
+      <Section heading="united states">
+        <P>Flat rate standard shipping:</P>
+        <DataTable
+          headers={['service', 'order weight', 'rate']}
+          rows={[
+            ['Standard', '0–1 lb', '$7.99'],
+            ['Standard', '1–5 lb', '$9.99'],
+          ]}
+        />
+      </Section>
+
+      <Section heading="international">
+        <P>
+          International rates are calculated live at checkout by the carrier, so you&apos;ll see the
+          exact cost and estimated transit time before you pay. Available services include:
+        </P>
+        <Bullets
+          items={[
+            'DHL Express Worldwide',
+            'FedEx International Connect Plus®',
+            'USPS First Class Package International, Priority Mail International, and Priority Mail Express International (select countries)',
+          ]}
+        />
+        <P>
+          USPS options are available in select countries. Everywhere else, DHL Express and FedEx are
+          offered.
+        </P>
+      </Section>
+
+      <Section heading="duties &amp; taxes">
+        <P>
+          Import duties, taxes, and customs fees are set by the destination country and are the
+          customer&apos;s responsibility. DHL Express orders support prepaid duties at checkout —
+          when that option is shown, you can pay everything upfront and avoid a bill on delivery.
+          Otherwise, the carrier will collect any charges before your package is released.
         </P>
       </Section>
 
@@ -28,8 +66,9 @@ export default function ShippingPage() {
       <Section heading="delays &amp; lost packages">
         <P>
           Once a package is handed to the carrier, delivery is in their hands and timelines aren&apos;t
-          guaranteed. If your tracking stalls or a package goes missing, email us at hello@tualmi.com and
-          we&apos;ll help you sort it out.
+          guaranteed. International orders can also be held in customs, which is outside our control.
+          If your tracking stalls or a package goes missing, email us at hello@tualmi.com and we&apos;ll
+          help you sort it out.
         </P>
       </Section>
 

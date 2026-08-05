@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import PhoneOptIn, { PHONE_THEMES } from '@/components/PhoneOptIn';
 
 // ─── Landing-page design tokens ───────────────────────────────────────────────
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
@@ -8,13 +9,15 @@ const maroon  = '#A9445C';
 const blushBg = '#FBF1F5';
 const soft    = '#C9849A';
 
-type Step = 'email' | 'source' | 'loading' | 'success' | 'error';
+// 'phone' comes after the email is already saved — it can never block the signup.
+type Step = 'email' | 'source' | 'loading' | 'phone' | 'success' | 'error';
 
 export default function InvitePage() {
   const [step, setStep]         = useState<Step>('email');
   const [email, setEmail]       = useState('');
   const [source, setSource]     = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [joinedSms, setJoinedSms] = useState(false);
 
   const validEmail = email.includes('@');
 
@@ -32,7 +35,8 @@ export default function InvitePage() {
         setErrorMsg(data.error || 'something went wrong.');
         setStep('error');
       } else {
-        setStep('success');
+        // Email is banked at this point — now the optional phone ask.
+        setStep('phone');
       }
     } catch {
       setErrorMsg('something went wrong — please try again.');
@@ -172,9 +176,25 @@ export default function InvitePage() {
         </ul>
 
         {/* Signup — same pill style as the footer */}
+        {step === 'phone' && (
+          <div style={{ maxWidth: '460px', margin: '0 auto' }}>
+            <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 700, color: maroon, margin: '0 0 22px', textTransform: 'lowercase' }}>
+              you&apos;re in ✦
+            </p>
+            <PhoneOptIn
+              email={email}
+              source={source ? `invite:${source}` : 'invite'}
+              theme={PHONE_THEMES.blush}
+              onDone={({ joinedSms: j }) => { setJoinedSms(j); setStep('success'); }}
+            />
+          </div>
+        )}
+
         {step === 'success' && (
           <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: maroon, margin: 0, textTransform: 'lowercase' }}>
-            you&apos;re in — we&apos;ll be in touch ✦
+            {joinedSms
+              ? 'done — you’ll get the drop link by text first ✦'
+              : 'you’re in — we’ll be in touch ✦'}
           </p>
         )}
 

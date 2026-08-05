@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import PhoneOptIn, { PHONE_THEMES } from './PhoneOptIn';
 
 const STORAGE_KEY = 'tualmi_welcome_shown';
 const CODE  = 'TRAILBLAZING15';
@@ -16,6 +17,9 @@ export default function WelcomePopup() {
   const [email, setEmail]     = useState('');
   const [status, setStatus]   = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errMsg, setErrMsg]   = useState('');
+  // Phone ask lives on the success screen, below the code — the discount is
+  // already delivered, so this can't cost us the email conversion.
+  const [smsStage, setSmsStage] = useState<'ask' | 'done'>('ask');
   const firedRef              = useRef(false);
 
   useEffect(() => {
@@ -126,6 +130,25 @@ export default function WelcomePopup() {
             <p style={{ fontFamily: sans, fontSize: '11px', color: muted, margin: 0 }}>
               Use it at checkout. Valid on your first order.
             </p>
+
+            {smsStage === 'ask' ? (
+              <div style={{
+                marginTop: '26px',
+                paddingTop: '22px',
+                borderTop: '1px solid rgba(59,47,30,0.18)',
+              }}>
+                <PhoneOptIn
+                  email={email}
+                  source="welcome-popup"
+                  theme={PHONE_THEMES.pink}
+                  lowercase={false}
+                  headline="One more thing — want the drop early?"
+                  subcopy="We text the link 24 hours before it hits email. That’s the only reason we’d text you."
+                  onDone={() => setSmsStage('done')}
+                />
+              </div>
+            ) : null}
+
             <button
               onClick={dismiss}
               style={{
