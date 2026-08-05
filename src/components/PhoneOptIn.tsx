@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { getAttribution } from '@/lib/attribution';
 
 const sans = 'var(--font-montserrat), system-ui, sans-serif';
 
@@ -108,7 +109,7 @@ export default function PhoneOptIn({
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, phone, smsConsent: true, source }),
+        body: JSON.stringify({ email, phone, smsConsent: true, source, attribution: getAttribution() }),
       });
       const data = await res.json();
       if (!res.ok) {

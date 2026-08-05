@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import PhoneOptIn, { PHONE_THEMES } from './PhoneOptIn';
+import { getAttribution } from '@/lib/attribution';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
 const serif  = "'Cormorant Garamond', Georgia, serif";
@@ -37,7 +38,7 @@ export default function Footer() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'footer' }),
+        body: JSON.stringify({ email, source: 'footer', attribution: getAttribution() }),
       });
       setStatus(res.ok ? 'success' : 'error');
     } catch {

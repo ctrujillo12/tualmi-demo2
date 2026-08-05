@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import PhoneOptIn, { PHONE_THEMES } from '@/components/PhoneOptIn';
+import { getAttribution } from '@/lib/attribution';
 
 // ─── Landing-page design tokens ───────────────────────────────────────────────
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
@@ -10,25 +11,27 @@ const blushBg = '#FBF1F5';
 const soft    = '#C9849A';
 
 // 'phone' comes after the email is already saved — it can never block the signup.
-type Step = 'email' | 'source' | 'loading' | 'phone' | 'success' | 'error';
+// There's deliberately no "how did you find us?" step: that's captured
+// automatically from UTM params / referrer (see lib/attribution.ts).
+type Step = 'email' | 'loading' | 'phone' | 'success' | 'error';
 
 export default function InvitePage() {
   const [step, setStep]         = useState<Step>('email');
   const [email, setEmail]       = useState('');
-  const [source, setSource]     = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [joinedSms, setJoinedSms] = useState(false);
 
   const validEmail = email.includes('@');
 
   async function handleSubmit() {
+    if (!validEmail) return;
     setStep('loading');
     setErrorMsg('');
     try {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source }),
+        body: JSON.stringify({ email, source: 'invite', attribution: getAttribution() }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -183,7 +186,7 @@ export default function InvitePage() {
             </p>
             <PhoneOptIn
               email={email}
-              source={source ? `invite:${source}` : 'invite'}
+              source="invite"
               theme={PHONE_THEMES.blush}
               onDone={({ joinedSms: j }) => { setJoinedSms(j); setStep('success'); }}
             />
@@ -204,41 +207,20 @@ export default function InvitePage() {
           </p>
         )}
 
-        {step === 'email' && (
-          <div style={pillStyle}>
-            <input
-              type="email"
-              placeholder="your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && validEmail && setStep('source')}
-              style={inputStyle}
-            />
-            <button onClick={() => validEmail && setStep('source')} disabled={!validEmail} style={buttonStyle(validEmail)}>
-              join
-            </button>
-          </div>
-        )}
-
-        {(step === 'source' || step === 'error') && (
+        {(step === 'email' || step === 'error') && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
-            <p style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: soft, margin: 0, textTransform: 'lowercase' }}>
-              one more thing — how did you find us?
-            </p>
-            <div style={{ ...pillStyle, width: '100%' }}>
-              <select
-                value={source}
-                onChange={(e) => setSource(e.target.value)}
-                style={{ ...inputStyle, appearance: 'none', cursor: 'pointer', color: source ? maroon : soft }}
-              >
-                <option value="" disabled>select one</option>
-                <option value="instagram">instagram</option>
-                <option value="tiktok">tiktok</option>
-                <option value="friend">a friend</option>
-                <option value="other">other</option>
-              </select>
-              <button onClick={() => source && handleSubmit()} disabled={!source} style={buttonStyle(!!source)}>
-                {step === 'error' ? 'retry' : 'submit'}
+            <div style={pillStyle}>
+              <input
+                type="email"
+                placeholder="your email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                style={inputStyle}
+              />
+              <button onClick={handleSubmit} disabled={!validEmail} style={buttonStyle(validEmail)}>
+                {step === 'error' ? 'retry' : 'join'}
               </button>
             </div>
             {step === 'error' && (

@@ -19,11 +19,13 @@ function toE164(raw: unknown): string | null {
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
-  const { email, phone, smsConsent, source } = body as {
+  const { email, phone, smsConsent, source, attribution } = body as {
     email?: string;
     phone?: string;
     smsConsent?: boolean;
     source?: string;
+    /** UTM params + referring channel, captured client-side. See lib/attribution.ts. */
+    attribution?: Record<string, string>;
   };
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -48,7 +50,13 @@ export async function POST(req: NextRequest) {
   const listId = process.env.KLAVIYO_LIST_ID;
 
   if (!apiKey || !listId) {
-    console.error('[subscribe] Missing KLAVIYO_API_KEY or KLAVIYO_LIST_ID in Vercel env vars');
+    // Log the address itself — otherwise a misconfigured environment loses
+    // signups without leaving any trace of who tried to subscribe.
+    console.error(
+      '[subscribe] Missing KLAVIYO_API_KEY or KLAVIYO_LIST_ID in Vercel env vars — LOST signup:',
+      email,
+      phoneNumber ? `(phone ${phoneNumber})` : ''
+    );
     return NextResponse.json({ success: true });
   }
 
@@ -69,8 +77,25 @@ export async function POST(req: NextRequest) {
     };
   }
 
-  if (source) {
-    profileAttributes.properties = { signup_source: source };
+  // Klaviyo profile properties: which form they used (signup_source) plus where
+  // they originally came from (utm_* / referrer). The attribution fields replace
+  // the old manual "how did you find us?" dropdown.
+  const properties: Record<string, string> = {};
+  if (source) properties.signup_source = source;
+
+  if (attribution && typeof attribution === 'object') {
+    const ALLOWED = [
+      'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
+      'referrer', 'landing_page',
+    ];
+    for (const key of ALLOWED) {
+      const value = attribution[key];
+      if (typeof value === 'string' && value) properties[key] = value.slice(0, 200);
+    }
+  }
+
+  if (Object.keys(properties).length > 0) {
+    profileAttributes.properties = properties;
   }
 
   profileAttributes.subscriptions = subscriptions;
@@ -109,7 +134,11 @@ export async function POST(req: NextRequest) {
 
     if (!res.ok) {
       const errBody = await res.text();
-      console.error('[subscribe] Klaviyo error — status:', res.status, '— body:', errBody);
+      console.error(
+        '[subscribe] Klaviyo error — status:', res.status,
+        '— body:', errBody,
+        '— LOST signup:', email, phoneNumber ? `(phone ${phoneNumber})` : ''
+      );
     } else {
       console.log('[subscribe] Klaviyo success:', email, phoneNumber ? '(+sms)' : '');
     }
