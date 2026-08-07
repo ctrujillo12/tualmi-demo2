@@ -18,6 +18,14 @@
 
 const KEY = 'tualmi_attribution';
 
+/**
+ * How long a first touch stays credited. Affiliate/influencer traffic often
+ * browses, leaves, and buys days later, so sessionStorage (which dies with the
+ * tab) would under-credit creators badly. 30 days is the common affiliate
+ * default.
+ */
+const WINDOW_DAYS = 30;
+
 export type Attribution = {
   utm_source?: string;
   utm_medium?: string;
@@ -63,7 +71,8 @@ function friendlyChannel(host: string): string {
 export function captureAttribution(): void {
   if (typeof window === 'undefined') return;
   try {
-    if (sessionStorage.getItem(KEY)) return; // first-touch wins
+    // First touch wins for the whole attribution window.
+    if (Object.keys(getAttribution()).length > 0) return;
 
     const params = new URLSearchParams(window.location.search);
     const data: Attribution = {};
@@ -80,21 +89,58 @@ export function captureAttribution(): void {
     // get instagram-vs-tiktok rather than nothing at all.
     if (!data.utm_source && data.referrer) data.utm_source = data.referrer;
 
+    // Nothing worth recording (direct visit, no tags, no referrer).
+    if (Object.keys(data).length === 0) return;
+
     data.landing_page = window.location.pathname;
 
-    sessionStorage.setItem(KEY, JSON.stringify(data));
+    localStorage.setItem(
+      KEY,
+      JSON.stringify({ data, expiresAt: Date.now() + WINDOW_DAYS * 86_400_000 })
+    );
   } catch {
     // Private mode / storage disabled — attribution is best-effort, never fatal.
   }
 }
 
-/** Whatever we captured this session. Safe to call anywhere, returns {} if none. */
+/** The stored first touch, if it hasn't expired. Returns {} otherwise. */
 export function getAttribution(): Attribution {
   if (typeof window === 'undefined') return {};
   try {
-    const raw = sessionStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Attribution) : {};
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as { data?: Attribution; expiresAt?: number };
+    if (!parsed?.data || !parsed.expiresAt || Date.now() > parsed.expiresAt) {
+      localStorage.removeItem(KEY);
+      return {};
+    }
+    return parsed.data;
   } catch {
     return {};
   }
+}
+
+/**
+ * Attribution formatted as Shopify cart attributes.
+ *
+ * These ride along with the cart into Shopify's hosted checkout and land on the
+ * order in the admin under "Additional details" — which is the only way to tie
+ * a purchase back to a creator, since the checkout is on Shopify's domain where
+ * our own analytics can't follow it.
+ */
+export function attributionCartAttributes(): { key: string; value: string }[] {
+  const a = getAttribution();
+  const out: { key: string; value: string }[] = [];
+
+  // Shown first in the Shopify admin, so make it the obvious one to read.
+  if (a.utm_source) out.push({ key: 'Referred by', value: a.utm_source });
+  if (a.utm_medium) out.push({ key: 'Channel', value: a.utm_medium });
+  if (a.utm_campaign) out.push({ key: 'Campaign', value: a.utm_campaign });
+  if (a.utm_content) out.push({ key: 'Content', value: a.utm_content });
+  if (a.referrer && a.referrer !== a.utm_source) {
+    out.push({ key: 'Referrer', value: a.referrer });
+  }
+  if (a.landing_page) out.push({ key: 'Landing page', value: a.landing_page });
+
+  return out;
 }

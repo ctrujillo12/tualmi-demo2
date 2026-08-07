@@ -123,6 +123,13 @@ export async function getProductById(shopifyId: string): Promise<ShopifyProduct 
 
 export async function createCheckout(
   lines: { variantId: string; quantity: number; attributes?: { key: string; value: string }[] }[],
+  /**
+   * Cart-level attributes (as opposed to per-line). Used to carry affiliate /
+   * UTM attribution through to the Shopify order, where it appears under
+   * "Additional details". This is the only reliable way to attribute a sale to
+   * a creator, because checkout happens on Shopify's domain.
+   */
+  cartAttributes?: { key: string; value: string }[],
 ): Promise<string> {
   const data = await shopifyFetch<CartCreateResult>(`
     mutation CartCreate($input: CartInput!) {
@@ -139,6 +146,7 @@ export async function createCheckout(
         // Line-item note (shows on cart, checkout, and the order confirmation)
         ...(attributes && attributes.length ? { attributes } : {}),
       })),
+      ...(cartAttributes && cartAttributes.length ? { attributes: cartAttributes } : {}),
     },
   });
 

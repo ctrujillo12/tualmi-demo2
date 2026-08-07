@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware';
 import type { Product, CartItem } from '@/types';
 import { createCheckout } from '@/lib/shopify';
 import type { ShopifyVariant } from '@/lib/shopify';
+import { attributionCartAttributes } from '@/lib/attribution';
 
 interface CartStore {
   items: CartItem[];
@@ -199,7 +200,9 @@ export const useCartStore = create<CartStore>()(
           );
         }
 
-        const checkoutUrl = await createCheckout(lines);
+        // Carries "Referred by / Campaign / ..." onto the Shopify order so
+        // affiliate sales can be reconciled exactly, not guessed by timestamp.
+        const checkoutUrl = await createCheckout(lines, attributionCartAttributes());
         clearCart();
         window.location.href = checkoutUrl;
       },
