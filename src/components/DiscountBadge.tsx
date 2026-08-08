@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getSessionDiscountCode } from '@/lib/discount';
+import { getDiscountCode } from '@/lib/discount';
 
 /**
  * Confirms an active creator code, inline in the page.
@@ -12,16 +12,16 @@ import { getSessionDiscountCode } from '@/lib/discount';
  * that matter — the product page CTA and the cart summary — keeps those layers
  * clean and puts the reassurance exactly where price doubt happens.
  *
- * Only shows for a visitor who arrived through /discount/[code] in THIS
- * session. The code stays valid for 30 days and still applies at checkout on a
- * later visit — but the note itself shouldn't trail someone around for a month
- * after one click. Renders nothing on the server, so no hydration mismatch.
+ * Only shows for a visitor who arrived through /discount/[code] in this visit —
+ * the code is session-scoped, so this note and the discount actually sent to
+ * Shopify are always the same thing. Renders nothing on the server, so there's
+ * no hydration mismatch.
  */
 export default function DiscountBadge() {
   const [code, setCode] = useState<string | null>(null);
 
   useEffect(() => {
-    setCode(getSessionDiscountCode());
+    setCode(getDiscountCode());
   }, []);
 
   if (!code) return null;
