@@ -28,6 +28,18 @@ export interface ShopifyVariant {
   title: string;
   price: { amount: string; currencyCode: string };
   availableForSale: boolean;
+  /**
+   * Units left for this variant.
+   *
+   * Shopify only returns a number when BOTH are true:
+   *   1. the Storefront access token has the
+   *      `unauthenticated_read_product_inventory` scope, and
+   *   2. the product has "Track quantity" enabled in Shopify.
+   *
+   * Otherwise it comes back null — so always treat null as "unknown", never as
+   * "zero", or in-stock sizes would look sold out.
+   */
+  quantityAvailable?: number | null;
   selectedOptions: { name: string; value: string }[];
   image?: { url: string; altText: string | null } | null;
 }
@@ -80,6 +92,7 @@ const PRODUCT_FIELDS = `
           title
           price { amount currencyCode }
           availableForSale
+          quantityAvailable
           selectedOptions { name value }
           image { url altText }
         }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import CartItem from '@/components/CartItem';
+import DiscountBadge from '@/components/DiscountBadge';
 import { useCartStore } from '@/store/cartStore';
 import { useShopAccess } from '@/lib/useShopAccess';
 
@@ -125,6 +126,11 @@ export default function CartPage() {
                 <span style={{ fontFamily: sans, fontSize: '14px', fontWeight: 700, color: maroon }}>${grandTotal.toFixed(2)}</span>
               </div>
             </div>
+
+            {/* Reassures the shopper the creator code survived to checkout —
+                the totals above can't reflect it, since Shopify computes the
+                discount on its own checkout page. */}
+            <DiscountBadge variant="inline" />
 
             {containsPreorder && (
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, marginBottom: '16px', lineHeight: 1.7 }}>

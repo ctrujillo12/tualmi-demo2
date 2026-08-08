@@ -83,6 +83,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
       : (product.shippingWindow ?? 'Coming soon');
 
   const addItem = useCartStore((state) => state.addItem);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
 
   const swatchColors = PRODUCT_COLORS[handle] ?? [];
   const colorImageMap = PRODUCT_COLOR_IMAGES[handle];
@@ -115,6 +116,8 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     return fallback;
   });
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  // Only tracks failures now — the "added" state is derived from the cart
+  // itself (see cartQty), so the button can't disagree with what's in the cart.
   const [buyStatus, setBuyStatus] = useState<'idle' | 'added' | 'error'>('idle');
 
   const fabricDetail = PRODUCT_DETAILS[handle] ?? null;
@@ -165,6 +168,63 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
   const toggleSection = (section: string) =>
     setExpandedSection(expandedSection === section ? null : section);
+
+  /**
+   * How many of THIS exact size+colour are already in the cart. Drives the
+   * +/- stepper below, so the control always reflects real cart state — if the
+   * shopper switches size or colour, the stepper resets to "add to cart"
+   * because that's a different line item.
+   */
+  const cartQty = useCartStore(
+    (state) =>
+      state.items.find(
+        (i) =>
+          i.product.id === product.id &&
+          i.selectedSize === selectedSize &&
+          i.selectedColor === selectedColor
+      )?.quantity ?? 0
+  );
+
+  const setQty = (next: number) =>
+    updateQuantity(product.id, selectedSize, selectedColor, next);
+
+  // ── Live inventory ─────────────────────────────────────────────────────────
+  // Reads straight from Shopify (variant.quantityAvailable), revalidated every
+  // 60s. `null` means Shopify didn't tell us — either inventory isn't tracked
+  // on the product or the Storefront token lacks the inventory scope — so we
+  // stay silent rather than guessing.
+
+  /** Find the Shopify variant matching a size + colour pair. */
+  const findVariant = (size: string, color: string) =>
+    product.variants?.find((v) => {
+      const opts = v.selectedOptions ?? [];
+      const matchSize = opts.some(
+        (o) => o.name.toLowerCase() === 'size' && o.value.toLowerCase() === size.toLowerCase()
+      );
+      const matchColor = opts.some(
+        (o) => o.name.toLowerCase() === 'color' && o.value.toLowerCase() === color.toLowerCase()
+      );
+      // Single-option products won't have a colour option at all.
+      const hasColorOpt = opts.some((o) => o.name.toLowerCase() === 'color');
+      return matchSize && (hasColorOpt ? matchColor : true);
+    });
+
+  /** Units left for a size in the current colour. null = unknown. */
+  const stockFor = (size: string): number | null => {
+    const variant = findVariant(size, selectedColor);
+    if (!variant) return null;
+    if (variant.availableForSale === false) return 0;
+    return typeof variant.quantityAvailable === 'number' ? variant.quantityAvailable : null;
+  };
+
+  /** Show "only N left" at or below this. */
+  const LOW_STOCK_AT = 5;
+
+  const selectedStock = stockFor(selectedSize);
+  const soldOut = selectedStock === 0;
+  const isLowStock = selectedStock !== null && selectedStock > 0 && selectedStock <= LOW_STOCK_AT;
+  /** Don't let the stepper exceed what Shopify actually has. */
+  const maxQty = selectedStock ?? 99;
 
   // ── Accordion content ──
   const accordionItems: { key: string; label: string; content: React.ReactNode }[] = [];
@@ -396,27 +456,48 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               <div style={{ marginBottom: '20px' }}>
                 <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '10px' }}>size</p>
                 <div className="pdp-sizes">
-                  {product.sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      style={{
-                        padding: '8px 18px',
-                        fontFamily: sans,
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        borderRadius: '100px',
-                        border: `1.5px solid ${maroon}`,
-                        backgroundColor: selectedSize === size ? maroon : 'transparent',
-                        color: selectedSize === size ? 'white' : maroon,
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                      }}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  {product.sizes.map((size) => {
+                    const stock = stockFor(size);
+                    const out = stock === 0;
+                    const isSelected = selectedSize === size;
+                    return (
+                      <button
+                        key={size}
+                        onClick={() => !out && setSelectedSize(size)}
+                        disabled={out}
+                        title={out ? 'Sold out' : stock !== null && stock <= LOW_STOCK_AT ? `Only ${stock} left` : undefined}
+                        style={{
+                          position: 'relative',
+                          padding: '8px 18px',
+                          fontFamily: sans,
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          borderRadius: '100px',
+                          border: `1.5px solid ${out ? rule : maroon}`,
+                          backgroundColor: isSelected && !out ? maroon : 'transparent',
+                          color: out ? soft : isSelected ? 'white' : maroon,
+                          cursor: out ? 'not-allowed' : 'pointer',
+                          textDecoration: out ? 'line-through' : 'none',
+                          opacity: out ? 0.55 : 1,
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        {size}
+                      </button>
+                    );
+                  })}
                 </div>
+
+                {/* Scarcity line — only when Shopify gives us a real number. */}
+                {soldOut ? (
+                  <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 600, color: soft, margin: '10px 0 0' }}>
+                    {selectedSize} is sold out in {selectedColor.toLowerCase()} — try another size or colour.
+                  </p>
+                ) : isLowStock ? (
+                  <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 700, color: maroon, margin: '10px 0 0' }}>
+                    ✦ only {selectedStock} left in {selectedSize}
+                  </p>
+                ) : null}
               </div>
             )}
 
@@ -486,31 +567,95 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               {buyable ? (
                 /* ── Buyable: add to cart ── */
                 <>
-                  <button
-                    onClick={handleAddToCart}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      boxSizing: 'border-box',
-                      backgroundColor: maroon,
-                      color: 'white',
-                      padding: '16px 28px',
-                      fontFamily: sans,
-                      fontSize: '15px',
-                      fontWeight: 700,
-                      letterSpacing: '0.02em',
-                      textTransform: 'lowercase',
-                      border: 'none',
-                      borderRadius: '100px',
-                      cursor: 'pointer',
-                      transition: 'opacity 0.2s',
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
-                  >
-                    {buyStatus === 'added' ? 'added ✦' : (isPreorder ? 'preorder now' : 'add to cart')}
-                  </button>
-                  {buyStatus === 'added' && (
+                  {cartQty === 0 ? (
+                    <button
+                      onClick={handleAddToCart}
+                      disabled={soldOut}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        backgroundColor: soldOut ? soft : maroon,
+                        cursor: soldOut ? 'not-allowed' : 'pointer',
+                        color: 'white',
+                        padding: '16px 28px',
+                        fontFamily: sans,
+                        fontSize: '15px',
+                        fontWeight: 700,
+                        letterSpacing: '0.02em',
+                        textTransform: 'lowercase',
+                        border: 'none',
+                        borderRadius: '100px',
+                        transition: 'opacity 0.2s',
+                      }}
+                      onMouseEnter={(e) => { if (!soldOut) e.currentTarget.style.opacity = '0.88'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+                    >
+                      {soldOut ? 'sold out' : isPreorder ? 'preorder now' : 'add to cart'}
+                    </button>
+                  ) : (
+                    /* ── In the cart: quantity stepper ── */
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '12px',
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        border: `1.5px solid ${maroon}`,
+                        borderRadius: '100px',
+                        padding: '6px 8px',
+                        backgroundColor: 'white',
+                      }}
+                    >
+                      <button
+                        onClick={() => setQty(cartQty - 1)}
+                        aria-label={cartQty === 1 ? 'Remove from cart' : 'Decrease quantity'}
+                        style={{
+                          width: '44px', height: '44px', flexShrink: 0,
+                          borderRadius: '50%', border: 'none', cursor: 'pointer',
+                          backgroundColor: blushBg, color: maroon,
+                          fontFamily: sans, fontSize: '20px', fontWeight: 700, lineHeight: 1,
+                        }}
+                      >
+                        −
+                      </button>
+
+                      <span
+                        style={{
+                          fontFamily: sans, fontSize: '14px', fontWeight: 700,
+                          color: maroon, textTransform: 'lowercase', textAlign: 'center',
+                        }}
+                      >
+                        {cartQty} in cart
+                      </span>
+
+                      <button
+                        onClick={() => cartQty < maxQty && setQty(cartQty + 1)}
+                        disabled={cartQty >= maxQty}
+                        aria-label="Increase quantity"
+                        style={{
+                          width: '44px', height: '44px', flexShrink: 0,
+                          borderRadius: '50%', border: 'none',
+                          cursor: cartQty >= maxQty ? 'not-allowed' : 'pointer',
+                          backgroundColor: maroon, color: 'white',
+                          opacity: cartQty >= maxQty ? 0.4 : 1,
+                          fontFamily: sans, fontSize: '20px', fontWeight: 700, lineHeight: 1,
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Hit the ceiling — say why, rather than leaving a dead button. */}
+                  {cartQty > 0 && cartQty >= maxQty && selectedStock !== null && (
+                    <p style={{ fontFamily: sans, fontSize: '11.5px', fontWeight: 600, color: soft, margin: '8px 0 0', textAlign: 'center' }}>
+                      that&apos;s all {maxQty} we have in {selectedSize}
+                    </p>
+                  )}
+                  {cartQty > 0 && (
                     <Link
                       href="/cart"
                       style={{
