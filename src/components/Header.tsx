@@ -20,8 +20,8 @@ const RIGHT_LINKS = [
 
 /**
  * Global site nav — rendered once from layout.tsx on every page.
- * White while over the homepage hero, maroon everywhere else
- * (and after scrolling past the hero on the homepage).
+ * Always maroon, including over the homepage hero, so the logo and every link
+ * read as one consistent colour.
  */
 export default function Header() {
   const pathname = usePathname();
@@ -44,7 +44,8 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [isHome]);
 
-  const color = isHome && !pastHero ? 'white' : maroon;
+  // One colour everywhere — logo, links, and cart all maroon.
+  const color = maroon;
 
   const linkStyle: React.CSSProperties = {
     fontFamily: sans,
@@ -74,7 +75,7 @@ export default function Header() {
       }}
     >
       <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 3vw, 44px)' }}>
-        {/* Home link — small logo, only shown off the landing page */}
+        {/* Home link — small maroon logo, only shown off the landing page */}
         {!isHome && (
           <Link href="/" aria-label="Home" style={{ display: 'flex', alignItems: 'center' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}

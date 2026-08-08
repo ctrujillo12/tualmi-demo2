@@ -51,11 +51,9 @@ export default function Footer() {
       style={{
         position: 'relative',
         zIndex: 3,
-        // Photo background with a dark maroon-tinted overlay so light text reads.
-        backgroundImage:
-          'linear-gradient(rgba(38,18,25,0.4), rgba(30,14,20,0.55)), url(/images-2/shortsandshoes.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        // Solid brand maroon — matches the landing-page palette and keeps the
+        // white type crisp without needing a photo overlay or text shadows.
+        backgroundColor: '#A9445C',
         padding: 'clamp(48px, 7vw, 88px) clamp(24px, 6vw, 72px) clamp(28px, 4vw, 44px)',
       }}
     >
@@ -79,7 +77,7 @@ export default function Footer() {
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      style={{ fontFamily: sans, fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.92)', textDecoration: 'none', textTransform: 'lowercase', textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}
+                      style={{ fontFamily: sans, fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.92)', textDecoration: 'none', textTransform: 'lowercase' }}
                     >
                       {link.name}
                     </Link>
@@ -100,12 +98,11 @@ export default function Footer() {
                 color: '#fff',
                 margin: '0 0 14px',
                 textTransform: 'lowercase',
-                textShadow: '0 2px 8px rgba(0,0,0,0.4)',
               }}
             >
               join the trailblazing club!
             </h3>
-            <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 500, lineHeight: 1.9, color: 'rgba(255,255,255,0.9)', margin: '0 0 20px', textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
+            <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 500, lineHeight: 1.9, color: 'rgba(255,255,255,0.9)', margin: '0 0 20px' }}>
               For style-conscious girls who don&apos;t compromise on the trail. First eyes
               on our new designs, early access when we drop July 31st, 
               and the occasional trail recommendation! 
@@ -119,7 +116,7 @@ export default function Footer() {
                 onDone={({ joinedSms: j }) => { setJoinedSms(j); setStage('done'); }}
               />
             ) : status === 'success' ? (
-              <p style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: '#fff', margin: 0, textTransform: 'lowercase', textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
+              <p style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: '#fff', margin: 0, textTransform: 'lowercase' }}>
                 {joinedSms
                   ? 'you’re in — watch your texts, you’ll hear first ✦'
                   : 'you’re in — we’ll be in touch ✦'}
@@ -175,7 +172,7 @@ export default function Footer() {
                   </button>
                 </div>
                 {status === 'error' && (
-                  <p style={{ fontFamily: sans, fontSize: '12px', color: '#FFD8CE', margin: '10px 0 0', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>
+                  <p style={{ fontFamily: sans, fontSize: '12px', color: '#FFD8CE', margin: '10px 0 0' }}>
                     something went wrong — please try again.
                   </p>
                 )}
@@ -199,7 +196,6 @@ export default function Footer() {
               fontWeight: 400,
               color: '#fff',
               lineHeight: 1,
-              textShadow: '0 2px 12px rgba(0,0,0,0.45)',
             }}
           >
             Tualmi
@@ -207,7 +203,7 @@ export default function Footer() {
         </div>
 
         {/* ── Bottom line ── */}
-        <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textAlign: 'center', margin: 0, textTransform: 'lowercase', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>
+        <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textAlign: 'center', margin: 0, textTransform: 'lowercase' }}>
           @ 2026, tualmi
         </p>
       </div>
