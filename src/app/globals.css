@@ -478,3 +478,31 @@ body {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
+
+
+/* ── Creator discount badge ────────────────────────────────────────────────
+   Inline only. No fixed/floating bar: the header owns the top (z 50) and
+   AccessBanner owns the bottom (z 80), so a global strip would collide.    */
+
+.discount-inline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  background-color: #FBF1F5;
+  border: 1px dashed #A9445C;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+}
+.discount-inline-code { font-size: 12px; font-weight: 600; color: #A9445C; }
+.discount-inline-note { font-size: 11px; font-weight: 500; color: #C9849A; }
+
+@media (max-width: 640px) {
+  /* Stack so neither half gets squeezed down to two words. */
+  .discount-inline { justify-content: flex-start; gap: 2px; }
+  .discount-inline-code,
+  .discount-inline-note { flex: 1 1 100%; }
+}

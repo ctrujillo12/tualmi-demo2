@@ -8,6 +8,7 @@ import { useCartStore } from '@/store/cartStore';
 import { PRODUCT_DETAILS, type HighlightIcon } from '@/lib/productDetails';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
+import DiscountBadge from '@/components/DiscountBadge';
 
 interface ProductDetailClientProps {
   product: Product;
@@ -564,6 +565,8 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
             {/* CTA */}
             <div style={{ marginBottom: '36px' }}>
+              {/* Only renders when a creator code is stored — see lib/discount.ts */}
+              <DiscountBadge />
               {buyable ? (
                 /* ── Buyable: add to cart ── */
                 <>
@@ -626,6 +629,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                         style={{
                           fontFamily: sans, fontSize: '14px', fontWeight: 700,
                           color: maroon, textTransform: 'lowercase', textAlign: 'center',
+                          whiteSpace: 'nowrap',
                         }}
                       >
                         {cartQty} in cart

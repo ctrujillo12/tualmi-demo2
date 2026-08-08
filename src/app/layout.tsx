@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AccessBanner from '@/components/AccessBanner';
 import AttributionTracker from '@/components/AttributionTracker';
-import DiscountBadge from '@/components/DiscountBadge';
+import WelcomePopup from '@/components/WelcomePopup';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair', display: 'swap' });
@@ -96,12 +96,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <AttributionTracker />
         <Header />
-        {/* Only renders when a creator code is stored — see lib/discount.ts */}
-        <DiscountBadge />
         <main className="min-h-screen">
           {children}
         </main>
         <Footer />
+        {/* Fires 3s after load on mobile (or on first scroll), 1.2s on desktop.
+            Shows once ever per browser; skipped on /invite, /cart, /discount. */}
+        <WelcomePopup />
         <AccessBanner />
       </body>
     </html>

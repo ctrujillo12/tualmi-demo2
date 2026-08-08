@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import PhoneOptIn, { PHONE_THEMES } from './PhoneOptIn';
+import { getAttribution } from '@/lib/attribution';
 
 const STORAGE_KEY = 'tualmi_welcome_shown';
-const CODE  = 'TRAILBLAZING15';
 const green = '#f9d6dd';
 const brown = '#3B2F1E';
 const mid   = '#6B5C4C';
@@ -17,12 +18,21 @@ export default function WelcomePopup() {
   const [email, setEmail]     = useState('');
   const [status, setStatus]   = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errMsg, setErrMsg]   = useState('');
-  // Phone ask lives on the success screen, below the code — the discount is
-  // already delivered, so this can't cost us the email conversion.
+  // Phone ask lives on the success screen — the email is already captured by
+  // then, so this can never cost us the email conversion.
   const [smsStage, setSmsStage] = useState<'ask' | 'done'>('ask');
   const firedRef              = useRef(false);
+  const pathname              = usePathname();
+
+  /**
+   * Pages where the popup would be counterproductive: /invite is already a
+   * signup page, and interrupting someone mid-checkout costs more than an
+   * email is worth.
+   */
+  const SUPPRESSED = ['/invite', '/cart', '/discount'];
 
   useEffect(() => {
+    if (SUPPRESSED.some((p) => pathname?.startsWith(p))) return;
     if (localStorage.getItem(STORAGE_KEY)) return;
 
     const show = () => {
@@ -45,7 +55,8 @@ export default function WelcomePopup() {
       clearTimeout(timer);
       window.removeEventListener('scroll', onScroll);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const dismiss = () => {
     localStorage.setItem(STORAGE_KEY, '1');
@@ -60,7 +71,13 @@ export default function WelcomePopup() {
       const res  = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        // source + attribution so popup signups are traceable in Klaviyo the
+        // same way footer and /invite signups are.
+        body: JSON.stringify({
+          email,
+          source: 'welcome-popup',
+          attribution: getAttribution(),
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Something went wrong');
@@ -116,19 +133,8 @@ export default function WelcomePopup() {
             <h2 style={{ fontFamily: serif, fontSize: 'clamp(26px, 5vw, 34px)', fontWeight: 400, color: brown, margin: '0 0 16px', lineHeight: 1.15 }}>
               You&apos;re in. 🌿
             </h2>
-            <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid, lineHeight: 1.7, margin: '0 0 24px' }}>
-              Check your email for your welcome gift. Your 15% off code is right here:
-            </p>
-            <div style={{
-              backgroundColor: 'rgba(59,47,30,0.10)', border: '1.5px dashed rgba(59,47,30,0.35)',
-              padding: '12px 20px', marginBottom: '24px', display: 'inline-block',
-            }}>
-              <span style={{ fontFamily: sans, fontSize: '16px', fontWeight: 700, letterSpacing: '0.18em', color: brown }}>
-                {CODE}
-              </span>
-            </div>
-            <p style={{ fontFamily: sans, fontSize: '11px', color: muted, margin: 0 }}>
-              Use it at checkout. Valid on your first order.
+            <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid, lineHeight: 1.7, margin: '0 0 8px' }}>
+              We&apos;ll let you know the moment the next piece drops.
             </p>
 
             {smsStage === 'ask' ? (
@@ -168,11 +174,34 @@ export default function WelcomePopup() {
               Trailblazing Club
             </p>
             <h2 style={{ fontFamily: serif, fontSize: 'clamp(26px, 5vw, 36px)', fontWeight: 400, color: brown, margin: '0 0 12px', lineHeight: 1.15 }}>
-              Join for 15% off your first order.
+              Get notified when our next pieces drop.
             </h2>
-            <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 300, color: mid, lineHeight: 1.7, margin: '0 0 28px' }}>
-              Be first to know about new drops, restocks, and trail-tested picks. Discount sent straight to your inbox.
-            </p>
+            <ul
+              style={{
+                listStyle: 'none', padding: 0,
+                margin: '0 0 22px',
+                display: 'flex', flexDirection: 'column', gap: '7px',
+                textAlign: 'left',
+              }}
+            >
+              {[
+                'First look, 24 hours early',
+                'A vote on what we make next',
+                'Restock alerts',
+              ].map((perk) => (
+                <li
+                  key={perk}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: '8px',
+                    fontFamily: sans, fontSize: '12.5px', fontWeight: 400,
+                    color: mid, lineHeight: 1.5,
+                  }}
+                >
+                  <span style={{ color: brown, flexShrink: 0 }}>✦</span>
+                  {perk}
+                </li>
+              ))}
+            </ul>
 
             <form onSubmit={handleSubmit}>
               <div style={{ display: 'flex', marginBottom: '12px' }}>
@@ -205,7 +234,7 @@ export default function WelcomePopup() {
                     flexShrink: 0,
                   }}
                 >
-                  {status === 'loading' ? '…' : 'Get 15% Off'}
+                  {status === 'loading' ? '…' : 'Join the Club'}
                 </button>
               </div>
               {status === 'error' && (

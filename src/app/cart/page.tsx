@@ -130,7 +130,7 @@ export default function CartPage() {
             {/* Reassures the shopper the creator code survived to checkout —
                 the totals above can't reflect it, since Shopify computes the
                 discount on its own checkout page. */}
-            <DiscountBadge variant="inline" />
+            <DiscountBadge />
 
             {containsPreorder && (
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, marginBottom: '16px', lineHeight: 1.7 }}>
