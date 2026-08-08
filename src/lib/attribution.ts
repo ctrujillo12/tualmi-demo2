@@ -103,6 +103,25 @@ export function captureAttribution(): void {
   }
 }
 
+/**
+ * Record attribution that didn't come from UTM params — currently used by the
+ * /discount/[code] route, so a creator's code doubles as their affiliate
+ * source. First touch still wins: this never overwrites an existing record.
+ */
+export function seedAttribution(data: Attribution): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (Object.keys(getAttribution()).length > 0) return;
+    if (Object.keys(data).length === 0) return;
+    localStorage.setItem(
+      KEY,
+      JSON.stringify({ data, expiresAt: Date.now() + WINDOW_DAYS * 86_400_000 })
+    );
+  } catch {
+    /* best effort */
+  }
+}
+
 /** The stored first touch, if it hasn't expired. Returns {} otherwise. */
 export function getAttribution(): Attribution {
   if (typeof window === 'undefined') return {};

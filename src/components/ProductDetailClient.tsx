@@ -105,7 +105,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   const [selectedSize, setSelectedSize]   = useState(product.sizes[0] || '');
   const [selectedColor, setSelectedColor] = useState(() => {
     const fallback = swatchColors.length > 0 ? swatchColors[0].name : (product.colors[0] || '');
-    if (initialColor && swatchColors.some((s) => s.name === initialColor)) return initialColor;
+    // Case-insensitive so shared links work whether they say Confetti or confetti.
+    if (initialColor) {
+      const match = swatchColors.find(
+        (s) => s.name.toLowerCase() === initialColor.trim().toLowerCase()
+      );
+      if (match) return match.name;
+    }
     return fallback;
   });
   const [expandedSection, setExpandedSection] = useState<string | null>(null);

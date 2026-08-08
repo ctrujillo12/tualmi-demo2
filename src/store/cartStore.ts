@@ -6,6 +6,7 @@ import type { Product, CartItem } from '@/types';
 import { createCheckout } from '@/lib/shopify';
 import type { ShopifyVariant } from '@/lib/shopify';
 import { attributionCartAttributes } from '@/lib/attribution';
+import { getDiscountCode } from '@/lib/discount';
 
 interface CartStore {
   items: CartItem[];
@@ -201,8 +202,14 @@ export const useCartStore = create<CartStore>()(
         }
 
         // Carries "Referred by / Campaign / ..." onto the Shopify order so
-        // affiliate sales can be reconciled exactly, not guessed by timestamp.
-        const checkoutUrl = await createCheckout(lines, attributionCartAttributes());
+        // affiliate sales can be reconciled exactly, not guessed by timestamp,
+        // and pre-applies any creator code picked up at /discount/[code].
+        const code = getDiscountCode();
+        const checkoutUrl = await createCheckout(
+          lines,
+          attributionCartAttributes(),
+          code ? [code] : undefined,
+        );
         clearCart();
         window.location.href = checkoutUrl;
       },

@@ -130,6 +130,12 @@ export async function createCheckout(
    * a creator, because checkout happens on Shopify's domain.
    */
   cartAttributes?: { key: string; value: string }[],
+  /**
+   * Creator/affiliate codes captured at /discount/[code]. Applying them here
+   * means the discount is already on the cart when checkout loads — no
+   * cross-domain cookie, and the shopper never types anything.
+   */
+  discountCodes?: string[],
 ): Promise<string> {
   const data = await shopifyFetch<CartCreateResult>(`
     mutation CartCreate($input: CartInput!) {
@@ -147,6 +153,7 @@ export async function createCheckout(
         ...(attributes && attributes.length ? { attributes } : {}),
       })),
       ...(cartAttributes && cartAttributes.length ? { attributes: cartAttributes } : {}),
+      ...(discountCodes && discountCodes.length ? { discountCodes } : {}),
     },
   });
 
