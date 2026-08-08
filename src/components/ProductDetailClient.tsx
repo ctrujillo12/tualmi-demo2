@@ -189,52 +189,8 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   const setQty = (next: number) =>
     updateQuantity(product.id, selectedSize, selectedColor, next);
 
-  // ── Live inventory ─────────────────────────────────────────────────────────
-  // Reads straight from Shopify (variant.quantityAvailable), revalidated every
-  // 60s. `null` means Shopify didn't tell us — either inventory isn't tracked
-  // on the product or the Storefront token lacks the inventory scope — so we
-  // stay silent rather than guessing.
-
-  /** Find the Shopify variant matching a size + colour pair. */
-  const findVariant = (size: string, color: string) =>
-    product.variants?.find((v) => {
-      const opts = v.selectedOptions ?? [];
-      const matchSize = opts.some(
-        (o) => o.name.toLowerCase() === 'size' && o.value.toLowerCase() === size.toLowerCase()
-      );
-      const matchColor = opts.some(
-        (o) => o.name.toLowerCase() === 'color' && o.value.toLowerCase() === color.toLowerCase()
-      );
-      // Single-option products won't have a colour option at all.
-      const hasColorOpt = opts.some((o) => o.name.toLowerCase() === 'color');
-      return matchSize && (hasColorOpt ? matchColor : true);
-    });
-
-  /** Units left for a size in the current colour. null = unknown. */
-  const stockFor = (size: string): number | null => {
-    const variant = findVariant(size, selectedColor);
-    if (!variant) return null;
-    if (variant.availableForSale === false) return 0;
-    return typeof variant.quantityAvailable === 'number' ? variant.quantityAvailable : null;
-  };
-
-  /** Show "only N left" at or below this. */
-  const LOW_STOCK_AT = 5;
-
-  /**
-   * getProduct() falls back to local static data when the Shopify fetch fails,
-   * and that fallback has no variants. The page then looks completely normal
-   * but nothing can be matched to a Shopify variant at checkout — the shopper
-   * only finds out after filling their cart. Detect it here and say so up
-   * front rather than letting them hit a dead end.
-   */
-  const hasVariants = (product.variants?.length ?? 0) > 0;
-
-  const selectedStock = stockFor(selectedSize);
-  const soldOut = selectedStock === 0;
-  const isLowStock = selectedStock !== null && selectedStock > 0 && selectedStock <= LOW_STOCK_AT;
-  /** Don't let the stepper exceed what Shopify actually has. */
-  const maxQty = selectedStock ?? 99;
+  /** Soft cap on the quantity stepper. Shopify enforces real stock at checkout. */
+  const MAX_QTY = 10;
 
   // ── Accordion content ──
   const accordionItems: { key: string; label: string; content: React.ReactNode }[] = [];
@@ -466,48 +422,27 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               <div style={{ marginBottom: '20px' }}>
                 <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '10px' }}>size</p>
                 <div className="pdp-sizes">
-                  {product.sizes.map((size) => {
-                    const stock = stockFor(size);
-                    const out = stock === 0;
-                    const isSelected = selectedSize === size;
-                    return (
-                      <button
-                        key={size}
-                        onClick={() => !out && setSelectedSize(size)}
-                        disabled={out}
-                        title={out ? 'Sold out' : stock !== null && stock <= LOW_STOCK_AT ? `Only ${stock} left` : undefined}
-                        style={{
-                          position: 'relative',
-                          padding: '8px 18px',
-                          fontFamily: sans,
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          borderRadius: '100px',
-                          border: `1.5px solid ${out ? rule : maroon}`,
-                          backgroundColor: isSelected && !out ? maroon : 'transparent',
-                          color: out ? soft : isSelected ? 'white' : maroon,
-                          cursor: out ? 'not-allowed' : 'pointer',
-                          textDecoration: out ? 'line-through' : 'none',
-                          opacity: out ? 0.55 : 1,
-                          transition: 'all 0.15s',
-                        }}
-                      >
-                        {size}
-                      </button>
-                    );
-                  })}
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      style={{
+                        padding: '8px 18px',
+                        fontFamily: sans,
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        borderRadius: '100px',
+                        border: `1.5px solid ${maroon}`,
+                        backgroundColor: selectedSize === size ? maroon : 'transparent',
+                        color: selectedSize === size ? 'white' : maroon,
+                        cursor: 'pointer',
+                        transition: 'all 0.15s',
+                      }}
+                    >
+                      {size}
+                    </button>
+                  ))}
                 </div>
-
-                {/* Scarcity line — only when Shopify gives us a real number. */}
-                {soldOut ? (
-                  <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 600, color: soft, margin: '10px 0 0' }}>
-                    {selectedSize} is sold out in {selectedColor.toLowerCase()} — try another size or colour.
-                  </p>
-                ) : isLowStock ? (
-                  <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 700, color: maroon, margin: '10px 0 0' }}>
-                    ✦ only {selectedStock} left in {selectedSize}
-                  </p>
-                ) : null}
               </div>
             )}
 
@@ -582,13 +517,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   {cartQty === 0 ? (
                     <button
                       onClick={handleAddToCart}
-                      disabled={soldOut || !hasVariants}
                       style={{
                         display: 'block',
                         width: '100%',
                         boxSizing: 'border-box',
-                        backgroundColor: soldOut || !hasVariants ? soft : maroon,
-                        cursor: soldOut || !hasVariants ? 'not-allowed' : 'pointer',
+                        backgroundColor: maroon,
+                        cursor: 'pointer',
                         color: 'white',
                         padding: '16px 28px',
                         fontFamily: sans,
@@ -600,16 +534,10 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                         borderRadius: '100px',
                         transition: 'opacity 0.2s',
                       }}
-                      onMouseEnter={(e) => { if (!soldOut) e.currentTarget.style.opacity = '0.88'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                     >
-                      {!hasVariants
-                        ? 'temporarily unavailable'
-                        : soldOut
-                          ? 'sold out'
-                          : isPreorder
-                            ? 'preorder now'
-                            : 'add to cart'}
+                      {isPreorder ? 'preorder now' : 'add to cart'}
                     </button>
                   ) : (
                     /* ── In the cart: quantity stepper ── */
@@ -651,28 +579,21 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                       </span>
 
                       <button
-                        onClick={() => cartQty < maxQty && setQty(cartQty + 1)}
-                        disabled={cartQty >= maxQty}
+                        onClick={() => cartQty < MAX_QTY && setQty(cartQty + 1)}
+                        disabled={cartQty >= MAX_QTY}
                         aria-label="Increase quantity"
                         style={{
                           width: '44px', height: '44px', flexShrink: 0,
                           borderRadius: '50%', border: 'none',
-                          cursor: cartQty >= maxQty ? 'not-allowed' : 'pointer',
+                          cursor: cartQty >= MAX_QTY ? 'not-allowed' : 'pointer',
                           backgroundColor: maroon, color: 'white',
-                          opacity: cartQty >= maxQty ? 0.4 : 1,
+                          opacity: cartQty >= MAX_QTY ? 0.4 : 1,
                           fontFamily: sans, fontSize: '20px', fontWeight: 700, lineHeight: 1,
                         }}
                       >
                         +
                       </button>
                     </div>
-                  )}
-
-                  {/* Hit the ceiling — say why, rather than leaving a dead button. */}
-                  {cartQty > 0 && cartQty >= maxQty && selectedStock !== null && (
-                    <p style={{ fontFamily: sans, fontSize: '11.5px', fontWeight: 600, color: soft, margin: '8px 0 0', textAlign: 'center' }}>
-                      that&apos;s all {maxQty} we have in {selectedSize}
-                    </p>
                   )}
                   {cartQty > 0 && (
                     <Link
@@ -696,12 +617,6 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                     >
                       view cart & check out →
                     </Link>
-                  )}
-                  {!hasVariants && (
-                    <p style={{ ...bodyStyle, color: '#B85C49', textAlign: 'center', marginTop: '12px', fontSize: '12.5px' }}>
-                      we couldn&apos;t reach our store just now — please refresh in a moment,
-                      or email hello@tualmi.com and we&apos;ll sort you out.
-                    </p>
                   )}
                   {buyStatus === 'error' && (
                     <p style={{ ...bodyStyle, color: '#B85C49', textAlign: 'center', marginTop: '12px' }}>
