@@ -221,6 +221,15 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   /** Show "only N left" at or below this. */
   const LOW_STOCK_AT = 5;
 
+  /**
+   * getProduct() falls back to local static data when the Shopify fetch fails,
+   * and that fallback has no variants. The page then looks completely normal
+   * but nothing can be matched to a Shopify variant at checkout — the shopper
+   * only finds out after filling their cart. Detect it here and say so up
+   * front rather than letting them hit a dead end.
+   */
+  const hasVariants = (product.variants?.length ?? 0) > 0;
+
   const selectedStock = stockFor(selectedSize);
   const soldOut = selectedStock === 0;
   const isLowStock = selectedStock !== null && selectedStock > 0 && selectedStock <= LOW_STOCK_AT;
@@ -573,13 +582,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   {cartQty === 0 ? (
                     <button
                       onClick={handleAddToCart}
-                      disabled={soldOut}
+                      disabled={soldOut || !hasVariants}
                       style={{
                         display: 'block',
                         width: '100%',
                         boxSizing: 'border-box',
-                        backgroundColor: soldOut ? soft : maroon,
-                        cursor: soldOut ? 'not-allowed' : 'pointer',
+                        backgroundColor: soldOut || !hasVariants ? soft : maroon,
+                        cursor: soldOut || !hasVariants ? 'not-allowed' : 'pointer',
                         color: 'white',
                         padding: '16px 28px',
                         fontFamily: sans,
@@ -594,7 +603,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                       onMouseEnter={(e) => { if (!soldOut) e.currentTarget.style.opacity = '0.88'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                     >
-                      {soldOut ? 'sold out' : isPreorder ? 'preorder now' : 'add to cart'}
+                      {!hasVariants
+                        ? 'temporarily unavailable'
+                        : soldOut
+                          ? 'sold out'
+                          : isPreorder
+                            ? 'preorder now'
+                            : 'add to cart'}
                     </button>
                   ) : (
                     /* ── In the cart: quantity stepper ── */
@@ -681,6 +696,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                     >
                       view cart & check out →
                     </Link>
+                  )}
+                  {!hasVariants && (
+                    <p style={{ ...bodyStyle, color: '#B85C49', textAlign: 'center', marginTop: '12px', fontSize: '12.5px' }}>
+                      we couldn&apos;t reach our store just now — please refresh in a moment,
+                      or email hello@tualmi.com and we&apos;ll sort you out.
+                    </p>
                   )}
                   {buyStatus === 'error' && (
                     <p style={{ ...bodyStyle, color: '#B85C49', textAlign: 'center', marginTop: '12px' }}>
