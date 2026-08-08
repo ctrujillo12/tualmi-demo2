@@ -27,14 +27,14 @@ const PAGE_METADATA: Record<string, Metadata> = {
       ...OG_BASE,
       title: 'Sierra Shorts — Tualmi',
       description:
-        'Mid-rise, relaxed fit. 100% recycled nylon, fast-dry and ultra-light. Built for the trail, cute everywhere else.',
+        'Mid-rise, relaxed fit. 100% recycled, fast-dry and ultra-light. Built for the trail, cute everywhere else.',
       url: '/products/sierra-shorts',
       images: [{ url: '/og/sierra-shorts-og.jpg', width: 1200, height: 630, alt: 'Tualmi Sierra Shorts' }],
     },
     twitter: {
       card: 'summary_large_image',
       title: 'Sierra Shorts — Tualmi',
-      description: 'Mid-rise, relaxed fit. 100% recycled nylon, fast-dry and ultra-light.',
+      description: 'Mid-rise, relaxed fit. 100% recycled, fast-dry and ultra-light.',
       images: ['/og/sierra-shorts-og.jpg'],
     },
   },

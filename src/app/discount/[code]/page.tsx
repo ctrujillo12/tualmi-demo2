@@ -11,10 +11,64 @@ import DiscountRedirect from '@/components/DiscountRedirect';
  *
  * Not indexed — these are share links, not pages we want in search results.
  */
-export const metadata: Metadata = {
-  title: 'applying your discount',
-  robots: { index: false, follow: false },
+/**
+ * Link previews for creator links.
+ *
+ * Without this the page inherits the site-wide OG card from app/layout.tsx, so
+ * a creator's link to the shorts previewed as the generic homepage image. The
+ * preview is the first thing their audience sees, so match it to wherever the
+ * link actually goes.
+ */
+const OG_BY_DESTINATION: { match: string; title: string; description: string; image: string }[] = [
+  {
+    match: 'sierra-shorts',
+    title: 'Sierra Shorts — Tualmi',
+    description: 'Mid-rise, relaxed fit. 100% recycled, fast-dry and ultra-light.',
+    image: '/og/sierra-shorts-og.jpg',
+  },
+  {
+    match: 'juniper-pant',
+    title: 'Juniper Pant — Tualmi',
+    description: 'Flare cargo hiking pants, engineered for women. Sustainable recycled materials.',
+    image: '/og/juniper-pant-og.jpg',
+  },
+];
+
+const OG_FALLBACK = {
+  title: 'Tualmi — actually cute hiking apparel',
+  description: 'Built for the trail, cute everywhere else.',
+  image: '/og/home-og.jpg',
 };
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const redirect = typeof sp.redirect === 'string' ? sp.redirect : '';
+  const og = OG_BY_DESTINATION.find((o) => redirect.includes(o.match)) ?? OG_FALLBACK;
+
+  return {
+    title: og.title,
+    description: og.description,
+    // Share links, not pages we want in search results.
+    robots: { index: false, follow: false },
+    openGraph: {
+      siteName: 'Tualmi',
+      type: 'website',
+      title: og.title,
+      description: og.description,
+      images: [{ url: og.image, width: 1200, height: 630, alt: og.title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: og.title,
+      description: og.description,
+      images: [og.image],
+    },
+  };
+}
 
 /** Only allow same-site paths. Blocks `//evil.com` and absolute URLs. */
 function safeRedirect(raw: string | undefined): string {

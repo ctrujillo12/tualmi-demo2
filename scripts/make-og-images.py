@@ -69,11 +69,22 @@ def product_card(photo_path, title, subtitle, out_name):
     canvas = Image.new("RGB", (W, H), BLUSH)
     draw = ImageDraw.Draw(canvas)
 
-    # ── Photo panel, right 45% ──
-    panel_w = 540
+    # ── Photo, right side ──
+    # CONTAIN, not cover: the whole garment stays visible. Cover-cropping a 2:3
+    # portrait into a fixed panel sliced ~20% off the frame and pushed the
+    # shorts to the bottom edge. Here the photo is scaled to the full card
+    # height and the panel takes whatever width that needs.
     photo = Image.open(photo_path).convert("RGB")
-    canvas.paste(cover(photo, panel_w, H), (W - panel_w, 0))
+    MAX_PANEL_W = 560
+    scale = H / photo.height
+    new_w, new_h = int(photo.width * scale), H
+    if new_w > MAX_PANEL_W:  # very wide source — fit by width instead
+        scale = MAX_PANEL_W / photo.width
+        new_w, new_h = MAX_PANEL_W, int(photo.height * scale)
+    photo = photo.resize((new_w, new_h), Image.LANCZOS)
+    canvas.paste(photo, (W - new_w, (H - new_h) // 2))
 
+    panel_w = new_w
     pad = 64
     text_w = W - panel_w - pad * 2
 
@@ -158,9 +169,9 @@ if __name__ == "__main__":
     )
 
     product_card(
-        img("model/jam-4.jpg"),
+        img("model/confetti-1.jpg"),
         "sierra shorts",
-        "Mid-rise, relaxed fit. 100% recycled nylon, fast-dry and ultra-light.",
+        "Mid-rise, relaxed fit. 100% recycled, fast-dry and ultra-light.",
         "sierra-shorts-og.jpg",
     )
 
