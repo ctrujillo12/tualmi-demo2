@@ -166,10 +166,19 @@ export async function createCheckout(
   if (userErrors.length > 0) throw new Error(userErrors.map((e) => e.message).join(', '));
   if (!cart) throw new Error('Cart creation failed — no cart returned.');
 
-  // Shopify builds checkoutUrl using the primary domain (tualmi.com) but that
-  // points to Vercel, not Shopify. Rewrite to myshopify.com so checkout loads.
+  // Shopify builds checkoutUrl on the store's primary domain (tualmi.com), but
+  // that DNS points at Vercel, not Shopify — so the URL would 404. It has to be
+  // rewritten to a hostname Shopify actually serves.
+  //
+  // Set NEXT_PUBLIC_SHOPIFY_CHECKOUT_DOMAIN to a branded subdomain you've added
+  // in Shopify (e.g. shop.tualmi.com) so customers never see myshopify.com —
+  // including when they back out of Shop Pay. Falls back to the raw myshopify
+  // domain, which works but exposes the store's internal address.
+  const checkoutHost =
+    process.env.NEXT_PUBLIC_SHOPIFY_CHECKOUT_DOMAIN?.trim() || SHOPIFY_DOMAIN;
+
   const url = new URL(cart.checkoutUrl);
-  url.hostname = 'tualmi.myshopify.com';
+  url.hostname = checkoutHost;
   url.port = '';
   return url.toString();
 }

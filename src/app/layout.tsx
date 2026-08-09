@@ -41,6 +41,12 @@ export const metadata: Metadata = {
       'Hiking apparel made by women, for women — the fits, prints, and colorways the legacy brands never made.',
     images: ['/og/home-og.jpg'],
   },
+  // Site-ownership verification tags. Next renders these into <head> on every
+  // page, which is what the platforms crawl for.
+  other: {
+    // Pinterest — Settings → Claimed accounts → Claim website
+    'p:domain_verify': '7209508abe4a03d0db9e62ce50ec661f',
+  },
 };
 
 // Google Analytics 4 measurement ID. Loaded once here in the root layout, which
