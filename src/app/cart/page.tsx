@@ -20,6 +20,15 @@ export default function CartPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError]         = useState<string | null>(null);
 
+  /**
+   * The cart is persisted to localStorage, which zustand only reads AFTER the
+   * first client render. Until then `items` is [] — which was rendering
+   * "nothing here yet." for a beat on every visit, even with a full cart.
+   * Wait for hydration before deciding the cart is empty.
+   */
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => { setHydrated(true); }, []);
+
   // Re-sync prices + photos from Shopify on load so the cart is never stale
   useEffect(() => { refreshFromShopify(); }, [refreshFromShopify]);
 
@@ -39,6 +48,19 @@ export default function CartPage() {
       setIsLoading(false);
     }
   };
+
+  // Reading the saved cart — show nothing rather than a wrong empty state.
+  if (!hydrated) {
+    return (
+      <main style={{ backgroundColor: blushBg, minHeight: '100vh' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto', padding: 'clamp(110px, 16vw, 170px) clamp(20px, 5vw, 32px)', textAlign: 'center' }}>
+          <p style={{ fontFamily: sans, fontWeight: 600, fontSize: '14px', color: soft, textTransform: 'lowercase', margin: 0 }}>
+            loading your cart…
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -74,6 +96,35 @@ export default function CartPage() {
 
   return (
     <main style={{ backgroundColor: blushBg, minHeight: '100vh', padding: 'clamp(96px, 13vw, 140px) clamp(20px, 4vw, 48px) clamp(64px, 9vw, 100px)' }}>
+      {/* Building the Shopify cart takes a second or two. Without a clear
+          signal the page just sits there and people assume it's broken. */}
+      {isLoading && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 2000,
+            backgroundColor: 'rgba(251,241,245,0.94)',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: '18px',
+            padding: '24px', textAlign: 'center',
+          }}
+        >
+          <div
+            aria-hidden
+            style={{
+              width: '34px', height: '34px', borderRadius: '50%',
+              border: `3px solid ${rule}`, borderTopColor: maroon,
+              animation: 'tualmi-spin 0.8s linear infinite',
+            }}
+          />
+          <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '16px', color: maroon, textTransform: 'lowercase', margin: 0 }}>
+            taking you to checkout ✦
+          </p>
+          <p style={{ fontFamily: sans, fontWeight: 500, fontSize: '13px', color: soft, margin: 0, maxWidth: '280px', lineHeight: 1.6 }}>
+            your cart is saved — you can always come back to it.
+          </p>
+          <style>{'@keyframes tualmi-spin{to{transform:rotate(360deg)}}'}</style>
+        </div>
+      )}
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
         <div style={{ marginBottom: '40px' }}>
@@ -156,7 +207,7 @@ export default function CartPage() {
                 transition: 'opacity 0.2s',
               }}
             >
-              {isLoading ? 'redirecting…' : (ready && !canShop ? 'opens friday · 11am pt' : 'checkout')}
+              {isLoading ? 'taking you to checkout…' : (ready && !canShop ? 'opens friday · 11am pt' : 'checkout')}
             </button>
             {ready && !canShop && (
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, textAlign: 'center', margin: '12px 0 0', lineHeight: 1.6 }}>

@@ -173,7 +173,7 @@ export const useCartStore = create<CartStore>()(
       },
 
       redirectToShopifyCheckout: async () => {
-        const { items, clearCart } = get();
+        const { items } = get();
         if (items.length === 0) throw new Error('Cart is empty');
 
         const lines: { variantId: string; quantity: number; attributes?: { key: string; value: string }[] }[] = [];
@@ -238,7 +238,11 @@ export const useCartStore = create<CartStore>()(
           cartAttributes,
           code ? [code] : undefined,
         );
-        clearCart();
+        // Deliberately NOT clearing the cart here. Shopify's checkout — and
+        // Shop Pay especially — is a place people back out of: to check a size,
+        // compare a colour, or grab a discount code. Emptying the cart on the
+        // way out meant hitting Back landed them on "nothing here yet." and the
+        // sale was gone. The cart is cheap to keep; an abandoned checkout is not.
         window.location.href = checkoutUrl;
       },
     }),
