@@ -100,13 +100,34 @@ export default function Footer() {
                 textTransform: 'lowercase',
               }}
             >
-              join the trailblazing club!
+              get notified when our next pieces drop.
             </h3>
-            <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 500, lineHeight: 1.9, color: 'rgba(255,255,255,0.9)', margin: '0 0 20px' }}>
-              For style-conscious girls who don&apos;t compromise on the trail. First eyes
-              on our new designs, early access when we drop July 31st, 
-              and the occasional trail recommendation! 
-            </p>
+
+            {/* Same three perks as the welcome popup — one consistent ask. */}
+            <ul
+              style={{
+                listStyle: 'none', padding: 0, margin: '0 0 22px',
+                display: 'flex', flexDirection: 'column', gap: '9px',
+              }}
+            >
+              {[
+                'first look, 24 hours early',
+                'a vote on what we make next',
+                'restock alerts',
+              ].map((perk) => (
+                <li
+                  key={perk}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: '10px',
+                    fontFamily: sans, fontSize: '14px', fontWeight: 500,
+                    color: 'rgba(255,255,255,0.9)', lineHeight: 1.6,
+                  }}
+                >
+                  <span style={{ color: '#fff', flexShrink: 0 }}>✦</span>
+                  {perk}
+                </li>
+              ))}
+            </ul>
 
             {status === 'success' && stage === 'phone' ? (
               <PhoneOptIn
@@ -118,8 +139,8 @@ export default function Footer() {
             ) : status === 'success' ? (
               <p style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: '#fff', margin: 0, textTransform: 'lowercase' }}>
                 {joinedSms
-                  ? 'you’re in — watch your texts, you’ll hear first ✦'
-                  : 'you’re in — we’ll be in touch ✦'}
+                  ? 'you’re in — we’ll text you the moment the next piece drops ✦'
+                  : 'you’re in — we’ll let you know the moment the next piece drops ✦'}
               </p>
             ) : (
               <>
@@ -168,7 +189,7 @@ export default function Footer() {
                       textTransform: 'lowercase',
                     }}
                   >
-                    {status === 'loading' ? '…' : 'submit'}
+                    {status === 'loading' ? '…' : 'join'}
                   </button>
                 </div>
                 {status === 'error' && (
