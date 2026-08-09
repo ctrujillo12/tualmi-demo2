@@ -179,13 +179,32 @@ export async function POST(req: NextRequest) {
   };
 
   const debug = process.env.GA4_DEBUG === '1';
-  const endpoint = debug
-    ? 'https://www.google-analytics.com/debug/mp/collect'
-    : 'https://www.google-analytics.com/mp/collect';
+
+  // IMPORTANT: /debug/mp/collect only VALIDATES a payload — it never records
+  // the event, so nothing shows up in DebugView. To make an event appear there
+  // you send it to the normal endpoint with `debug_mode: true` in the params.
+  // When debugging we do both: validate (for the error messages) and send.
+  if (debug) {
+    try {
+      const check = await fetch(
+        `https://www.google-analytics.com/debug/mp/collect?measurement_id=${GA_MEASUREMENT_ID}&api_secret=${apiSecret}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        }
+      );
+      console.log('[ga-webhook] validation response:', await check.text());
+    } catch (err) {
+      console.error('[ga-webhook] validation call failed:', err);
+    }
+    // Flag the real event so GA4 routes it to DebugView.
+    (payload.events[0].params as Record<string, unknown>).debug_mode = true;
+  }
 
   try {
     const res = await fetch(
-      `${endpoint}?measurement_id=${GA_MEASUREMENT_ID}&api_secret=${apiSecret}`,
+      `https://www.google-analytics.com/mp/collect?measurement_id=${GA_MEASUREMENT_ID}&api_secret=${apiSecret}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -193,19 +212,15 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    if (debug) {
-      // The debug endpoint returns validation messages; the live one returns 204.
-      console.log('[ga-webhook] DEBUG response:', await res.text());
-    }
-
-    if (!res.ok && !debug) {
+    if (!res.ok) {
       console.error('[ga-webhook] Measurement Protocol returned', res.status, await res.text());
     } else {
       console.log(
         '[ga-webhook] purchase sent — order', orderName,
         '| value', value, currency,
         '| source', referredBy ?? 'direct',
-        '| session', sessionId ?? '(none)'
+        '| session', sessionId ?? '(none)',
+        debug ? '| debug_mode ON' : ''
       );
     }
   } catch (err) {
