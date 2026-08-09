@@ -7,6 +7,8 @@ import { createCheckout } from '@/lib/shopify';
 import type { ShopifyVariant } from '@/lib/shopify';
 import { attributionCartAttributes } from '@/lib/attribution';
 import { getDiscountCode } from '@/lib/discount';
+import { trackBeginCheckout } from '@/lib/analytics';
+import { getGaIds } from '@/lib/ga';
 
 interface CartStore {
   items: CartItem[];
@@ -205,9 +207,35 @@ export const useCartStore = create<CartStore>()(
         // affiliate sales can be reconciled exactly, not guessed by timestamp,
         // and pre-applies any creator code picked up at /discount/[code].
         const code = getDiscountCode();
+
+        // Last event we can fire ourselves — the purchase happens on Shopify's
+        // domain, so that one has to come from Shopify's own GA4 integration.
+        trackBeginCheckout(
+          items.map((i) => ({
+            item_id: i.product.handle ?? i.product.id,
+            item_name: i.product.name,
+            price: i.product.price / 100,
+            item_variant: `${i.selectedColor} / ${i.selectedSize}`,
+            quantity: i.quantity,
+          })),
+          get().getTotal() / 100,
+          code ?? undefined,
+        );
+
+        // GA4 ids ride along on the cart so the orders webhook can replay a
+        // server-side `purchase` into the SAME GA4 session. Without this, the
+        // Shop Pay hop through shop.app makes every sale look like "direct".
+        // Keys starting with "_" are hidden from customer-facing order views.
+        const ga = await getGaIds();
+        const cartAttributes = [
+          ...attributionCartAttributes(),
+          ...(ga.clientId ? [{ key: '_ga_client_id', value: ga.clientId }] : []),
+          ...(ga.sessionId ? [{ key: '_ga_session_id', value: ga.sessionId }] : []),
+        ];
+
         const checkoutUrl = await createCheckout(
           lines,
-          attributionCartAttributes(),
+          cartAttributes,
           code ? [code] : undefined,
         );
         clearCart();

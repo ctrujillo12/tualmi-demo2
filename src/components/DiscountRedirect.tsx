@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveDiscountCode, normalizeCode } from '@/lib/discount';
 import { seedAttribution } from '@/lib/attribution';
+import { trackCreatorCampaign } from '@/lib/analytics';
 
 /**
  * Stores a creator's discount code, credits them as the traffic source, then
@@ -33,6 +34,8 @@ export default function DiscountRedirect({
         utm_campaign: 'creator-code',
         landing_page: redirectTo,
       });
+      // Same signal to GA4 — otherwise creator-code traffic files as "direct".
+      trackCreatorCampaign(clean);
     }
     router.replace(redirectTo);
   }, [code, redirectTo, router]);

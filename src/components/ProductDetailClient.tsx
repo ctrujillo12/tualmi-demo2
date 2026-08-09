@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/types';
@@ -9,6 +9,7 @@ import { PRODUCT_DETAILS, type HighlightIcon } from '@/lib/productDetails';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
+import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 
 interface ProductDetailClientProps {
   product: Product;
@@ -160,6 +161,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
         selectedSize, selectedColor, 1,
         { isPreorder: shipsLater, shippingWindow: shipsLater ? shipWindow : undefined },
       );
+      trackAddToCart({
+        item_id: handle,
+        item_name: product.name,
+        price: product.price / 100,
+        item_variant: `${selectedColor} / ${selectedSize}`,
+        quantity: 1,
+      });
       setBuyStatus('added');
     } catch (e) {
       console.error('[addToCart] failed:', e);
@@ -191,6 +199,16 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
   /** Soft cap on the quantity stepper. Shopify enforces real stock at checkout. */
   const MAX_QTY = 10;
+
+  // GA4 view_item — once per product, not on every colour/size change.
+  useEffect(() => {
+    trackViewItem({
+      item_id: handle,
+      item_name: product.name,
+      price: product.price / 100,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handle]);
 
   // ── Accordion content ──
   const accordionItems: { key: string; label: string; content: React.ReactNode }[] = [];

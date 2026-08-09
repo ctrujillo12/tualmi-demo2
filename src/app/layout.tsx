@@ -87,7 +87,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}');
+            gtag('config', '${GA_MEASUREMENT_ID}', {
+              // Cross-domain: checkout lives on tualmi.myshopify.com, so without
+              // this a shopper is counted as two users and the purchase is
+              // attributed to a new "referral" session. This is the code half —
+              // it must be paired with GA4 admin → Data Streams → Configure tag
+              // settings → Configure your domains, listing both hosts.
+              linker: {
+                domains: ['tualmi.com', 'www.tualmi.com', 'tualmi.myshopify.com'],
+                accept_incoming: true,
+              },
+            });
           `}
         </Script>
         <script
