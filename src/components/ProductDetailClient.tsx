@@ -105,7 +105,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   };
 
   const [focusIdx, setFocusIdx]           = useState(0); // mobile hero photo
-  const [selectedSize, setSelectedSize]   = useState(product.sizes[0] || '');
+  // Deliberately NO default size. Pre-selecting the first option (2XS) meant
+  // people could add to cart without ever choosing, and only discover the
+  // wrong size on delivery. One-size products are the exception — there's
+  // nothing to choose.
+  const [selectedSize, setSelectedSize] = useState(
+    product.sizes.length === 1 ? product.sizes[0] : ''
+  );
   const [selectedColor, setSelectedColor] = useState(() => {
     const fallback = swatchColors.length > 0 ? swatchColors[0].name : (product.colors[0] || '');
     // Case-insensitive so shared links work whether they say Confetti or confetti.
@@ -331,7 +337,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                     src={image}
                     alt={`${product.name} — ${selectedColor} ${i + 1}`}
                     fill
-                    quality={90}
+                    // The first tile is the LCP element on desktop. Without
+                    // priority it's lazy-loaded, so the browser doesn't even
+                    // request it until after layout — that's the few seconds of
+                    // blank white box. The rest stay lazy.
+                    priority={i === 0}
+                    quality={82}
                     sizes="(max-width: 1024px) 50vw, 30vw"
                     style={{ objectFit: 'cover' }}
                   />
@@ -346,6 +357,9 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   src={gallery[focusIdx] ?? gallery[0]}
                   alt={`${product.name} — ${selectedColor}`}
                   fill
+                  // LCP element on mobile — same reasoning as the desktop tile.
+                  priority
+                  quality={82}
                   sizes="100vw"
                   style={{ objectFit: 'cover' }}
                 />
@@ -535,12 +549,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   {cartQty === 0 ? (
                     <button
                       onClick={handleAddToCart}
+                      disabled={!selectedSize}
                       style={{
                         display: 'block',
                         width: '100%',
                         boxSizing: 'border-box',
-                        backgroundColor: maroon,
-                        cursor: 'pointer',
+                        backgroundColor: selectedSize ? maroon : soft,
+                        cursor: selectedSize ? 'pointer' : 'not-allowed',
                         color: 'white',
                         padding: '16px 28px',
                         fontFamily: sans,
@@ -552,10 +567,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                         borderRadius: '100px',
                         transition: 'opacity 0.2s',
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
+                      onMouseEnter={(e) => { if (selectedSize) e.currentTarget.style.opacity = '0.88'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                     >
-                      {isPreorder ? 'preorder now' : 'add to cart'}
+                      {!selectedSize
+                        ? 'select a size'
+                        : isPreorder ? 'preorder now' : 'add to cart'}
                     </button>
                   ) : (
                     /* ── In the cart: quantity stepper ── */

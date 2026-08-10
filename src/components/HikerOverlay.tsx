@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 
 export default function HikerOverlay() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -85,10 +86,14 @@ export default function HikerOverlay() {
         <path d="M3 38 C12 36.5, 24 40, 35 37.5 C43 35.5, 50 38, 54 37" stroke="#5C4A2A" strokeWidth="1.7" strokeLinecap="round" fill="none" />
       </svg>
 
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      {/* next/image so this is resized + served as AVIF/WebP rather than
+          shipping the full PNG. Decorative, so it stays lazy-loaded. */}
+      <Image
         src="/images-2/hiker.png"
         alt=""
+        width={460}
+        height={460}
+        sizes="(max-width: 768px) 16vw, 210px"
         style={{
           height: 'clamp(72px, 16vw, 210px)',
           width: 'auto',

@@ -72,6 +72,14 @@ export default function Header() {
         alignItems: 'center',
         padding: '14px clamp(20px, 3vw, 40px)',
         zIndex: 50,
+        // Without a background, page content scrolled underneath and collided
+        // with the nav links — photos and text bleeding through "our story" /
+        // "shop drop one". Translucent blush + blur keeps the airy look while
+        // making the links readable over anything.
+        backgroundColor: 'rgba(251, 241, 245, 0.88)',
+        backdropFilter: 'saturate(140%) blur(10px)',
+        WebkitBackdropFilter: 'saturate(140%) blur(10px)',
+        borderBottom: '1px solid rgba(169, 68, 92, 0.10)',
       }}
     >
       <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 3vw, 44px)' }}>

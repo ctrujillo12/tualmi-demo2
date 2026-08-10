@@ -354,7 +354,8 @@ body {
   aspect-ratio: 3 / 4;
   border-radius: 10px;
   overflow: hidden;
-  background-color: #fff;
+  /* Blush, not white — a white box reads as broken while the photo loads. */
+  background-color: #FBF1F5;
 }
 /* Odd trailing photo spans the full row on desktop */
 .pdp-tile--wide {
@@ -373,7 +374,7 @@ body {
   aspect-ratio: 3 / 4;
   border-radius: 10px;
   overflow: hidden;
-  background-color: #fff;
+  background-color: #FBF1F5;
 }
 .pdp-m-big2 {
   display: grid;

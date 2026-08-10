@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    // Serve modern formats — typically 25-50% smaller than JPEG at the same
+    // quality. Browsers that don't support them fall back automatically.
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
