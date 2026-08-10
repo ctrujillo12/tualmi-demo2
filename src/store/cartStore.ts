@@ -166,6 +166,11 @@ export const useCartStore = create<CartStore>()(
                 ...item.product,
                 price: typeof d.price === 'number' ? d.price : item.product.price,
                 images: colorImg ? [colorImg] : item.product.images,
+                // Re-attach live variants. Items added while Shopify was down
+                // have none, and without this they can never check out.
+                variants: Array.isArray(d.variants) && d.variants.length
+                  ? d.variants
+                  : item.product.variants,
               },
             };
           }),
@@ -173,9 +178,22 @@ export const useCartStore = create<CartStore>()(
       },
 
       redirectToShopifyCheckout: async () => {
-        const { items } = get();
-        if (items.length === 0) throw new Error('Cart is empty');
+        if (get().items.length === 0) throw new Error('Cart is empty');
 
+        // Self-heal stale carts. Items added while Shopify was unreachable were
+        // saved with no variants and persist in localStorage indefinitely, so
+        // checkout would fail forever with "no variant matched". Re-fetch
+        // before giving up rather than dead-ending the customer.
+        if (get().items.some((i) => !i.product.variants?.length)) {
+          console.warn('[cart] Item(s) missing variants — refreshing from Shopify before checkout');
+          try {
+            await get().refreshFromShopify();
+          } catch (e) {
+            console.error('[cart] Pre-checkout refresh failed:', e);
+          }
+        }
+
+        const items = get().items;
         const lines: { variantId: string; quantity: number; attributes?: { key: string; value: string }[] }[] = [];
 
         for (const item of items) {
@@ -197,9 +215,11 @@ export const useCartStore = create<CartStore>()(
         }
 
         if (lines.length === 0) {
+          // Customer-facing wording — the old message was internal debugging
+          // text about the Storefront API, which means nothing to a shopper.
           throw new Error(
-            'None of your cart items could be matched to a Shopify variant. ' +
-            'Make sure your products are published in the Shopify Storefront API.'
+            'We couldn’t start checkout just now. Please refresh the page and try again — ' +
+            'if it keeps happening, email hello@tualmi.com and we’ll take your order directly.'
           );
         }
 

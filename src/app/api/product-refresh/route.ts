@@ -23,7 +23,18 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { ok: true, price: p.price, name: p.name, featured: p.images?.[0] ?? null, imageByColor },
+      {
+        ok: true,
+        price: p.price,
+        name: p.name,
+        featured: p.images?.[0] ?? null,
+        imageByColor,
+        // Variants MUST come back too. A cart item saved while Shopify was
+        // unreachable has no variants (getProduct falls back to local data),
+        // and the cart persists to localStorage — so without this it can never
+        // recover and checkout fails forever with "no variant matched".
+        variants: p.variants ?? [],
+      },
       { headers: { 'Cache-Control': 'public, max-age=60' } },
     );
   } catch {
