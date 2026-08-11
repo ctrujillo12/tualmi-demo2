@@ -228,6 +228,15 @@ body {
   height: 130svh;
 }
 
+/* Mobile: crop the hero down so the about section is reachable with one
+   short scroll instead of one and a third screens of photo. */
+@media (max-width: 768px) {
+  .hero-viewport {
+    height: 78vh;
+    height: 78svh;
+  }
+}
+
 @media (max-width: 768px) {
   /* On mobile, drop the sticky scroll-over behavior entirely. The panels
      become normal stacked sections, so the next product no longer slides
@@ -506,4 +515,61 @@ body {
   .discount-inline { justify-content: flex-start; gap: 2px; }
   .discount-inline-code,
   .discount-inline-note { flex: 1 1 100%; }
+}
+
+
+/* ── Hero shop buttons ─────────────────────────────────────────────────────
+   Styled to match the EST / 2026 marks — white, wide letter-spacing, light
+   weight — so they read as part of the hero lockup rather than as UI dropped
+   on top of it. Translucent fill keeps the photo visible through them; hover
+   fills solid.                                                             */
+
+.hero-ctas {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0 16px;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;              /* comfortable tap target */
+  padding: 13px 30px;
+  background-color: rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  color: #fff;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: clamp(11px, 1.3vw, 13px);
+  font-weight: 500;
+  letter-spacing: 0.2em;         /* matches the EST / 2026 tracking */
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 100px;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.hero-cta:hover {
+  background-color: #fff;
+  color: #A9445C;
+}
+
+@media (max-width: 640px) {
+  .hero-ctas { gap: 10px; width: 100%; }
+  .hero-cta {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 12px 10px;
+    letter-spacing: 0.14em;
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-cta { letter-spacing: 0.1em; padding: 12px 6px; }
 }

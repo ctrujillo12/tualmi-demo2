@@ -207,6 +207,18 @@ export default function Home() {
           </div>
 
           <LaunchCountdown tone="light" />
+
+          {/* Straight-to-product CTAs. Most cold traffic arrives on mobile from
+              social and bounces before scrolling, so the two buys need to be
+              reachable without any scrolling at all. */}
+          <div className="hero-ctas">
+            <Link href="/products/sierra-shorts" className="hero-cta">
+              shop shorts
+            </Link>
+            <Link href="/products/juniper-pant" className="hero-cta">
+              shop pants
+            </Link>
+          </div>
         </div>
       </section>
 
