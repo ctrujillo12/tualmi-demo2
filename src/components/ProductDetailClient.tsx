@@ -395,23 +395,11 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
             {/* Trust strip. Analytics showed most cold traffic lands straight
                 on a product page and never sees the homepage story, so the
                 credibility signals have to live here too. */}
-            <div
-              style={{
-                display: 'flex', flexWrap: 'wrap', alignItems: 'center',
-                gap: '8px 14px', marginBottom: '18px',
-              }}
-            >
-              {['women-owned', 'WRAP-certified factory', 'recycled fabric'].map((claim, i) => (
-                <span
-                  key={claim}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '6px',
-                    fontFamily: sans, fontSize: '11.5px', fontWeight: 600,
-                    color: soft, textTransform: 'lowercase', letterSpacing: '0.02em',
-                  }}
-                >
-                  {i > 0 && <span style={{ color: rule }}>·</span>}
-                  <span style={{ color: maroon }}>✦</span>
+            <div className="pdp-strip pdp-strip--trust">
+              {['women-owned', 'WRAP-certified', 'recycled fabric'].map((claim, i) => (
+                <span key={claim} className="pdp-strip-item">
+                  {i > 0 && <span className="pdp-strip-sep">·</span>}
+                  <span className="pdp-strip-mark">✦</span>
                   {claim}
                 </span>
               ))}
@@ -703,33 +691,20 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
                   {/* Shipping + returns, visible at the decision point instead
                       of collapsed inside the accordion further down the page. */}
-                  <div
-                    style={{
-                      display: 'flex', flexWrap: 'wrap', justifyContent: 'center',
-                      gap: '6px 16px', marginTop: '14px',
-                    }}
-                  >
+                  <div className="pdp-strip pdp-strip--assure">
                     {[
                       // Preorders don't ship in 2–3 days — the banner above
                       // states their real window instead.
                       {
-                        label: isPreorder ? 'ships from LA' : 'ships from LA in 2–3 days',
+                        label: isPreorder ? 'ships from LA' : 'ships in 2–3 days',
                         href: '/footer-pages/shipping',
                       },
                       { label: 'easy returns', href: '/footer-pages/returns' },
-                      { label: 'free size exchanges', href: '/footer-pages/exchanges' },
-                    ].map((x) => (
-                      <Link
-                        key={x.label}
-                        href={x.href}
-                        style={{
-                          fontFamily: sans, fontSize: '11.5px', fontWeight: 600,
-                          color: soft, textDecoration: 'none',
-                          textTransform: 'lowercase',
-                          display: 'flex', alignItems: 'center', gap: '5px',
-                        }}
-                      >
-                        <span style={{ color: maroon }}>✦</span>
+                      { label: 'free exchanges', href: '/footer-pages/exchanges' },
+                    ].map((x, i) => (
+                      <Link key={x.label} href={x.href} className="pdp-strip-item">
+                        {i > 0 && <span className="pdp-strip-sep">·</span>}
+                        <span className="pdp-strip-mark">✦</span>
                         {x.label}
                       </Link>
                     ))}

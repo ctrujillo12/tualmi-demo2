@@ -228,13 +228,19 @@ body {
   height: 130svh;
 }
 
-/* Mobile: crop the hero down so the about section is reachable with one
-   short scroll instead of one and a third screens of photo. */
+/* Desktop framing of the hero photo. */
+.hero-img { object-position: center 33%; }
+
+/* Mobile: shorter hero so a bit of the blurb below peeks into view, and the
+   photo anchors to the TOP so the crop comes off the bottom of the frame
+   (where the feet are) rather than evenly from both edges. */
 @media (max-width: 768px) {
   .hero-viewport {
-    height: 78vh;
-    height: 78svh;
+    height: 68vh;
+    height: 68svh;
+    min-height: 420px;
   }
+  .hero-img { object-position: center 18%; }
 }
 
 @media (max-width: 768px) {
@@ -560,16 +566,69 @@ body {
 }
 
 @media (max-width: 640px) {
-  .hero-ctas { gap: 10px; width: 100%; }
+  /* Deliberately small and understated — these sit inside the hero lockup,
+     so full-width chunky buttons fight the wordmark for attention. */
+  .hero-ctas { gap: 10px; width: auto; }
   .hero-cta {
-    flex: 1 1 0;
-    min-width: 0;
-    padding: 12px 10px;
-    letter-spacing: 0.14em;
-    max-width: 180px;
+    flex: 0 0 auto;
+    min-height: 34px;
+    padding: 8px 16px;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    border-width: 1px;
+    max-width: none;
   }
 }
 
 @media (max-width: 360px) {
-  .hero-cta { letter-spacing: 0.1em; padding: 12px 6px; }
+  .hero-ctas { gap: 8px; }
+  .hero-cta { font-size: 9px; padding: 7px 13px; letter-spacing: 0.12em; }
+}
+
+
+/* ── Product page info strips ──────────────────────────────────────────────
+   The trust claims and the shipping/returns links. Both must sit on ONE line
+   at every width — wrapped fragments looked broken and ate vertical space on
+   a page where scroll length already matters. Font size scales with the
+   viewport (vw) so three items always fit rather than reflowing.          */
+
+.pdp-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+}
+
+.pdp-strip--trust  { margin-bottom: 16px; }
+.pdp-strip--assure { margin-top: 14px; justify-content: center; }
+
+.pdp-strip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #C9849A;
+  text-transform: lowercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.pdp-strip-mark { color: #A9445C; }
+.pdp-strip-sep  { color: #F0D9E1; margin-right: 5px; }
+
+@media (max-width: 768px) {
+  /* Centre both strips and shrink with the viewport so all three items stay
+     on a single row down to the narrowest phones. */
+  .pdp-strip { justify-content: center; gap: 6px; }
+  .pdp-strip-item { font-size: clamp(8.5px, 2.7vw, 11px); gap: 3px; }
+  .pdp-strip-sep { margin-right: 3px; }
+}
+
+@media (max-width: 360px) {
+  .pdp-strip { gap: 4px; }
+  .pdp-strip-item { font-size: 8px; letter-spacing: -0.01em; }
 }

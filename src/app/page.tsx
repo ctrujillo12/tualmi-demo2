@@ -156,7 +156,11 @@ export default function Home() {
           alt="Tualmi Outdoors"
           fill
           priority
-          style={{ objectFit: 'cover', objectPosition: 'center 33%' }}
+          // object-position lives in CSS (.hero-img) so mobile can anchor the
+          // photo to the top — that crops the bottom of the frame (the feet)
+          // rather than trimming evenly from both edges.
+          className="hero-img"
+          style={{ objectFit: 'cover' }}
         />
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,12,8,0.18)' }} />
 
