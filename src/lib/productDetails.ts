@@ -87,7 +87,10 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     ],
     fit: 'Low rise with a relaxed flared leg. True to size. If you’re between sizes, size down.',
     modelNote: 'rachel is 5\'6" and wearing a size small',
-    shipNote: 'Preorder opens July 31. Due to a small manufacturing delay, the pants ship in late August. Order now to lock in your size and colorway.',
+    // No shipNote — the preorder callout above the add-to-cart button (in
+    // ProductDetailClient) already states the ship window, and having both
+    // showed two competing preorder cards. Set this only for a genuinely
+    // different message, e.g. an unexpected delay.
     sizeChart: {
       note: 'Garment measurements in inches, taken flat.',
       sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
