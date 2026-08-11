@@ -392,6 +392,31 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
           {/* ── Right: details ── */}
           <div>
+            {/* Trust strip. Analytics showed most cold traffic lands straight
+                on a product page and never sees the homepage story, so the
+                credibility signals have to live here too. */}
+            <div
+              style={{
+                display: 'flex', flexWrap: 'wrap', alignItems: 'center',
+                gap: '8px 14px', marginBottom: '18px',
+              }}
+            >
+              {['women-owned', 'WRAP-certified factory', 'recycled fabric'].map((claim, i) => (
+                <span
+                  key={claim}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    fontFamily: sans, fontSize: '11.5px', fontWeight: 600,
+                    color: soft, textTransform: 'lowercase', letterSpacing: '0.02em',
+                  }}
+                >
+                  {i > 0 && <span style={{ color: rule }}>·</span>}
+                  <span style={{ color: maroon }}>✦</span>
+                  {claim}
+                </span>
+              ))}
+            </div>
+
             {ready && (
               <p style={{ ...eyebrowStyle, marginBottom: '12px' }}>
                 {lockedForLaunch
@@ -543,6 +568,23 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
             <div style={{ marginBottom: '36px' }}>
               {/* Only renders when a creator code is stored — see lib/discount.ts */}
               <DiscountBadge />
+
+              {/* Preorder timing, stated next to the price rather than buried
+                  in an accordion. Unexpected wait times are a top reason people
+                  abandon at this exact point. */}
+              {isPreorder && shippingLabel && (
+                <p
+                  style={{
+                    fontFamily: sans, fontSize: '12.5px', fontWeight: 600,
+                    color: maroon, backgroundColor: blushBg,
+                    border: `1px solid ${rule}`, borderRadius: '10px',
+                    padding: '10px 14px', margin: '0 0 12px', lineHeight: 1.5,
+                  }}
+                >
+                  ✦ preorder — {shippingLabel.toLowerCase()}. you&apos;re charged today and
+                  we ship the moment it lands.
+                </p>
+              )}
               {buyable ? (
                 /* ── Buyable: add to cart ── */
                 <>
@@ -658,6 +700,40 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                       something went wrong. please try again.
                     </p>
                   )}
+
+                  {/* Shipping + returns, visible at the decision point instead
+                      of collapsed inside the accordion further down the page. */}
+                  <div
+                    style={{
+                      display: 'flex', flexWrap: 'wrap', justifyContent: 'center',
+                      gap: '6px 16px', marginTop: '14px',
+                    }}
+                  >
+                    {[
+                      // Preorders don't ship in 2–3 days — the banner above
+                      // states their real window instead.
+                      {
+                        label: isPreorder ? 'ships from LA' : 'ships from LA in 2–3 days',
+                        href: '/footer-pages/shipping',
+                      },
+                      { label: 'easy returns', href: '/footer-pages/returns' },
+                      { label: 'free size exchanges', href: '/footer-pages/exchanges' },
+                    ].map((x) => (
+                      <Link
+                        key={x.label}
+                        href={x.href}
+                        style={{
+                          fontFamily: sans, fontSize: '11.5px', fontWeight: 600,
+                          color: soft, textDecoration: 'none',
+                          textTransform: 'lowercase',
+                          display: 'flex', alignItems: 'center', gap: '5px',
+                        }}
+                      >
+                        <span style={{ color: maroon }}>✦</span>
+                        {x.label}
+                      </Link>
+                    ))}
+                  </div>
                 </>
               ) : lockedForLaunch ? (
                 /* ── Sellable but shop not open yet ── */

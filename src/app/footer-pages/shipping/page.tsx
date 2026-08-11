@@ -1,4 +1,5 @@
-import { PolicyPage, Section, P, Bullets, DataTable } from '@/components/PolicyPage';
+import Link from 'next/link';
+import { PolicyPage, Section, P, Bullets, DataTable, maroon } from '@/components/PolicyPage';
 
 export default function ShippingPage() {
   return (
@@ -69,6 +70,19 @@ export default function ShippingPage() {
           guaranteed. International orders can also be held in customs, which is outside our control.
           If your tracking stalls or a package goes missing, email us at hello@tualmi.com and we&apos;ll
           help you sort it out.
+        </P>
+      </Section>
+
+      <Section heading="returns &amp; exchanges">
+        <P>
+          Need to send something back or swap a size? Start with our{' '}
+          <Link href="/footer-pages/exchanges" style={{ color: maroon, fontWeight: 600 }}>
+            return &amp; exchange form
+          </Link>
+          {' '}— it collects your order number so we can get straight to it. Full terms are in our{' '}
+          <Link href="/footer-pages/returns" style={{ color: maroon, fontWeight: 600 }}>
+            returns &amp; refunds policy
+          </Link>.
         </P>
       </Section>
 

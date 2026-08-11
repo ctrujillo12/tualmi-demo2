@@ -10,13 +10,17 @@ const soft   = '#C9849A';
 const blush  = '#FBF1F5';
 const rule   = '#F0D9E1';
 
-type RequestType = 'size' | 'color' | 'refund' | 'issue';
+type RequestType = 'size' | 'color' | 'refund' | 'issue' | 'cancel';
 
 const OPTIONS: { value: RequestType; label: string; hint?: string }[] = [
   { value: 'size',   label: 'swap for a different size', hint: 'fastest way to get the right fit' },
   { value: 'color',  label: 'swap for a different color or style' },
   { value: 'refund', label: 'return for a refund' },
   { value: 'issue',  label: 'my order arrived wrong or damaged' },
+  // The returns policy tells people to cancel through this form, so the option
+  // has to exist here — including for preorders, which are cancellable right
+  // up until they ship.
+  { value: 'cancel', label: 'cancel my order', hint: 'available any time before it ships' },
 ];
 
 const REQUEST_LABEL: Record<RequestType, string> = {
@@ -24,6 +28,7 @@ const REQUEST_LABEL: Record<RequestType, string> = {
   color:  'Color/style exchange',
   refund: 'Return for refund',
   issue:  'Wrong or damaged item',
+  cancel: 'Order cancellation',
 };
 
 const labelStyle: CSSProperties = {
@@ -215,7 +220,9 @@ export default function ExchangesPage() {
               )}
 
               <p style={{ fontFamily: sans, fontSize: '12px', color: soft, margin: '4px 0 0', lineHeight: 1.6 }}>
-                the full details are in our{' '}
+                Returns accepted within 14 days of delivery, unworn with tags attached. We&apos;ll email
+                you the return address once we&apos;ve reviewed your request — please don&apos;t ship
+                anything back before then. Full details in our{' '}
                 <Link href="/footer-pages/returns" style={{ color: maroon, fontWeight: 600 }}>return &amp; exchange policy</Link>.
               </p>
             </div>
