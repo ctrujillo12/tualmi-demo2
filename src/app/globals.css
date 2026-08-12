@@ -366,10 +366,14 @@ body {
 }
 .pdp-tile {
   position: relative;
-  aspect-ratio: 3 / 4;
+  /* 2/3 matches the shoot (all product photos are 1067x1600 etc.), so every
+     tile is the same size AND nothing gets cropped. It was 3/4, which meant
+     cover-cropping shaved the top and bottom off every frame. */
+  aspect-ratio: 2 / 3;
   border-radius: 10px;
   overflow: hidden;
-  /* Blush, not white — a white box reads as broken while the photo loads. */
+  /* Blush, not white — a white box reads as broken while the photo loads, and
+     it also backs any letterboxing if a photo isn't exactly 2:3. */
   background-color: #FBF1F5;
 }
 /* Odd trailing photo spans the full row on desktop */

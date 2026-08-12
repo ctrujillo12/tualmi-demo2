@@ -344,7 +344,11 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                     priority={i === 0}
                     quality={82}
                     sizes="(max-width: 1024px) 50vw, 30vw"
-                    style={{ objectFit: 'cover' }}
+                    // contain, not cover: the tile is 2/3 to match the shoot,
+                    // so nothing is letterboxed — but if a future photo has a
+                    // different ratio it will be shown whole on blush rather
+                    // than silently cropped.
+                    style={{ objectFit: 'contain' }}
                   />
                 </div>
               ))}
