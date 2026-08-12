@@ -26,14 +26,17 @@ export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> =
 // numbers of photos per color). Lead/front shot first.
 const PP = '/images-2/model';
 export const PRODUCT_COLOR_IMAGES: Record<string, Record<string, string[]>> = {
+  // Files are numbered in gallery order by scripts/import-product-photos.py —
+  // -1 is the lead shot (full-body front), then back / lifestyle / detail.
+  // Re-running that script regenerates them, so keep these lists in sync with
+  // the PLAN dict there rather than reordering by hand.
   'sierra-shorts': {
-    // Lead shot first (clean full-body front), then back / lifestyle / detail.
-    Jam:      [`${PP}/jam-4.jpg`, `${PP}/jam-6.jpg`, `${PP}/jam-3.jpg`, `${PP}/jam-5.jpg`, `${PP}/jam-1.jpg`, `${PP}/jam-2.jpg`],
-    Picnic:   [`${PP}/picnic-2.jpg`, `${PP}/picnic-3.jpg`, `${PP}/picnic-1.jpg`],
-    Confetti: [`${PP}/confetti-3.jpg`, `${PP}/confetti-5.jpg`, `${PP}/confetti-2.jpg`, `${PP}/confetti-4.jpg`, `${PP}/confetti-1.jpg`],
+    Jam:      [`${PP}/jam-1.jpg`, `${PP}/jam-2.jpg`, `${PP}/jam-3.jpg`, `${PP}/jam-4.jpg`, `${PP}/jam-5.jpg`, `${PP}/jam-6.jpg`],
+    Picnic:   [`${PP}/picnic-1.jpg`, `${PP}/picnic-2.jpg`, `${PP}/picnic-3.jpg`, `${PP}/picnic-4.jpg`],
+    Confetti: [`${PP}/confetti-1.jpg`, `${PP}/confetti-2.jpg`, `${PP}/confetti-3.jpg`, `${PP}/confetti-4.jpg`, `${PP}/confetti-5.jpg`],
   },
   'juniper-pant': {
-    Birch: [`${PP}/birch-3.jpg`, `${PP}/birch-7.jpg`, `${PP}/birch-4.jpg`, `${PP}/birch-1.jpg`, `${PP}/birch-2.jpg`],
-    Olive: [`${PP}/olive-2.jpg`, `${PP}/olive-1.jpg`, `${PP}/olive-4.jpg`, `${PP}/olive-3.jpg`],
+    Birch: [`${PP}/birch-1.jpg`, `${PP}/birch-2.jpg`, `${PP}/birch-3.jpg`, `${PP}/birch-4.jpg`, `${PP}/birch-5.jpg`, `${PP}/birch-6.jpg`, `${PP}/birch-7.jpg`],
+    Olive: [`${PP}/olive-1.jpg`, `${PP}/olive-2.jpg`, `${PP}/olive-3.jpg`, `${PP}/olive-4.jpg`],
   },
 };
