@@ -68,9 +68,9 @@ interface DropProduct {
 const MP = '/images-2/model';
 const LANDING_COVERS: Record<string, Record<string, string>> = {
   'sierra-shorts': {
-    Jam:      `${MP}/jam-5.jpg`,
-    Picnic:   `${MP}/picnic-2.jpg`,
-    Confetti: `${MP}/confetti-1.jpg`,
+    Jam:      `${MP}/jam-6.jpg`,
+    Picnic:   `${MP}/picnic-1.jpg`,
+    Confetti: `${MP}/confetti-5.jpg`,
   },
   'juniper-pant': {
     Birch: `${MP}/birch-4.jpg`,
