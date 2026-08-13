@@ -9,6 +9,7 @@ import { PRODUCT_DETAILS, type HighlightIcon } from '@/lib/productDetails';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
+import ImageLightbox from '@/components/ImageLightbox';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 
 interface ProductDetailClientProps {
@@ -210,6 +211,9 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   // 95.6% of traffic is mobile and 92.8% of product viewers never add to cart.
   // The buy box sits under a tall gallery, so most people never scroll to a
   // live CTA. This keeps one pinned to the bottom of the screen instead.
+  // Tap any gallery photo to open it full-screen with zoom.
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
   const sizeRef = useRef<HTMLDivElement>(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [flashSize, setFlashSize] = useState(false);
@@ -362,7 +366,15 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
             {/* Desktop: uniform 2-up grid */}
             <div className="pdp-gallery">
               {gallery.map((image, i) => (
-                <div key={image} className="pdp-tile">
+                <div
+                  key={image}
+                  className="pdp-tile pdp-tile--zoom"
+                  onClick={() => setLightboxIdx(i)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === 'Enter' && setLightboxIdx(i)}
+                  aria-label="View photo full screen"
+                >
                   <Image
                     src={image}
                     alt={`${product.name} — ${selectedColor} ${i + 1}`}
@@ -386,7 +398,14 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
             {/* Mobile: hero + 2 big supporting, then a tappable thumbnail strip */}
             <div className="pdp-gallery--mobile">
-              <div className="pdp-m-hero">
+              <div
+                className="pdp-m-hero pdp-tile--zoom"
+                onClick={() => setLightboxIdx(focusIdx)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && setLightboxIdx(focusIdx)}
+                aria-label="View photo full screen"
+              >
                 <Image
                   src={gallery[focusIdx] ?? gallery[0]}
                   alt={`${product.name} — ${selectedColor}`}
@@ -401,7 +420,15 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               {(gallery[1] || gallery[2]) && (
                 <div className="pdp-m-big2">
                   {[1, 2].map((i) => gallery[i] && (
-                    <div key={gallery[i]} className="pdp-tile">
+                    <div
+                      key={gallery[i]}
+                      className="pdp-tile pdp-tile--zoom"
+                      onClick={() => setLightboxIdx(i)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => e.key === 'Enter' && setLightboxIdx(i)}
+                      aria-label="View photo full screen"
+                    >
                       <Image src={gallery[i]} alt={`${product.name} — ${selectedColor} ${i + 1}`} fill sizes="50vw" style={{ objectFit: 'cover' }} />
                     </div>
                   ))}
@@ -501,11 +528,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               <div
                 ref={sizeRef}
                 style={{
-                  marginBottom: '20px',
+                  // 22px clears the size pills before the model note below.
+                  marginBottom: '22px',
                   // Flashes when someone taps buy without choosing a size.
                   borderRadius: '12px',
                   padding: flashSize ? '10px' : 0,
-                  margin: flashSize ? '-10px -10px 10px' : undefined,
+                  margin: flashSize ? '-10px -10px 12px' : undefined,
                   backgroundColor: flashSize ? '#FBF1F5' : 'transparent',
                   boxShadow: flashSize ? `0 0 0 2px ${maroon}` : 'none',
                   transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
@@ -537,9 +565,19 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               </div>
             )}
 
-            {/* Model reference */}
+            {/* Model reference — sizing context, so it sits under the size row
+                with real breathing room rather than jammed against it. */}
             {fabricDetail?.modelNote && (
-              <p style={{ fontFamily: sans, fontSize: '12px', fontStyle: 'italic', color: soft, margin: '0 0 24px' }}>
+              <p
+                style={{
+                  fontFamily: sans,
+                  fontSize: '12.5px',
+                  fontStyle: 'italic',
+                  lineHeight: 1.6,
+                  color: soft,
+                  margin: '0 0 26px',
+                }}
+              >
                 {fabricDetail.modelNote}
               </p>
             )}
@@ -874,6 +912,16 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
           </div>
         </div>
       </div>
+
+      {lightboxIdx !== null && (
+        <ImageLightbox
+          images={gallery}
+          index={lightboxIdx}
+          alt={`${product.name} — ${selectedColor}`}
+          onClose={() => setLightboxIdx(null)}
+          onIndexChange={setLightboxIdx}
+        />
+      )}
 
       {/* ── Sticky mobile buy bar ──
           Mobile only, appears once the hero image scrolls past. Keeps a live
