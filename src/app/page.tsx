@@ -4,6 +4,8 @@ import Link from 'next/link';
 import LaunchCountdown from '@/components/LaunchCountdown';
 import PanelShopLink from '@/components/PanelShopLink';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
+import QuickAdd from '@/components/QuickAdd';
+import { getProduct } from '@/lib/products';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
@@ -142,7 +144,16 @@ const TIKTOKS = [
 const TIKTOK_URL = 'https://www.tiktok.com/@tualmi.outdoors';
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-export default function Home() {
+export default async function Home() {
+  // Fetched here (server-side) so the landing-page quick-add builds cart lines
+  // from real Shopify variants rather than partial static config.
+  const [shortsProduct, pantProduct] = await Promise.all([
+    getProduct('sierra-shorts').catch(() => null),
+    getProduct('juniper-pant').catch(() => null),
+  ]);
+  const productFor = (handle: string) =>
+    handle === 'sierra-shorts' ? shortsProduct : handle === 'juniper-pant' ? pantProduct : null;
+
   return (
     <>
       <script
@@ -316,27 +327,28 @@ export default function Home() {
               {/* All colorways, side by side */}
               <div className="colorway-row">
                 {p.colorways.map((cw) => (
-                  <Link
-                    key={cw.color}
-                    href={`/products/${p.handle}?color=${encodeURIComponent(cw.color)}`}
-                    className="colorway-tile"
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <div className="colorway-photo">
-                      <Image
-                        src={cw.image}
-                        alt={`${p.name} in ${cw.color}`}
-                        fill
-                        quality={90}
-                        sizes="(max-width: 768px) 33vw, 420px"
-                        style={{ objectFit: 'cover' }}
-                      />
-                    </div>
-                    <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontFamily: sans, fontWeight: 600, fontSize: '13px', color: p.accent, margin: '9px 0 0', textTransform: 'lowercase' }}>
-                      <span style={{ width: '11px', height: '11px', borderRadius: '50%', background: cw.swatch, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.12)', flexShrink: 0 }} />
-                      {cw.color.toLowerCase()}
-                    </p>
-                  </Link>
+                  <div key={cw.color} className="colorway-tile">
+                    <Link
+                      href={`/products/${p.handle}?color=${encodeURIComponent(cw.color)}`}
+                      style={{ textDecoration: 'none', display: 'block' }}
+                    >
+                      <div className="colorway-photo">
+                        <Image
+                          src={cw.image}
+                          alt={`${p.name} in ${cw.color}`}
+                          fill
+                          quality={90}
+                          sizes="(max-width: 768px) 33vw, 420px"
+                          style={{ objectFit: 'cover' }}
+                        />
+                      </div>
+                      <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontFamily: sans, fontWeight: 600, fontSize: '13px', color: p.accent, margin: '9px 0 0', textTransform: 'lowercase' }}>
+                        <span style={{ width: '11px', height: '11px', borderRadius: '50%', background: cw.swatch, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.12)', flexShrink: 0 }} />
+                        {cw.color.toLowerCase()}
+                      </p>
+                    </Link>
+                    <QuickAdd product={productFor(p.handle)} color={cw.color} accent={p.accent} />
+                  </div>
                 ))}
               </div>
 

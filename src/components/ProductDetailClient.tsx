@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/types';
@@ -205,6 +205,36 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
   /** Soft cap on the quantity stepper. Shopify enforces real stock at checkout. */
   const MAX_QTY = 10;
+
+  // ── Sticky mobile buy bar ──────────────────────────────────────────────────
+  // 95.6% of traffic is mobile and 92.8% of product viewers never add to cart.
+  // The buy box sits under a tall gallery, so most people never scroll to a
+  // live CTA. This keeps one pinned to the bottom of the screen instead.
+  const sizeRef = useRef<HTMLDivElement>(null);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+  const [flashSize, setFlashSize] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowStickyBar(window.scrollY > 320);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  /**
+   * Primary buy action. If no size is chosen we don't dead-end the tap —
+   * scroll the picker into view and flash it, so the button always does
+   * something rather than sitting inert.
+   */
+  const handleBuy = () => {
+    if (!selectedSize) {
+      sizeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setFlashSize(true);
+      window.setTimeout(() => setFlashSize(false), 1600);
+      return;
+    }
+    handleAddToCart();
+  };
 
   // GA4 view_item — once per product, not on every colour/size change.
   useEffect(() => {
@@ -468,7 +498,19 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
             {/* Sizes */}
             {product.sizes.length > 0 && product.sizes[0] !== 'One Size' && (
-              <div style={{ marginBottom: '20px' }}>
+              <div
+                ref={sizeRef}
+                style={{
+                  marginBottom: '20px',
+                  // Flashes when someone taps buy without choosing a size.
+                  borderRadius: '12px',
+                  padding: flashSize ? '10px' : 0,
+                  margin: flashSize ? '-10px -10px 10px' : undefined,
+                  backgroundColor: flashSize ? '#FBF1F5' : 'transparent',
+                  boxShadow: flashSize ? `0 0 0 2px ${maroon}` : 'none',
+                  transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
+                }}
+              >
                 <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '10px' }}>size</p>
                 <div className="pdp-sizes">
                   {product.sizes.map((size) => (
@@ -582,14 +624,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                 <>
                   {cartQty === 0 ? (
                     <button
-                      onClick={handleAddToCart}
-                      disabled={!selectedSize}
+                      onClick={handleBuy}
                       style={{
                         display: 'block',
                         width: '100%',
                         boxSizing: 'border-box',
-                        backgroundColor: selectedSize ? maroon : soft,
-                        cursor: selectedSize ? 'pointer' : 'not-allowed',
+                        backgroundColor: maroon,
+                        cursor: 'pointer',
                         color: 'white',
                         padding: '16px 28px',
                         fontFamily: sans,
@@ -601,12 +642,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                         borderRadius: '100px',
                         transition: 'opacity 0.2s',
                       }}
-                      onMouseEnter={(e) => { if (selectedSize) e.currentTarget.style.opacity = '0.88'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                     >
-                      {!selectedSize
-                        ? 'select a size'
-                        : isPreorder ? 'preorder now' : 'add to cart'}
+                      {/* Always a real, live CTA with the price in it. Tapping
+                          without a size opens the picker instead of doing
+                          nothing — a dead button reads as a broken page. */}
+                      {isPreorder ? 'preorder' : 'add to cart'} — ${(product.price / 100).toFixed(2)}
                     </button>
                   ) : (
                     /* ── In the cart: quantity stepper ── */
@@ -832,6 +874,31 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
           </div>
         </div>
       </div>
+
+      {/* ── Sticky mobile buy bar ──
+          Mobile only, appears once the hero image scrolls past. Keeps a live
+          CTA on screen for the whole page instead of leaving it stranded under
+          a tall gallery. */}
+      {buyable && (
+        <div
+          className="pdp-buybar"
+          data-visible={showStickyBar ? 'true' : 'false'}
+          aria-hidden={!showStickyBar}
+        >
+          <div className="pdp-buybar-info">
+            <span className="pdp-buybar-name">{product.name}</span>
+            <span className="pdp-buybar-meta">
+              {selectedColor.toLowerCase()}
+              {selectedSize ? ` · ${selectedSize}` : ' · pick a size'}
+            </span>
+          </div>
+          <button onClick={handleBuy} className="pdp-buybar-cta">
+            {cartQty > 0
+              ? `in cart (${cartQty})`
+              : `${isPreorder ? 'preorder' : 'add'} — $${(product.price / 100).toFixed(2)}`}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

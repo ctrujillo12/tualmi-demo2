@@ -632,3 +632,160 @@ body {
   .pdp-strip { gap: 4px; }
   .pdp-strip-item { font-size: 8px; letter-spacing: -0.01em; }
 }
+
+
+/* ── Sticky mobile buy bar (product pages) ────────────────────────────────
+   95.6% of traffic is mobile and the buy box sits under a tall gallery, so
+   most visitors never scrolled to a live CTA. Desktop doesn't need it — the
+   buy box is beside the gallery there.                                    */
+
+.pdp-buybar { display: none; }
+
+@media (max-width: 767px) {
+  .pdp-buybar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 70;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    background-color: rgba(251, 241, 245, 0.97);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #F0D9E1;
+    transform: translateY(110%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+
+  .pdp-buybar[data-visible='true'] {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .pdp-buybar-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .pdp-buybar-name {
+    font-family: var(--font-montserrat), system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #A9445C;
+    text-transform: lowercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pdp-buybar-meta {
+    font-family: var(--font-montserrat), system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: #C9849A;
+    text-transform: lowercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pdp-buybar-cta {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 12px 22px;
+    background-color: #A9445C;
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    font-family: var(--font-montserrat), system-ui, sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-transform: lowercase;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+}
+
+
+/* ── Landing-page quick add ────────────────────────────────────────────────
+   Sits under each colourway tile: "+ add" opens a size row, tapping a size
+   adds it and goes to the cart, where quantity is adjustable.            */
+
+.qa-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px 10px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1.5px solid currentColor;
+  border-radius: 100px;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: lowercase;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.qa-btn:hover { background-color: #fff; }
+
+.qa-plus {
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 700;
+  margin-top: -1px;
+}
+
+/* ── Size row ── */
+.qa-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.qa-size {
+  flex: 1 1 auto;
+  min-width: 30px;
+  min-height: 32px;
+  padding: 6px 4px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid currentColor;
+  border-radius: 100px;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.qa-size:hover { background: #fff; }
+.qa-size--close { flex: 0 0 auto; min-width: 28px; font-size: 13px; }
+
+@media (max-width: 768px) {
+  /* Three tiles share a row on mobile, so everything shrinks to fit. */
+  .qa-btn { font-size: 10px; padding: 8px 6px; margin-top: 6px; gap: 4px; }
+  .qa-plus { font-size: 13px; }
+  .qa-sizes { gap: 3px; margin-top: 6px; }
+  .qa-size {
+    min-width: 0;
+    min-height: 30px;
+    padding: 5px 2px;
+    font-size: 9px;
+  }
+}

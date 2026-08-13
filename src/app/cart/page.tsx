@@ -34,8 +34,8 @@ export default function CartPage() {
 
   const totalCents       = getTotal();
   const total            = totalCents / 100;
-  const tax              = total * 0.08;
-  const grandTotal       = total + tax;
+  // No local tax/total estimate — Shopify calculates both at checkout, and
+  // showing a guess here only sets up a mismatch on the next screen.
   const containsPreorder = hasPreorderItems();
 
   const handleCheckout = async () => {
@@ -168,13 +168,26 @@ export default function CartPage() {
                 <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft }}>Subtotal</span>
                 <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: maroon }}>${total.toFixed(2)}</span>
               </div>
+              {/* Shipping is the cost people are actually worried about, so it
+                  gets named here. The old summary did the opposite: it added an
+                  estimated tax line they weren't expecting and stayed silent on
+                  shipping until checkout. Shopify computes both exactly at
+                  checkout, so estimating them here only invites a mismatch. */}
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft }}>Est. Tax (8%)</span>
-                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: maroon }}>${tax.toFixed(2)}</span>
+                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft }}>Shipping</span>
+                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: maroon }}>
+                  from $7.99
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft }}>Tax</span>
+                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft }}>
+                  calculated at checkout
+                </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: `1px solid ${rule}`, paddingTop: '12px' }}>
-                <span style={{ fontFamily: sans, fontSize: '14px', fontWeight: 700, color: maroon }}>Total</span>
-                <span style={{ fontFamily: sans, fontSize: '14px', fontWeight: 700, color: maroon }}>${grandTotal.toFixed(2)}</span>
+                <span style={{ fontFamily: sans, fontSize: '14px', fontWeight: 700, color: maroon }}>Subtotal</span>
+                <span style={{ fontFamily: sans, fontSize: '14px', fontWeight: 700, color: maroon }}>${total.toFixed(2)}</span>
               </div>
             </div>
 
