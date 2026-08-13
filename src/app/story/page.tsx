@@ -74,10 +74,10 @@ export default function StoryPage() {
           </p>
 
           <p style={bodyStyle}>
-            We&apos;re two college girls who clicked immediately over one shared opinion: outdoor gear for women
-            is functional but completely forgettable. Like, it works, but it wasn&apos;t made <em>for</em> us.
+            We&apos;re two girls who clicked immediately over one shared opinion: outdoor gear for women
+            is functional but completely forgettable. It works, but it wasn&apos;t made <em>for</em> us.
             Not really. Rachel brings the trail cred and vision. Cheyenne is obsessed with how things are made
-            and has strong opinions about every product she&apos;s ever owned. Together we&apos;re the perfect team.
+            and has strong opinions about every clothing article she&apos;s ever owned. Together we&apos;re the perfect team.
           </p>
 
           <p style={bodyStyle}>
