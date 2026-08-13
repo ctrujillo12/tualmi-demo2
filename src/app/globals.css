@@ -699,7 +699,12 @@ body {
   }
 
   .pdp-buybar-cta {
+    /* Anchor or button depending on cart state — both need the same box. */
     flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
     min-height: 44px;
     padding: 12px 22px;
     background-color: #A9445C;

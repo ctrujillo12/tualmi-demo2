@@ -940,11 +940,18 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               {selectedSize ? ` · ${selectedSize}` : ' · pick a size'}
             </span>
           </div>
-          <button onClick={handleBuy} className="pdp-buybar-cta">
-            {cartQty > 0
-              ? `in cart (${cartQty})`
-              : `${isPreorder ? 'preorder' : 'add'} — $${(product.price / 100).toFixed(2)}`}
-          </button>
+          {/* Once it's in the cart the bar becomes a link to the cart. It used
+              to keep calling handleBuy while reading "in cart", so tapping it
+              silently piled on quantity and never went anywhere. */}
+          {cartQty > 0 ? (
+            <Link href="/cart" className="pdp-buybar-cta">
+              view cart ({cartQty}) →
+            </Link>
+          ) : (
+            <button onClick={handleBuy} className="pdp-buybar-cta">
+              {isPreorder ? 'preorder' : 'add'} — ${(product.price / 100).toFixed(2)}
+            </button>
+          )}
         </div>
       )}
     </div>
