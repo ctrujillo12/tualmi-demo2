@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import CartItem from '@/components/CartItem';
 import DiscountBadge from '@/components/DiscountBadge';
+import FreeShippingBar from '@/components/FreeShippingBar';
+import { freeShippingProgress } from '@/lib/shipping';
 import { useCartStore } from '@/store/cartStore';
 import { useShopAccess } from '@/lib/useShopAccess';
 
@@ -34,6 +36,7 @@ export default function CartPage() {
 
   const totalCents       = getTotal();
   const total            = totalCents / 100;
+  const shipping         = freeShippingProgress(totalCents);
   // No local tax/total estimate — Shopify calculates both at checkout, and
   // showing a guess here only sets up a mismatch on the next screen.
   const containsPreorder = hasPreorderItems();
@@ -162,6 +165,10 @@ export default function CartPage() {
               order summary
             </h2>
 
+            {/* How close they are to free shipping — the one number that
+                changes behaviour at this step. */}
+            <FreeShippingBar variant="panel" />
+
             {/* Price breakdown */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -175,8 +182,8 @@ export default function CartPage() {
                   checkout, so estimating them here only invites a mismatch. */}
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft }}>Shipping</span>
-                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: maroon }}>
-                  from $7.99
+                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 700, color: maroon }}>
+                  {shipping.qualified ? 'FREE ✦' : 'from $7.99'}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>

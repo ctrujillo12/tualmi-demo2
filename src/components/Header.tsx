@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import FreeShippingBar from '@/components/FreeShippingBar';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useCartStore } from '@/store/cartStore';
@@ -61,16 +62,12 @@ export default function Header() {
 
   return (
     <header
-      className="site-nav"
+      className="site-nav-wrap"
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '14px clamp(20px, 3vw, 40px)',
         zIndex: 50,
         // Without a background, page content scrolled underneath and collided
         // with the nav links — photos and text bleeding through "our story" /
@@ -80,6 +77,15 @@ export default function Header() {
         backdropFilter: 'saturate(140%) blur(10px)',
         WebkitBackdropFilter: 'saturate(140%) blur(10px)',
         borderBottom: '1px solid rgba(169, 68, 92, 0.10)',
+      }}
+    >
+    <div
+      className="site-nav"
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '14px clamp(20px, 3vw, 40px)',
       }}
     >
       <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 3vw, 44px)' }}>
@@ -137,6 +143,10 @@ export default function Header() {
           )}
         </Link>
       </nav>
+    </div>
+
+    {/* Free-shipping promo — live progress once the cart has something in it. */}
+    <FreeShippingBar variant="strip" />
     </header>
   );
 }

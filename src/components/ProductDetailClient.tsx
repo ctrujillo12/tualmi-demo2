@@ -9,6 +9,7 @@ import { PRODUCT_DETAILS, type HighlightIcon } from '@/lib/productDetails';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
+import { FREE_SHIPPING_LABEL } from '@/lib/shipping';
 import ImageLightbox from '@/components/ImageLightbox';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 
@@ -780,7 +781,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                       // Preorders don't ship in 2–3 days — the banner above
                       // states their real window instead.
                       {
-                        label: isPreorder ? 'ships from LA' : 'ships in 2–3 days',
+                        label: FREE_SHIPPING_LABEL,
                         href: '/footer-pages/shipping',
                       },
                       { label: 'easy returns', href: '/footer-pages/returns' },

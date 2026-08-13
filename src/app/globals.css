@@ -926,3 +926,151 @@ body {
   .lightbox-nav--prev { left: 4px; }
   .lightbox-nav--next { right: 4px; }
 }
+
+
+/* ── Free shipping promo + progress ───────────────────────────────────────
+   Header strip + cart panel. Both read lib/shipping.ts so the promise can't
+   drift between pages. Mobile-first: the strip carries its own hairline
+   progress fill so a phone shows progress without a second row of UI.     */
+
+.ship-strip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 6px 16px 7px;
+  background-color: #A9445C;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  line-height: 1.35;
+  overflow: hidden;
+  transition: background-color 0.4s ease;
+}
+
+.ship-strip strong { font-weight: 800; }
+
+.ship-strip-text {
+  display: block;
+  max-width: 100%;
+  /* Never let the nudge wrap to two rows and shove the page down. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Progress along the bottom edge of the strip. */
+.ship-strip-fill {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.85);
+  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Qualified reads as a reward, not a nag. */
+.ship-strip[data-qualified='true'] { background-color: #7E5A3C; }
+.ship-strip[data-qualified='true'] .ship-strip-fill { background-color: rgba(255, 255, 255, 0.95); }
+
+.ship-spark {
+  margin-right: 5px;
+  animation: ship-pop 0.5s ease;
+}
+
+@keyframes ship-pop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  60%  { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ── Cart panel ── */
+.ship-panel {
+  margin-bottom: 20px;
+  padding: 13px 15px 14px;
+  border: 1px solid #F0D9E1;
+  border-radius: 14px;
+  background-color: #FBF1F5;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.ship-panel[data-qualified='true'] {
+  border-color: #A9445C;
+  background-color: #F7E7EE;
+}
+
+.ship-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.ship-panel-msg {
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #A9445C;
+  text-transform: lowercase;
+  line-height: 1.3;
+}
+
+.ship-panel-amount {
+  flex: 0 0 auto;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #A9445C;
+  white-space: nowrap;
+}
+
+.ship-panel-note {
+  margin: 8px 0 0;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #C9849A;
+  text-transform: lowercase;
+  line-height: 1.4;
+}
+
+.ship-track {
+  height: 7px;
+  border-radius: 100px;
+  background-color: #F0D9E1;
+  overflow: hidden;
+}
+
+.ship-fill {
+  height: 100%;
+  border-radius: 100px;
+  background-color: #A9445C;
+  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 640px) {
+  .ship-strip {
+    min-height: 24px;
+    padding: 5px 12px 6px;
+    font-size: 10.5px;
+    letter-spacing: 0.02em;
+  }
+  .ship-panel { padding: 12px 13px 13px; border-radius: 12px; }
+  .ship-panel-head { gap: 8px; margin-bottom: 9px; }
+  .ship-panel-msg { font-size: 12px; }
+  .ship-panel-amount { font-size: 12px; }
+  .ship-track { height: 8px; }   /* a touch chunkier so it reads on a phone */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ship-strip-fill,
+  .ship-fill { transition: none; }
+  .ship-spark { animation: none; }
+}
