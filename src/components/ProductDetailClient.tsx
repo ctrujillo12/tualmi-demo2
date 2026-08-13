@@ -10,6 +10,7 @@ import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
 import ImageLightbox from '@/components/ImageLightbox';
+import ShareButton from '@/components/ShareButton';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 
 interface ProductDetailClientProps {
@@ -456,7 +457,8 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
             {/* Trust strip. Analytics showed most cold traffic lands straight
                 on a product page and never sees the homepage story, so the
                 credibility signals have to live here too. */}
-            <div className="pdp-strip pdp-strip--trust">
+            <div className="pdp-topbar">
+              <div className="pdp-strip pdp-strip--trust pdp-strip--inline">
               {['women-owned', 'WRAP-certified', 'recycled fabric'].map((claim, i) => (
                 <span key={claim} className="pdp-strip-item">
                   {i > 0 && <span className="pdp-strip-sep">·</span>}
@@ -464,6 +466,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   {claim}
                 </span>
               ))}
+              </div>
+              <ShareButton
+                productName={product.name}
+                color={selectedColor}
+                price={product.price}
+              />
             </div>
 
             {ready && (
