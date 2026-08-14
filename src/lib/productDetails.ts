@@ -119,6 +119,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       { icon: 'pocket',   label: 'Deep phone pockets' },
     ],
     features: [
+      '3" inseam',
       'Deep side pockets, big enough for your whole phone',
       'Water-repellent shell',
       'Fast-dry performance',
@@ -131,12 +132,15 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Mid-rise, relaxed fit. True to size.',
+    fit: 'Mid-rise, relaxed fit with a 3" inseam. True to size.',
     modelNote: 'rachel is 5\'6" and wearing a size small',
     sizeChart: {
-      note: 'Garment measurements in inches, taken flat.',
+      note: 'Garment measurements in inches, taken flat. Inseam is 3" on every size.',
       sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
       rows: [
+        // Same on every size — kept as a row anyway so it's visible in the
+        // chart people actually scan, not just in the note above it.
+        { label: 'Inseam',                       values: ['3"', '3"', '3"', '3"', '3"', '3"', '3"'] },
         { label: 'Waist (relaxed)',              values: ['24.5"', '26.5"', '28.25"', '30.25"', '32.25"', '34.25"', '36.25"'] },
         { label: 'Hip',                          values: ['39.5"', '41.5"', '43.5"', '45.5"', '47.5"', '49.5"', '51.5"'] },
         { label: 'Thigh',                        values: ['26"', '27.25"', '28.25"', '29.5"', '30.75"', '32"', '33"'] },
