@@ -82,8 +82,7 @@ export default function StoryPage() {
 
           <p style={bodyStyle}>
             She came home with an idea: gear that felt more like the women actually wearing it.
-            Together with her co-founder Cheyenne, she built Tualmi — outdoors gear that wasn&apos;t
-            just men&apos;s gear resized.
+            Together with her co-founder Cheyenne, she built Tualmi.
           </p>
 
           <p style={bodyStyle}>
@@ -92,7 +91,7 @@ export default function StoryPage() {
           </p>
 
           <p style={{ ...bodyStyle, color: maroon, fontWeight: 600 }}>
-            You don&apos;t have to look, dress, or act a certain way to belong outside.
+            Because you don&apos;t have to look, dress, or act a certain way to belong outside.
           </p>
 
           <p style={bodyStyle}>
