@@ -86,8 +86,8 @@ export default function StoryPage() {
           </p>
 
           <p style={bodyStyle}>
-            Tualmi makes technical outdoor gear designed for women from the start — with flattering
-            fits, playful prints, and the performance to actually take on your adventures.
+            Tualmi makes technical outdoor gear designed for women from the start. Flattering fits,
+            playful prints, and the performance to keep up with wherever you&apos;re headed.
           </p>
 
           <p style={{ ...bodyStyle, color: maroon, fontWeight: 600 }}>
