@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'our story',
   description:
-    'Tualmi makes technical outdoor gear designed for women from the start — flattering fits, playful prints, unexpected color, and real performance. Sustainably and ethically made in a WRAP Gold Standard certified facility.',
+    'Tualmi makes technical outdoor gear designed for women from the start — flattering fits, playful prints, and real performance. Made with a WRAP Gold Standard certified manufacturer.',
   alternates: { canonical: '/story' },
 };
 
@@ -68,31 +68,42 @@ export default function StoryPage() {
 
         {/* Body — left-aligned */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+          {/* The mission line carries the most weight, so it gets the maroon
+              emphasis the launch-date line used to have. */}
           <p style={{ ...bodyStyle, color: maroon, fontWeight: 600 }}>
             Tualmi exists to make the outdoors feel like it belongs to more of us.
           </p>
 
           <p style={bodyStyle}>
-            For too long, outdoors gear has been built around one idea of &ldquo;outdoorsy&rdquo; —
-            rugged, serious, and masculine. Women have been left with gear designed for men and
-            scaled down, or told that looking cute and being taken seriously outdoors are mutually
-            exclusive.
+            Our founder, Rachel, was backpacking through Yosemite when she asked herself: why is so
+            much women&apos;s outdoor gear still boxy, muted, and designed around the same very
+            specific idea of what an &ldquo;outdoorsy person&rdquo; should look like?
           </p>
 
-          <p style={bodyStyle}>We think women deserve better.</p>
+          <p style={bodyStyle}>
+            She came home with an idea: gear that felt more like the women actually wearing it.
+            Together with her co-founder Cheyenne, she built Tualmi — outdoors gear that wasn&apos;t
+            just men&apos;s gear resized.
+          </p>
 
           <p style={bodyStyle}>
             Tualmi makes technical outdoor gear designed for women from the start — with flattering
-            fits, playful prints, unexpected color, and the performance to actually take outside.
+            fits, playful prints, and the performance to actually take outside.
+          </p>
+
+          <p style={{ ...bodyStyle, color: maroon, fontWeight: 600 }}>
+            You don&apos;t have to look, dress, or act a certain way to belong outside.
           </p>
 
           <p style={bodyStyle}>
-            Sustainably and ethically manufactured in a WRAP Gold Standard certified facility.
+            We make everything with a WRAP Gold Standard certified manufacturer, sustainably,
+            ethically, and designed to last because we&apos;re not interested in adding to the pile.
+            We&apos;d rather make a few things you actually reach for than ten you forget you own.
           </p>
 
-          {/* <p style={bodyStyle}>
+          <p style={bodyStyle}>
             Love, Rachel &amp; Cheyenne🌸
-          </p> */}
+          </p>
         </div>
       </main>
     </div>
