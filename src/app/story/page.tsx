@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'our story',
   description:
-    'Two college friends who love the outdoors and their outfits — making hiking apparel from recycled materials in a WRAP-certified facility. First collection available 7/31.',
+    'Tualmi makes technical outdoor gear designed for women from the start — flattering fits, playful prints, unexpected color, and real performance. Sustainably and ethically made in a WRAP Gold Standard certified facility.',
   alternates: { canonical: '/story' },
 };
 
@@ -63,41 +63,35 @@ export default function StoryPage() {
             textAlign: 'center',
           }}
         >
-          for girls who love the outdoors <em>and</em> their outfits.
+          gear for a new kind of outdoorsy.
         </h1>
 
         {/* Body — left-aligned */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-          <p style={bodyStyle}>
-            Rachel was backpacking through Yosemite, surrounded by mountains &amp; doing exactly what she loves, when she
-            looked down at her outfit and realized it just didn&apos;t feel like her at all.
-          </p>
-
-          <p style={bodyStyle}>
-            We&apos;re two girls who clicked immediately over one shared opinion: outdoor gear for women
-            is functional but completely forgettable. It works, but it wasn&apos;t made <em>for</em> us.
-            Not really. Rachel brings the trail cred and vision. Cheyenne is an engineer obsessed with  
-            things made tastefully. Together we&apos;re the perfect team.
-          </p>
-
-          <p style={bodyStyle}>
-            So we made Tualmi. Because we think the more you feel like yourself outside,
-            the more you actually want to be out there.
-          </p>
-
-          <p style={bodyStyle}>
-            We make everything with a certified sustainable, WRAP-certified manufacturer,
-            and designed to last because we&apos;re not interested in adding to the pile.
-            We&apos;d rather make a few things you actually reach for
-            than ten you forget you own.
-          </p>
-
           <p style={{ ...bodyStyle, color: maroon, fontWeight: 600 }}>
-            Our first collection is available 7/31!
+            Tualmi exists to make the outdoors feel like it belongs to more of us.
           </p>
 
           <p style={bodyStyle}>
-            Love, Rachel & Cheyenne🌸
+            For too long, outdoors gear has been built around one idea of &ldquo;outdoorsy&rdquo; —
+            rugged, serious, and masculine. Women have been left with gear designed for men and
+            scaled down, or told that looking cute and being taken seriously outdoors are mutually
+            exclusive.
+          </p>
+
+          <p style={bodyStyle}>We think women deserve better.</p>
+
+          <p style={bodyStyle}>
+            Tualmi makes technical outdoor gear designed for women from the start — with flattering
+            fits, playful prints, unexpected color, and the performance to actually take outside.
+          </p>
+
+          <p style={bodyStyle}>
+            Sustainably and ethically manufactured in a WRAP Gold Standard certified facility.
+          </p>
+
+          <p style={bodyStyle}>
+            Love, Rachel &amp; Cheyenne🌸
           </p>
         </div>
       </main>
