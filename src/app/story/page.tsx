@@ -90,9 +90,9 @@ export default function StoryPage() {
             Sustainably and ethically manufactured in a WRAP Gold Standard certified facility.
           </p>
 
-          <p style={bodyStyle}>
+          {/* <p style={bodyStyle}>
             Love, Rachel &amp; Cheyenne🌸
-          </p>
+          </p> */}
         </div>
       </main>
     </div>
