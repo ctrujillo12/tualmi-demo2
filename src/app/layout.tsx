@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import AccessBanner from '@/components/AccessBanner';
 import AttributionTracker from '@/components/AttributionTracker';
 import WelcomePopup from '@/components/WelcomePopup';
+import { KLAVIYO_COMPANY_ID } from '@/lib/klaviyo';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair', display: 'swap' });
@@ -106,6 +107,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             });
           `}
         </Script>
+        {/* Klaviyo onsite tracking.
+
+            This was never installed, which is why `Viewed Product` had fired
+            zero times in Klaviyo and a browse-abandon flow was impossible to
+            build — there was no browse event to trigger on. The events
+            themselves are pushed from lib/klaviyo.ts via lib/analytics.ts.
+
+            The company id is a public identifier; it appears in this script URL
+            on every Klaviyo-enabled storefront. No private key belongs here. */}
+        <Script
+          id="klaviyo-onsite"
+          strategy="afterInteractive"
+          src={`https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${KLAVIYO_COMPANY_ID}`}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

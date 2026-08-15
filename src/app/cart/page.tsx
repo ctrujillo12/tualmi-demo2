@@ -5,7 +5,7 @@ import Link from 'next/link';
 import CartItem from '@/components/CartItem';
 import DiscountBadge from '@/components/DiscountBadge';
 import FreeShippingBar from '@/components/FreeShippingBar';
-import { freeShippingProgress } from '@/lib/shipping';
+import { freeShippingProgress, FLAT_SHIPPING_CENTS, money } from '@/lib/shipping';
 import { useCartStore } from '@/store/cartStore';
 import { useShopAccess } from '@/lib/useShopAccess';
 
@@ -37,6 +37,10 @@ export default function CartPage() {
   const totalCents       = getTotal();
   const total            = totalCents / 100;
   const shipping         = freeShippingProgress(totalCents);
+  // A real number, not "from $7.99". Tax is still Shopify's to compute, but
+  // shipping is a rate we set, so there's no reason to make the shopper guess.
+  const shippingCents    = shipping.qualified ? 0 : FLAT_SHIPPING_CENTS;
+  const estimatedCents   = totalCents + shippingCents;
   // No local tax/total estimate — Shopify calculates both at checkout, and
   // showing a guess here only sets up a mismatch on the next screen.
   const containsPreorder = hasPreorderItems();
@@ -176,14 +180,14 @@ export default function CartPage() {
                 <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: maroon }}>${total.toFixed(2)}</span>
               </div>
               {/* Shipping is the cost people are actually worried about, so it
-                  gets named here. The old summary did the opposite: it added an
-                  estimated tax line they weren't expecting and stayed silent on
-                  shipping until checkout. Shopify computes both exactly at
-                  checkout, so estimating them here only invites a mismatch. */}
+                  gets a firm number. It read "from $7.99" while the line below
+                  it showed the subtotal again — so the shopper tapped checkout
+                  without knowing what they'd pay, and a vague shipping cost is
+                  the most-cited reason carts get abandoned. */}
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft }}>Shipping</span>
+                <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft }}>Shipping (US)</span>
                 <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 700, color: maroon }}>
-                  {shipping.qualified ? 'FREE ✦' : 'from $7.99'}
+                  {shipping.qualified ? 'FREE ✦' : money(FLAT_SHIPPING_CENTS)}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -192,10 +196,17 @@ export default function CartPage() {
                   calculated at checkout
                 </span>
               </div>
+              {/* This row said "Subtotal" twice — the same number labelled the
+                  same way, top and bottom, with shipping quietly excluded. */}
               <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: `1px solid ${rule}`, paddingTop: '12px' }}>
-                <span style={{ fontFamily: sans, fontSize: '14px', fontWeight: 700, color: maroon }}>Subtotal</span>
-                <span style={{ fontFamily: sans, fontSize: '14px', fontWeight: 700, color: maroon }}>${total.toFixed(2)}</span>
+                <span style={{ fontFamily: sans, fontSize: '14px', fontWeight: 700, color: maroon }}>Estimated total</span>
+                <span style={{ fontFamily: sans, fontSize: '14px', fontWeight: 700, color: maroon }}>${(estimatedCents / 100).toFixed(2)}</span>
               </div>
+              <p style={{ fontFamily: sans, fontSize: '11px', fontWeight: 500, color: soft, margin: 0, lineHeight: 1.5 }}>
+                {shipping.qualified
+                  ? 'Shipping included. Tax added at checkout.'
+                  : `Includes ${money(FLAT_SHIPPING_CENTS)} US shipping. Tax added at checkout. International shipping is quoted at checkout.`}
+              </p>
             </div>
 
             {/* Reassures the shopper the creator code survived to checkout —

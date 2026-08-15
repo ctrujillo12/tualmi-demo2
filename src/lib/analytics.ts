@@ -16,6 +16,8 @@
  * analytics can never break a purchase.
  */
 
+import { klaviyoViewedProduct, klaviyoAddedToCart } from '@/lib/klaviyo';
+
 type GtagArgs = [string, string, Record<string, unknown>?];
 
 declare global {
@@ -41,13 +43,34 @@ export type AnalyticsItem = {
   price: number;
   item_variant?: string;
   quantity?: number;
+  /** Klaviyo only — used by browse-abandon and recently-viewed blocks. */
+  image_url?: string;
+  /** Klaviyo only — defaults to the current page. */
+  url?: string;
 };
+
+/** Strip the Klaviyo-only keys so GA4's item payload stays clean. */
+function ga4Item(item: AnalyticsItem) {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  const { image_url, url, ...rest } = item;
+  /* eslint-enable @typescript-eslint/no-unused-vars */
+  return rest;
+}
 
 export function trackViewItem(item: AnalyticsItem): void {
   gtag('event', 'view_item', {
     currency: 'USD',
     value: item.price,
-    items: [item],
+    items: [ga4Item(item)],
+  });
+  // Klaviyo `Viewed Product` — the trigger a browse-abandon flow needs, and
+  // the event that had fired exactly zero times before now.
+  klaviyoViewedProduct({
+    id: item.item_id,
+    name: item.item_name,
+    price: item.price,
+    imageUrl: item.image_url,
+    url: item.url,
   });
 }
 
@@ -55,7 +78,16 @@ export function trackAddToCart(item: AnalyticsItem): void {
   gtag('event', 'add_to_cart', {
     currency: 'USD',
     value: item.price * (item.quantity ?? 1),
-    items: [item],
+    items: [ga4Item(item)],
+  });
+  klaviyoAddedToCart({
+    id: item.item_id,
+    name: item.item_name,
+    price: item.price,
+    imageUrl: item.image_url,
+    url: item.url,
+    variant: item.item_variant,
+    quantity: item.quantity,
   });
 }
 

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import PhoneOptIn, { PHONE_THEMES } from './PhoneOptIn';
 import { getAttribution } from '@/lib/attribution';
+import { klaviyoIdentify } from '@/lib/klaviyo';
 
 const STORAGE_KEY = 'tualmi_welcome_shown';
 
@@ -83,6 +84,11 @@ export default function WelcomePopup() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'something went wrong');
       setStatus('success');
+      // Bind this browser to the profile so Klaviyo can attribute onsite
+      // browse events to a real inbox. Without it, every Viewed Product after
+      // a signup still lands on an anonymous cookie and can't trigger a
+      // browse-abandon email.
+      klaviyoIdentify(email);
       localStorage.setItem(STORAGE_KEY, '1');
     } catch (err) {
       setErrMsg(err instanceof Error ? err.message : 'something went wrong');

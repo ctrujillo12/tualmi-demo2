@@ -252,12 +252,33 @@ body {
     position: relative !important;
     top: auto !important;
     height: auto !important;
-    min-height: 100svh !important;
-    padding-top: 84px !important;
-    padding-bottom: 56px !important;
+    /* auto, not 100svh: the colourways stack on a phone, so the panel is
+       already taller than a screen — forcing a full viewport on top of that
+       just added dead space above the first product. */
+    min-height: auto !important;
+    padding-top: 48px !important;
+    padding-bottom: 48px !important;
   }
   .panel-photo {
     width: min(82vw, 380px) !important;
+  }
+}
+
+/* ── Landing "about" block ────────────────────────────────────────────────
+   On desktop this is a generous, airy statement. On a phone it was ~900px of
+   brand copy standing between an ad click and the first product card (which
+   started ~1,700px down the page). Same words, less air.                  */
+@media (max-width: 767px) {
+  .home-about {
+    padding-top: 44px !important;
+    padding-bottom: 44px !important;
+  }
+  .home-about h1 {
+    margin-bottom: 20px !important;
+  }
+  .home-about p {
+    line-height: 1.75 !important;
+    margin-bottom: 16px !important;
   }
 }
 
@@ -340,6 +361,10 @@ body {
 }
 
 /* ── Product page layout ── */
+.pdp-shell {
+  padding: clamp(88px, 12vw, 130px) clamp(20px, 4vw, 48px) clamp(64px, 9vw, 110px);
+}
+
 .pdp-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr); /* minmax(0,..) lets wide children shrink instead of overflowing */
@@ -349,12 +374,74 @@ body {
 .pdp-layout > * {
   min-width: 0;
 }
+
+.pdp-col-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 @media (min-width: 1024px) {
   /* Gallery gets the larger share so the photos read big on desktop */
   .pdp-layout {
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
     gap: clamp(40px, 5vw, 72px);
     align-items: start;
+  }
+}
+
+/* ── Mobile: interleave the two columns ───────────────────────────────────
+   The buy box has to sit directly under the lead photo, not after the entire
+   gallery. `display: contents` dissolves the two column wrappers so their
+   children become siblings of the flex container and can be ordered:
+
+     1. lead photo + thumbnails
+     2. name / price / size / colour / add-to-cart
+     3. the remaining photos
+     4. description, fit, accordion
+
+   Before this the price sat ~1,050px down and add-to-cart ~1,450px down —
+   two full swipes past a full-bleed photo, on paid traffic that leaves in
+   five seconds.                                                           */
+@media (max-width: 767px) {
+  .pdp-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .pdp-col-gallery,
+  .pdp-col-info {
+    display: contents;
+  }
+  .pdp-m-lead  { order: 1; min-width: 0; }
+  .pdp-buybox  { order: 2; min-width: 0; }
+  .pdp-m-rest  { order: 3; min-width: 0; }
+  .pdp-details { order: 4; min-width: 0; }
+
+  /* Inside the buy box, the one thing that doesn't earn its place above the
+     size picker is the feature-icon strip — it's a nice-to-know, not part of
+     the decision. Flex + order moves it to the bottom of the box on phones
+     while leaving the desktop stack (price → icons → size) untouched. */
+  .pdp-buybox {
+    display: flex;
+    flex-direction: column;
+  }
+  .pdp-buybox > .pdp-highlights {
+    order: 1;
+    margin: 4px 0 0 !important;
+    width: 100% !important;
+  }
+
+  /* The fixed header is ~66px on a phone; up to 130px of top padding was
+     pushing the whole page down for nothing. */
+  .pdp-shell {
+    padding-top: 76px;
+    padding-bottom: 48px;
+  }
+
+  /* Clearance for the sticky buy bar so it never covers the last row. */
+  .pdp-page {
+    padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -382,15 +469,25 @@ body {
   aspect-ratio: 3 / 2;
 }
 
-/* ── Product page gallery: mobile (3 big + tappable thumbnails) ── */
-.pdp-gallery--mobile { display: none; max-width: 100%; }
+/* ── Product page gallery: mobile ── */
+.pdp-m-lead,
+.pdp-m-rest { display: none; max-width: 100%; }
 @media (max-width: 767px) {
   .pdp-gallery { display: none; }          /* hide the desktop grid */
-  .pdp-gallery--mobile { display: block; }
+  .pdp-m-lead  { display: block; }
+  .pdp-m-rest  { display: block; }
 }
 .pdp-m-hero {
   position: relative;
-  aspect-ratio: 3 / 4;
+  /* Was aspect-ratio 3/4 — on a 390px phone that's a 520px-tall photo that
+     fills the screen on its own, so nothing below it was ever visible without
+     a deliberate swipe. A fixed share of the viewport instead. Measured at
+     375/390/412px wide: this puts the price at 531–638px, i.e. on the first
+     screen of every common handset, with the size row at the fold. */
+  height: 43vh;
+  height: 43svh;
+  min-height: 280px;
+  max-height: 420px;
   border-radius: 10px;
   overflow: hidden;
   background-color: #FBF1F5;
@@ -406,14 +503,16 @@ body {
   gap: 8px;
   overflow-x: auto;
   max-width: 100%;
-  margin-top: 10px;
+  margin-top: 8px;
   padding-bottom: 4px;
   -webkit-overflow-scrolling: touch;
 }
 .pdp-m-thumbs button {
   position: relative;
   flex: 0 0 auto;
-  width: 58px;
+  /* 44, not 58 — every pixel here is a pixel of buy box pushed below the
+     fold, and 44x59 is still a comfortable tap. */
+  width: 44px;
   aspect-ratio: 3 / 4;
   border-radius: 8px;
   overflow: hidden;
@@ -602,7 +701,7 @@ body {
   font-family: var(--font-montserrat), system-ui, sans-serif;
 }
 
-.pdp-strip--trust  { margin-bottom: 16px; }
+.pdp-strip--trust  { margin-bottom: 14px; }
 .pdp-strip--assure { margin-top: 14px; justify-content: center; }
 
 .pdp-strip-item {
@@ -635,9 +734,16 @@ body {
 
 
 /* ── Sticky mobile buy bar (product pages) ────────────────────────────────
-   95.6% of traffic is mobile and the buy box sits under a tall gallery, so
-   most visitors never scrolled to a live CTA. Desktop doesn't need it — the
-   buy box is beside the gallery there.                                    */
+   95.6% of traffic is mobile, so this is the primary CTA of the whole store.
+   Desktop doesn't need it — the buy box is beside the gallery there.
+
+   NOTE ON THE DEFAULT STATE: this used to be hidden by default and revealed
+   by [data-visible='true']. Paired with a scroll listener that never landed,
+   the bar computed to opacity 0 / pointer-events none at every scroll
+   position — built, styled, and completely invisible. The states are now
+   inverted: shown by default, hidden only by an explicit
+   [data-visible='false']. If anything upstream fails, the failure mode is a
+   redundant CTA rather than no CTA at all.                                */
 
 .pdp-buybar { display: none; }
 
@@ -647,7 +753,8 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 70;
+    /* Above AccessBanner (80) — a promo pill must never sit on the buy CTA. */
+    z-index: 90;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -657,16 +764,17 @@ body {
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border-top: 1px solid #F0D9E1;
-    transform: translateY(110%);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 0.25s ease, opacity 0.25s ease;
-  }
-
-  .pdp-buybar[data-visible='true'] {
+    box-shadow: 0 -6px 20px rgba(120, 40, 60, 0.10);
     transform: translateY(0);
     opacity: 1;
     pointer-events: auto;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+
+  .pdp-buybar[data-visible='false'] {
+    transform: translateY(110%);
+    opacity: 0;
+    pointer-events: none;
   }
 
   .pdp-buybar-info {

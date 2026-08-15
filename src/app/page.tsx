@@ -59,10 +59,18 @@ interface DropProduct {
   name: string;
   availability: string; // small eyebrow above the name ('' = hide it)
   shopLabel: string;    // CTA text, e.g. 'shop shorts'
+  /** Fallback price in cents, used only if Shopify is unreachable at build. */
+  price: number;
   bg: string;      // panel background (drives the scroll color-change)
   accent: string;  // heading / text color
   colorways: { color: string; swatch: string; image: string }[];
 }
+
+/** $68 / $68.50 — whole dollars read cleaner on a card. */
+const priceLabel = (cents: number) => {
+  const d = cents / 100;
+  return d % 1 === 0 ? `$${d.toFixed(0)}` : `$${d.toFixed(2)}`;
+};
 
 // Landing-page cover shot per colorway. Kept separate from the product-page
 // gallery order (PRODUCT_COLOR_IMAGES) so the landing can lead with a different
@@ -89,6 +97,7 @@ const DROP_PRODUCTS: DropProduct[] = [
     name: 'the sierra shorts',
     availability: '',
     shopLabel: 'shop shorts',
+    price: 6800,
     bg: '#EED0C1',
     accent: '#A94E38',
     colorways: (PRODUCT_COLORS['sierra-shorts'] ?? []).map((c) => ({
@@ -102,6 +111,7 @@ const DROP_PRODUCTS: DropProduct[] = [
     name: 'the juniper pant',
     availability: 'preorder · ships late aug',
     shopLabel: 'shop pants',
+    price: 10800,
     bg: '#C9D3AC',
     accent: '#68764A',
     colorways: (PRODUCT_COLORS['juniper-pant'] ?? []).map((c) => ({
@@ -227,18 +237,22 @@ export default async function Home() {
         {/* Straight-to-product links, pinned near the bottom edge of the hero.
             Outside the centred lockup so they sit low without pushing the
             wordmark up. */}
+        {/* Prices ride along with the links so the first dollar figure a
+            visitor sees is a product price, not a free-shipping gap. */}
         <div className="hero-links">
           <Link href="/products/sierra-shorts" className="hero-link">
-            shop shorts
+            shop shorts · $68
           </Link>
           <Link href="/products/juniper-pant" className="hero-link">
-            shop pants
+            shop pants · $108
           </Link>
         </div>
       </section>
 
       {/* ══ 2 · ABOUT ═════════════════════════════════════════════════════ */}
-      <section style={{ backgroundColor: blushBg, padding: 'clamp(80px, 12vw, 160px) clamp(24px, 6vw, 72px)', position: 'relative' }}>
+      {/* Kept short on mobile (see .home-about in globals.css): every pixel of
+          brand copy here is a pixel between an ad click and a product. */}
+      <section className="home-about" style={{ backgroundColor: blushBg, padding: 'clamp(80px, 12vw, 160px) clamp(24px, 6vw, 72px)', position: 'relative' }}>
         <div style={{ maxWidth: '860px', margin: '0 auto', textAlign: 'center' }}>
           <h1
             style={{
@@ -295,7 +309,10 @@ export default async function Home() {
       {/* Two stacked colored bands; the background changes from the shorts
           panel to the pants panel as you scroll between them. */}
       <div id="collection">
-        {DROP_PRODUCTS.map((p) => (
+        {DROP_PRODUCTS.map((p) => {
+        // Live Shopify price when we have it, static fallback otherwise.
+        const panelPrice = priceLabel(productFor(p.handle)?.price ?? p.price);
+        return (
           <section
             key={p.handle}
             className="panel-viewport"
@@ -322,6 +339,13 @@ export default async function Home() {
                 <h3 style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(26px, 3.4vw, 40px)', letterSpacing: '-0.02em', color: p.accent, margin: 0, textTransform: 'lowercase' }}>
                   {p.name}
                 </h3>
+                {/* Price. There was no dollar figure anywhere on this page —
+                    the only one above the fold was "$62 away from free
+                    shipping", which frames shipping as a problem before
+                    anyone has seen what anything costs. */}
+                <p style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(15px, 1.8vw, 19px)', color: p.accent, margin: '6px 0 0', opacity: 0.9 }}>
+                  {panelPrice}
+                </p>
               </div>
 
               {/* All colorways, side by side */}
@@ -345,6 +369,8 @@ export default async function Home() {
                       <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontFamily: sans, fontWeight: 600, fontSize: '13px', color: p.accent, margin: '9px 0 0', textTransform: 'lowercase' }}>
                         <span style={{ width: '11px', height: '11px', borderRadius: '50%', background: cw.swatch, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.12)', flexShrink: 0 }} />
                         {cw.color.toLowerCase()}
+                        <span aria-hidden style={{ opacity: 0.5 }}>·</span>
+                        <span style={{ fontWeight: 700 }}>{panelPrice}</span>
                       </p>
                     </Link>
                     <QuickAdd product={productFor(p.handle)} color={cw.color} accent={p.accent} />
@@ -355,7 +381,8 @@ export default async function Home() {
               <PanelShopLink handle={p.handle} accent={p.accent} label={p.shopLabel} />
             </div>
           </section>
-        ))}
+        );
+        })}
       </div>
 
       {/* ══ 4b · COMING SOON (afterthought) ═══════════════════════════════ */}

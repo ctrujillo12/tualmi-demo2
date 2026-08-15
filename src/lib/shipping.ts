@@ -28,6 +28,23 @@ export const FREE_SHIPPING_THRESHOLD = 13000;
 // shipping" would be a promise checkout doesn't keep.
 export const FREE_SHIPPING_LABEL = 'free US shipping over $130';
 
+/**
+ * Flat US shipping rate charged below the free threshold, in cents.
+ *
+ * The cart used to say "Shipping — from $7.99" while the total underneath
+ * showed only the subtotal. "From" is the word that loses the sale: the
+ * shopper taps checkout not knowing what they'll pay, and on a $68 order an
+ * unknown worth ~12% of the basket is a reasonable thing to back out over.
+ * Naming one number, and rolling it into a stated estimated total, removes
+ * the last unknown before the checkout button.
+ *
+ * MUST match the US rate in Shopify → Settings → Shipping and delivery. If
+ * that rate is tiered or weight-based rather than flat, set this to the
+ * highest a single-item order can hit — quoting high and charging less is
+ * recoverable; quoting low is the same surprise moved one screen later.
+ */
+export const FLAT_SHIPPING_CENTS = 799;
+
 export type ShippingProgress = {
   qualified: boolean;
   /** Cents still needed. 0 once qualified. */

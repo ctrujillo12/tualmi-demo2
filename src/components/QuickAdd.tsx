@@ -74,6 +74,8 @@ export default function QuickAdd({
       price: product.price / 100,
       item_variant: `${color} / ${size}`,
       quantity: 1,
+      image_url: image,
+      url: `/products/${handle}?color=${encodeURIComponent(color)}`,
     });
 
     router.push('/cart');

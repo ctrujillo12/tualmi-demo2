@@ -175,6 +175,8 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
         price: product.price / 100,
         item_variant: `${selectedColor} / ${selectedSize}`,
         quantity: 1,
+        image_url: cartImg,
+        url: `/products/${handle}?color=${encodeURIComponent(selectedColor)}`,
       });
       setBuyStatus('added');
     } catch (e) {
@@ -209,22 +211,45 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   const MAX_QTY = 10;
 
   // ── Sticky mobile buy bar ──────────────────────────────────────────────────
-  // 95.6% of traffic is mobile and 92.8% of product viewers never add to cart.
-  // The buy box sits under a tall gallery, so most people never scroll to a
-  // live CTA. This keeps one pinned to the bottom of the screen instead.
+  // 95.6% of traffic is mobile and 93.8% of product viewers never add to cart.
   // Tap any gallery photo to open it full-screen with zoom.
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
   const sizeRef = useRef<HTMLDivElement>(null);
-  const [showStickyBar, setShowStickyBar] = useState(false);
+  const inlineCtaRef = useRef<HTMLDivElement>(null);
   const [flashSize, setFlashSize] = useState(false);
 
+  /**
+   * Visibility of the sticky bar.
+   *
+   * This was `window.scrollY > 320` with an initial state of `false` — a
+   * fail-HIDDEN design. In practice the bar never appeared at all: it computed
+   * to opacity 0 / pointer-events none at every scroll position, so on a store
+   * where 95%+ of traffic is mobile the most valuable CTA on the page was
+   * invisible and un-tappable.
+   *
+   * Inverted to fail-VISIBLE. The bar starts on, and the only thing that hides
+   * it is the inline buy box actually being on screen, where it would be
+   * redundant. If the observer never fires — old browser, blocked API, a
+   * layout it can't resolve — the shopper still gets a live CTA.
+   */
+  const [showStickyBar, setShowStickyBar] = useState(true);
+
   useEffect(() => {
-    const onScroll = () => setShowStickyBar(window.scrollY > 320);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    const el = inlineCtaRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setShowStickyBar(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => setShowStickyBar(!entry.isIntersecting),
+      // A sliver of the buy box counts as "on screen"; the bottom margin stops
+      // the bar flickering as the box slides underneath it.
+      { threshold: 0.35, rootMargin: '0px 0px -96px 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [buyable]);
 
   /**
    * Primary buy action. If no size is chosen we don't dead-end the tap —
@@ -241,12 +266,16 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
     handleAddToCart();
   };
 
-  // GA4 view_item — once per product, not on every colour/size change.
+  // GA4 view_item + Klaviyo Viewed Product — once per product, not on every
+  // colour/size change. The image and URL are Klaviyo's: they're what a
+  // browse-abandon email shows, and an email with no photo doesn't convert.
   useEffect(() => {
     trackViewItem({
       item_id: handle,
       item_name: product.name,
       price: product.price / 100,
+      image_url: product.images[0],
+      url: `/products/${handle}`,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handle]);
@@ -358,12 +387,15 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   const gallery     = getColorImages(Math.max(0, activeColorIdx));
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: blushBg }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(88px, 12vw, 130px) clamp(20px, 4vw, 48px) clamp(64px, 9vw, 110px)' }}>
+    <div className="pdp-page" style={{ minHeight: '100vh', backgroundColor: blushBg }}>
+      <div className="pdp-shell" style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <div className="pdp-layout">
 
-          {/* ── Left: gallery ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {/* ── Left: gallery ──
+              `display: contents` on mobile (see globals.css) so the hero photo
+              and the supporting shots become siblings of the buy box and can be
+              re-ordered around it. On desktop this is just the left column. */}
+          <div className="pdp-col-gallery">
             {/* Desktop: uniform 2-up grid */}
             <div className="pdp-gallery">
               {gallery.map((image, i) => (
@@ -397,8 +429,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               ))}
             </div>
 
-            {/* Mobile: hero + 2 big supporting, then a tappable thumbnail strip */}
-            <div className="pdp-gallery--mobile">
+            {/* Mobile lead: ONE hero photo, sized so the buy box below it is
+                already peeking at the fold, plus the tappable thumbnail strip.
+                The two big supporting shots move BELOW the buy box (.pdp-m-rest)
+                — they used to sit between the photo and the price, which is why
+                the price landed ~1,050px down and add-to-cart ~1,450px down:
+                two deliberate swipes on an audience that leaves in 5 seconds. */}
+            <div className="pdp-m-lead">
               <div
                 className="pdp-m-hero pdp-tile--zoom"
                 onClick={() => setLightboxIdx(focusIdx)}
@@ -418,23 +455,6 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   style={{ objectFit: 'cover' }}
                 />
               </div>
-              {(gallery[1] || gallery[2]) && (
-                <div className="pdp-m-big2">
-                  {[1, 2].map((i) => gallery[i] && (
-                    <div
-                      key={gallery[i]}
-                      className="pdp-tile pdp-tile--zoom"
-                      onClick={() => setLightboxIdx(i)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => e.key === 'Enter' && setLightboxIdx(i)}
-                      aria-label="View photo full screen"
-                    >
-                      <Image src={gallery[i]} alt={`${product.name} — ${selectedColor} ${i + 1}`} fill sizes="50vw" style={{ objectFit: 'cover' }} />
-                    </div>
-                  ))}
-                </div>
-              )}
               {gallery.length > 1 && (
                 <div className="pdp-m-thumbs">
                   {gallery.map((image, i) => (
@@ -450,13 +470,42 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                 </div>
               )}
             </div>
+
+            {/* The rest of the mobile gallery — rendered after the buy box. */}
+            {(gallery[1] || gallery[2]) && (
+              <div className="pdp-m-rest">
+                <div className="pdp-m-big2">
+                  {[1, 2].map((i) => gallery[i] && (
+                    <div
+                      key={gallery[i]}
+                      className="pdp-tile pdp-tile--zoom"
+                      onClick={() => setLightboxIdx(i)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => e.key === 'Enter' && setLightboxIdx(i)}
+                      aria-label="View photo full screen"
+                    >
+                      <Image src={gallery[i]} alt={`${product.name} — ${selectedColor} ${i + 1}`} fill sizes="50vw" style={{ objectFit: 'cover' }} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ── Right: details ── */}
-          <div>
-            {/* Trust strip. Analytics showed most cold traffic lands straight
-                on a product page and never sees the homepage story, so the
-                credibility signals have to live here too. */}
+          <div className="pdp-col-info">
+
+            {/* ── Buy box ──
+                Everything needed to make the decision, in one block: name,
+                price, size, colour, CTA. */}
+            <div className="pdp-buybox" ref={inlineCtaRef}>
+
+            {/* Trust strip. Most cold traffic lands straight on a product page
+                and never sees the homepage story, so the credibility signals
+                have to live here too — above the name, where they read as a
+                header for the product rather than as a second footnote row
+                stacked under the shipping/returns line. */}
             <div className="pdp-strip pdp-strip--trust">
               {['women-owned', 'WRAP-certified', 'recycled fabric'].map((claim, i) => (
                 <span key={claim} className="pdp-strip-item">
@@ -468,7 +517,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
             </div>
 
             {ready && (
-              <p style={{ ...eyebrowStyle, marginBottom: '12px' }}>
+              <p style={{ ...eyebrowStyle, marginBottom: '8px' }}>
                 {lockedForLaunch
                   ? 'opens friday · 11am pt'
                   : buyable && !isPreorder
@@ -478,13 +527,14 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
             )}
 
             <h1
+              className="pdp-title"
               style={{
                 fontFamily: sans,
                 fontWeight: 700,
-                fontSize: 'clamp(28px, 3.5vw, 42px)',
+                fontSize: 'clamp(26px, 3.5vw, 42px)',
                 letterSpacing: '-0.03em',
                 color: maroon,
-                margin: '0 0 8px',
+                margin: '0 0 6px',
                 lineHeight: 1.1,
                 textTransform: 'lowercase',
               }}
@@ -492,11 +542,28 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               {product.name}
             </h1>
 
-            <p style={{ ...bodyStyle, fontWeight: 600, color: maroon, marginBottom: '24px' }}>
+            {/* Price, at the size of a price. It was set in 14px body type,
+                which is smaller than the nav — on a phone it read as a caption
+                rather than the number the whole page exists to communicate. */}
+            <p
+              className="pdp-price"
+              style={{
+                fontFamily: sans,
+                fontWeight: 700,
+                fontSize: '20px',
+                lineHeight: 1.2,
+                color: maroon,
+                margin: '0 0 18px',
+              }}
+            >
               ${(product.price / 100).toFixed(2)}
             </p>
 
-            {/* Feature highlights — Halfday-style icon strip */}
+            {/* Feature highlights — Halfday-style icon strip. Sits here on
+                desktop, where there's room beside the gallery. On mobile the
+                buy box is a flex column and this gets `order: 1` (see
+                globals.css), which drops it below the CTA so it isn't standing
+                between the price and the size picker at the fold. */}
             {fabricDetail?.highlights && fabricDetail.highlights.length > 0 && (
               <div
                 className="pdp-highlights"
@@ -506,7 +573,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   justifyContent: 'center',
                   gap: '12px 16px',
                   padding: '14px 16px',
-                  marginBottom: '26px',
+                  marginBottom: '24px',
                   backgroundColor: 'white',
                   borderRadius: '12px',
                   width: 'fit-content',
@@ -529,8 +596,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               <div
                 ref={sizeRef}
                 style={{
-                  // 22px clears the size pills before the model note below.
-                  marginBottom: '22px',
+                  marginBottom: '16px',
                   // Flashes when someone taps buy without choosing a size.
                   borderRadius: '12px',
                   padding: flashSize ? '10px' : 0,
@@ -547,7 +613,11 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       style={{
-                        padding: '8px 18px',
+                        // 42px min height: an 8px-padded 12px pill is a ~30px
+                        // tap target, well under the 44px thumb minimum, and
+                        // this is a phone-first store.
+                        padding: '11px 18px',
+                        minHeight: '42px',
                         fontFamily: sans,
                         fontSize: '12px',
                         fontWeight: 600,
@@ -566,30 +636,19 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               </div>
             )}
 
-            {/* Model reference — sizing context, so it sits under the size row
-                with real breathing room rather than jammed against it. */}
-            {fabricDetail?.modelNote && (
-              <p
-                style={{
-                  fontFamily: sans,
-                  fontSize: '12.5px',
-                  fontStyle: 'italic',
-                  lineHeight: 1.6,
-                  color: soft,
-                  margin: '0 0 26px',
-                }}
-              >
-                {fabricDetail.modelNote}
-              </p>
-            )}
-
-            {/* Colors */}
+            {/* Colors. The model-reference note used to sit here, between the
+                size row and the swatches — two lines of italic text pushing the
+                CTA further down. It now lives with fit & sizing, where someone
+                actually looking for it will go. */}
             {swatchColors.length > 0 && (
-              <div style={{ marginBottom: '28px' }}>
-                <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '10px' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '8px' }}>
                   color · {selectedColor.toLowerCase()}
                 </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                {/* gap 0: each button is a 42px tap target around a 26px dot,
+                    so the dots already sit 16px apart — adding gap on top of
+                    that spread them across half the column. */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 0, marginLeft: '-8px' }}>
                   {swatchColors.map((swatch) => {
                     const isSelected = selectedColor === swatch.name;
                     const isGradient = swatch.value.startsWith('linear-gradient');
@@ -597,23 +656,41 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                       <button
                         key={swatch.name}
                         title={swatch.name}
+                        aria-label={swatch.name}
+                        aria-pressed={isSelected}
                         onClick={() => handleColorSelect(swatch.name)}
                         style={{
-                          width: '26px',
-                          height: '26px',
-                          borderRadius: '50%',
-                          border: isSelected ? `2px solid ${maroon}` : '2px solid transparent',
-                          outline: isSelected ? 'none' : `1px solid ${rule}`,
-                          outlineOffset: '1px',
-                          background: isGradient ? swatch.value : undefined,
-                          backgroundColor: isGradient ? undefined : swatch.value,
+                          // The visible dot stays 26px; the button around it is
+                          // 42px so it's a real thumb target on a phone.
+                          width: '42px',
+                          height: '42px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: 'none',
+                          background: 'none',
                           cursor: 'pointer',
                           padding: 0,
                           flexShrink: 0,
-                          transition: 'border-color 0.15s, transform 0.15s',
-                          transform: isSelected ? 'scale(1.15)' : 'scale(1)',
                         }}
-                      />
+                      >
+                        <span
+                          aria-hidden
+                          style={{
+                            display: 'block',
+                            width: '26px',
+                            height: '26px',
+                            borderRadius: '50%',
+                            border: isSelected ? `2px solid ${maroon}` : '2px solid transparent',
+                            outline: isSelected ? 'none' : `1px solid ${rule}`,
+                            outlineOffset: '1px',
+                            background: isGradient ? swatch.value : undefined,
+                            backgroundColor: isGradient ? undefined : swatch.value,
+                            transition: 'border-color 0.15s, transform 0.15s',
+                            transform: isSelected ? 'scale(1.15)' : 'scale(1)',
+                          }}
+                        />
+                      </button>
                     );
                   })}
                 </div>
@@ -852,6 +929,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               )}
             </div>
 
+            </div>{/* /.pdp-buybox */}
+
+            {/* ── Everything below the decision ──
+                On mobile this renders after the rest of the gallery. */}
+            <div className="pdp-details">
+
             {/* Description */}
             <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
               <p style={bodyStyle}>{product.description}</p>
@@ -864,6 +947,11 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                 {fabricDetail.fit.split('\n\n').map((block, i) => (
                   <p key={i} style={{ ...bodyStyle, margin: i > 0 ? '10px 0 0' : 0 }}>{block}</p>
                 ))}
+                {fabricDetail.modelNote && (
+                  <p style={{ ...bodyStyle, fontSize: '12.5px', fontStyle: 'italic', marginTop: '12px' }}>
+                    {fabricDetail.modelNote}
+                  </p>
+                )}
                 {fabricDetail.sizeChart && (
                   <p style={{ ...bodyStyle, fontSize: '13px', marginTop: '12px' }}>
                     Full measurements in the <span style={{ color: maroon, fontWeight: 600 }}>size guide</span> below.
@@ -910,6 +998,8 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               ))}
             </div>
 
+            </div>{/* /.pdp-details */}
+
           </div>
         </div>
       </div>
@@ -925,9 +1015,8 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
       )}
 
       {/* ── Sticky mobile buy bar ──
-          Mobile only, appears once the hero image scrolls past. Keeps a live
-          CTA on screen for the whole page instead of leaving it stranded under
-          a tall gallery. */}
+          Mobile only. On by default; hides only while the inline buy box is on
+          screen. There is always a live, priced CTA within thumb reach. */}
       {buyable && (
         <div
           className="pdp-buybar"
