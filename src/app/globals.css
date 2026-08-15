@@ -479,18 +479,38 @@ body {
 }
 .pdp-m-hero {
   position: relative;
-  /* Was aspect-ratio 3/4 — on a 390px phone that's a 520px-tall photo that
-     fills the screen on its own, so nothing below it was ever visible without
-     a deliberate swipe. A fixed share of the viewport instead. Measured at
-     375/390/412px wide: this puts the price at 531–638px, i.e. on the first
-     screen of every common handset, with the size row at the fold. */
-  height: 43vh;
-  height: 43svh;
-  min-height: 280px;
-  max-height: 420px;
+
+  /* The shoot is 2:3 (1067x1600). A fixed height cropped it hard — a 390px-wide
+     box 363px tall is landscape, so `cover` was cutting roughly a third off the
+     top and bottom of every frame.
+
+     So: size the box FROM the photo's ratio, never against it. `--hero-h` is
+     the smaller of a share of the viewport height and the height a full-width
+     2:3 photo would need, and the width is derived from it. Whichever limit
+     bites, the box stays exactly 2:3 and the photo is shown whole.
+
+       - tall phones (412x915):  full width, ~558px tall
+       - typical  (390x844):     full width, ~525px tall
+       - short    (375x667):     ~293px wide, centred on blush
+
+     1.5 is 3/2, the inverse of the 2:3 frame. 40px is the shell's side padding
+     on mobile (clamp(20px, 4vw, 48px) resolves to 20px at phone widths). */
+  --hero-h: min(66svh, calc((100vw - 40px) * 1.5));
+  height: var(--hero-h);
+  width: calc(var(--hero-h) / 1.5);
+  max-width: 100%;
+  margin: 0 auto;
+
   border-radius: 10px;
   overflow: hidden;
   background-color: #FBF1F5;
+}
+
+/* svh isn't universal; vh is the fallback for anything that doesn't support it. */
+@supports not (height: 1svh) {
+  .pdp-m-hero {
+    --hero-h: min(66vh, calc((100vw - 40px) * 1.5));
+  }
 }
 .pdp-m-big2 {
   display: grid;

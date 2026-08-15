@@ -452,7 +452,11 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   priority
                   quality={82}
                   sizes="100vw"
-                  style={{ objectFit: 'cover' }}
+                  // contain, not cover. The box is already 2:3, so for the
+                  // current shoot the two are identical — but if a future photo
+                  // isn't exactly 2:3, this shows it whole on blush instead of
+                  // silently cropping it. Matches the desktop tiles.
+                  style={{ objectFit: 'contain' }}
                 />
               </div>
               {gallery.length > 1 && (
