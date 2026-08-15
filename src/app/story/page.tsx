@@ -75,7 +75,7 @@ export default function StoryPage() {
           </p>
 
           <p style={bodyStyle}>
-            Our founder, Rachel, was backpacking through Yosemite when she asked herself: why is so
+            Our founder, Rachel, was backpacking through the Tuolumne Meadows in Yosemite when she asked herself: why is so
             much women&apos;s outdoor gear still boxy, muted, and designed around the same very
             specific idea of what an &ldquo;outdoorsy person&rdquo; should look like?
           </p>
