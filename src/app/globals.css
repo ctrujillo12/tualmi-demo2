@@ -439,9 +439,21 @@ body {
     padding-bottom: 48px;
   }
 
-  /* Clearance for the sticky buy bar so it never covers the last row. */
+  /* Clearance for the sticky buy bar so it never covers the last row.
+     Also the single source of truth for the mobile gallery's width — the hero,
+     the thumbnail strip and the supporting shots all size off these, so they
+     line up in one centred column no matter how many photos a product has. */
   .pdp-page {
     padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+    --hero-h: min(66svh, calc((100vw - 40px) * 1.5));
+    --hero-w: calc(var(--hero-h) / 1.5);
+  }
+}
+
+/* svh isn't universal; vh is the fallback for anything that doesn't have it. */
+@supports not (height: 1svh) {
+  @media (max-width: 767px) {
+    .pdp-page { --hero-h: min(66vh, calc((100vw - 40px) * 1.5)); }
   }
 }
 
@@ -493,11 +505,11 @@ body {
        - typical  (390x844):     full width, ~525px tall
        - short    (375x667):     ~293px wide, centred on blush
 
-     1.5 is 3/2, the inverse of the 2:3 frame. 40px is the shell's side padding
-     on mobile (clamp(20px, 4vw, 48px) resolves to 20px at phone widths). */
-  --hero-h: min(66svh, calc((100vw - 40px) * 1.5));
+     1.5 is 3/2, the inverse of the 2:3 frame. --hero-h / --hero-w are defined
+     once on .pdp-page so the thumbnail strip and the supporting shots can size
+     off the same numbers and stay in one centred column. */
   height: var(--hero-h);
-  width: calc(var(--hero-h) / 1.5);
+  width: var(--hero-w);
   max-width: 100%;
   margin: 0 auto;
 
@@ -506,24 +518,44 @@ body {
   background-color: #FBF1F5;
 }
 
-/* svh isn't universal; vh is the fallback for anything that doesn't support it. */
-@supports not (height: 1svh) {
-  .pdp-m-hero {
-    --hero-h: min(66vh, calc((100vw - 40px) * 1.5));
-  }
-}
+/* ── Supporting shots + thumbnail strip ───────────────────────────────────
+   Both are pinned to the hero's width and centred inside it. On a narrow
+   phone the hero doesn't fill the column (it's ratio-locked, so it can be
+   ~293px inside a 335px shell) — a full-width grid underneath it started
+   further left than the photo and read as misaligned. Everything in the
+   mobile gallery now shares one centred column, at any photo count.       */
 .pdp-m-big2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
-  margin-top: 8px;
+  width: var(--hero-w);
+  max-width: 100%;
+  margin: 8px auto 0;
+}
+/* Two per row by default; an odd one out centres on its own row rather than
+   hanging off the left edge. */
+.pdp-m-big2 > * {
+  flex: 0 1 calc((100% - 8px) / 2);
+  min-width: 0;
+}
+/* A product with a single supporting shot gets it at the hero's full width —
+   a lone half-width tile floating in the middle looks like a mistake. */
+.pdp-m-big2 > *:only-child {
+  flex-basis: 100%;
 }
 .pdp-m-thumbs {
   display: flex;
   gap: 8px;
+  /* `safe` keeps the overflow reachable when there are more thumbs than fit:
+     plain `center` would push the first ones past the left scroll origin.
+     Browsers without `safe` fall back to the plain `center` above it. */
+  justify-content: center;
+  justify-content: safe center;
   overflow-x: auto;
+  width: var(--hero-w);
   max-width: 100%;
-  margin-top: 8px;
+  margin: 8px auto 0;
   padding-bottom: 4px;
   -webkit-overflow-scrolling: touch;
 }
