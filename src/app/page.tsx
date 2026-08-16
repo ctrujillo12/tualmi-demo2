@@ -1,7 +1,6 @@
-import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import LaunchCountdown from '@/components/LaunchCountdown';
+import HeroCarousel from '@/components/HeroCarousel';
 import PanelShopLink from '@/components/PanelShopLink';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import QuickAdd from '@/components/QuickAdd';
@@ -9,11 +8,8 @@ import { getProduct } from '@/lib/products';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const serif  = "'Cormorant Garamond', Georgia, serif";
 const maroon = '#A9445C';
 const blushBg = '#FBF1F5';
-
-const HERO_IMAGE = '/images-2/funky-rock0.jpg';
 
 // Product structured data — all items are shown on this page. Availability +
 // verified fabric per item; PreOrder for the drop, InStock for the tote.
@@ -170,84 +166,16 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productsJsonLd) }}
       />
-      {/* ══ 1 · HERO ══════════════════════════════════════════════════════ */}
-      <section className="hero-viewport" style={{ position: 'relative', minHeight: '560px', overflow: 'hidden' }}>
-        <Image
-          src={HERO_IMAGE}
-          alt="Tualmi Outdoors"
-          fill
-          priority
-          // object-position lives in CSS (.hero-img) so mobile can anchor the
-          // photo to the top — that crops the bottom of the frame (the feet)
-          // rather than trimming evenly from both edges.
-          className="hero-img"
-          style={{ objectFit: 'cover' }}
-        />
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,12,8,0.18)' }} />
-
-        {/* Centered logo lockup + subtle launch countdown */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 'clamp(18px, 4vh, 32px)',
-            zIndex: 1,
-          }}
-        >
-          <div
-            className="hero-center"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 'clamp(20px, 4vw, 56px)',
-            }}
-          >
-            <span className="hero-est" style={heroEstStyle}>EST</span>
-            <div className="hero-lockup" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images-2/logo2-brown.png"
-                alt=""
-                style={{ height: 'clamp(60px, 9vw, 120px)', width: 'auto', filter: 'brightness(0) invert(1)' }}
-              />
-              <span
-                className="hero-wordmark"
-                style={{
-                  fontFamily: serif,
-                  fontSize: 'clamp(64px, 10vw, 140px)',
-                  fontWeight: 400,
-                  color: 'white',
-                  lineHeight: 1,
-                }}
-              >
-                Tualmi
-              </span>
-            </div>
-            <span className="hero-est" style={heroEstStyle}>2026</span>
-          </div>
-
-          <LaunchCountdown tone="light" />
-        </div>
-
-        {/* Straight-to-product links, pinned near the bottom edge of the hero.
-            Outside the centred lockup so they sit low without pushing the
-            wordmark up. */}
-        {/* Prices ride along with the links so the first dollar figure a
-            visitor sees is a product price, not a free-shipping gap. */}
-        <div className="hero-links">
-          <Link href="/products/sierra-shorts" className="hero-link">
-            shop shorts · $68
-          </Link>
-          <Link href="/products/juniper-pant" className="hero-link">
-            shop pants · $108
-          </Link>
-        </div>
-      </section>
+      {/* ══ 1 · HERO — shoppable carousel ═══════════════════════════════ */}
+      {/* One slide per product: photo, price, and a button straight to the
+          PDP. Prices are handed down from the Shopify fetch above so the hero
+          can't drift from the panels further down the page. */}
+      <HeroCarousel
+        prices={{
+          'sierra-shorts': shortsProduct?.price,
+          'juniper-pant': pantProduct?.price,
+        }}
+      />
 
       {/* ══ 2 · ABOUT ═════════════════════════════════════════════════════ */}
       {/* Kept short on mobile (see .home-about in globals.css): every pixel of
@@ -472,11 +400,3 @@ export default async function Home() {
     </>
   );
 }
-
-const heroEstStyle: CSSProperties = {
-  fontFamily: sans,
-  fontSize: 'clamp(14px, 1.8vw, 22px)',
-  fontWeight: 500,
-  letterSpacing: '0.2em',
-  color: 'white',
-};

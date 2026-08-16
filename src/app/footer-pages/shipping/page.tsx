@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { PolicyPage, Section, P, Bullets, DataTable, maroon } from '@/components/PolicyPage';
+import { FREE_SHIPPING_SENTENCE, FREE_SHIPPING_THRESHOLD, money } from '@/lib/shipping';
 
 export default function ShippingPage() {
   return (
@@ -11,8 +12,20 @@ export default function ShippingPage() {
         </P>
       </Section>
 
+      <Section heading="free shipping">
+        {/* The threshold is promised in the header strip, the cart bar and on
+            every product page, but the policy page never stated it — which is
+            the one page a shopper opens to check whether the promise is real.
+            Reads from lib/shipping so it can't drift from those surfaces. */}
+        <P>
+          <strong>{FREE_SHIPPING_SENTENCE}</strong> The discount applies automatically at
+          checkout once your order subtotal reaches {money(FREE_SHIPPING_THRESHOLD)}, before
+          tax. International orders are quoted live by the carrier and aren&apos;t covered.
+        </P>
+      </Section>
+
       <Section heading="united states">
-        <P>Flat rate standard shipping:</P>
+        <P>Flat rate standard shipping under {money(FREE_SHIPPING_THRESHOLD)}:</P>
         <DataTable
           headers={['service', 'order weight', 'rate']}
           rows={[

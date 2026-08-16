@@ -7,26 +7,44 @@
  *
  * IMPORTANT: this is only the storefront messaging. The actual discount has to
  * exist in Shopify (Settings → Shipping and delivery → add a Free shipping
- * rate with a $130 minimum, or a Free Shipping discount with a minimum
+ * rate with a $100 minimum, or a Free Shipping discount with a minimum
  * purchase amount). Without it the site promises something checkout won't
- * honour.
+ * honour. If you change the number here, change it there in the same sitting.
  */
 
 /**
  * Orders at or above this qualify. Cents, to match cart maths.
  *
- * $130 is set so two pairs of Sierra Shorts ($68 each = $136) clear it — the
- * threshold exists to make the second pair feel free to ship, so it has to sit
- * just under that number, not above it.
+ * $100. What each basket does at this number:
+ *   1 × Sierra Shorts  $68  → $32 short, so the bar has something to ask for
+ *   2 × Sierra Shorts  $136 → clears
+ *   1 × Juniper Pant   $108 → clears on its own
+ *   shorts + pant      $176 → clears
+ *
+ * The previous $130 was tuned so only a second pair of shorts cleared it. At
+ * $100 a single pant ships free, which is the trade being made deliberately:
+ * more orders qualify, and the shipping cost on a one-pant order comes out of
+ * margin instead of the customer.
  *
  * Must match the minimum on the Shopify free-shipping rule.
  */
-export const FREE_SHIPPING_THRESHOLD = 13000;
+export const FREE_SHIPPING_THRESHOLD = 10000;
 
 // "US" is load-bearing: the Shopify rule is United States only and excludes
 // rates over $11, so international orders still pay. Claiming plain "free
-// shipping" would be a promise checkout doesn't keep.
-export const FREE_SHIPPING_LABEL = 'free US shipping over $130';
+// shipping" would be a promise checkout doesn't keep. Drop the word only if
+// the Shopify rule is changed to cover every country.
+// Derived from the constant, not retyped, so the number can only ever be
+// changed in one place. `money` is a function declaration, so it is hoisted
+// and usable here.
+export const FREE_SHIPPING_LABEL = `free US shipping over ${money(FREE_SHIPPING_THRESHOLD)}`;
+
+/**
+ * Long-form version of the same promise, for places with room for a sentence
+ * (policy pages, the cart panel, email). Same number, same caveat, one source.
+ */
+export const FREE_SHIPPING_SENTENCE =
+  `Earn free shipping if you spend over ${money(FREE_SHIPPING_THRESHOLD)} on US orders.`;
 
 /**
  * Flat US shipping rate charged below the free threshold, in cents.

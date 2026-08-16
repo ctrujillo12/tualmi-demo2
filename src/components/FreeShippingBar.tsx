@@ -45,7 +45,10 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
       )
     ) : (
       <>
-        free US shipping over <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong>
+        {/* "earn" rather than a flat statement of fact — the idle state is the
+            one a shopper sees before they've added anything, so it should read
+            as something to go get, not a policy line. */}
+        earn free US shipping over <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong>
       </>
     );
 
