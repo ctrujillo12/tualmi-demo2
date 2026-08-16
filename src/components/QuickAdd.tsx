@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { Product } from '@/types';
@@ -19,20 +19,46 @@ import { trackAddToCart } from '@/lib/analytics';
  * `product` comes from the server (page.tsx fetches it via getProduct) so cart
  * lines carry real Shopify variants — building them from partial data is what
  * causes "no variant matched" at checkout.
+ *
+ * `stayOnPage` is for the cart's "you might also like" row: adding from there
+ * shouldn't navigate to the cart, because that's the page you're already on.
+ * It confirms inline instead. Everything else — the variant snapshot, the
+ * preorder flags, the analytics event — stays on this one code path, so the
+ * two entry points can't drift.
  */
 export default function QuickAdd({
   product,
   color,
   accent,
+  stayOnPage = false,
+  sizeVariant = 'pill',
 }: {
   product: Product | null;
   color: string;
   accent: string;
+  /** Confirm inline instead of navigating to /cart. */
+  stayOnPage?: boolean;
+  /**
+   * 'pill'  — bordered buttons. Fine in a wide tile.
+   * 'link'  — plain text on one line, underlined on press. For narrow tiles
+   *           (the cart's "you might also like" cards) where seven bordered
+   *           pills wrap onto three rows and shove the card out of shape.
+   */
+  sizeVariant?: 'pill' | 'link';
 }) {
   const addItem = useCartStore((s) => s.addItem);
   const { canShop, ready } = useShopAccess();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+
+  // Confirmation is a state, not a toast — it reverts so the tile can be used
+  // again (someone adding two colourways in a row).
+  useEffect(() => {
+    if (!justAdded) return;
+    const t = setTimeout(() => setJustAdded(false), 1900);
+    return () => clearTimeout(t);
+  }, [justAdded]);
 
   const handle = product?.handle ?? '';
   const shoppable = ready && isBuyable(handle, canShop) && !!product;
@@ -78,17 +104,32 @@ export default function QuickAdd({
       url: `/products/${handle}?color=${encodeURIComponent(color)}`,
     });
 
+    if (stayOnPage) {
+      setOpen(false);
+      setJustAdded(true);
+      return;
+    }
     router.push('/cart');
   };
 
-  if (open) {
+  if (justAdded) {
     return (
-      <div className="qa-sizes">
+      <p className="qa-btn qa-added" role="status" style={{ color: accent, borderColor: accent }}>
+        added ✦
+      </p>
+    );
+  }
+
+  if (open) {
+    const asLink = sizeVariant === 'link';
+    const sizeClass = `qa-size${asLink ? ' qa-size--link' : ''}`;
+    return (
+      <div className={`qa-sizes${asLink ? ' qa-sizes--link' : ''}`}>
         {sizes.map((s) => (
           <button
             key={s}
             onClick={() => add(s)}
-            className="qa-size"
+            className={sizeClass}
             style={{ color: accent, borderColor: accent }}
           >
             {s}
@@ -96,7 +137,7 @@ export default function QuickAdd({
         ))}
         <button
           onClick={() => setOpen(false)}
-          className="qa-size qa-size--close"
+          className={`${sizeClass} qa-size--close`}
           aria-label="Close size picker"
           style={{ color: accent, borderColor: accent }}
         >

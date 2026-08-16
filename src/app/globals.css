@@ -908,6 +908,16 @@ body {
 
 .qa-btn:hover { background-color: #fff; }
 
+/* Post-add confirmation. Same pill as the button so the tile doesn't resize
+   and shove its neighbours around for the two seconds it's showing — it is a
+   <p>, not a button, because there is nothing left to press. */
+.qa-added {
+  cursor: default;
+  background: #fff;
+  justify-content: center;
+  letter-spacing: 0.06em;
+}
+
 .qa-plus {
   font-size: 15px;
   line-height: 1;
@@ -941,6 +951,51 @@ body {
 
 .qa-size:hover { background: #fff; }
 .qa-size--close { flex: 0 0 auto; min-width: 28px; font-size: 13px; }
+
+/* ── Size row, link style ──────────────────────────────────────────────────
+   For narrow tiles — the cart's "you might also like" cards are ~150px wide
+   on a phone, where seven bordered pills wrapped onto three rows and pushed
+   the card taller than its neighbours. Plain text, one line, no boxes. The
+   affordance is the underline on press rather than a border, which also means
+   the row costs one line of height instead of three.                       */
+.qa-sizes--link {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: clamp(4px, 1.2vw, 9px);
+  margin-top: 11px;
+  padding: 0 1px;
+}
+
+.qa-size--link {
+  flex: 0 1 auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 3px 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  /* Scales down on the narrowest phones so XXS…XXL plus the close still fit
+     on one line rather than wrapping. */
+  font-size: clamp(8.5px, 2.4vw, 11px);
+  letter-spacing: 0;
+  white-space: nowrap;
+  text-decoration: none;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+.qa-size--link:hover,
+.qa-size--link:active,
+.qa-size--link:focus-visible { background: none; text-decoration: underline; }
+
+.qa-size--link.qa-size--close {
+  flex: 0 0 auto;
+  min-width: 0;
+  font-size: 12px;
+  opacity: 0.5;
+}
+.qa-size--link.qa-size--close:hover { opacity: 1; text-decoration: none; }
 
 @media (max-width: 768px) {
   /* Three tiles share a row on mobile, so everything shrinks to fit. */

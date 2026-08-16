@@ -5,6 +5,7 @@ import Link from 'next/link';
 import CartItem from '@/components/CartItem';
 import DiscountBadge from '@/components/DiscountBadge';
 import FreeShippingBar from '@/components/FreeShippingBar';
+import CartUpsell from '@/components/CartUpsell';
 import { freeShippingProgress, FLAT_SHIPPING_CENTS, money } from '@/lib/shipping';
 import { useCartStore } from '@/store/cartStore';
 import { useShopAccess } from '@/lib/useShopAccess';
@@ -255,6 +256,12 @@ export default function CartPage() {
           </div>
 
         </div>
+
+        {/* Under everything, below the checkout button: the colourways of the
+            drop that aren't in this cart yet. Deliberately last — the total is
+            what they came to read, and pushing it down the page to sell a
+            second item is how you lose the first one. */}
+        <CartUpsell />
       </div>
     </main>
   );
