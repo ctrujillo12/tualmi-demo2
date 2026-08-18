@@ -33,6 +33,31 @@ someone adds to cart — only briefly during checkout. Two shoppers can always
 race for the last unit, and the loser sees an error at payment. That's inherent
 to hosted checkout, not something the storefront can fix.
 
+### Multiple locations — keeping gifting stock unsellable
+
+The store has two locations, one of which holds gifting stock that must never
+count as buyable. This is settled entirely in Shopify; the storefront just
+reads what Shopify reports.
+
+Shopify admin → **Settings → Locations** → open the gifting location → uncheck
+**"Fulfill online orders from this location"**.
+
+That's the whole fix. Inventory at a location that doesn't fulfil online orders
+still counts toward your *total* inventory but is excluded from the *online*
+quantity — and the online quantity is exactly what the Storefront API's
+`quantityAvailable` reports ("the total sellable quantity of the variant for
+online sales channels"). So the numbers on the product page drop to
+warehouse-only stock automatically, with no code change.
+
+Worth knowing: a variant stocked **only** at the gifting location becomes
+unavailable online once you do this. That's the intent, but it will show as
+sold out on the storefront, so check nothing you actually sell lives there
+alone.
+
+**Verify it took:** re-run `node scripts/dump-variants.mjs`. Every `qty` should
+drop by whatever that variant holds at the gifting location. If the numbers
+don't move, the checkbox didn't save or you unchecked the wrong location.
+
 ### Storefront token scope
 
 To show real quantities ("only 3 left") rather than a hand-kept list, the
@@ -123,7 +148,7 @@ to 60 seconds — a long time mid-drop.
 
 | Variable | Default | What it does |
 | --- | --- | --- |
-| `NEXT_PUBLIC_LOW_STOCK_BELOW` | `10` | Below this many units, a size reads "only a few left". At 10 that means 1–9 are flagged, 10 is not |
+| `NEXT_PUBLIC_LOW_STOCK_AT_OR_BELOW` | `10` | This many units or fewer reads "only a few left". At 10 that means 1–10 are flagged, 11 is not |
 | `NEXT_PUBLIC_SHOPIFY_API_VERSION` | `2024-01` | Storefront API version. Bump after smoke-testing a product page and a checkout |
 | `SHOPIFY_WEBHOOK_SECRET` | — | Shared by both Shopify webhook routes |
 

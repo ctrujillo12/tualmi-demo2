@@ -78,8 +78,8 @@ console.log('\nquantities readable');
     assert.equal(availability(p, 'Picnic', 'S').low, true);
     assert.equal(availability(p, 'Picnic', 'M').low, false);
   });
-  check('the boundary is "under 10" — 9 is low, 10 is not', () => {
-    const q = product([v('Picnic', 'S', true, 9), v('Picnic', 'M', true, 10)]);
+  check('the boundary is "10 or fewer" — 10 is low, 11 is not', () => {
+    const q = product([v('Picnic', 'S', true, 10), v('Picnic', 'M', true, 11)]);
     assert.equal(availability(q, 'Picnic', 'S').low, true);
     assert.equal(availability(q, 'Picnic', 'M').low, false);
   });
@@ -224,6 +224,73 @@ console.log('\nthe substitution bug');
   });
   check('a size with no variant resolves to nothing', () => {
     assert.equal(findVariant(p, 'Picnic', 'XXL'), null);
+  });
+}
+
+console.log('\nno size may ever show another size\'s number');
+{
+  // Distinct counts per size, so any cross-wiring shows up immediately.
+  const p = product([
+    v('Picnic', 'XS', true, 3),
+    v('Picnic', 'S', true, 8),
+    v('Picnic', 'M', true, 21),
+    v('Jam', 'XS', true, 99),
+    v('Jam', 'S', true, 55),
+    v('Jam', 'M', true, 44),
+  ], ['XS', 'S', 'M']);
+
+  check('every size reports its own count, per colourway', () => {
+    assert.equal(availability(p, 'Picnic', 'XS').quantity, 3);
+    assert.equal(availability(p, 'Picnic', 'S').quantity, 8);
+    assert.equal(availability(p, 'Picnic', 'M').quantity, 21);
+    assert.equal(availability(p, 'Jam', 'XS').quantity, 99);
+    assert.equal(availability(p, 'Jam', 'S').quantity, 55);
+    assert.equal(availability(p, 'Jam', 'M').quantity, 44);
+  });
+  check('no two sizes in a colourway resolve to the same variant', () => {
+    const ids = ['XS', 'S', 'M'].map((s) => findVariant(p, 'Picnic', s)?.id);
+    assert.equal(new Set(ids).size, 3);
+    assert.ok(ids.every(Boolean));
+  });
+  check('switching colourway changes the number, not just the label', () => {
+    assert.notEqual(
+      availability(p, 'Picnic', 'S').quantity,
+      availability(p, 'Jam', 'S').quantity,
+    );
+  });
+}
+
+console.log('\noptions named something other than Size/Color');
+{
+  // The dangerous case: nothing declares "size", so the old per-variant logic
+  // matched the FIRST variant for every size and showed its count everywhere.
+  const odd = (waist: string, qty: number): ShopifyVariant => ({
+    id: `gid://shopify/ProductVariant/waist-${waist}`,
+    title: waist,
+    price: { amount: '108.00', currencyCode: 'USD' },
+    availableForSale: true,
+    quantityAvailable: qty,
+    currentlyNotInStock: false,
+    selectedOptions: [{ name: 'Waist', value: waist }],
+  });
+  const p = product([odd('24', 8), odd('26', 40), odd('28', 2)], ['XS', 'S', 'M']);
+
+  check('resolves to nothing rather than guessing a variant', () => {
+    assert.equal(findVariant(p, 'Picnic', 'XS'), null);
+    assert.equal(findVariant(p, 'Picnic', 'S'), null);
+  });
+  check('no size shows a fabricated count', () => {
+    for (const s of ['XS', 'S', 'M']) {
+      assert.equal(availability(p, 'Picnic', s).quantity, null, `${s} must not report a count`);
+      assert.equal(availability(p, 'Picnic', s).status, 'unknown');
+      assert.equal(availability(p, 'Picnic', s).low, false);
+    }
+  });
+  check('and nothing is blocked from being bought', () => {
+    for (const s of ['XS', 'S', 'M']) {
+      assert.equal(isSoldOut(p, 'Picnic', s), false);
+      assert.equal(maxPurchasable(p, 'Picnic', s, 10), 10);
+    }
   });
 }
 

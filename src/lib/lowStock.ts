@@ -3,9 +3,10 @@
  *
  * ── THIS IS NO LONGER THE PRIMARY SOURCE ─────────────────────────────────
  * Low stock is now derived from real Shopify quantities. lib/inventory.ts
- * reads `quantityAvailable` off each variant and flags anything below
- * LOW_STOCK_BELOW (10 by default — so 1 through 9), which means the storefront
- * tracks restocks and sell-downs on its own with nothing to maintain here.
+ * reads `quantityAvailable` off each variant and flags anything at or below
+ * LOW_STOCK_AT_OR_BELOW (10 by default — so 1 through 10), which means the
+ * storefront tracks restocks and sell-downs on its own with nothing to
+ * maintain here.
  *
  * The old comment in this file claimed the storefront "genuinely cannot see
  * stock levels". It can — the query failed because the Storefront token was
@@ -37,8 +38,14 @@
  */
 
 const LOW_STOCK_OVERRIDES: Record<string, string[]> = {
-  // Fewer than 10 pairs left, as of 18 Aug 2026.
-  'sierra-shorts|Picnic': ['S'],
+  // Verified against Shopify on 18 Aug 2026 (scripts/dump-variants.mjs).
+  // Sierra Shorts, Picnic: XS=8, S=10, XL=8 — all at or under the threshold.
+  // 2XS and 2XL are also thin but exempt by design, see NO_LOW_STOCK_DOT.
+  //
+  // Only reachable if the inventory scope stops working. While quantities are
+  // readable this is dead weight, and the numbers above will drift.
+  'sierra-shorts|Picnic': ['XS', 'S', 'XL'],
+  'sierra-shorts|Jam': ['XS', 'XL'],
 };
 
 /** The wording used wherever a low-stock size is shown. */
