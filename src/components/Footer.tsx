@@ -17,6 +17,7 @@ const LINK_COL_1 = [
 ];
 
 const LINK_COL_2 = [
+  { name: 'in the wild',          href: '/in-the-wild' },
   { name: 'contact us',           href: 'mailto:hello@tualmi.com' },
   { name: 'privacy policy',       href: '/footer-pages/privacy' },
   { name: 'terms and conditions', href: '/footer-pages/legal' },

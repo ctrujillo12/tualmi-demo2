@@ -25,16 +25,41 @@ import os
 pillow_heif.register_heif_opener()  # lets PIL read .heic / .HEIC
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
-SRC = "/sessions/zen-fervent-shannon/mnt/Website Photos"
+# The shoot folder. Defaults to where it lives in the repo; override with
+# PHOTOS_SRC=/some/path when running from a machine that has it elsewhere.
+SRC = os.environ.get(
+    "PHOTOS_SRC",
+    os.path.join(ROOT, "public", "images-2", "Website Photos"),
+)
 OUT = os.path.join(ROOT, "public", "images-2", "model")
 
-MAX_EDGE = 1600
+# 2000px on the long edge → 1333px wide for a 2:3 portrait. The gallery is
+# 100vw on phones, so a 430pt phone at 3x density asks for ~1290px — 1600px
+# masters (1067 wide) were being upscaled by the browser on exactly the device
+# most people shop on. These are master files: next/image resizes per device
+# and serves AVIF/WebP on top, so a visitor never downloads this.
+#
+# Sources are NEVER upscaled. Anything below 2000px comes out at native size
+# and is reported at the end of the run.
+MAX_EDGE = 2000
 QUALITY = 82
 
 # destination stem -> (source folder, filename), in gallery order
+#
+# The shoot folder also contains older, lower-resolution duplicates of some of
+# these colorways — "Jam - Sierra Shorts", "Picnic - Sierra Shorts",
+# "Confetti - Sierra Shorts" and "Birch - Juniper Pants". Nothing below points
+# at them on purpose. If you add a colorway, take it from the newer folders
+# (the ones named by colour, plus "fixed photos").
 PLAN = {
     # Sierra Shorts — Jam. Uses "fixed photos" (retouched) rather than the
     # raw "Red Shorts" folder; same six shots, cleaner grade.
+    #
+    # NOTE: these retouched exports are only 828x1242 — less than half the
+    # resolution of every other colorway, and below what a modern phone
+    # gallery asks for. Re-export them from the retouching app at full size
+    # and Jam stops being the soft one. The raw "Red Shorts" folder has the
+    # same frames at 3000px+ if you'd rather go back to those.
     "jam-1": ("fixed photos", "3.png"),
     "jam-2": ("fixed photos", "6.png"),
     "jam-3": ("fixed photos", "4.png"),

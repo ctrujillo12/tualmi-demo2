@@ -10,6 +10,7 @@ import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
 import { FREE_SHIPPING_LABEL } from '@/lib/shipping';
+import { isLowStock, LOW_STOCK_LABEL } from '@/lib/lowStock';
 import ImageLightbox from '@/components/ImageLightbox';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 
@@ -612,31 +613,88 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               >
                 <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '10px' }}>size</p>
                 <div className="pdp-sizes">
-                  {product.sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      style={{
-                        // 42px min height: an 8px-padded 12px pill is a ~30px
-                        // tap target, well under the 44px thumb minimum, and
-                        // this is a phone-first store.
-                        padding: '11px 18px',
-                        minHeight: '42px',
-                        fontFamily: sans,
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        borderRadius: '100px',
-                        border: `1.5px solid ${maroon}`,
-                        backgroundColor: selectedSize === size ? maroon : 'transparent',
-                        color: selectedSize === size ? 'white' : maroon,
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                      }}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  {product.sizes.map((size) => {
+                    const low = isLowStock(handle, selectedColor, size);
+                    return (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        // Announced rather than left to the dot alone — a red
+                        // circle means nothing to a screen reader.
+                        aria-label={low ? `${size} — ${LOW_STOCK_LABEL}` : size}
+                        style={{
+                          position: 'relative',
+                          // 42px min height: an 8px-padded 12px pill is a ~30px
+                          // tap target, well under the 44px thumb minimum, and
+                          // this is a phone-first store.
+                          padding: '11px 18px',
+                          minHeight: '42px',
+                          fontFamily: sans,
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          borderRadius: '100px',
+                          border: `1.5px solid ${maroon}`,
+                          backgroundColor: selectedSize === size ? maroon : 'transparent',
+                          color: selectedSize === size ? 'white' : maroon,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        {size}
+                        {low && (
+                          <span
+                            aria-hidden
+                            style={{
+                              position: 'absolute',
+                              top: '4px',
+                              right: '5px',
+                              width: '7px',
+                              height: '7px',
+                              borderRadius: '50%',
+                              backgroundColor: '#D2402F',
+                              // Ring in the pill's own background so the dot
+                              // stays visible once the pill fills in maroon.
+                              boxShadow: `0 0 0 1.5px ${
+                                selectedSize === size ? maroon : blushBg
+                              }`,
+                            }}
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
+
+                {/* Only once they've actually picked the low size — a warning
+                    about a size nobody chose is just noise on the page. */}
+                {isLowStock(handle, selectedColor, selectedSize) && (
+                  <p
+                    role="status"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '7px',
+                      fontFamily: sans,
+                      fontSize: '12.5px',
+                      fontWeight: 700,
+                      color: '#B3341F',
+                      margin: '11px 0 0',
+                      textTransform: 'lowercase',
+                    }}
+                  >
+                    <span
+                      aria-hidden
+                      style={{
+                        width: '7px',
+                        height: '7px',
+                        borderRadius: '50%',
+                        backgroundColor: '#D2402F',
+                        flexShrink: 0,
+                      }}
+                    />
+                    {LOW_STOCK_LABEL} in {selectedSize}
+                  </p>
+                )}
               </div>
             )}
 
