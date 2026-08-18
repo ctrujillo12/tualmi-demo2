@@ -26,7 +26,19 @@ import { SHOPIFY_PRODUCTS_TAG } from '@/lib/shopify';
  *   inventory_levels/update   ← the important one: stock moved
  *   products/update           ← catches variant add/remove, policy changes
  * Format: JSON
- * URL: https://tualmi.com/api/webhooks/shopify/inventory
+ * URL: https://hooks.tualmi.com/api/webhooks/shopify/inventory
+ *
+ * ── WHY NOT tualmi.com ───────────────────────────────────────────────────
+ * Shopify refuses to send webhooks to a domain connected to the store, and
+ * tualmi.com is the store's primary domain (it's what builds checkout URLs).
+ * The form rejects it outright.
+ *
+ * ── WHY NOT THE .vercel.app URL ──────────────────────────────────────────
+ * The project runs Vercel SSO protection scoped to `all_except_custom_domains`,
+ * so every *.vercel.app URL answers 401 behind an auth wall. Shopify would see
+ * failures and eventually delete the webhook. Custom domains are exempt, which
+ * is why hooks.tualmi.com is the destination: reachable, and not a domain
+ * Shopify considers its own.
  */
 
 export const runtime = 'nodejs'; // needs crypto + the raw request body

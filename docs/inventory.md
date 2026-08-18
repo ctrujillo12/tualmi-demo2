@@ -11,7 +11,9 @@ Three layers, in order of how much they actually protect you:
 2. **The storefront** reads live availability and refuses to add sold-out
    things to the cart. This is UX, not enforcement.
 3. **A webhook** flushes the storefront's cache the moment stock moves, so
-   layer 2 isn't working from stale numbers.
+   layer 2 isn't working from stale numbers. *Not set up — see §2.*
+
+Layers 1 and 2 are live. Layer 3 is a refinement worth doing before a drop.
 
 ## 1. Shopify admin — do this first
 
@@ -57,19 +59,61 @@ variants. That's what the old warning comments in the codebase were about.)
 Check the server logs for `[shopify] Inventory quantities readable` to confirm
 the scope is live.
 
-## 2. Webhooks
+## 2. Webhooks — NOT SET UP YET (optional)
+
+**Status as of 18 Aug 2026: deliberately skipped.** Everything else works
+without this. The only cost of not having it is that a sell-out can stay
+visible on the storefront for up to 60 seconds — the cache window in
+`lib/shopify.ts` — before the next read picks up the change.
+
+That's fine on an ordinary day and worth fixing before a drop, where sizes can
+go in minutes. Come back to this section when that matters.
+
+Nothing in the code is waiting on it: `/api/webhooks/shopify/inventory` already
+exists and works; it simply never gets called until the webhooks below are
+created.
+
+### The URL has to be hooks.tualmi.com
+
+Two constraints rule out the obvious candidates:
+
+- **`tualmi.com` is rejected by Shopify.** It won't send webhooks to a domain
+  connected to the store, and this is the store's primary domain — it's what
+  builds checkout URLs. The form refuses it.
+- **`tualmi-outdoors.vercel.app` is rejected by us.** The Vercel project runs
+  SSO protection scoped to `all_except_custom_domains`, so every `*.vercel.app`
+  URL answers 401 behind an auth wall. Shopify would log failures and
+  eventually delete the webhook. Custom domains are exempt.
+
+So: a dedicated subdomain, added to the Vercel project but never connected to
+Shopify. Vercel → the project → **Settings → Domains** → add
+`hooks.tualmi.com`, then create the DNS record Vercel shows you (a CNAME to
+`cname.vercel-dns.com`, unless the domain's nameservers already point at
+Vercel, in which case it's automatic).
+
+Don't add this subdomain to Shopify. The moment you do, Shopify starts
+rejecting it for the same reason it rejects `tualmi.com`.
+
+### Creating them
 
 Shopify admin → **Settings → Notifications → Webhooks**. Create these, both
 pointing at the same URL:
 
 | Event | Format | URL |
 | --- | --- | --- |
-| `inventory_levels/update` | JSON | `https://tualmi.com/api/webhooks/shopify/inventory` |
-| `products/update` | JSON | `https://tualmi.com/api/webhooks/shopify/inventory` |
+| `inventory_levels/update` | JSON | `https://hooks.tualmi.com/api/webhooks/shopify/inventory` |
+| `products/update` | JSON | `https://hooks.tualmi.com/api/webhooks/shopify/inventory` |
 
-Shopify shows a signing secret when you create the first one. It goes in
-`SHOPIFY_WEBHOOK_SECRET` — the same variable the orders webhook already uses.
-Requests without a valid HMAC are rejected with a 401.
+The signing secret is on that same page, after *"All your webhooks will be
+signed with"*. It's one store-level secret shared by every webhook created in
+the admin UI, which is why `SHOPIFY_WEBHOOK_SECRET` — already set for the
+orders webhook — covers these too. Requests without a valid HMAC get a 401.
+
+**While you're on that page, check the orders webhook's URL.** It's documented
+as `https://tualmi.com/api/webhooks/shopify/orders`, which Shopify now refuses
+as a destination. If it's set to that and failing, GA4 purchase attribution is
+silently dead — the exact problem that route exists to solve. It wants moving
+to `https://hooks.tualmi.com/api/webhooks/shopify/orders` as well.
 
 The route calls `revalidateTag('shopify-products')`, which invalidates every
 tagged Shopify read. Without it, a sell-out could sit on the storefront for up

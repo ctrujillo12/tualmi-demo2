@@ -106,6 +106,21 @@ async function productFetch<T>(
     return data;
   } catch (err) {
     if (!isInventoryScopeError(err)) throw err;
+
+    // Once this token has demonstrably read inventory, a later denial is a
+    // blip — scope propagation lag right after granting it, or a flaky
+    // response — not the scope being revoked. Demoting on it would throw away
+    // a known-good capability and revert the whole store to the manual list
+    // for the entire re-probe window, off the back of one bad request. So
+    // fall back for THIS request only and leave the capability alone.
+    if (inventoryCapability === 'granted') {
+      console.warn(
+        '[shopify] One inventory read was denied even though the scope is live — ' +
+        'serving this request without quantities. Harmless unless it repeats.',
+      );
+      return shopifyFetch<T>(build(false), variables);
+    }
+
     inventoryCapability = 'denied';
     deniedAt = Date.now();
     console.warn(
