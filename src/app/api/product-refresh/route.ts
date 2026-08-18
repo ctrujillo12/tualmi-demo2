@@ -33,9 +33,17 @@ export async function GET(req: NextRequest) {
         // unreachable has no variants (getProduct falls back to local data),
         // and the cart persists to localStorage — so without this it can never
         // recover and checkout fails forever with "no variant matched".
+        //
+        // They now also carry availability (availableForSale, quantityAvailable),
+        // which is what the cart page and checkout guard read to catch anything
+        // that sold out while it sat in someone's cart.
         variants: p.variants ?? [],
       },
-      { headers: { 'Cache-Control': 'public, max-age=60' } },
+      // Not cached. This is what the cart trusts immediately before checkout —
+      // the one place where stale availability turns straight into an order
+      // that can't be fulfilled. The cart sees a fraction of product-page
+      // traffic, so the extra Shopify calls are cheap.
+      { headers: { 'Cache-Control': 'no-store' } },
     );
   } catch {
     return NextResponse.json({ ok: false });

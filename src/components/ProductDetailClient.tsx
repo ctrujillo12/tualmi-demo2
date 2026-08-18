@@ -10,7 +10,8 @@ import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
 import { FREE_SHIPPING_LABEL } from '@/lib/shipping';
-import { isLowStock, LOW_STOCK_LABEL } from '@/lib/lowStock';
+import { LOW_STOCK_LABEL, SOLD_OUT_LABEL } from '@/lib/lowStock';
+import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/inventory';
 import ImageLightbox from '@/components/ImageLightbox';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 
@@ -208,8 +209,28 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   const setQty = (next: number) =>
     updateQuantity(product.id, selectedSize, selectedColor, next);
 
-  /** Soft cap on the quantity stepper. Shopify enforces real stock at checkout. */
-  const MAX_QTY = 10;
+  /**
+   * Ceiling on the quantity stepper: 10, or whatever Shopify actually has,
+   * whichever is smaller. When stock isn't readable the cap stays at 10 and
+   * Shopify enforces the truth at payment.
+   */
+  const MAX_QTY = maxPurchasable(product, selectedColor, selectedSize, 10);
+
+  /** Live availability of exactly what's selected right now. */
+  const selected = availability(product, selectedColor, selectedSize);
+  const selectedSoldOut = selected.status === 'sold-out';
+
+  /**
+   * A size that's fine in Jam may be gone in Picnic. Switching colourway can
+   * therefore strand the shopper on a selection that no longer exists — so
+   * clear it and make them pick again, rather than letting them tap buy on
+   * something we already know can't be sold.
+   */
+  useEffect(() => {
+    if (selectedSize && isSoldOut(product, selectedColor, selectedSize)) {
+      setSelectedSize('');
+    }
+  }, [selectedColor, selectedSize, product]);
 
   // ── Sticky mobile buy bar ──────────────────────────────────────────────────
   // 95.6% of traffic is mobile and 93.8% of product viewers never add to cart.
@@ -259,6 +280,15 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
    */
   const handleBuy = () => {
     if (!selectedSize) {
+      sizeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setFlashSize(true);
+      window.setTimeout(() => setFlashSize(false), 1600);
+      return;
+    }
+    // Belt and braces. The picker won't let a sold-out size be selected, but
+    // the sticky bar can be tapped from anywhere on the page and stock can
+    // change under a tab that's been open a while.
+    if (isSoldOut(product, selectedColor, selectedSize)) {
       sizeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setFlashSize(true);
       window.setTimeout(() => setFlashSize(false), 1600);
@@ -614,14 +644,25 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                 <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '10px' }}>size</p>
                 <div className="pdp-sizes">
                   {product.sizes.map((size) => {
-                    const low = isLowStock(handle, selectedColor, size);
+                    // Real Shopify availability for this exact size + colourway.
+                    // An unknown answer (Shopify down, size not a variant) reads
+                    // as available — see lib/inventory.ts.
+                    const state = availability(product, selectedColor, size);
+                    const soldOut = state.status === 'sold-out';
+                    const low = state.low;
                     return (
                       <button
                         key={size}
-                        onClick={() => setSelectedSize(size)}
-                        // Announced rather than left to the dot alone — a red
-                        // circle means nothing to a screen reader.
-                        aria-label={low ? `${size} — ${LOW_STOCK_LABEL}` : size}
+                        onClick={() => !soldOut && setSelectedSize(size)}
+                        disabled={soldOut}
+                        // Announced rather than left to the dot or the
+                        // strikethrough alone — neither means anything to a
+                        // screen reader.
+                        aria-label={
+                          soldOut ? `${size} — ${SOLD_OUT_LABEL}`
+                          : low ? `${size} — ${LOW_STOCK_LABEL}`
+                          : size
+                        }
                         style={{
                           position: 'relative',
                           // 42px min height: an 8px-padded 12px pill is a ~30px
@@ -633,15 +674,21 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                           fontSize: '12px',
                           fontWeight: 600,
                           borderRadius: '100px',
-                          border: `1.5px solid ${maroon}`,
-                          backgroundColor: selectedSize === size ? maroon : 'transparent',
-                          color: selectedSize === size ? 'white' : maroon,
-                          cursor: 'pointer',
+                          border: `1.5px solid ${soldOut ? rule : maroon}`,
+                          backgroundColor: selectedSize === size && !soldOut ? maroon : 'transparent',
+                          // Sold-out sizes stay on the page rather than
+                          // disappearing: a shopper who can't find their size
+                          // assumes the site is broken, where a struck-through
+                          // pill tells them it exists and is gone.
+                          color: soldOut ? soft : selectedSize === size ? 'white' : maroon,
+                          textDecoration: soldOut ? 'line-through' : 'none',
+                          opacity: soldOut ? 0.55 : 1,
+                          cursor: soldOut ? 'not-allowed' : 'pointer',
                           transition: 'all 0.15s',
                         }}
                       >
                         {size}
-                        {low && (
+                        {low && !soldOut && (
                           <span
                             aria-hidden
                             style={{
@@ -667,7 +714,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
 
                 {/* Only once they've actually picked the low size — a warning
                     about a size nobody chose is just noise on the page. */}
-                {isLowStock(handle, selectedColor, selectedSize) && (
+                {selected.low && (
                   <p
                     role="status"
                     style={{
@@ -692,7 +739,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                         flexShrink: 0,
                       }}
                     />
-                    {LOW_STOCK_LABEL} in {selectedSize}
+                    {/* A real count when Shopify will give us one — "only 3
+                        left" is both more useful and more honest than a vague
+                        nudge, and it's a claim we can actually stand behind. */}
+                    {selected.quantity !== null && selected.quantity > 0
+                      ? `only ${selected.quantity} left in ${selectedSize}`
+                      : `${LOW_STOCK_LABEL} in ${selectedSize}`}
                   </p>
                 )}
               </div>
@@ -714,16 +766,21 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                   {swatchColors.map((swatch) => {
                     const isSelected = selectedColor === swatch.name;
                     const isGradient = swatch.value.startsWith('linear-gradient');
+                    // Only when EVERY size in the colourway is confirmed gone.
+                    // Still selectable — the shopper should be able to look at
+                    // it, and the size row then explains itself.
+                    const colorGone = isColorSoldOut(product, swatch.name);
                     return (
                       <button
                         key={swatch.name}
-                        title={swatch.name}
-                        aria-label={swatch.name}
+                        title={colorGone ? `${swatch.name} — ${SOLD_OUT_LABEL}` : swatch.name}
+                        aria-label={colorGone ? `${swatch.name} — ${SOLD_OUT_LABEL}` : swatch.name}
                         aria-pressed={isSelected}
                         onClick={() => handleColorSelect(swatch.name)}
                         style={{
                           // The visible dot stays 26px; the button around it is
                           // 42px so it's a real thumb target on a phone.
+                          position: 'relative',
                           width: '42px',
                           height: '42px',
                           display: 'flex',
@@ -750,8 +807,25 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                             backgroundColor: isGradient ? undefined : swatch.value,
                             transition: 'border-color 0.15s, transform 0.15s',
                             transform: isSelected ? 'scale(1.15)' : 'scale(1)',
+                            // Faded and struck through, so a sold-out colourway
+                            // reads as gone at a glance rather than only after
+                            // tapping it and finding no sizes left.
+                            opacity: colorGone ? 0.35 : 1,
                           }}
                         />
+                        {colorGone && (
+                          <span
+                            aria-hidden
+                            style={{
+                              position: 'absolute',
+                              width: '30px',
+                              height: '1.5px',
+                              backgroundColor: soft,
+                              transform: 'rotate(-45deg)',
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        )}
                       </button>
                     );
                   })}
@@ -800,7 +874,37 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               {buyable ? (
                 /* ── Buyable: add to cart ── */
                 <>
-                  {cartQty === 0 ? (
+                  {/* Sold out is its own state, not a disabled add-to-cart.
+                      A greyed button with a price on it reads as a bug; this
+                      says what happened and offers the one thing left to do. */}
+                  {selectedSoldOut ? (
+                    <div>
+                      <p
+                        role="status"
+                        style={{
+                          display: 'block',
+                          width: '100%',
+                          boxSizing: 'border-box',
+                          backgroundColor: 'white',
+                          border: `1.5px solid ${rule}`,
+                          color: soft,
+                          padding: '16px 28px',
+                          margin: 0,
+                          textAlign: 'center',
+                          fontFamily: sans,
+                          fontSize: '15px',
+                          fontWeight: 700,
+                          textTransform: 'lowercase',
+                          borderRadius: '100px',
+                        }}
+                      >
+                        {SOLD_OUT_LABEL} in {selectedSize}
+                      </p>
+                      <p style={{ ...bodyStyle, fontSize: '12.5px', textAlign: 'center', marginTop: '10px' }}>
+                        pick another size above — the rest are ready to ship.
+                      </p>
+                    </div>
+                  ) : cartQty === 0 ? (
                     <button
                       onClick={handleBuy}
                       style={{
@@ -883,6 +987,13 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                         +
                       </button>
                     </div>
+                  )}
+                  {/* Why the + stopped working, said plainly. Only when the cap
+                      is real stock rather than the arbitrary 10-per-order one. */}
+                  {cartQty > 0 && cartQty >= MAX_QTY && MAX_QTY < 10 && (
+                    <p role="status" style={{ ...bodyStyle, fontSize: '12.5px', textAlign: 'center', marginTop: '10px', color: '#B3341F', fontWeight: 600 }}>
+                      that&apos;s all we have left in {selectedSize}
+                    </p>
                   )}
                   {cartQty > 0 && (
                     <Link
@@ -1099,6 +1210,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
             <Link href="/cart" className="pdp-buybar-cta">
               view cart ({cartQty}) →
             </Link>
+          ) : selectedSoldOut ? (
+            /* Tapping this used to add a sold-out size to the cart from
+               anywhere on the page, bypassing the size picker entirely. */
+            <button onClick={handleBuy} className="pdp-buybar-cta" aria-label={`${selectedSize} ${SOLD_OUT_LABEL} — choose another size`}>
+              {SOLD_OUT_LABEL} — pick a size
+            </button>
           ) : (
             <button onClick={handleBuy} className="pdp-buybar-cta">
               {isPreorder ? 'preorder' : 'add'} — ${(product.price / 100).toFixed(2)}

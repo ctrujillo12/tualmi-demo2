@@ -93,6 +93,18 @@ export default async function ProductPage({
     notFound();
   }
 
+  // Availability was hardcoded to PreOrder, so Google kept advertising
+  // "pre-order" on products that had been shipping for weeks — and would go on
+  // advertising it after they sold out. Derived from the live variants instead.
+  const anySellable = (product!.variants ?? []).some((v) => v.availableForSale);
+  const availability =
+    product!.isPreorder ? 'https://schema.org/PreOrder'
+    // No Shopify data (offline fallback) — don't announce a sold-out store to
+    // Google on the strength of one failed request.
+    : !product!.variants?.length ? 'https://schema.org/InStock'
+    : anySellable ? 'https://schema.org/InStock'
+    : 'https://schema.org/OutOfStock';
+
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -104,7 +116,7 @@ export default async function ProductPage({
       '@type': 'Offer',
       price: (product!.price / 100).toFixed(2),
       priceCurrency: 'USD',
-      availability: 'https://schema.org/PreOrder',
+      availability,
       url: `https://tualmi.com/products/${product!.handle ?? id}`,
     },
   };

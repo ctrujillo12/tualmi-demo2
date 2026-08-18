@@ -1,36 +1,42 @@
 /**
- * Low-stock flags, by product / colourway / size.
+ * Manual low-stock overrides.
  *
- * ── WHY THIS IS A HAND-KEPT LIST ─────────────────────────────────────────
- * Because the storefront genuinely cannot see stock levels. Shopify exposes
- * `quantityAvailable` on a variant, but only to tokens holding the
- * `unauthenticated_read_product_inventory` scope — and ours doesn't. Adding
- * that field to the query without the scope makes Shopify reject the whole
- * request, which drops every product back to local data with no variants and
- * makes the entire store unbuyable. There's a comment in lib/shopify.ts saying
- * exactly that, because it has already happened once.
+ * ── THIS IS NO LONGER THE PRIMARY SOURCE ─────────────────────────────────
+ * Low stock is now derived from real Shopify quantities. lib/inventory.ts
+ * reads `quantityAvailable` off each variant and flags anything at or below
+ * LOW_STOCK_THRESHOLD, so the storefront tracks restocks and sell-downs on its
+ * own with nothing to maintain here.
  *
- * So: a list you maintain. The cost is that it can go stale; the benefit is
- * that it cannot take checkout down.
+ * The old comment in this file claimed the storefront "genuinely cannot see
+ * stock levels". It can — the query failed because the Storefront token was
+ * missing the `unauthenticated_read_product_inventory` scope, not because the
+ * field is off-limits. lib/shopify.ts now requests the field optimistically
+ * and retries without it if the token can't read it, so a missing scope
+ * degrades to this list instead of taking checkout down.
+ *
+ * ── WHEN TO EDIT THIS FILE ───────────────────────────────────────────────
+ * Only two cases:
+ *   1. The inventory scope isn't granted yet (the server log carries a warning
+ *      from lib/shopify.ts when that's so) — this list is the whole mechanism
+ *      until it is.
+ *   2. A colourway you want flagged sooner than the global threshold — say a
+ *      size you're deliberately holding back.
+ *
+ * When quantities ARE readable, entries here are ignored. Real numbers win.
  *
  * ── KEEPING IT HONEST ────────────────────────────────────────────────────
- * "Only a few left" is a promise about the real world. If it's on a size that
- * is in fact well stocked, it's the kind of small lie shoppers notice and
- * remember — and in the US the FTC treats fake urgency as a deceptive
- * practice. Clear the entry when you restock.
+ * "Only a few left" is a claim about the real world. On a well-stocked size
+ * it's the kind of small lie shoppers notice, and the FTC treats manufactured
+ * urgency as a deceptive practice. Clear the entry when you restock.
  *
- * ── HOW TO EDIT ──────────────────────────────────────────────────────────
- * Key is "<product handle>|<colourway>", value is the list of sizes running
- * low. Both are matched case-insensitively. To flag a whole colourway rather
- * than particular sizes, list every size.
+ * Key is "<product handle>|<colourway>", value is the sizes running low. Both
+ * are matched case-insensitively.
  *
  *   'sierra-shorts|Picnic': ['S']      → Picnic, size S only
  *   'juniper-pant|Olive':   ['XS','S'] → Olive, two sizes
- *
- * Delete the key entirely when nothing in that colourway is low.
  */
 
-const LOW_STOCK: Record<string, string[]> = {
+const LOW_STOCK_OVERRIDES: Record<string, string[]> = {
   // Fewer than 10 pairs left, as of 18 Aug 2026.
   'sierra-shorts|Picnic': ['S'],
 };
@@ -38,27 +44,21 @@ const LOW_STOCK: Record<string, string[]> = {
 /** The wording used wherever a low-stock size is shown. */
 export const LOW_STOCK_LABEL = 'only a few left';
 
-/** True when this exact product + colourway + size is running low. */
-export function isLowStock(
+/** Wording for a size Shopify says can't be sold. */
+export const SOLD_OUT_LABEL = 'sold out';
+
+/**
+ * Manually-flagged sizes for a product + colourway. Consulted by
+ * lib/inventory.ts only when real quantities aren't readable.
+ */
+export function manualLowStockSizes(
   handle: string | undefined,
   color: string | undefined,
-  size: string | undefined,
-): boolean {
-  if (!handle || !color || !size) return false;
+): string[] {
+  if (!handle || !color) return [];
   const key = `${handle.trim().toLowerCase()}|${color.trim().toLowerCase()}`;
-  const entry = Object.entries(LOW_STOCK).find(
+  const entry = Object.entries(LOW_STOCK_OVERRIDES).find(
     ([k]) => k.trim().toLowerCase() === key,
   );
-  if (!entry) return false;
-  return entry[1].some((s) => s.trim().toLowerCase() === size.trim().toLowerCase());
-}
-
-/** True when any size in this colourway is low — for a badge on the swatch. */
-export function colorHasLowStock(
-  handle: string | undefined,
-  color: string | undefined,
-): boolean {
-  if (!handle || !color) return false;
-  const key = `${handle.trim().toLowerCase()}|${color.trim().toLowerCase()}`;
-  return Object.keys(LOW_STOCK).some((k) => k.trim().toLowerCase() === key);
+  return entry ? entry[1] : [];
 }

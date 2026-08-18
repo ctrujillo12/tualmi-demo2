@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { CartItem as CartItemType } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
+import { availability } from '@/lib/inventory';
+import { SOLD_OUT_LABEL } from '@/lib/lowStock';
 
 interface CartItemProps {
   item: CartItemType;
@@ -28,6 +30,13 @@ export default function CartItem({ item }: CartItemProps) {
   };
 
   const productUrl = `/products/${item.product.handle ?? item.product.id}`;
+
+  /**
+   * Live availability of this exact line. The cart re-syncs variants from
+   * Shopify on load (cartStore.refreshFromShopify), so this reflects stock as
+   * of this page view rather than whenever the item was added.
+   */
+  const lineState = availability(item.product, item.selectedColor, item.selectedSize);
 
   /**
    * First usable image: what was saved with the cart line, else the live
@@ -98,6 +107,20 @@ export default function CartItem({ item }: CartItemProps) {
             {item.isPreorder && (
               <p style={{ fontFamily: sans, fontSize: '11px', fontWeight: 700, color: soft, marginTop: '8px', textTransform: 'lowercase', letterSpacing: '0.08em' }}>
                 pre-order · {item.shippingWindow ?? 'ships when collection drops'}
+              </p>
+            )}
+            {/* Flagged on the line itself, right next to the remove button that
+                resolves it — not only in a summary further down the page. */}
+            {lineState.status === 'sold-out' && (
+              <p role="status" style={{ fontFamily: sans, fontSize: '11.5px', fontWeight: 700, color: '#B85C49', marginTop: '8px', textTransform: 'lowercase', letterSpacing: '0.06em' }}>
+                {SOLD_OUT_LABEL} — please remove
+              </p>
+            )}
+            {lineState.status === 'available' &&
+              lineState.quantity !== null &&
+              lineState.quantity < item.quantity && (
+              <p role="status" style={{ fontFamily: sans, fontSize: '11.5px', fontWeight: 700, color: '#B85C49', marginTop: '8px', textTransform: 'lowercase', letterSpacing: '0.06em' }}>
+                only {lineState.quantity} left — quantity will be reduced at checkout
               </p>
             )}
           </div>

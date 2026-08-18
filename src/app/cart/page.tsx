@@ -7,8 +7,9 @@ import DiscountBadge from '@/components/DiscountBadge';
 import FreeShippingBar from '@/components/FreeShippingBar';
 import CartUpsell from '@/components/CartUpsell';
 import { freeShippingProgress, FLAT_SHIPPING_CENTS, money } from '@/lib/shipping';
-import { useCartStore } from '@/store/cartStore';
+import { useCartStore, unsellableLines } from '@/store/cartStore';
 import { useShopAccess } from '@/lib/useShopAccess';
+import { SOLD_OUT_LABEL } from '@/lib/lowStock';
 
 // Landing-page design tokens
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
@@ -45,6 +46,18 @@ export default function CartPage() {
   // No local tax/total estimate — Shopify calculates both at checkout, and
   // showing a guess here only sets up a mismatch on the next screen.
   const containsPreorder = hasPreorderItems();
+
+  /**
+   * Lines Shopify won't take. A cart persists in localStorage indefinitely, so
+   * something added last week can easily be gone by the time it's checked out
+   * — and finding that out only after tapping "checkout" is the worst possible
+   * moment. refreshFromShopify() above re-attaches live variants on load, so
+   * this is current as of this page view.
+   */
+  const blocked = unsellableLines(items);
+  const blockedNames = blocked.map(
+    (b) => `${b.item.product.name} (${[b.item.selectedColor, b.item.selectedSize].filter(Boolean).join(' / ')})`,
+  );
 
   const handleCheckout = async () => {
     setIsLoading(true);
@@ -221,25 +234,52 @@ export default function CartPage() {
               </p>
             )}
 
+            {/* Said before the tap, not after it. A cart can sit for days, and
+                the first the shopper hears of a sell-out shouldn't be an error
+                on the button they just pressed. */}
+            {blockedNames.length > 0 && (
+              <div
+                role="status"
+                style={{
+                  marginBottom: '16px', padding: '12px 14px',
+                  border: '1px solid #E8C4B8', borderRadius: '12px',
+                  backgroundColor: '#FDF4F1',
+                }}
+              >
+                <p style={{ fontFamily: sans, fontSize: '12.5px', fontWeight: 700, color: '#B85C49', margin: '0 0 4px', textTransform: 'lowercase' }}>
+                  {blockedNames.length > 1 ? 'some items are' : 'one item is'} {SOLD_OUT_LABEL}
+                </p>
+                <p style={{ fontFamily: sans, fontSize: '12.5px', fontWeight: 500, color: '#B85C49', margin: 0 }}>
+                  {blockedNames.join(', ')} sold out while {blockedNames.length > 1 ? 'they were' : 'it was'} in
+                  your cart. Remove {blockedNames.length > 1 ? 'them' : 'it'} to keep going — the rest of your
+                  order is fine.
+                </p>
+              </div>
+            )}
+
             {error && (
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: '#B85C49', marginBottom: '16px' }}>{error}</p>
             )}
 
             <button
               onClick={handleCheckout}
-              disabled={isLoading || (ready && !canShop)}
+              disabled={isLoading || (ready && !canShop) || blockedNames.length > 0}
               style={{
                 width: '100%', padding: '15px 32px',
                 backgroundColor: maroon, color: 'white',
                 fontFamily: sans, fontSize: '14px', fontWeight: 700,
                 textTransform: 'lowercase',
                 border: 'none', borderRadius: '100px',
-                cursor: (isLoading || (ready && !canShop)) ? 'default' : 'pointer',
-                opacity: (isLoading || (ready && !canShop)) ? 0.6 : 1,
+                cursor: (isLoading || (ready && !canShop) || blockedNames.length > 0) ? 'default' : 'pointer',
+                opacity: (isLoading || (ready && !canShop) || blockedNames.length > 0) ? 0.6 : 1,
                 transition: 'opacity 0.2s',
               }}
             >
-              {isLoading ? 'taking you to checkout…' : (ready && !canShop ? 'opens friday · 11am pt' : 'checkout')}
+              {isLoading
+                ? 'taking you to checkout…'
+                : blockedNames.length > 0
+                  ? 'remove sold-out items to check out'
+                  : (ready && !canShop ? 'opens friday · 11am pt' : 'checkout')}
             </button>
             {ready && !canShop && (
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, textAlign: 'center', margin: '12px 0 0', lineHeight: 1.6 }}>

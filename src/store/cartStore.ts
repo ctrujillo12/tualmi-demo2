@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware';
 import type { Product, CartItem } from '@/types';
 import { createCheckout } from '@/lib/shopify';
 import type { ShopifyVariant } from '@/lib/shopify';
+import { findVariant, maxPurchasable } from '@/lib/inventory';
 import { attributionCartAttributes } from '@/lib/attribution';
 import { getDiscountCode } from '@/lib/discount';
 import { trackBeginCheckout } from '@/lib/analytics';
@@ -35,27 +36,58 @@ interface CartStore {
 }
 
 // ─── Variant resolver ─────────────────────────────────────────────────────────
-function resolveVariantId(item: CartItem): string | null {
+/**
+ * The Shopify variant for a cart line — exact size + colour, or nothing.
+ *
+ * This used to fall back twice: first to any variant in the same SIZE
+ * regardless of colour, then to "whatever variant happens to be available".
+ * Both are silent substitutions. Someone who picked Picnic / S could be
+ * charged for, and shipped, Jam / S, with no error raised anywhere — from
+ * Shopify's side it's a perfectly valid order. That's worse than a failed
+ * checkout. A failed checkout is a support email; a wrong item is a return, a
+ * refund, and a customer who doesn't come back.
+ *
+ * So: exact, or nothing. Callers surface the failure.
+ */
+type VariantResolution =
+  | { ok: true; variant: ShopifyVariant }
+  | { ok: false; reason: 'no-data' | 'no-match' | 'sold-out' };
+
+function resolveVariant(item: CartItem): VariantResolution {
   const variants: ShopifyVariant[] | undefined = item.product.variants;
-  if (!variants || variants.length === 0) return null;
+  if (!variants || variants.length === 0) return { ok: false, reason: 'no-data' };
 
-  const size  = item.selectedSize.toLowerCase();
-  const color = item.selectedColor.toLowerCase();
+  const variant = findVariant(item.product, item.selectedColor, item.selectedSize);
+  if (!variant) return { ok: false, reason: 'no-match' };
+  // Shopify would reject this at payment anyway. Better to say so here, where
+  // the shopper can still change size instead of hitting a wall on checkout.
+  if (!variant.availableForSale) return { ok: false, reason: 'sold-out' };
 
-  const exact = variants.find((v) => {
-    const opts = v.selectedOptions.map((o) => ({ name: o.name.toLowerCase(), value: o.value.toLowerCase() }));
-    const hasSize  = opts.find((o) => o.name === 'size')?.value  === size;
-    const hasColor = opts.find((o) => o.name === 'color')?.value === color;
-    return hasSize && hasColor;
-  });
-  if (exact) return exact.id;
+  return { ok: true, variant };
+}
 
-  const bySize = variants.find((v) =>
-    v.selectedOptions.some((o) => o.name.toLowerCase() === 'size' && o.value.toLowerCase() === size)
-  );
-  if (bySize) return bySize.id;
+/** How a cart line reads to a shopper, e.g. "Sierra Shorts (Picnic / S)". */
+function describeLine(item: CartItem): string {
+  const opts = [item.selectedColor, item.selectedSize].filter(Boolean).join(' / ');
+  return opts ? `${item.product.name} (${opts})` : item.product.name;
+}
 
-  return variants.find((v) => v.availableForSale)?.id ?? variants[0]?.id ?? null;
+/**
+ * Cart lines Shopify won't accept as-is, with a reason. The cart page uses
+ * this to warn before the shopper commits, and checkout refuses to proceed
+ * while it's non-empty.
+ *
+ * Lines whose product carries no Shopify data at all are deliberately NOT
+ * listed — that's the offline fallback, and blocking on it would take the
+ * store down every time Shopify hiccups.
+ */
+export function unsellableLines(items: CartItem[]): { item: CartItem; reason: 'no-match' | 'sold-out' }[] {
+  const out: { item: CartItem; reason: 'no-match' | 'sold-out' }[] = [];
+  for (const item of items) {
+    const r = resolveVariant(item);
+    if (!r.ok && r.reason !== 'no-data') out.push({ item, reason: r.reason });
+  }
+  return out;
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -74,9 +106,13 @@ export const useCartStore = create<CartStore>()(
           );
 
           if (existing) {
+            // Never let repeated taps push a line past what Shopify has. When
+            // the quantity isn't readable this is a no-op cap, not a block.
+            const wanted = existing.quantity + quantity;
+            const allowed = maxPurchasable(product, selectedColor, selectedSize, wanted);
             return {
               items: state.items.map((i) =>
-                i === existing ? { ...i, quantity: i.quantity + quantity } : i
+                i === existing ? { ...i, quantity: Math.max(existing.quantity, allowed) } : i
               ),
             };
           }
@@ -114,13 +150,22 @@ export const useCartStore = create<CartStore>()(
           return;
         }
         set((state) => ({
-          items: state.items.map((i) =>
-            i.product.id === productId &&
-            i.selectedSize === selectedSize &&
-            i.selectedColor === selectedColor
-              ? { ...i, quantity }
-              : i
-          ),
+          items: state.items.map((i) => {
+            if (
+              i.product.id !== productId ||
+              i.selectedSize !== selectedSize ||
+              i.selectedColor !== selectedColor
+            ) {
+              return i;
+            }
+            // Raising the quantity is capped at real stock; lowering it always
+            // goes through, even below what's currently sellable.
+            const capped =
+              quantity > i.quantity
+                ? Math.max(i.quantity, maxPurchasable(i.product, selectedColor, selectedSize, quantity))
+                : quantity;
+            return { ...i, quantity: capped };
+          }),
         }));
       },
 
@@ -195,26 +240,58 @@ export const useCartStore = create<CartStore>()(
 
         const items = get().items;
         const lines: { variantId: string; quantity: number; attributes?: { key: string; value: string }[] }[] = [];
+        const soldOut: string[] = [];
+        const unresolved: string[] = [];
 
         for (const item of items) {
-          const variantId = resolveVariantId(item);
-          if (!variantId) {
+          const resolved = resolveVariant(item);
+
+          if (!resolved.ok) {
+            // A line that can't be matched used to be skipped silently — the
+            // shopper then paid for a cart quietly missing an item and only
+            // found out when the box arrived. Every failure is now surfaced.
+            if (resolved.reason === 'sold-out') soldOut.push(describeLine(item));
+            else unresolved.push(describeLine(item));
             console.warn(
-              `[cart] Could not resolve variant for "${item.product.name}" ` +
-              `(${item.selectedSize} / ${item.selectedColor}). Skipping.`
+              `[cart] ${resolved.reason} for "${item.product.name}" ` +
+              `(${item.selectedSize} / ${item.selectedColor}).`,
             );
             continue;
           }
+
+          // Last line of defence on quantity. The stepper already caps at
+          // what's in stock, but a cart can sit in localStorage for days while
+          // the stock behind it sells down.
+          const allowed = maxPurchasable(item.product, item.selectedColor, item.selectedSize, item.quantity);
+          if (allowed < item.quantity) {
+            if (allowed <= 0) {
+              soldOut.push(describeLine(item));
+              continue;
+            }
+            console.warn(`[cart] Trimming "${describeLine(item)}" from ${item.quantity} to ${allowed} — that's all Shopify has.`);
+          }
+
           // Preorder items carry their ship window onto the Shopify order.
           // Strip a leading "Ships " so the note reads e.g. "Ships: August".
           const attributes =
             item.isPreorder && item.shippingWindow
               ? [{ key: 'Ships', value: item.shippingWindow.replace(/^ships\s+/i, '') }]
               : undefined;
-          lines.push({ variantId, quantity: item.quantity, attributes });
+          lines.push({ variantId: resolved.variant.id, quantity: Math.max(1, allowed), attributes });
         }
 
-        if (lines.length === 0) {
+        // Sold out is a different conversation from a technical failure, so it
+        // gets its own message: it names what went, and the fix is in the
+        // shopper's hands rather than ours.
+        if (soldOut.length > 0) {
+          throw new Error(
+            `${soldOut.join(' and ')} just sold out. Please remove ` +
+            `${soldOut.length > 1 ? 'those items' : 'that item'} from your cart — ` +
+            'everything else is ready to go.',
+          );
+        }
+
+        if (unresolved.length > 0 || lines.length === 0) {
           // Customer-facing wording — the old message was internal debugging
           // text about the Storefront API, which means nothing to a shopper.
           throw new Error(

@@ -8,6 +8,8 @@ import { useCartStore } from '@/store/cartStore';
 import { useShopAccess, isBuyable } from '@/lib/useShopAccess';
 import { PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import { trackAddToCart } from '@/lib/analytics';
+import { availability, isColorSoldOut } from '@/lib/inventory';
+import { SOLD_OUT_LABEL } from '@/lib/lowStock';
 
 /**
  * Quick add from a landing-page colourway tile.
@@ -61,17 +63,21 @@ export default function QuickAdd({
   }, [justAdded]);
 
   const handle = product?.handle ?? '';
-  const shoppable = ready && isBuyable(handle, canShop) && !!product;
+  // Nothing left in this colourway — the tile becomes a link rather than an
+  // "+ add" that opens a size row with every size struck through.
+  const colorGone = isColorSoldOut(product, color);
+  const shoppable = ready && isBuyable(handle, canShop) && !!product && !colorGone;
 
-  // Shop closed, or Shopify data unavailable — fall back to the product page.
+  // Shop closed, sold out, or Shopify data unavailable — fall back to the
+  // product page.
   if (!shoppable) {
     return (
       <Link
         href={`/products/${handle}?color=${encodeURIComponent(color)}`}
         className="qa-btn"
-        style={{ color: accent, borderColor: accent }}
+        style={{ color: accent, borderColor: accent, opacity: colorGone ? 0.6 : 1 }}
       >
-        view
+        {colorGone ? SOLD_OUT_LABEL : 'view'}
       </Link>
     );
   }
@@ -125,16 +131,30 @@ export default function QuickAdd({
     const sizeClass = `qa-size${asLink ? ' qa-size--link' : ''}`;
     return (
       <div className={`qa-sizes${asLink ? ' qa-sizes--link' : ''}`}>
-        {sizes.map((s) => (
-          <button
-            key={s}
-            onClick={() => add(s)}
-            className={sizeClass}
-            style={{ color: accent, borderColor: accent }}
-          >
-            {s}
-          </button>
-        ))}
+        {sizes.map((s) => {
+          // This row is one tap from the cart, so a sold-out size here goes
+          // straight into an order that can't be fulfilled. Same rule as the
+          // product page: shown, struck through, not tappable.
+          const soldOut = availability(product, color, s).status === 'sold-out';
+          return (
+            <button
+              key={s}
+              onClick={() => !soldOut && add(s)}
+              disabled={soldOut}
+              aria-label={soldOut ? `${s} — ${SOLD_OUT_LABEL}` : s}
+              className={sizeClass}
+              style={{
+                color: accent,
+                borderColor: accent,
+                textDecoration: soldOut ? 'line-through' : undefined,
+                opacity: soldOut ? 0.4 : 1,
+                cursor: soldOut ? 'not-allowed' : undefined,
+              }}
+            >
+              {s}
+            </button>
+          );
+        })}
         <button
           onClick={() => setOpen(false)}
           className={`${sizeClass} qa-size--close`}

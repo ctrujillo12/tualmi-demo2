@@ -2,9 +2,28 @@
 
 const SHOPIFY_DOMAIN  = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN!;
 const SHOPIFY_TOKEN   = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN!;
-const API_URL         = `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`;
 
-async function shopifyFetch<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+// Pinned, but overridable without a code change. Shopify ships a new API
+// version every quarter and supports each for at least 12 months; requesting
+// an unsupported one silently serves the oldest supported version instead.
+// Bump this with NEXT_PUBLIC_SHOPIFY_API_VERSION (e.g. "2026-07") once you've
+// smoke-tested a product page and a real checkout against it.
+const API_VERSION = process.env.NEXT_PUBLIC_SHOPIFY_API_VERSION?.trim() || '2024-01';
+const API_URL     = `https://${SHOPIFY_DOMAIN}/api/${API_VERSION}/graphql.json`;
+
+/**
+ * Cache tag on every product read. The inventory webhook
+ * (app/api/webhooks/shopify/inventory) calls revalidateTag with this, so a
+ * stock change in Shopify flushes the storefront immediately instead of
+ * waiting out the 60-second window.
+ */
+export const SHOPIFY_PRODUCTS_TAG = 'shopify-products';
+
+async function shopifyFetch<T>(
+  query: string,
+  variables?: Record<string, unknown>,
+  opts?: { noStore?: boolean },
+): Promise<T> {
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: {
@@ -12,7 +31,10 @@ async function shopifyFetch<T>(query: string, variables?: Record<string, unknown
       'X-Shopify-Storefront-Access-Token': SHOPIFY_TOKEN,
     },
     body: JSON.stringify({ query, variables }),
-    next: { revalidate: 60 },
+    // Mutations (cart creation) must never be served from a cache.
+    ...(opts?.noStore
+      ? { cache: 'no-store' as const }
+      : { next: { revalidate: 60, tags: [SHOPIFY_PRODUCTS_TAG] } }),
   });
 
   if (!res.ok) throw new Error(`Shopify API error: ${res.status} ${res.statusText}`);
@@ -23,16 +45,97 @@ async function shopifyFetch<T>(query: string, variables?: Record<string, unknown
   return json.data as T;
 }
 
+// ─── Inventory scope: ask for it, but never bet the store on it ──────────────
+//
+// `quantityAvailable` requires the Storefront token to hold
+// `unauthenticated_read_product_inventory` (Shopify admin → the app that owns
+// the token → Storefront API access scopes). Requesting the field WITHOUT the
+// scope makes Shopify reject the whole request — which is exactly what once
+// dropped every product back to local data with no variants and made the store
+// unbuyable.
+//
+// So the field is requested optimistically and, if the token can't read it,
+// the same query is retried without it. Being wrong costs one failed request
+// per ten minutes. Being wrong used to cost the store.
+
+type InventoryCapability = 'unknown' | 'granted' | 'denied';
+let inventoryCapability: InventoryCapability = 'unknown';
+let deniedAt = 0;
+const REPROBE_AFTER_MS = 10 * 60 * 1000;
+
+/** Whether inventory quantities are currently readable. For diagnostics. */
+export function inventoryQuantitiesVisible(): boolean {
+  return inventoryCapability === 'granted';
+}
+
+function shouldRequestInventory(): boolean {
+  if (inventoryCapability !== 'denied') return true;
+  // Re-probe periodically, so granting the scope takes effect without a deploy.
+  if (Date.now() - deniedAt >= REPROBE_AFTER_MS) {
+    inventoryCapability = 'unknown';
+    return true;
+  }
+  return false;
+}
+
+/** Is this "your token can't read that field", or a genuine failure? */
+function isInventoryScopeError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return (
+    /quantityAvailable|currentlyNotInStock/i.test(msg) ||
+    /access denied|not authorized|unauthorized|scope/i.test(msg)
+  );
+}
+
+/**
+ * Runs a product query with the inventory fields, falling back to the same
+ * query without them when the token lacks the scope.
+ */
+async function productFetch<T>(
+  build: (withInventory: boolean) => string,
+  variables?: Record<string, unknown>,
+): Promise<T> {
+  if (!shouldRequestInventory()) return shopifyFetch<T>(build(false), variables);
+
+  try {
+    const data = await shopifyFetch<T>(build(true), variables);
+    if (inventoryCapability !== 'granted') {
+      inventoryCapability = 'granted';
+      console.info('[shopify] Inventory quantities readable — low-stock flags are automatic.');
+    }
+    return data;
+  } catch (err) {
+    if (!isInventoryScopeError(err)) throw err;
+    inventoryCapability = 'denied';
+    deniedAt = Date.now();
+    console.warn(
+      '[shopify] Storefront token cannot read inventory quantities. Falling back to ' +
+      'availableForSale plus the manual list in lib/lowStock.ts. To fix: add the ' +
+      '`unauthenticated_read_product_inventory` scope to the token in Shopify admin.',
+    );
+    return shopifyFetch<T>(build(false), variables);
+  }
+}
+
 export interface ShopifyVariant {
   id: string;
   title: string;
   price: { amount: string; currencyCode: string };
+  /**
+   * Shopify's own verdict on whether this variant can be sold right now. It
+   * accounts for inventory policy, so it stays true for a variant the merchant
+   * has set to "continue selling when out of stock". Authoritative for whether
+   * to show a buy button.
+   */
   availableForSale: boolean;
-  // NOTE: do NOT add `quantityAvailable` to the variant query unless the
-  // Storefront token has the `unauthenticated_read_product_inventory` scope.
-  // Without it Shopify returns a GraphQL error, shopifyFetch throws, and every
-  // product silently falls back to local data with no variants — which makes
-  // the whole store unbuyable. This happened once; don't repeat it.
+  /**
+   * Units on hand. `undefined` means the Storefront token can't read inventory
+   * (see productFetch above) — NOT that stock is zero. Treat undefined as
+   * "unknown" everywhere; lib/inventory.ts already does.
+   */
+  quantityAvailable?: number | null;
+  /** Out of stock but still sellable — i.e. the merchant allows backorders. */
+  currentlyNotInStock?: boolean | null;
   selectedOptions: { name: string; value: string }[];
   image?: { url: string; altText: string | null } | null;
 }
@@ -64,7 +167,12 @@ interface CartCreateResult {
   };
 }
 
-const PRODUCT_FIELDS = `
+/** The two fields that need the inventory scope, isolated so they can be dropped. */
+const INVENTORY_FIELDS = `
+          quantityAvailable
+          currentlyNotInStock`;
+
+const productFields = (withInventory: boolean) => `
   fragment ProductFields on Product {
     id
     handle
@@ -84,7 +192,7 @@ const PRODUCT_FIELDS = `
           id
           title
           price { amount currencyCode }
-          availableForSale
+          availableForSale${withInventory ? INVENTORY_FIELDS : ''}
           selectedOptions { name value }
           image { url altText }
         }
@@ -94,8 +202,8 @@ const PRODUCT_FIELDS = `
 `;
 
 export async function getAllProducts(): Promise<ShopifyProduct[]> {
-  const data = await shopifyFetch<ProductsQueryResult>(`
-    ${PRODUCT_FIELDS}
+  const data = await productFetch<ProductsQueryResult>((inv) => `
+    ${productFields(inv)}
     query GetAllProducts {
       products(first: 50) {
         edges { node { ...ProductFields } }
@@ -106,8 +214,8 @@ export async function getAllProducts(): Promise<ShopifyProduct[]> {
 }
 
 export async function getProductByHandle(handle: string): Promise<ShopifyProduct | null> {
-  const data = await shopifyFetch<ProductQueryResult>(`
-    ${PRODUCT_FIELDS}
+  const data = await productFetch<ProductQueryResult>((inv) => `
+    ${productFields(inv)}
     query GetProduct($handle: String!) {
       product(handle: $handle) { ...ProductFields }
     }
@@ -117,8 +225,8 @@ export async function getProductByHandle(handle: string): Promise<ShopifyProduct
 
 export async function getProductById(shopifyId: string): Promise<ShopifyProduct | null> {
   const gid = shopifyId.startsWith('gid://') ? shopifyId : `gid://shopify/Product/${shopifyId}`;
-  const data = await shopifyFetch<{ node: ShopifyProduct | null }>(`
-    ${PRODUCT_FIELDS}
+  const data = await productFetch<{ node: ShopifyProduct | null }>((inv) => `
+    ${productFields(inv)}
     query GetProductById($id: ID!) {
       node(id: $id) { ...ProductFields }
     }
@@ -160,7 +268,7 @@ export async function createCheckout(
       ...(cartAttributes && cartAttributes.length ? { attributes: cartAttributes } : {}),
       ...(discountCodes && discountCodes.length ? { discountCodes } : {}),
     },
-  });
+  }, { noStore: true });
 
   const { cart, userErrors } = data.cartCreate;
   if (userErrors.length > 0) throw new Error(userErrors.map((e) => e.message).join(', '));
@@ -199,6 +307,14 @@ export function toProduct(sp: ShopifyProduct): Product {
   const isPreorder = sp.tags?.includes('preorder') ?? false;                     // ← NEW
   const shippingWindow = sp.shippingWindow?.value ?? undefined;                  // ← NEW
 
+  // Real units when the token can read them; the old 100/0 placeholder when it
+  // can't. Nothing should branch on this number directly — use lib/inventory.ts,
+  // which distinguishes "zero" from "we can't see it".
+  const counted = variants.filter((v) => typeof v.quantityAvailable === 'number');
+  const stock = counted.length
+    ? counted.reduce((n, v) => n + Math.max(0, v.quantityAvailable ?? 0), 0)
+    : variants.some((v) => v.availableForSale) ? 100 : 0;
+
   return {
     id: sp.handle,
     handle: sp.handle,
@@ -209,7 +325,7 @@ export function toProduct(sp: ShopifyProduct): Product {
     category: sp.productType,
     sizes: sizes.length ? sizes : ['One Size'],
     colors: colors.length ? colors : ['Default'],
-    stock: variants.some((v) => v.availableForSale) ? 100 : 0,
+    stock,
     variants,
     isPreorder,                                                                  // ← NEW
     shippingWindow,                                                              // ← NEW

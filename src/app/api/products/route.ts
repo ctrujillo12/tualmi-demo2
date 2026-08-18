@@ -42,9 +42,12 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       { ok: true, products },
-      // Same 5-minute window the rest of the storefront reads on; prices here
-      // are only used for display, and the cart re-syncs on its own.
-      { headers: { 'Cache-Control': 'public, max-age=300' } },
+      // Was 5 minutes, on the reasoning that prices here are display-only. These
+      // records now carry availability too, and the upsell tiles gate their
+      // "+ add" on it — a five-minute-old sold-out flag is long enough to take
+      // an order we can't fill. Matched to the 60s the rest of the storefront
+      // reads on; the inventory webhook flushes the server cache underneath.
+      { headers: { 'Cache-Control': 'public, max-age=60' } },
     );
   } catch {
     return NextResponse.json({ ok: false, products: [] });
