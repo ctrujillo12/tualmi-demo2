@@ -123,7 +123,7 @@ to 60 seconds — a long time mid-drop.
 
 | Variable | Default | What it does |
 | --- | --- | --- |
-| `NEXT_PUBLIC_LOW_STOCK_THRESHOLD` | `6` | At or below this many units, a size reads "only a few left" |
+| `NEXT_PUBLIC_LOW_STOCK_BELOW` | `10` | Below this many units, a size reads "only a few left". At 10 that means 1–9 are flagged, 10 is not |
 | `NEXT_PUBLIC_SHOPIFY_API_VERSION` | `2024-01` | Storefront API version. Bump after smoke-testing a product page and a checkout |
 | `SHOPIFY_WEBHOOK_SECRET` | — | Shared by both Shopify webhook routes |
 
@@ -146,6 +146,21 @@ the better failure.
 | `availableForSale` | Can this be bought at all | Authoritative. Stays true for variants set to continue selling when out of stock |
 | `quantityAvailable` | "only N left", quantity caps | `undefined` when the scope is missing — means unknown, never zero |
 | `currentlyNotInStock` | Detecting backorders | Sellable but not in stock; deliberately not flagged as low stock |
+
+### Sizes exempt from the low-stock dot
+
+`NO_LOW_STOCK_DOT` in `lib/lowStock.ts` currently holds **2XS and 2XL** (both
+spellings — `xxs`/`2xs`, `xxl`/`2xl` — since local product data and Shopify
+variant titles disagree).
+
+Those sizes are stocked two-deep by design, not two-*left*. A dot there reads
+as "nearly gone, everyone's buying these" when nobody has bought one, which
+pushes people away from the size they actually need.
+
+It hides the dot only. An exempt size that genuinely hits zero still shows as
+sold out and still can't be added to the cart. Revisit the list if you ever
+stock those sizes at normal depth — at that point a low count means what it
+means everywhere else.
 
 ## What happens where
 

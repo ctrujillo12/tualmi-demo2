@@ -33,16 +33,20 @@
 
 import type { Product } from '@/types';
 import type { ShopifyVariant } from '@/lib/shopify';
-import { manualLowStockSizes } from '@/lib/lowStock';
+import { manualLowStockSizes, suppressesLowStockDot } from '@/lib/lowStock';
 
 /**
- * At or below this many units, a size reads as "only a few left".
- * Override with NEXT_PUBLIC_LOW_STOCK_THRESHOLD.
+ * A size reads as "only a few left" when its quantity is BELOW this number —
+ * so at 10, anything from 1 to 9 is flagged and 10 is not. Named "below"
+ * rather than "threshold" because the off-by-one matters and has already
+ * caused confusion once.
+ *
+ * Override with NEXT_PUBLIC_LOW_STOCK_BELOW.
  */
-export const LOW_STOCK_THRESHOLD =
-  Number(process.env.NEXT_PUBLIC_LOW_STOCK_THRESHOLD) > 0
-    ? Number(process.env.NEXT_PUBLIC_LOW_STOCK_THRESHOLD)
-    : 6;
+export const LOW_STOCK_BELOW =
+  Number(process.env.NEXT_PUBLIC_LOW_STOCK_BELOW) > 0
+    ? Number(process.env.NEXT_PUBLIC_LOW_STOCK_BELOW)
+    : 10;
 
 export type AvailabilityStatus = 'available' | 'sold-out' | 'unknown';
 
@@ -131,10 +135,19 @@ export function availability(
   const low = backorder
     ? false
     : qty !== null
-      ? qty > 0 && qty <= LOW_STOCK_THRESHOLD
+      ? qty > 0 && qty < LOW_STOCK_BELOW
       : manualLowStockSizes(product.handle, color).some((s) => norm(s) === norm(size));
 
-  return { status: 'available', quantity: qty, low, backorder };
+  return {
+    status: 'available',
+    quantity: qty,
+    // Some sizes are stocked thin by design and are exempt from the dot — see
+    // NO_LOW_STOCK_DOT in lib/lowStock.ts. Applied last so it overrides both
+    // the real count and the manual list, and applied only to `low`: an exempt
+    // size that hits zero still goes sold-out above, untouched.
+    low: low && !suppressesLowStockDot(size),
+    backorder,
+  };
 }
 
 /** Sold out for certain. Unknown is deliberately NOT sold out. */

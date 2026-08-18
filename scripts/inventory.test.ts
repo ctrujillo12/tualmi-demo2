@@ -78,6 +78,11 @@ console.log('\nquantities readable');
     assert.equal(availability(p, 'Picnic', 'S').low, true);
     assert.equal(availability(p, 'Picnic', 'M').low, false);
   });
+  check('the boundary is "under 10" — 9 is low, 10 is not', () => {
+    const q = product([v('Picnic', 'S', true, 9), v('Picnic', 'M', true, 10)]);
+    assert.equal(availability(q, 'Picnic', 'S').low, true);
+    assert.equal(availability(q, 'Picnic', 'M').low, false);
+  });
   check('the real count comes through for the message', () => {
     assert.equal(availability(p, 'Picnic', 'S').quantity, 2);
   });
@@ -147,6 +152,43 @@ console.log('\nunknown must never block a sale');
   });
   check('no size chosen yet is unknown', () => {
     assert.equal(availability(p, 'Picnic', '').status, 'unknown');
+  });
+}
+
+console.log('\nsizes exempt from the low-stock dot (2XS / 2XL)');
+{
+  const sizes = ['XXS', '2XS', 'S', 'XXL', '2XL'];
+  const p = product(
+    [
+      v('Picnic', 'XXS', true, 2),
+      v('Picnic', '2XS', true, 2),
+      v('Picnic', 'S', true, 2),
+      v('Picnic', 'XXL', true, 2),
+      v('Picnic', '2XL', true, 2),
+    ],
+    sizes,
+  );
+
+  check('no dot on XXS / 2XS / XXL / 2XL even at 2 units', () => {
+    for (const s of ['XXS', '2XS', 'XXL', '2XL']) {
+      assert.equal(availability(p, 'Picnic', s).low, false, `${s} should not be flagged`);
+    }
+  });
+  check('a normal size at the same count still gets the dot', () => {
+    assert.equal(availability(p, 'Picnic', 'S').low, true);
+  });
+  check('the real quantity is still reported, just not flagged', () => {
+    assert.equal(availability(p, 'Picnic', '2XL').quantity, 2);
+  });
+  check('an exempt size that hits zero is STILL sold out', () => {
+    const gone = product([v('Picnic', '2XL', false, 0)], ['2XL']);
+    assert.equal(isSoldOut(gone, 'Picnic', '2XL'), true);
+    assert.equal(maxPurchasable(gone, 'Picnic', '2XL', 10), 0);
+  });
+  check('exemption overrides the manual list too', () => {
+    // No readable quantities, so the manual overrides would normally apply.
+    const manual = product([v('Picnic', '2XL', true, undefined)], ['2XL']);
+    assert.equal(availability(manual, 'Picnic', '2XL').low, false);
   });
 }
 

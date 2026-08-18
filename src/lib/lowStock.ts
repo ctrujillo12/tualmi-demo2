@@ -3,9 +3,9 @@
  *
  * ── THIS IS NO LONGER THE PRIMARY SOURCE ─────────────────────────────────
  * Low stock is now derived from real Shopify quantities. lib/inventory.ts
- * reads `quantityAvailable` off each variant and flags anything at or below
- * LOW_STOCK_THRESHOLD, so the storefront tracks restocks and sell-downs on its
- * own with nothing to maintain here.
+ * reads `quantityAvailable` off each variant and flags anything below
+ * LOW_STOCK_BELOW (10 by default — so 1 through 9), which means the storefront
+ * tracks restocks and sell-downs on its own with nothing to maintain here.
  *
  * The old comment in this file claimed the storefront "genuinely cannot see
  * stock levels". It can — the query failed because the Storefront token was
@@ -61,4 +61,33 @@ export function manualLowStockSizes(
     ([k]) => k.trim().toLowerCase() === key,
   );
   return entry ? entry[1] : [];
+}
+
+// ─── Sizes that never show the low-stock dot ────────────────────────────────
+//
+// The end sizes are stocked thin on purpose — two units each, not two units
+// *left*. Flagging them as low is technically true and practically misleading:
+// a shopper reads the dot as "nearly gone, everyone's buying these" when in
+// fact nobody has bought one. Worse, it makes the size look like a bad bet and
+// nudges people away from the size they actually need.
+//
+// Both spellings are listed because the storefront's local product data says
+// XXS/XXL while Shopify variants may be titled 2XS/2XL, and this has to match
+// whichever comes back.
+//
+// ── WHAT THIS DOES NOT DO ───────────────────────────────────────────────
+// It only hides the low-stock dot. A size in this list that genuinely hits
+// zero still shows as sold out and still can't be added to the cart — that
+// path reads availableForSale, which nothing here touches.
+//
+// ── WHEN TO REVISIT ─────────────────────────────────────────────────────
+// When you start stocking these sizes at normal depth. At that point a low
+// count means the same thing it means everywhere else, and hiding it costs a
+// shopper the warning they'd want. Remove the size from this list then.
+const NO_LOW_STOCK_DOT = ['xxs', '2xs', 'xxl', '2xl'];
+
+/** True when this size is deliberately exempt from the low-stock treatment. */
+export function suppressesLowStockDot(size: string | undefined): boolean {
+  if (!size) return false;
+  return NO_LOW_STOCK_DOT.includes(size.trim().toLowerCase());
 }
