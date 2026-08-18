@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { PRODUCT_DETAILS, type HighlightIcon } from '@/lib/productDetails';
-import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
+import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, PRODUCT_LIFESTYLE_IMAGES } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
 import { FREE_SHIPPING_LABEL } from '@/lib/shipping';
@@ -137,6 +137,9 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
     setFocusIdx(0);
+    // The outdoor set differs per colourway and isn't the same length, so a
+    // stale index here would open the viewer on the wrong photo or on nothing.
+    setLifestyleIdx(null);
     // Persist the choice in the URL so a refresh keeps the same colorway
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
@@ -236,6 +239,15 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   // 95.6% of traffic is mobile and 93.8% of product viewers never add to cart.
   // Tap any gallery photo to open it full-screen with zoom.
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
+  /**
+   * Outdoor shots for the selected colourway, shown as a small row under the
+   * description rather than inside the gallery — see the note on
+   * PRODUCT_LIFESTYLE_IMAGES. Empty for products that don't have any, in which
+   * case the whole section doesn't render.
+   */
+  const lifestyleImages = PRODUCT_LIFESTYLE_IMAGES[handle]?.[selectedColor] ?? [];
+  const [lifestyleIdx, setLifestyleIdx] = useState<number | null>(null);
 
   const sizeRef = useRef<HTMLDivElement>(null);
   const inlineCtaRef = useRef<HTMLDivElement>(null);
@@ -1113,6 +1125,72 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
               <p style={bodyStyle}>{product.description}</p>
             </div>
 
+            {/* ── Out in the world ──
+                The outdoor shots, deliberately small and deliberately not in
+                the gallery above. Up here the studio frames answer "what does
+                this garment look like"; down here these answer "what does it
+                look like on a trail", which is a different question and a
+                worse job for a full-width hero-sized photo.
+
+                A horizontally scrolling row rather than a grid: it stays one
+                line tall on a phone, so it never pushes the fit and care
+                copy off the screen, and the overflow makes it obvious there
+                are more to swipe to. Tapping opens the same lightbox the
+                gallery uses. */}
+            {lifestyleImages.length > 0 && (
+              <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
+                <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '12px' }}>
+                  out in the world
+                </p>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '8px',
+                    overflowX: 'auto',
+                    // Lets the row bleed to the screen edge on a phone, so the
+                    // last thumbnail is visibly cut off — the cue that says
+                    // "scrollable" without needing an arrow.
+                    scrollSnapType: 'x proximity',
+                    paddingBottom: '4px',
+                    WebkitOverflowScrolling: 'touch',
+                  }}
+                >
+                  {lifestyleImages.map((src, i) => (
+                    <button
+                      key={src}
+                      onClick={() => setLifestyleIdx(i)}
+                      aria-label={`${product.name} in ${selectedColor} — photo ${i + 1} of ${lifestyleImages.length}, open full screen`}
+                      style={{
+                        position: 'relative',
+                        flex: '0 0 auto',
+                        width: '104px',
+                        height: '156px',
+                        padding: 0,
+                        border: `1px solid ${rule}`,
+                        borderRadius: '10px',
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        background: blushBg,
+                        scrollSnapAlign: 'start',
+                      }}
+                    >
+                      <Image
+                        src={src}
+                        alt=""
+                        fill
+                        sizes="104px"
+                        style={{ objectFit: 'cover' }}
+                        // Well below the fold on every viewport, and there are
+                        // up to six of them — no reason to compete with the
+                        // gallery for bandwidth.
+                        loading="lazy"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Fit & sizing */}
             {fabricDetail?.fit && (
               <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
@@ -1184,6 +1262,18 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
           alt={`${product.name} — ${selectedColor}`}
           onClose={() => setLightboxIdx(null)}
           onIndexChange={setLightboxIdx}
+        />
+      )}
+
+      {/* Same viewer, its own image set — so paging through the outdoor shots
+          doesn't wander into the studio gallery and vice versa. */}
+      {lifestyleIdx !== null && (
+        <ImageLightbox
+          images={lifestyleImages}
+          index={lifestyleIdx}
+          alt={`${product.name} in ${selectedColor}, outdoors`}
+          onClose={() => setLifestyleIdx(null)}
+          onIndexChange={setLifestyleIdx}
         />
       )}
 

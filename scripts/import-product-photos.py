@@ -67,18 +67,24 @@ PLAN = {
     "jam-5": ("fixed photos", "1.png"),
     "jam-6": ("fixed photos", "2.png"),
 
-    # Sierra Shorts — Picnic (pink gingham)
-    "picnic-1": ("Pink Shorts", "Facetune_24-07-2026-16-22-56.HEIC"),
-    "picnic-2": ("Pink Shorts", "Facetune_24-07-2026-21-40-45.HEIC"),
-    "picnic-3": ("Pink Shorts", "Facetune_21-07-2026-00-03-14 2.heic"),
-    "picnic-4": ("Pink Shorts", "Untitled design (2).PNG"),
+    # Sierra Shorts — Picnic (pink gingham).
+    # Moved off the "Pink Shorts" HEICs onto the retouched "fixed photos"
+    # exports, so all three shorts colourways now come from one graded set and
+    # match each other. These are 2588x3881 — no resolution given up, unlike
+    # Jam above. Order: full-body front, full-body side/back, side, back
+    # detail, side detail.
+    "picnic-1": ("fixed photos", "6 (1).png"),
+    "picnic-2": ("fixed photos", "8.png"),
+    "picnic-3": ("fixed photos", "10.png"),
+    "picnic-4": ("fixed photos", "9.png"),
+    "picnic-5": ("fixed photos", "7.png"),
 
-    # Sierra Shorts — Confetti
-    "confetti-1": ("Confetti Shorts", "Facetune_24-07-2026-21-51-27.HEIC"),
-    "confetti-2": ("Confetti Shorts", "Facetune_24-07-2026-21-54-29.HEIC"),
-    "confetti-3": ("Confetti Shorts", "Facetune_24-07-2026-21-55-59.HEIC"),
-    "confetti-4": ("Confetti Shorts", "Facetune_22-07-2026-10-39-13.heic"),
-    "confetti-5": ("Confetti Shorts", "Facetune_22-07-2026-10-24-13.heic"),
+    # Sierra Shorts — Confetti. Also moved onto "fixed photos".
+    "confetti-1": ("fixed photos", "11.png"),
+    "confetti-2": ("fixed photos", "12.png"),
+    "confetti-3": ("fixed photos", "13.png"),
+    "confetti-4": ("fixed photos", "14.png"),
+    "confetti-5": ("fixed photos", "15.png"),
 
     # Juniper Pant — Birch (beige)
     "birch-1": ("Beige Pants", "Facetune_24-07-2026-21-57-29.HEIC"),
@@ -100,8 +106,47 @@ PLAN = {
     "tioga-1": ("Top Coming Soon", "2.png"),
 }
 
+# ─── Lifestyle strip ────────────────────────────────────────────────────────
+#
+# The outdoor shots — trail, rocks, clothesline — that run in a small row under
+# the description on the product page. Deliberately NOT in PLAN: they'd sit in
+# the same gallery as the studio shots, and mixing a white-background product
+# frame with a backlit hillside makes both look like mistakes.
+#
+# They render as ~150px thumbnails, so 1200px on the long edge is already
+# generous (retina on the largest thumbnail) and keeps the whole strip near
+# 150KB a photo instead of 250KB+.
+LIFESTYLE_OUT = os.path.join(ROOT, "public", "images-2", "lifestyle")
+LIFESTYLE_MAX_EDGE = 1200
 
-def convert(src_path: str, dest_path: str) -> tuple[int, int, int]:
+LIFESTYLE_PLAN = {
+    "jam-life-1": ("fixed photos/additional pics", "red 3.png"),
+    "jam-life-2": ("fixed photos/additional pics", "red 4.png"),
+    "jam-life-3": ("fixed photos/additional pics", "red 2.png"),
+    "jam-life-4": ("fixed photos/additional pics", "red 1.png"),
+
+    "picnic-life-1": ("fixed photos/additional pics", "pink 4.png"),
+    "picnic-life-2": ("fixed photos/additional pics", "pink 3.png"),
+    "picnic-life-3": ("fixed photos/additional pics", "pink 5.png"),
+    "picnic-life-4": ("fixed photos/additional pics", "pink 6.png"),
+    "picnic-life-5": ("fixed photos/additional pics", "pink 2.png"),
+    "picnic-life-6": ("fixed photos/additional pics", "pink 1.png"),
+
+    "confetti-life-1": ("fixed photos/additional pics", "confetti 3.png"),
+    "confetti-life-2": ("fixed photos/additional pics", "confetti 5.png"),
+    "confetti-life-3": ("fixed photos/additional pics", "confetti 4.png"),
+    "confetti-life-4": ("fixed photos/additional pics", "confetti 2.png"),
+    "confetti-life-5": ("fixed photos/additional pics", "confetti 6.png"),
+    "confetti-life-6": ("fixed photos/additional pics", "confetti 1.png"),
+
+    # Not used: "use this one for pink.png" / "use this one for red shorts.png".
+    # They're byte-identical copies of one frame showing both colourways, which
+    # makes them a hero candidate rather than a per-colourway strip photo.
+    # Parked until there's a decision on where it goes.
+}
+
+
+def convert(src_path: str, dest_path: str, max_edge: int = MAX_EDGE) -> tuple[int, int, int]:
     img = Image.open(src_path)
 
     # Phone photos carry EXIF rotation; bake it in or portraits come out sideways.
@@ -121,7 +166,7 @@ def convert(src_path: str, dest_path: str) -> tuple[int, int, int]:
         img = img.convert("RGB")
 
     w, h = img.size
-    scale = min(1.0, MAX_EDGE / max(w, h))
+    scale = min(1.0, max_edge / max(w, h))
     if scale < 1.0:
         img = img.resize((round(w * scale), round(h * scale)), Image.LANCZOS)
 
@@ -153,6 +198,26 @@ if __name__ == "__main__":
         print(f"  {stem}.jpg  {w}x{h}  {size // 1024} KB   <- {folder}/{fname}")
 
     print(f"\n{len(PLAN) - len(missing)} photos, {total / 1048576:.1f} MB total")
+
+    # ── Lifestyle strip ──
+    os.makedirs(LIFESTYLE_OUT, exist_ok=True)
+    for f in os.listdir(LIFESTYLE_OUT):
+        if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp")):
+            os.remove(os.path.join(LIFESTYLE_OUT, f))
+
+    life_total = 0
+    print(f"\nlifestyle strip -> public/images-2/lifestyle/ (max {LIFESTYLE_MAX_EDGE}px)")
+    for stem, (folder, fname) in LIFESTYLE_PLAN.items():
+        src = os.path.join(SRC, folder, fname)
+        if not os.path.exists(src):
+            missing.append(f"{folder}/{fname}")
+            continue
+        dest = os.path.join(LIFESTYLE_OUT, f"{stem}.jpg")
+        w, h, size = convert(src, dest, LIFESTYLE_MAX_EDGE)
+        life_total += size
+        print(f"  {stem}.jpg  {w}x{h}  {size // 1024} KB   <- {folder}/{fname}")
+    print(f"\n{len(LIFESTYLE_PLAN)} lifestyle photos, {life_total / 1048576:.1f} MB total")
+
     if missing:
         print("\nMISSING SOURCES:")
         for m in missing:
