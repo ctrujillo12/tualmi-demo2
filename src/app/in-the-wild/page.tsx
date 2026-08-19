@@ -157,14 +157,18 @@ export default function InTheWildPage() {
         @media (max-width: 640px) { .wild-map { max-width: none; } }
         .wild-state { fill: #F5E3EA; stroke: #EACBD8; stroke-width: 1; }
         .wild-state[data-shipped='true'] { fill: #EFCBDA; }
-        /* Smaller than a state-level pin would be: there are two dozen of
-           these and several sit close together, so a fat dot turns the Bay
-           Area into one blob. */
-        .wild-pin { fill: ${maroon}; stroke: #fff; stroke-width: 1.6; r: 6; }
-        /* The map scales to about a third of its drawn size on a phone, which
-           would take a 6px pin to 2px. CSS geometry properties let the dot
-           grow back without redrawing anything. */
-        @media (max-width: 640px) { .wild-pin { r: 11; stroke-width: 2.6; } }
+        /* Colour only. Pin SIZE lives on the elements themselves as real SVG
+           r / stroke-width attributes — see the note above the two <g> groups
+           in the markup for why it can't live here. */
+        .wild-pin { fill: ${maroon}; stroke: #fff; }
+        /* Which of the two pin sets is drawn. Phone gets the larger one
+           because the map renders at roughly a third of its desktop size
+           there, and a 6-unit dot lands at about 2px. */
+        .wild-pins--phone { display: none; }
+        @media (max-width: 640px) {
+          .wild-pins--wide { display: none; }
+          .wild-pins--phone { display: inline; }
+        }
 
         .wild-statelist {
           display: flex;
@@ -264,15 +268,53 @@ export default function InTheWildPage() {
             ))}
             {/* Pins last so they sit above every outline. No <title>: the
                 tooltip would name the town, and the point of an unlabelled dot
-                is that it doesn't. */}
-            {pins.map((p) => (
-              <circle
-                key={`${p.state}-${Math.round(p.x)}-${Math.round(p.y)}`}
-                className="wild-pin"
-                cx={p.x}
-                cy={p.y}
-              />
-            ))}
+                is that it doesn't.
+
+                ── WHY THE PINS ARE DRAWN TWICE ─────────────────────────────
+                The radius used to come from CSS alone — `.wild-pin { r: 6 }`,
+                with `r: 11` in a phone media query — and these circles carried
+                no `r` attribute at all. A circle whose radius resolves to
+                nothing is a circle of radius ZERO, so the moment a browser
+                declined that declaration the pins didn't shrink, they vanished
+                outright, leaving a map of tinted states and nothing on it.
+                That's what was happening on iOS.
+
+                The declaration was `r: 6` — no unit. Chromium accepts that;
+                per spec a non-zero <length> requires one, and WebKit is strict
+                about it. Adding "px" would fix the immediate symptom but keeps
+                the fragile part: the size still lives in a CSS property that
+                only some engines honour, and the failure mode is still total
+                invisibility rather than a wrong size.
+
+                So the size is back on the elements as plain SVG attributes,
+                which every renderer has understood forever, and the phone/wide
+                switch is a `display` toggle between two groups — also
+                universally supported. Sixty-odd extra circles in the DOM is a
+                cheap price for a map that cannot silently empty itself. */}
+            <g className="wild-pins wild-pins--wide">
+              {pins.map((p) => (
+                <circle
+                  key={`${p.state}-${Math.round(p.x)}-${Math.round(p.y)}`}
+                  className="wild-pin"
+                  cx={p.x}
+                  cy={p.y}
+                  r={6}
+                  strokeWidth={1.6}
+                />
+              ))}
+            </g>
+            <g className="wild-pins wild-pins--phone">
+              {pins.map((p) => (
+                <circle
+                  key={`${p.state}-${Math.round(p.x)}-${Math.round(p.y)}`}
+                  className="wild-pin"
+                  cx={p.x}
+                  cy={p.y}
+                  r={11}
+                  strokeWidth={2.6}
+                />
+              ))}
+            </g>
           </svg>
 
           {/* The same information as text — a screen reader shouldn't have to

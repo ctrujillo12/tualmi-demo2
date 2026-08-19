@@ -120,8 +120,38 @@ def product_card(photo_path, title, subtitle, out_name):
     print(f"  {out_name}  {os.path.getsize(path)//1024} KB")
 
 
+def hero_plain(photo_path, out_name):
+    """
+    Full-bleed landscape photo, nothing composited over it.
+
+    Used for the homepage preview. The card treatment below (hero_card) put
+    "actually cute hiking gear" over a dark scrim; this drops both. The reason
+    to prefer it: every platform that renders a link preview already draws the
+    page title and description right underneath the image, so baked-in text is
+    the same words twice — and it's the copy that gets cropped or covered when
+    a platform decides to letterbox or overlay the thumbnail.
+
+    Still generated rather than pointing the meta tag at the source photo:
+    shorts-holdinghands.jpg is 6240x4160 and 12.5 MB. Facebook rejects anything
+    over 8 MB outright, and iMessage / WhatsApp / Slack give up on large files
+    before they finish downloading, so a raw link would often preview with no
+    image at all. 1200x630 at ~175 KB always renders.
+    """
+    photo = Image.open(photo_path).convert("RGB")
+    canvas = cover(photo, W, H)
+    path = os.path.join(OUT, out_name)
+    canvas.save(path, "JPEG", quality=86, optimize=True, progressive=True)
+    print(f"  {out_name}  {os.path.getsize(path)//1024} KB  (plain, no overlay)")
+
+
 def hero_card(photo_path, title, subtitle, out_name):
-    """Full-bleed landscape photo with a dark scrim and text over it."""
+    """
+    Full-bleed landscape photo with a dark scrim and text over it.
+
+    No longer used for the homepage — see hero_plain. Kept because it's the
+    right treatment if you ever need a preview to carry a message the page
+    title doesn't (a sale, a launch date, a campaign).
+    """
     photo = Image.open(photo_path).convert("RGB")
     canvas = cover(photo, W, H)
 
@@ -161,10 +191,11 @@ if __name__ == "__main__":
     img = lambda p: os.path.join(ROOT, "public", "images-2", p)
     print("Writing OG images to public/og/ ...")
 
-    hero_card(
+    # Homepage: the photo on its own. The title and description that used to be
+    # burned into it are already in the metadata, so every platform renders them
+    # below the image anyway.
+    hero_plain(
         img("shorts-holdinghands.jpg"),
-        "actually cute hiking gear",
-        "Women-owned. Built for the trail, cute everywhere else.",
         "home-og.jpg",
     )
 
