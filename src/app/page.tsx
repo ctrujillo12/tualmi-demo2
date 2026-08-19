@@ -209,36 +209,24 @@ export default async function Home() {
           </h1>
 
           {/* ── The about copy ──
-              Written for the customer we're actually chasing: a college student
-              with money to spend, outdoorsy without being hardcore about it,
-              who cares how she looks out there and cares about the planet, and
-              is bored senseless by what the gear industry offers her.
+              Supplied copy, used as written. It's the same language as the
+              story page (src/app/story/page.tsx), so if you edit one, edit the
+              other or the two pages start contradicting each other.
 
-              So it opens on the frustration she already has rather than on who
-              we are. She doesn't need our company description, she needs to
-              recognise her own complaint. The belonging line lands second,
-              because "you don't have to be hardcore" is the permission slip
-              this customer is looking for. Sustainability comes last and gets
-              a reason attached: she isn't a mindless consumer, but she also
-              won't read a paragraph about certification.
-
-              House rules for anything written here: no em dashes, no stacked
-              marketing adjectives ("fashion-forward", "trail-ready"), and no
-              third-person self-description. It should sound like Rachel and
-              Cheyenne talking, which is what the story page already does. */}
+              No em dashes anywhere in this section. */}
+          
           <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
-            We got tired of choosing between gear that works and gear we actually wanted to wear.
-            Everything made for women was boxy, beige, and shrunk down from a men&apos;s pattern,
-            like you&apos;re supposed to disappear into the scenery.
+            Why is so much women&apos;s outdoor gear still boxy, muted, and designed around the same
+            very specific idea of what an &ldquo;outdoorsy person&rdquo; should look like?
           </p>
           <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
-            So we made Tualmi. Styles we love, with the performance to
-            back it up. You don&apos;t have to be hardcore to belong out here.
+            Tualmi makes technical outdoor gear designed for women from the start. Flattering fits,
+            playful prints, and the performance to keep up with wherever you&apos;re headed; because you don&apos;t have to look, dress, or act a certain way to belong outside.
           </p>
           <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(28px, 4vw, 44px)', textAlign: 'left' }}>
-            We make everything with a WRAP Gold Standard certified manufacturer, sustainably and
-            ethically, in small runs. We&apos;d rather make a few things you keep reaching for than
-            ten you forget you own.
+            We make everything with a WRAP Gold Standard certified manufacturer, sustainably,
+            ethically, and designed to last because we&apos;re not interested in adding to the pile.
+            We&apos;d rather make a few things you actually reach for than ten you forget you own.
           </p>
 
           <div style={{ textAlign: 'left' }}>
