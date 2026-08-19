@@ -116,20 +116,55 @@ const PLACES: ShippedPlace[] = [
 /**
  * Orders that landed outside the United States.
  *
- * Albers USA is a US-only projection, so these have no pin — feeding them to
- * it returns null and they would vanish without a trace. Rather than lose
- * them, they're listed as countries under the map. If this list gets long
- * enough to be worth its own map, that's a good problem and a different
- * component.
+ * Albers USA is a US-only projection, so none of these can go on the main map —
+ * feeding them to it returns null and they would vanish without a trace.
+ * Instead they join the list of places under the map by country name.
  *
- * Countries only. A town of a few hundred people plus a country is a small
- * enough haystack that naming it stops being anonymous.
+ * Countries only in what's rendered. A town of a few hundred people plus a
+ * country is a small enough haystack that naming it stops being anonymous —
+ * `city` is here for the same reason it is on ShippedPlace above, so a human
+ * can maintain the file, and is never sent to the browser.
+ *
+ * `lat`/`lon` are optional and only worth filling in for a country that has
+ * its own inset map to be drawn on. Right now that's Australia (see
+ * src/lib/auMap.ts). Everywhere else the coordinates would go unused, so
+ * they're left off rather than collected for nothing.
  */
-const INTERNATIONAL: string[] = ['Austria', 'France', 'New Zealand'];
+export type InternationalPlace = {
+  country: string;
+  /** For your reference only — never rendered. */
+  city?: string;
+  lat?: number;
+  lon?: number;
+};
+
+const INTERNATIONAL: InternationalPlace[] = [
+  { country: 'Australia', city: 'Mount Evelyn, Victoria', lat: -37.7833, lon: 145.3833 },
+  { country: 'Austria' },
+  { country: 'France' },
+  { country: 'New Zealand' },
+];
 
 /** Countries shipped to outside the US, alphabetical. */
 export function getInternationalCountries(): string[] {
-  return Array.from(new Set(INTERNATIONAL)).sort((a, b) => a.localeCompare(b));
+  return Array.from(new Set(INTERNATIONAL.map((p) => p.country))).sort((a, b) =>
+    a.localeCompare(b),
+  );
+}
+
+/** An international row that has coordinates, so it can actually be drawn. */
+export type InternationalPin = InternationalPlace & { lat: number; lon: number };
+
+/**
+ * The rows for one country that carry coordinates, for that country's inset
+ * map. Returns an empty array for a country we only know by name, which is
+ * what lets the page skip drawing an inset rather than draw an empty one.
+ */
+export function getInternationalPins(country: string): InternationalPin[] {
+  return INTERNATIONAL.filter(
+    (p): p is InternationalPin =>
+      p.country === country && p.lat != null && p.lon != null,
+  );
 }
 
 /** Every place, normalised. See the note above before editing. */

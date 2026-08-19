@@ -147,7 +147,15 @@ const TIKTOKS = [
   },
 ];
 
-const TIKTOK_URL = 'https://www.tiktok.com/@tualmi.outdoors';
+/**
+ * Where the socials block sends people.
+ *
+ * The videos are TikToks and each tile still opens the clip on TikTok — that's
+ * where they live. But every *social* link on the site (the icon and the big
+ * handle here, the tag prompt on /in-the-wild) points at Instagram, which is
+ * the account we want people to land on and follow.
+ */
+const INSTAGRAM_URL = 'https://www.instagram.com/tualmioutdoors';
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Home() {
@@ -226,7 +234,6 @@ export default async function Home() {
           <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(28px, 4vw, 44px)', textAlign: 'left' }}>
             We make everything with a WRAP Gold Standard certified manufacturer, sustainably,
             ethically, and designed to last because we&apos;re not interested in adding to the pile.
-            We&apos;d rather make a few things you actually reach for than ten you forget you own.
           </p>
 
           <div style={{ textAlign: 'left' }}>
@@ -378,7 +385,13 @@ export default async function Home() {
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <a href={TIKTOK_URL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Tualmi on Instagram"
+            style={{ textDecoration: 'none' }}
+          >
             <p style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: sans, fontWeight: 600, fontSize: '14px', color: 'white', margin: '0 0 6px', textTransform: 'lowercase', letterSpacing: '0.02em' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

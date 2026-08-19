@@ -1,8 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { US_STATES, US_VIEWBOX, projectAlbersUsa } from '@/lib/usMap';
+import { AU_PATH, AU_VIEWBOX, projectAustralia } from '@/lib/auMap';
 import Image from 'next/image';
-import { getShippedPlaces, getShippedStates } from '@/lib/shippedPlaces';
+import {
+  getInternationalCountries,
+  getInternationalPins,
+  getShippedPlaces,
+  getShippedStates,
+} from '@/lib/shippedPlaces';
 
 export const metadata: Metadata = {
   title: 'in the wild',
@@ -135,6 +141,18 @@ export default function InTheWildPage() {
     a.name.localeCompare(b.name),
   );
 
+  // Orders that landed outside the US. They can't go on an Albers USA map, so
+  // they reach the page two ways: every one of them by name in the list under
+  // the map, and Australia — the only one we hold coordinates for — as a pin
+  // on its own small inset beside the big map.
+  const countries = getInternationalCountries();
+  const auPins = getInternationalPins('Australia')
+    .map((p) => projectAustralia(p.lat, p.lon))
+    .filter((p): p is [number, number] => p !== null);
+
+  // The written list under the map: states first, then countries.
+  const everywhere = [...shippedStates.map((s) => s.name), ...countries];
+
   return (
     <div style={{ backgroundColor: blushBg, minHeight: '100vh' }}>
       <style>{`
@@ -155,8 +173,48 @@ export default function InTheWildPage() {
           display: block;
         }
         @media (max-width: 640px) { .wild-map { max-width: none; } }
+
+        /* ── The two maps side by side ──
+           Australia rides along as an inset rather than as its own section:
+           the US map already tucks Alaska and Hawaii into corner insets, so a
+           second box in the same row reads as part of one map, not a second
+           map. Bottom-aligned, because the inset is much shorter and hanging
+           it off the top of the row would leave a hole under it.
+
+           At phone width the row wraps and the inset would sit alone on a
+           line at 120px wide, which looks like a mistake. Below 640px it goes
+           full-width under the US map instead and is allowed to grow. */
+        .wild-maps {
+          display: flex;
+          align-items: flex-end;
+          gap: clamp(16px, 3vw, 36px);
+          flex-wrap: wrap;
+        }
+        .wild-inset { flex: 0 0 auto; }
+        .wild-inset-map {
+          width: clamp(96px, 13vw, 132px);
+          height: auto;
+          display: block;
+        }
+        .wild-inset-label {
+          font-family: ${sans};
+          font-size: 11px;
+          font-weight: 600;
+          color: ${soft};
+          text-transform: lowercase;
+          margin: 6px 0 0;
+        }
+        @media (max-width: 640px) {
+          .wild-maps { display: block; }
+          .wild-inset { margin-top: 24px; }
+          .wild-inset-map { width: 40%; }
+        }
+
         .wild-state { fill: #F5E3EA; stroke: #EACBD8; stroke-width: 1; }
         .wild-state[data-shipped='true'] { fill: #EFCBDA; }
+        /* The inset country is always somewhere we've shipped — it only gets
+           drawn because there's a pin to put on it. */
+        .wild-country { fill: #EFCBDA; stroke: #EACBD8; stroke-width: 1; }
         /* Colour only. Pin SIZE lives on the elements themselves as real SVG
            r / stroke-width attributes — see the note above the two <g> groups
            in the markup for why it can't live here. */
@@ -251,9 +309,14 @@ export default function InTheWildPage() {
             <strong style={{ fontWeight: 700, color: maroon }}>
               {shippedStates.length} states
             </strong>{' '}
+            and{' '}
+            <strong style={{ fontWeight: 700, color: maroon }}>
+              {countries.length} countries
+            </strong>{' '}
             and counting
           </h2>
 
+          <div className="wild-maps">
           <svg
             className="wild-map"
             viewBox={`0 0 ${US_VIEWBOX.width} ${US_VIEWBOX.height}`}
@@ -317,11 +380,55 @@ export default function InTheWildPage() {
             </g>
           </svg>
 
+          {/* ── Australia ──
+              Drawn only when there's actually a pin to put on it. An empty
+              country outline sitting next to the US map would be a claim we
+              haven't earned, and this way the inset disappears by itself if
+              the order data ever stops including one. Same fill, stroke and
+              pin colours as the main map, so it reads as the same drawing.
+
+              The pin size is a plain SVG attribute for exactly the reason
+              spelled out over the US pins below — a CSS `r` is not something
+              every renderer honours, and the failure mode is an invisible pin
+              rather than a small one. No phone/wide pair here because this
+              box barely changes size between breakpoints. */}
+          {auPins.length > 0 && (
+            <div className="wild-inset">
+              <svg
+                className="wild-inset-map"
+                viewBox={`0 0 ${AU_VIEWBOX.width} ${AU_VIEWBOX.height}`}
+                role="img"
+                aria-label="Map of Australia with one place marked, near Melbourne."
+              >
+                <path className="wild-country" d={AU_PATH} />
+                {auPins.map(([x, y]) => (
+                  <circle
+                    key={`au-${Math.round(x)}-${Math.round(y)}`}
+                    className="wild-pin"
+                    cx={x}
+                    cy={y}
+                    r={9}
+                    strokeWidth={2.2}
+                  />
+                ))}
+              </svg>
+              {/* Labelled, unlike the states. A tinted state sits inside a
+                  recognisable US outline; a small shape on its own does not
+                  identify itself, and "which country is that" is a worse
+                  question to leave hanging than the label is clutter. */}
+              <p className="wild-inset-label">australia</p>
+            </div>
+          )}
+          </div>
+
           {/* The same information as text — a screen reader shouldn't have to
-              parse an SVG, and it gives the page something to be found by. */}
+              parse an SVG, and it gives the page something to be found by.
+              States first, then countries, each group alphabetical: mixing
+              "Australia" in among the American states would read as a state
+              nobody has heard of. */}
           <ul className="wild-statelist">
-            {shippedStates.map((s) => (
-              <li key={s.code}>{s.name}</li>
+            {everywhere.map((name) => (
+              <li key={name}>{name}</li>
             ))}
           </ul>
 
