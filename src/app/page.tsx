@@ -182,11 +182,22 @@ export default async function Home() {
           brand copy here is a pixel between an ad click and a product. */}
       <section className="home-about" style={{ backgroundColor: blushBg, padding: 'clamp(80px, 12vw, 160px) clamp(24px, 6vw, 72px)', position: 'relative' }}>
         <div style={{ maxWidth: '860px', margin: '0 auto', textAlign: 'center' }}>
+          {/* The slogan, matched to the story page's heading so the two read
+              as one brand rather than two drafts.
+
+              SIZE: this is five characters longer than "actually cute outdoors
+              gear." was, and the line is nowrap, so the old clamp overflowed
+              the 860px column — 1140px at the 64px cap, and 347px into 342px
+              of usable width on a 390px phone. (The old slogan overflowed too
+              above a 1280px viewport, at 959px; nothing clips it, so it went
+              unnoticed.) 45px / 4.4vw holds one line from a 320px iPhone SE
+              up, measured in a browser rather than eyeballed. If you want the big type back, drop whiteSpace and let
+              it wrap to two lines instead. */}
           <h1
             style={{
               fontFamily: sans,
               fontWeight: 700,
-              fontSize: 'clamp(16px, 5vw, 64px)',
+              fontSize: 'clamp(15px, 4.4vw, 45px)',
               letterSpacing: '-0.03em',
               color: maroon,
               margin: '0 0 clamp(32px, 5vw, 56px)',
@@ -194,17 +205,40 @@ export default async function Home() {
               whiteSpace: 'nowrap',
             }}
           >
-            actually cute outdoors gear.
+            gear for a new kind of outdoorsy.
           </h1>
 
+          {/* ── The about copy ──
+              Written for the customer we're actually chasing: a college student
+              with money to spend, outdoorsy without being hardcore about it,
+              who cares how she looks out there and cares about the planet, and
+              is bored senseless by what the gear industry offers her.
+
+              So it opens on the frustration she already has rather than on who
+              we are. She doesn't need our company description, she needs to
+              recognise her own complaint. The belonging line lands second,
+              because "you don't have to be hardcore" is the permission slip
+              this customer is looking for. Sustainability comes last and gets
+              a reason attached: she isn't a mindless consumer, but she also
+              won't read a paragraph about certification.
+
+              House rules for anything written here: no em dashes, no stacked
+              marketing adjectives ("fashion-forward", "trail-ready"), and no
+              third-person self-description. It should sound like Rachel and
+              Cheyenne talking, which is what the story page already does. */}
           <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
-            Tualmi is a women-owned outdoor apparel brand built on a simple idea: women deserve
-            fashion-forward hiking gear engineered for their bodies, not scaled down from men&apos;s
-            patterns. Every piece pairs technical, trail-ready performance with a flattering,
-            women-specific fit and bold, print-forward colorways.
+            We got tired of choosing between gear that works and gear we actually wanted to wear.
+            Everything made for women was boxy, beige, and shrunk down from a men&apos;s pattern,
+            like you&apos;re supposed to disappear into the scenery.
+          </p>
+          <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
+            So we made Tualmi. Styles we love, with the performance to
+            back it up. You don&apos;t have to be hardcore to belong out here.
           </p>
           <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(28px, 4vw, 44px)', textAlign: 'left' }}>
-            Sustainably made in a WRAP-certified facility.
+            We make everything with a WRAP Gold Standard certified manufacturer, sustainably and
+            ethically, in small runs. We&apos;d rather make a few things you keep reaching for than
+            ten you forget you own.
           </p>
 
           <div style={{ textAlign: 'left' }}>
@@ -214,6 +248,16 @@ export default async function Home() {
           </div>
         </div>
 
+        {/* Marginal link out to the story page.
+            It's absolutely positioned against the section, so it doesn't push
+            the centred column aside, it floats over whatever is there. That's
+            fine when the window is wide enough for the column to sit well
+            clear of it, and a mess when it isn't: at md/lg this was landing on
+            top of the paragraph text (43px into it at 768px, 17px at 1024px).
+            Widening the label to "read our story" made that worse, so the
+            breakpoint moved from md to xl, where the column starts at x=210
+            and the link ends at x=143. Nothing is lost at smaller widths,
+            because "our story" is in the header nav at every size. */}
         <Link
           href="/story"
           style={{
@@ -226,10 +270,11 @@ export default async function Home() {
             color: maroon,
             textDecoration: 'none',
             textTransform: 'lowercase',
+            whiteSpace: 'nowrap',
           }}
-          className="hidden md:block"
+          className="hidden xl:block"
         >
-          our story
+          read our story
         </Link>
       </section>
 
