@@ -30,6 +30,9 @@
  * it's the kind of small lie shoppers notice, and the FTC treats manufactured
  * urgency as a deceptive practice. Clear the entry when you restock.
  *
+ * There are no size exemptions any more — every size at or below the threshold
+ * gets the dot. See the note at the bottom of this file for what was removed.
+ *
  * Key is "<product handle>|<colourway>", value is the sizes running low. Both
  * are matched case-insensitively.
  *
@@ -40,12 +43,17 @@
 const LOW_STOCK_OVERRIDES: Record<string, string[]> = {
   // Verified against Shopify on 18 Aug 2026 (scripts/dump-variants.mjs).
   // Sierra Shorts, Picnic: XS=8, S=10, XL=8 — all at or under the threshold.
-  // 2XS and 2XL are also thin but exempt by design, see NO_LOW_STOCK_DOT.
+  //
+  // XXS and XXL are listed too. They're stocked around two units each, which is
+  // under the threshold like everything else here, and as of 19 Aug 2026 they
+  // are no longer exempt from the dot (see the note at the bottom of this
+  // file). Spelled the way the storefront spells them — lib/products.ts says
+  // XXS/XXL — since that's what gets passed to this function.
   //
   // Only reachable if the inventory scope stops working. While quantities are
   // readable this is dead weight, and the numbers above will drift.
-  'sierra-shorts|Picnic': ['XS', 'S', 'XL'],
-  'sierra-shorts|Jam': ['XS', 'XL'],
+  'sierra-shorts|Picnic': ['XXS', 'XS', 'S', 'XL', 'XXL'],
+  'sierra-shorts|Jam': ['XXS', 'XS', 'XL', 'XXL'],
 };
 
 /** The wording used wherever a low-stock size is shown. */
@@ -70,31 +78,26 @@ export function manualLowStockSizes(
   return entry ? entry[1] : [];
 }
 
-// ─── Sizes that never show the low-stock dot ────────────────────────────────
+// ─── Removed: the end-size exemption ────────────────────────────────────────
 //
-// The end sizes are stocked thin on purpose — two units each, not two units
-// *left*. Flagging them as low is technically true and practically misleading:
-// a shopper reads the dot as "nearly gone, everyone's buying these" when in
-// fact nobody has bought one. Worse, it makes the size look like a bad bet and
-// nudges people away from the size they actually need.
+// XXS/2XS and XXL/2XL used to be exempt from the low-stock dot, via a
+// NO_LOW_STOCK_DOT list here and a `suppressesLowStockDot()` check in
+// lib/inventory.ts. Removed 19 Aug 2026 at Cheyenne's request: every size at
+// or below LOW_STOCK_AT_OR_BELOW now gets the dot, end sizes included.
 //
-// Both spellings are listed because the storefront's local product data says
-// XXS/XXL while Shopify variants may be titled 2XS/2XL, and this has to match
-// whichever comes back.
+// The argument for the exemption, recorded so it isn't rediscovered from
+// scratch: the end sizes are stocked thin on purpose — around two units each,
+// not two units *left*. A dot there is technically true and reads as "nearly
+// gone, everyone's buying these" when in fact nobody has bought one, which
+// makes the size look like a bad bet and can push a shopper off the size she
+// actually needs.
 //
-// ── WHAT THIS DOES NOT DO ───────────────────────────────────────────────
-// It only hides the low-stock dot. A size in this list that genuinely hits
-// zero still shows as sold out and still can't be added to the cart — that
-// path reads availableForSale, which nothing here touches.
+// The argument against, which is the one in force: two units left is two units
+// left whatever the reason, and a shopper who doesn't buy today finds it gone
+// either way. Consistency across sizes is easier to trust than a rule that
+// quietly stays silent at both ends of the range.
 //
-// ── WHEN TO REVISIT ─────────────────────────────────────────────────────
-// When you start stocking these sizes at normal depth. At that point a low
-// count means the same thing it means everywhere else, and hiding it costs a
-// shopper the warning they'd want. Remove the size from this list then.
-const NO_LOW_STOCK_DOT = ['xxs', '2xs', 'xxl', '2xl'];
-
-/** True when this size is deliberately exempt from the low-stock treatment. */
-export function suppressesLowStockDot(size: string | undefined): boolean {
-  if (!size) return false;
-  return NO_LOW_STOCK_DOT.includes(size.trim().toLowerCase());
-}
+// If you bring the exemption back, it belongs in exactly the two places named
+// above, and remember it only ever hid the DOT — an exempt size at zero still
+// went sold out and still couldn't be added to the cart, because that path
+// reads availableForSale and never touched this file.

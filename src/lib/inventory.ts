@@ -33,7 +33,7 @@
 
 import type { Product } from '@/types';
 import type { ShopifyVariant } from '@/lib/shopify';
-import { manualLowStockSizes, suppressesLowStockDot } from '@/lib/lowStock';
+import { manualLowStockSizes } from '@/lib/lowStock';
 
 /**
  * A size reads as "only a few left" at this quantity OR FEWER — so at 10,
@@ -194,11 +194,11 @@ export function availability(
   return {
     status: 'available',
     quantity: qty,
-    // Some sizes are stocked thin by design and are exempt from the dot — see
-    // NO_LOW_STOCK_DOT in lib/lowStock.ts. Applied last so it overrides both
-    // the real count and the manual list, and applied only to `low`: an exempt
-    // size that hits zero still goes sold-out above, untouched.
-    low: low && !suppressesLowStockDot(size),
+    // No size is exempt: every size at or below LOW_STOCK_AT_OR_BELOW gets the
+    // dot, XXS and XXL included. The end sizes used to be filtered out here —
+    // see the note at the bottom of lib/lowStock.ts for what that rule was and
+    // why it went away.
+    low,
     backorder,
   };
 }
