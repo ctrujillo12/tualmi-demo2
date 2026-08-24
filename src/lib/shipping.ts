@@ -28,7 +28,7 @@
  *
  * Must match the minimum on the Shopify free-shipping rule.
  */
-export const FREE_SHIPPING_THRESHOLD = 10000;
+export const FREE_SHIPPING_THRESHOLD = 13000;
 
 // "US" is load-bearing: the Shopify rule is United States only and excludes
 // rates over $11, so international orders still pay. Claiming plain "free
