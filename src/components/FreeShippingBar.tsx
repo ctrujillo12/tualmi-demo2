@@ -1,17 +1,44 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
-import { freeShippingProgress, money, FREE_SHIPPING_THRESHOLD } from '@/lib/shipping';
+import {
+  freeShippingProgress,
+  money,
+  FREE_SHIPPING_THRESHOLD,
+  FLAT_SHIPPING_CENTS,
+} from '@/lib/shipping';
+import { trackShippingNudge } from '@/lib/analytics';
 
 /**
- * Free-shipping progress, shown in two places with the same numbers.
+ * Free-shipping messaging, shown in two places with the same numbers.
  *
- * The message follows the shopper down the funnel: a plain promo when the cart
- * is empty, a live "add $X more" nudge once they've started, and a reward state
- * once they qualify. A static banner that never changes is the version people
- * learn to ignore.
+ * ── WHY THIS STOPPED SAYING "$62 TO GO" ──────────────────────────────────
+ * The gap number is only motivating when the gap is closeable. Every item in
+ * this shop costs at least $68, so a one-item cart is never a small top-up
+ * away from the threshold — it is a whole second purchase away. "$62 away from
+ * free US shipping" asked a shopper to spend $62 to save $7.99, which reads as
+ * a penalty for buying one thing, and it was the loudest element on a screen
+ * whose actual job is to get her to checkout.
+ *
+ * So the message below the threshold now does one of two things:
+ *
+ *   plain        — states what shipping costs. No ask, no bar-filling guilt.
+ *                  Used in the header strip always, and in the cart whenever
+ *                  nothing in the cart could close the gap in one step.
+ *
+ *   second_pair  — names the reachable outcome WITH its total: "add a second
+ *                  pair — $136 total, and shipping's free". A total a shopper
+ *                  can check beats a deficit she has to do arithmetic on, and
+ *                  it points at something real (the colourways sitting in
+ *                  <CartUpsell> directly below).
+ *
+ * Both fire trackShippingNudge so checkout completion can be compared between
+ * them, and against the "$X to go" period before 27 Aug 2026.
+ *
+ * The threshold itself is unchanged and deliberate — $130, see lib/shipping.ts.
+ * This is a copy change. It moves no margin.
  *
  * `variant`:
  *   'strip' — thin line in the site header, with a hairline progress fill
@@ -21,6 +48,7 @@ import { freeShippingProgress, money, FREE_SHIPPING_THRESHOLD } from '@/lib/ship
  */
 export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'strip' | 'panel' }) {
   const total = useCartStore((s) => s.getTotal());
+  const items = useCartStore((s) => s.items);
 
   // The cart is persisted, so it isn't readable until after hydration. Render
   // the plain promo first and upgrade to live progress once it's known.
@@ -30,7 +58,54 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
   const { qualified, remaining, pct } = freeShippingProgress(total);
   const started = hydrated && total > 0;
 
+  /**
+   * The cheapest thing already in the cart, as a stand-in for "one more of
+   * what you're clearly buying". Using something they've already chosen keeps
+   * the suggested total honest — it's a number they can verify against the
+   * line items — and it costs no extra data fetch.
+   */
+  const cheapestCents = items.length
+    ? Math.min(...items.map((i) => i.product.price))
+    : 0;
+  const secondPairTotal = total + cheapestCents;
+
+  /**
+   * Only suggest the second pair when it's a proportionate way to close the
+   * gap — when what you'd add is near what you still need.
+   *
+   * Without this the suggestion gets absurd at the top of the range. A cart
+   * holding one $108 pant is $22 short, and "add a second pair" would mean
+   * $108 to close a $22 gap — an answer five times the size of the question,
+   * which reads as a shop that isn't listening. That cart gets the plain line
+   * instead, and <CartUpsell> below is free to offer the $68 shorts on its own
+   * terms.
+   *
+   * 1.5× is a judgement call, not a discovered constant. It keeps the one-pair
+   * shorts cart (needs $62, add $68) and rejects the one-pant cart. Move it if
+   * the price ladder changes.
+   */
+  const PROPORTIONATE = 1.5;
+  const secondPairClears =
+    !qualified &&
+    cheapestCents > 0 &&
+    secondPairTotal >= FREE_SHIPPING_THRESHOLD &&
+    cheapestCents <= remaining * PROPORTIONATE;
+
+  // ── Measurement ──
+  // Keyed so the event fires when the message changes, not on every render.
+  const lastTracked = useRef<string | null>(null);
+  useEffect(() => {
+    if (!started || qualified) return;
+    const nudge = secondPairClears ? 'second_pair' : 'plain';
+    const key = `${variant}:${nudge}:${total}`;
+    if (lastTracked.current === key) return;
+    lastTracked.current = key;
+    trackShippingNudge(nudge, total / 100);
+  }, [started, qualified, secondPairClears, total, variant]);
+
   // ── Header strip ──
+  // Always the plain version. There is no room here for a sentence, and the
+  // header is not where a shopper is deciding what else to buy.
   if (variant === 'strip') {
     const body = started ? (
       qualified ? (
@@ -40,7 +115,10 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
         </>
       ) : (
         <>
-          <strong>{money(remaining)}</strong> away from free US shipping
+          {/* Stated, not demanded. She can see what shipping costs and what
+              would make it free, and decide for herself. */}
+          shipping <strong>{money(FLAT_SHIPPING_CENTS)}</strong> · free over{' '}
+          <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong>
         </>
       )
     ) : (
@@ -56,7 +134,9 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
       <>
         <span className="ship-strip-text">{body}</span>
         {/* Hairline fill along the bottom edge — progress at a glance without
-            taking a second row of vertical space on a phone. */}
+            taking a second row of vertical space on a phone. Kept even though
+            the gap number is gone: a quiet visual is encouraging where an
+            explicit deficit is not. */}
         <span
           className="ship-strip-fill"
           style={{ width: started ? `${Math.round(pct * 100)}%` : '0%' }}
@@ -88,16 +168,36 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
         <span className="ship-panel-msg">
           {qualified ? 'free US shipping unlocked ✦' : 'free US shipping'}
         </span>
+        {/* Was "{remaining} to go". Now the cost itself, which is the number
+            she is actually weighing — and it matches the Shipping line in the
+            breakdown a few rows below instead of competing with it. */}
         {!qualified && (
-          <span className="ship-panel-amount">{money(remaining)} to go</span>
+          <span className="ship-panel-amount">{money(FLAT_SHIPPING_CENTS)} shipping</span>
         )}
       </div>
-      <div className="ship-track" role="progressbar" aria-valuenow={Math.round(pct * 100)} aria-valuemin={0} aria-valuemax={100}>
+
+      <div
+        className="ship-track"
+        role="progressbar"
+        aria-valuenow={Math.round(pct * 100)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
         <div className="ship-fill" style={{ width: `${Math.round(pct * 100)}%` }} />
       </div>
+
       {!qualified && (
         <p className="ship-panel-note">
-          on US orders over {money(FREE_SHIPPING_THRESHOLD)}
+          {secondPairClears ? (
+            <>
+              add a second pair — <strong>{money(secondPairTotal)}</strong> total, and
+              shipping&apos;s free
+            </>
+          ) : (
+            // Nothing in the cart closes the gap in one step, so there is no
+            // honest nudge to make. State the rule and leave her alone.
+            <>free on US orders over {money(FREE_SHIPPING_THRESHOLD)}</>
+          )}
         </p>
       )}
     </div>

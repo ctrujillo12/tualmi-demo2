@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
 import ProductDetailClient from '@/components/ProductDetailClient';
 import { getProduct } from '@/lib/products';
+import { getReviews } from '@/lib/reviews';
+import ProductReviews from '@/components/ProductReviews';
 
 // Full product pages: the shorts and pant. Anything else redirects to the preview.
 const DETAIL_HANDLES = ['sierra-shorts', 'juniper-pant'];
@@ -88,7 +90,11 @@ export default async function ProductPage({
   }
 
   // ── Full product page: shorts & pant ──
-  const product = await getProduct(id);
+  // Fetched together rather than in sequence: reviews don't depend on the
+  // product, and chaining them would add their latency to a page that already
+  // waits on Shopify. getReviews never throws — a Supabase outage costs the
+  // review section, not the page.
+  const [product, reviewSummary] = await Promise.all([getProduct(id), getReviews(id)]);
   if (!product) {
     notFound();
   }
@@ -119,6 +125,20 @@ export default async function ProductPage({
       availability,
       url: `https://tualmi.com/products/${product!.handle ?? id}`,
     },
+    // Google will show a star rating in the search result for this, which is
+    // the single biggest free click-through win a product page gets. Gated on
+    // the same threshold as the on-page section (lib/reviews.ts): claiming an
+    // aggregate rating built from one review is both useless and, under
+    // Google's structured-data policy, grounds for a manual action.
+    ...(reviewSummary.show && reviewSummary.average !== null
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: reviewSummary.average,
+            reviewCount: reviewSummary.count,
+          },
+        }
+      : {}),
   };
 
   return (
@@ -128,6 +148,7 @@ export default async function ProductPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
       <ProductDetailClient product={product!} initialColor={color} />
+      <ProductReviews summary={reviewSummary} />
     </main>
   );
 }

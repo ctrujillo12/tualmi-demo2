@@ -101,6 +101,26 @@ export function trackBeginCheckout(items: AnalyticsItem[], valueDollars: number,
 }
 
 /**
+ * Which free-shipping message a shopper below the threshold was shown.
+ *
+ * Fired so the copy rewrite can be measured rather than argued about. The
+ * comparison that matters is begin_checkout → purchase, split by `nudge`:
+ * 'second_pair' is the version that names a reachable total, 'plain' is the
+ * version that just states the cost because nothing in the cart can close the
+ * gap in one step.
+ *
+ * Fires once per distinct message per cart state, not on every render — a
+ * view event that fires sixty times while someone reads is not a view.
+ */
+export function trackShippingNudge(nudge: 'second_pair' | 'plain', valueDollars: number): void {
+  gtag('event', 'shipping_nudge_view', {
+    currency: 'USD',
+    nudge,
+    value: valueDollars,
+  });
+}
+
+/**
  * Credit a creator code as a campaign source in GA4.
  *
  * Links like /discount/CAMI10 carry no utm_* params, so GA4 would file that

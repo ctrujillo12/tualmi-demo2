@@ -8,6 +8,7 @@ import AccessBanner from '@/components/AccessBanner';
 import AttributionTracker from '@/components/AttributionTracker';
 import WelcomePopup from '@/components/WelcomePopup';
 import { KLAVIYO_COMPANY_ID } from '@/lib/klaviyo';
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair', display: 'swap' });
@@ -141,6 +142,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Shows once ever per browser; skipped on /invite, /cart, /discount. */}
         <WelcomePopup />
         <AccessBanner />
+        {/* Vercel Web Analytics.
+
+            Separate from GA4 above and not a replacement for it: this counts
+            page views and visitors from Vercel's edge, with no cookie and no
+            consent banner, so it still sees the traffic ad blockers hide from
+            gtag. Useful as a sanity check when GA4's numbers look wrong — which
+            is the situation that prompted installing it.
+
+            It reports nothing in local development and only collects on
+            deployments where Web Analytics is enabled for the project (Vercel
+            dashboard → the project → Analytics → Enable). Ecommerce events stay
+            in lib/analytics.ts; this component is page views only. */}
+        <Analytics />
       </body>
     </html>
   );
