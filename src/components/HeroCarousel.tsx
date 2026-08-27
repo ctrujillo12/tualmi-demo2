@@ -99,7 +99,7 @@ const SLIDES: Slide[] = [
   },
   {
     handle: 'juniper-pant',
-    eyebrow: 'preorder · ships late aug',
+    eyebrow: 'preorder · ships mid sept',
     name: 'the juniper pant',
     fallbackPrice: 10800,
     cta: 'shop pants',

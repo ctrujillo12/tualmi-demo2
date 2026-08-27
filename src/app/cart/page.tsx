@@ -46,6 +46,29 @@ export default function CartPage() {
   // No local tax/total estimate — Shopify calculates both at checkout, and
   // showing a guess here only sets up a mismatch on the next screen.
   const containsPreorder = hasPreorderItems();
+  /**
+   * The ship windows actually sitting in this cart, deduped and with the
+   * leading "Ships " stripped so they read inside a sentence.
+   *
+   * This note used to say "the first collection is available 7/31" — a launch
+   * date hardcoded in July that went stale in August and then contradicted the
+   * pant's own mid-September window on the same screen. Derived from the cart
+   * so it can't drift again. Prefer the live product record over the snapshot
+   * taken when the line was added: a cart persists in localStorage for weeks,
+   * and the snapshot can predate a date change.
+   */
+  const preorderWindows = Array.from(
+    new Set(
+      items
+        .filter((i) => i.isPreorder)
+        .map((i) =>
+          (i.product.shippingWindow ?? i.shippingWindow ?? '')
+            .replace(/^ships\s+/i, '')
+            .trim(),
+        )
+        .filter(Boolean),
+    ),
+  );
 
   /**
    * Lines Shopify won't take. A cart persists in localStorage indefinitely, so
@@ -230,7 +253,8 @@ export default function CartPage() {
 
             {containsPreorder && (
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, marginBottom: '16px', lineHeight: 1.7 }}>
-                Your order contains pre-order items. Payment is collected at checkout — the first collection is available 7/31.
+                Your order contains pre-order items. Payment is collected at checkout
+                {preorderWindows.length > 0 && ` — ${preorderWindows.length > 1 ? 'shipping ' : 'and ships '}${preorderWindows.join(' and ')}`}.
               </p>
             )}
 

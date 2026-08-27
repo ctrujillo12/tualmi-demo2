@@ -67,8 +67,8 @@ export default function ShippingPage() {
           Sierra Shorts are in stock and ship within 2–3 business days of your order.
         </P>
         <P>
-          The Juniper Pant is a preorder and ships in late August. If you order the pant together with
-          shorts, your whole order ships in late August — place separate orders if you&apos;d like the
+          The Juniper Pant is a preorder and ships in mid September. If you order the pant together with
+          shorts, your whole order ships in mid September — place separate orders if you&apos;d like the
           shorts sooner.
         </P>
       </Section>

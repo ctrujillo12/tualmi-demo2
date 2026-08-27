@@ -1,60 +1,31 @@
 /**
- * Manual low-stock overrides.
+ * Wording for the stock states the storefront shows.
  *
- * ── THIS IS NO LONGER THE PRIMARY SOURCE ─────────────────────────────────
- * Low stock is now derived from real Shopify quantities. lib/inventory.ts
- * reads `quantityAvailable` off each variant and flags anything at or below
- * LOW_STOCK_AT_OR_BELOW (10 by default — so 1 through 10), which means the
- * storefront tracks restocks and sell-downs on its own with nothing to
+ * That's all this file is now. Low stock itself is derived from real Shopify
+ * quantities in lib/inventory.ts, which reads `quantityAvailable` off each
+ * variant and flags anything at or below LOW_STOCK_AT_OR_BELOW — so the
+ * storefront tracks restocks and sell-downs on its own, with nothing to
  * maintain here.
  *
- * The old comment in this file claimed the storefront "genuinely cannot see
- * stock levels". It can — the query failed because the Storefront token was
- * missing the `unauthenticated_read_product_inventory` scope, not because the
- * field is off-limits. lib/shopify.ts now requests the field optimistically
- * and retries without it if the token can't read it, so a missing scope
- * degrades to this list instead of taking checkout down.
+ * ── WHAT USED TO LIVE HERE ───────────────────────────────────────────────
+ * A hand-kept LOW_STOCK_OVERRIDES map (product handle + colourway → sizes to
+ * flag) and a manualLowStockSizes() lookup, used as a fallback for when the
+ * Storefront token couldn't read inventory. Removed 27 Aug 2026.
  *
- * ── WHEN TO EDIT THIS FILE ───────────────────────────────────────────────
- * Only two cases:
- *   1. The inventory scope isn't granted yet (the server log carries a warning
- *      from lib/shopify.ts when that's so) — this list is the whole mechanism
- *      until it is.
- *   2. A colourway you want flagged sooner than the global threshold — say a
- *      size you're deliberately holding back.
+ * Two reasons. First, the scope is live — the boot log says "Inventory
+ * quantities readable" — so the map had been dead code since the token was
+ * fixed, and its numbers were last verified on 18 Aug 2026. It still listed
+ * Picnic / S as merely low when Shopify has it at zero. A fallback nobody
+ * exercises doesn't stay correct; it just waits to be wrong at the worst
+ * moment. Second, a stale list is a worse failure than no list: "only a few
+ * left" is a claim about the real world, and the FTC treats manufactured
+ * urgency as a deceptive practice.
  *
- * When quantities ARE readable, entries here are ignored. Real numbers win.
- *
- * ── KEEPING IT HONEST ────────────────────────────────────────────────────
- * "Only a few left" is a claim about the real world. On a well-stocked size
- * it's the kind of small lie shoppers notice, and the FTC treats manufactured
- * urgency as a deceptive practice. Clear the entry when you restock.
- *
- * There are no size exemptions any more — every size at or below the threshold
- * gets the dot. See the note at the bottom of this file for what was removed.
- *
- * Key is "<product handle>|<colourway>", value is the sizes running low. Both
- * are matched case-insensitively.
- *
- *   'sierra-shorts|Picnic': ['S']      → Picnic, size S only
- *   'juniper-pant|Olive':   ['XS','S'] → Olive, two sizes
+ * If the scope ever breaks again, lib/inventory.ts now goes quiet rather than
+ * guessing — no dots at all, and lib/shopify.ts logs a loud warning naming the
+ * `unauthenticated_read_product_inventory` scope. A missing dot costs a nudge.
+ * A wrong dot costs trust.
  */
-
-const LOW_STOCK_OVERRIDES: Record<string, string[]> = {
-  // Verified against Shopify on 18 Aug 2026 (scripts/dump-variants.mjs).
-  // Sierra Shorts, Picnic: XS=8, S=10, XL=8 — all at or under the threshold.
-  //
-  // XXS and XXL are listed too. They're stocked around two units each, which is
-  // under the threshold like everything else here, and as of 19 Aug 2026 they
-  // are no longer exempt from the dot (see the note at the bottom of this
-  // file). Spelled the way the storefront spells them — lib/products.ts says
-  // XXS/XXL — since that's what gets passed to this function.
-  //
-  // Only reachable if the inventory scope stops working. While quantities are
-  // readable this is dead weight, and the numbers above will drift.
-  'sierra-shorts|Picnic': ['XXS', 'XS', 'S', 'XL', 'XXL'],
-  'sierra-shorts|Jam': ['XXS', 'XS', 'XL', 'XXL'],
-};
 
 /** The wording used wherever a low-stock size is shown. */
 export const LOW_STOCK_LABEL = 'only a few left';
@@ -62,42 +33,30 @@ export const LOW_STOCK_LABEL = 'only a few left';
 /** Wording for a size Shopify says can't be sold. */
 export const SOLD_OUT_LABEL = 'sold out';
 
-/**
- * Manually-flagged sizes for a product + colourway. Consulted by
- * lib/inventory.ts only when real quantities aren't readable.
- */
-export function manualLowStockSizes(
-  handle: string | undefined,
-  color: string | undefined,
-): string[] {
-  if (!handle || !color) return [];
-  const key = `${handle.trim().toLowerCase()}|${color.trim().toLowerCase()}`;
-  const entry = Object.entries(LOW_STOCK_OVERRIDES).find(
-    ([k]) => k.trim().toLowerCase() === key,
-  );
-  return entry ? entry[1] : [];
-}
-
 // ─── Removed: the end-size exemption ────────────────────────────────────────
 //
 // XXS/2XS and XXL/2XL used to be exempt from the low-stock dot, via a
 // NO_LOW_STOCK_DOT list here and a `suppressesLowStockDot()` check in
-// lib/inventory.ts. Removed 19 Aug 2026 at Cheyenne's request: every size at
-// or below LOW_STOCK_AT_OR_BELOW now gets the dot, end sizes included.
+// lib/inventory.ts. Removed 19 Aug 2026; deliberately left removed on
+// 27 Aug 2026 when LOW_STOCK_AT_OR_BELOW dropped from 10 to 4.
 //
 // The argument for the exemption, recorded so it isn't rediscovered from
-// scratch: the end sizes are stocked thin on purpose — around two units each,
-// not two units *left*. A dot there is technically true and reads as "nearly
-// gone, everyone's buying these" when in fact nobody has bought one, which
-// makes the size look like a bad bet and can push a shopper off the size she
-// actually needs.
+// scratch: the end sizes are stocked thin on purpose — a handful of units
+// each, not a handful *left*. A dot there is technically true and reads as
+// "nearly gone, everyone's buying these" when in fact nobody has bought one,
+// which makes the size look like a bad bet and can push a shopper off the size
+// she actually needs.
 //
-// The argument against, which is the one in force: two units left is two units
-// left whatever the reason, and a shopper who doesn't buy today finds it gone
-// either way. Consistency across sizes is easier to trust than a rule that
-// quietly stays silent at both ends of the range.
+// Why it stays removed: the real fault was the threshold, not the end sizes. At
+// 10, a variant stocked ~14 deep got the dot after selling four units ever, so
+// the dot marched across the whole size run as the drop sold through normally —
+// four of seven sizes on Sierra Shorts / Jam by 20 Aug. At 4 the dot fires only
+// when a size is genuinely about to go, which drops the end sizes off the list
+// on the merits and leaves one rule that applies evenly to every size. A rule
+// that quietly goes silent at both ends of the range is harder to trust than
+// one honest number.
 //
-// If you bring the exemption back, it belongs in exactly the two places named
-// above, and remember it only ever hid the DOT — an exempt size at zero still
-// went sold out and still couldn't be added to the cart, because that path
-// reads availableForSale and never touched this file.
+// If you do bring the exemption back, it belongs in exactly the two places
+// named above, and remember it only ever hid the DOT — an exempt size at zero
+// still went sold out and still couldn't be added to the cart, because that
+// path reads availableForSale and never touched this file.

@@ -21,7 +21,7 @@ const PAGE_METADATA: Record<string, Metadata> = {
   'sierra-shorts': {
     title: 'sierra shorts — mid-rise hiking shorts',
     description:
-      'Mid-rise, relaxed-fit women’s hiking shorts in 100% recycled nylon — fast-dry and water-repellent performance, ultra-light. Dropping July 31st in Jam, Picnic, and Confetti.',
+      'Mid-rise, relaxed-fit women’s hiking shorts in 100% recycled nylon — fast-dry and water-repellent performance, ultra-light. In Jam, Picnic, and Confetti — shipping now.',
     alternates: { canonical: '/products/sierra-shorts' },
     openGraph: {
       ...OG_BASE,
@@ -41,7 +41,7 @@ const PAGE_METADATA: Record<string, Metadata> = {
   'juniper-pant': {
     title: 'juniper pant — flare cargo hiking pants',
     description:
-      'Fashion-forward flare cargo hiking pants with a flattering, women-engineered fit and cargo pockets. Made from sustainable, recycled materials. Dropping July 31st.',
+      'Fashion-forward flare cargo hiking pants with a flattering, women-engineered fit and cargo pockets. Made from sustainable, recycled materials. Preorder now — ships mid September.',
     alternates: { canonical: '/products/juniper-pant' },
     openGraph: {
       ...OG_BASE,

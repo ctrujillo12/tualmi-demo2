@@ -81,6 +81,14 @@ export default function ProductCard({
   const isPreviewOnly = PREVIEW_ONLY_HANDLES.includes(handle);
   const isPreorder    = !isInStock && !isPreviewOnly;
 
+  // Show the ship-window line only for a product carrying a real dated window
+  // ("Ships mid September"), not for "Coming soon" or an in-stock item with an
+  // empty window. Derived from the string in lib/products.ts rather than
+  // matching a month name, so the badge survives the next date change — it used
+  // to test `.includes('August')`, which silently went blank when the pant
+  // moved to September.
+  const hasShipWindow = /^ships\s/i.test(product.shippingWindow ?? '');
+
   const handleColorClick = (e: React.MouseEvent, index: number) => {
     e.preventDefault();
     e.stopPropagation();
@@ -154,13 +162,13 @@ export default function ProductCard({
             {product.category}
           </p>
           {showPrice && (
-            <p style={{ fontSize: '13px', color: '#111110', fontFamily: serif, marginBottom: product.shippingWindow?.includes('August') ? '4px' : undefined }}>
+            <p style={{ fontSize: '13px', color: '#111110', fontFamily: serif, marginBottom: hasShipWindow ? '4px' : undefined }}>
               ${(product.price / 100).toFixed(2)}
             </p>
           )}
-          {product.shippingWindow?.includes('August') && (
+          {hasShipWindow && (
             <p style={{ fontSize: '9px', fontFamily: sans, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#C94468', margin: 0 }}>
-              Available 7/31
+              {product.shippingWindow}
             </p>
           )}
         </div>

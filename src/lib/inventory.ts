@@ -33,22 +33,39 @@
 
 import type { Product } from '@/types';
 import type { ShopifyVariant } from '@/lib/shopify';
-import { manualLowStockSizes } from '@/lib/lowStock';
 
 /**
- * A size reads as "only a few left" at this quantity OR FEWER — so at 10,
- * everything from 1 to 10 is flagged and 11 is not.
+ * A size reads as "only a few left" at this quantity OR FEWER — so at 4,
+ * everything from 1 to 4 is flagged and 5 is not.
  *
  * The name spells out the comparison on purpose. This started as "threshold"
- * with a `<` and it wasn't clear whether the number itself counted; Picnic / S
- * landed on exactly 10 and went unflagged, which looked like a bug and wasn't.
+ * with a `<` and it wasn't clear whether the number itself counted; a size
+ * landing on exactly the number went unflagged, which looked like a bug and
+ * wasn't.
+ *
+ * ── WHY 4, NOT 10 ────────────────────────────────────────────────────────
+ * 10 was set for an inventory model deeper than the one we have. Sierra Shorts
+ * shipped ~300 units across 3 colourways × 7 sizes — roughly 14 per variant.
+ * At 10, a variant got the dot after selling FOUR UNITS EVER, so the dot didn't
+ * mark scarcity, it tracked normal sell-through and spread across the size run:
+ * on 27 Aug 2026, 12 of the 21 Sierra Shorts variants were at or below 10, and
+ * every colourway showed "only a few left" on 4 of its 7 sizes. One dot reads
+ * as scarce; four of seven reads as picked over, and the shopper leaves.
+ *
+ * Against those same live quantities (`node scripts/dump-variants.mjs`), 4
+ * flags 6 of 21 Sierra variants — 2 sizes per colourway, both end sizes, all
+ * genuinely down to their last two or three — and 1 size per Juniper colourway.
+ *
+ * If a future drop is stocked much deeper per size, revisit this — the right
+ * number is "few enough that a shopper who waits actually loses the size", not
+ * a fixed count.
  *
  * Override with NEXT_PUBLIC_LOW_STOCK_AT_OR_BELOW.
  */
 export const LOW_STOCK_AT_OR_BELOW =
   Number(process.env.NEXT_PUBLIC_LOW_STOCK_AT_OR_BELOW) > 0
     ? Number(process.env.NEXT_PUBLIC_LOW_STOCK_AT_OR_BELOW)
-    : 10;
+    : 4;
 
 export type AvailabilityStatus = 'available' | 'sold-out' | 'unknown';
 
@@ -185,19 +202,20 @@ export function availability(
     return { status: 'sold-out', quantity: qty ?? 0, low: false, backorder: false };
   }
 
-  const low = backorder
-    ? false
-    : qty !== null
-      ? qty > 0 && qty <= LOW_STOCK_AT_OR_BELOW
-      : manualLowStockSizes(product.handle, color).some((s) => norm(s) === norm(size));
+  // qty === null means the token couldn't read quantities for this variant.
+  // Say nothing rather than guess — a missing dot costs a nudge, a wrong dot is
+  // a false claim about the real world. lib/shopify.ts logs a loud warning
+  // naming the scope to add when this happens. (There used to be a hand-kept
+  // fallback list in lib/lowStock.ts; it went stale, and was removed 27 Aug 2026.)
+  const low = backorder ? false : qty !== null && qty > 0 && qty <= LOW_STOCK_AT_OR_BELOW;
 
   return {
     status: 'available',
     quantity: qty,
     // No size is exempt: every size at or below LOW_STOCK_AT_OR_BELOW gets the
-    // dot, XXS and XXL included. The end sizes used to be filtered out here —
-    // see the note at the bottom of lib/lowStock.ts for what that rule was and
-    // why it went away.
+    // dot, the end sizes included. They mostly stopped qualifying on their own
+    // when the threshold dropped to 4 — see the note at the bottom of
+    // lib/lowStock.ts for the exemption rule that used to live here.
     low,
     backorder,
   };

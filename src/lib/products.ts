@@ -37,7 +37,7 @@ export const localProducts: Product[] = [
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Ships August',
+    shippingWindow: 'Ships mid September',
   },
   {
     id: 'alpine-baby-tee',
@@ -98,6 +98,31 @@ const ALT_SHOPIFY_HANDLES: Record<string, string[]> = {
 
 // Products removed from the site entirely (may still exist in Shopify)
 const REMOVED_HANDLES = ['carabiner', 'trailblazing-tote'];
+
+/**
+ * The Shopify handle that actually answered, per site handle.
+ *
+ * Our handles and Shopify's are not the same — Shopify still calls these
+ * products `summit-pant` and `horizon-shorts`. getProduct() walks the alias
+ * list until one answers, so before this cache a single Juniper page view
+ * spent THREE sequential Storefront round-trips (juniper-pant, miss →
+ * juniper-pants, miss → summit-pant, hit) and a shorts view spent two, every
+ * time the 60s data cache lapsed.
+ *
+ * Chained requests are the worst shape for this: three round-trips is three
+ * chances to be slow and three times the rate-limit cost, on the two pages
+ * that matter most, and they add up rather than overlap. Remember which handle
+ * won and go straight to it next time.
+ *
+ * Process-local and self-healing — if a remembered handle stops answering, the
+ * walk runs again and re-caches, so products can be renamed in Shopify without
+ * a deploy.
+ *
+ * The real fix is to rename the products in Shopify so the handles match the
+ * site's and the first attempt always hits. This makes that unnecessary rather
+ * than urgent.
+ */
+const resolvedShopifyHandle = new Map<string, string>();
 
 // Our curated copy, keyed by handle — always wins over whatever Shopify returns
 const localByHandle: Record<string, Product> = Object.fromEntries(
@@ -162,13 +187,24 @@ export async function getProduct(id: string): Promise<Product | null> {
   if (REMOVED_HANDLES.includes(handle)) return null;
 
   try {
-    // Try the site handle first, then any alternate Shopify handles
-    let sp = await getProductByHandle(handle);
-    for (const alt of ALT_SHOPIFY_HANDLES[handle] ?? []) {
-      if (sp) break;
-      sp = await getProductByHandle(alt);
+    // Whichever handle answered last time first, then the site handle, then the
+    // aliases. Deduped, so a remembered handle is never asked for twice.
+    const known = resolvedShopifyHandle.get(handle);
+    const candidates = [
+      ...new Set([
+        ...(known ? [known] : []),
+        handle,
+        ...(ALT_SHOPIFY_HANDLES[handle] ?? []),
+      ]),
+    ];
+
+    for (const candidate of candidates) {
+      const sp = await getProductByHandle(candidate);
+      if (sp) {
+        resolvedShopifyHandle.set(handle, candidate);
+        return normalizeProduct(toProduct(sp));
+      }
     }
-    if (sp) return normalizeProduct(toProduct(sp));
   } catch (err) {
     console.warn('[products] Shopify product fetch failed, using local data:', err);
   }

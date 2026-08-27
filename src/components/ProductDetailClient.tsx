@@ -83,7 +83,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
   const lockedForLaunch = isGated && !canShop;     // sellable but shop not open yet
 
   const shippingLabel = isPreorder
-    ? (product.shippingWindow || 'Ships August')
+    ? (product.shippingWindow || 'Ships mid September')
     : buyable
       ? 'In stock, ships in 1–2 business days'
       : (product.shippingWindow ?? 'Coming soon');
@@ -165,7 +165,7 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
       const shopifyProductImg = product.images.find((u) => u.startsWith('http'));
       const cartImg = variantImg ?? shopifyProductImg ?? colorImages[0];
 
-      // Items with a future ship window (e.g. the pant's late-August window)
+      // Items with a future ship window (e.g. the pant's mid-September window)
       // are flagged as preorder so the date carries onto the Shopify order.
       const shipWindow = product.shippingWindow ?? '';
       const shipsLater = !!shipWindow && !shipWindow.toLowerCase().startsWith('in stock');

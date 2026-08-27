@@ -45,25 +45,12 @@ export default function VotePage() {
           fontSize: 'clamp(13px, 2vw, 15px)',
           lineHeight: 1.9,
           color: mid,
-          marginBottom: '12px',
+          marginBottom: '40px',
           fontFamily: sans,
           fontWeight: 300,
           letterSpacing: '0.015em',
         }}>
           We love hearing from you and read every single response!
-        </p>
-
-        <p style={{
-          fontSize: 'clamp(13px, 2vw, 15px)',
-          lineHeight: 1.9,
-          color: muted,
-          marginBottom: '40px',
-          fontFamily: sans,
-          fontWeight: 300,
-          letterSpacing: '0.015em',
-          fontStyle: 'italic',
-        }}>
-          Launching July 31
         </p>
 
         <Link

@@ -64,7 +64,7 @@ export default function ReturnsPage() {
             form
           </Link>{' '}
           and choose cancellation as your request type. This includes preorders: you can cancel the
-          Juniper Pant any time before it ships in late August.
+          Juniper Pant any time before it ships in mid September.
         </P>
       </Section>
 

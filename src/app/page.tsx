@@ -105,7 +105,7 @@ const DROP_PRODUCTS: DropProduct[] = [
   {
     handle: 'juniper-pant',
     name: 'the juniper pant',
-    availability: 'preorder · ships late aug',
+    availability: 'preorder · ships mid sept',
     shopLabel: 'shop pants',
     price: 10800,
     bg: '#C9D3AC',

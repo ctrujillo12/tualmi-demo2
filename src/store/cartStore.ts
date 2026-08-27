@@ -272,7 +272,7 @@ export const useCartStore = create<CartStore>()(
           }
 
           // Preorder items carry their ship window onto the Shopify order.
-          // Strip a leading "Ships " so the note reads e.g. "Ships: August".
+          // Strip a leading "Ships " so the note reads e.g. "Ships: mid September".
           const attributes =
             item.isPreorder && item.shippingWindow
               ? [{ key: 'Ships', value: item.shippingWindow.replace(/^ships\s+/i, '') }]

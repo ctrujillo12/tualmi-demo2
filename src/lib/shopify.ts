@@ -19,30 +19,109 @@ const API_URL     = `https://${SHOPIFY_DOMAIN}/api/${API_VERSION}/graphql.json`;
  */
 export const SHOPIFY_PRODUCTS_TAG = 'shopify-products';
 
+/**
+ * How long one Shopify request gets before we stop waiting on it.
+ *
+ * There was no timeout here at all, and that is how a slow Storefront response
+ * became a failed page: the render sat on the socket with nothing to interrupt
+ * it until the serverless function itself was killed, and the shopper got an
+ * error instead of a product. The fallback in lib/products.ts never ran,
+ * because nothing ever threw.
+ *
+ * 6s is far past Shopify's normal response time and still well inside the
+ * function limit, so a hang now fails while there's still time to recover.
+ * Failing fast is the whole point: the caller catches and serves local copy,
+ * and a product page without live stock badges beats no product page.
+ *
+ * Override with SHOPIFY_TIMEOUT_MS.
+ */
+const REQUEST_TIMEOUT_MS = Number(process.env.SHOPIFY_TIMEOUT_MS) || 6000;
+
+/** Attempts per read, including the first. */
+const MAX_ATTEMPTS = 3;
+
+/** Base backoff; attempt N waits N × this. Short — a shopper is waiting. */
+const BACKOFF_MS = 150;
+
+/**
+ * A blip worth retrying, as opposed to a request that will fail identically
+ * every time. 429 is Shopify's cost-based rate limit, 408/5xx are theirs to
+ * fix; a 400 or 404 is ours and retrying it just burns the clock.
+ */
+function isRetryableStatus(status: number): boolean {
+  return status === 408 || status === 429 || status >= 500;
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function shopifyFetch<T>(
   query: string,
   variables?: Record<string, unknown>,
   opts?: { noStore?: boolean },
 ): Promise<T> {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': SHOPIFY_TOKEN,
-    },
-    body: JSON.stringify({ query, variables }),
-    // Mutations (cart creation) must never be served from a cache.
-    ...(opts?.noStore
-      ? { cache: 'no-store' as const }
-      : { next: { revalidate: 60, tags: [SHOPIFY_PRODUCTS_TAG] } }),
-  });
+  /**
+   * Reads retry; mutations don't.
+   *
+   * A retried cart mutation can leave a duplicate abandoned cart in Shopify if
+   * the first attempt actually landed and only the response was lost. That's
+   * cosmetic, but it also isn't worth much: checkout is a click the shopper can
+   * repeat, whereas a product page render is not. So reads get the resilience
+   * and mutations get one clean attempt.
+   */
+  const attempts = opts?.noStore ? 1 : MAX_ATTEMPTS;
+  let lastErr: unknown;
 
-  if (!res.ok) throw new Error(`Shopify API error: ${res.status} ${res.statusText}`);
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    let res: Response;
 
-  const json = await res.json();
-  if (json.errors) throw new Error(json.errors.map((e: { message: string }) => e.message).join(', '));
+    try {
+      res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Storefront-Access-Token': SHOPIFY_TOKEN,
+        },
+        body: JSON.stringify({ query, variables }),
+        // Bounded, so a hung connection can't outlive the request that needs it.
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        // Mutations (cart creation) must never be served from a cache.
+        ...(opts?.noStore
+          ? { cache: 'no-store' as const }
+          : { next: { revalidate: 60, tags: [SHOPIFY_PRODUCTS_TAG] } }),
+      });
+    } catch (err) {
+      // Timed out, or the connection failed before any response. Both are the
+      // kind of thing that works on the next try.
+      lastErr = err;
+      if (attempt >= attempts) throw err;
+      await sleep(BACKOFF_MS * attempt);
+      continue;
+    }
 
-  return json.data as T;
+    if (!res.ok) {
+      const err = new Error(`Shopify API error: ${res.status} ${res.statusText}`);
+      if (isRetryableStatus(res.status) && attempt < attempts) {
+        lastErr = err;
+        await sleep(BACKOFF_MS * attempt);
+        continue;
+      }
+      throw err;
+    }
+
+    const json = await res.json();
+
+    // A GraphQL-level error is a fact about the query, not about the network —
+    // a missing scope or a bad field fails identically on every attempt. Throw
+    // it straight through so productFetch's inventory-scope fallback fires on
+    // the first attempt instead of after three pointless retries.
+    if (json.errors) {
+      throw new Error(json.errors.map((e: { message: string }) => e.message).join(', '));
+    }
+
+    return json.data as T;
+  }
+
+  throw lastErr ?? new Error('Shopify request failed');
 }
 
 // ─── Inventory scope: ask for it, but never bet the store on it ──────────────
