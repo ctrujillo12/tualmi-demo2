@@ -100,10 +100,6 @@ type Row = {
   verified: boolean;
 };
 
-const SELECT =
-  'id, created_at, rating, title, body, author_name, height, usual_size, ' +
-  'size_purchased, fit, colorway, activity, photo_url, verified';
-
 function toReview(r: Row): Review {
   return {
     id: r.id,
@@ -132,7 +128,15 @@ async function fetchReviews(productHandle: string): Promise<Review[]> {
   try {
     const { data, error } = await createClient(url, key)
       .from('reviews')
-      .select(SELECT)
+      // One string literal, deliberately. supabase-js parses this at the TYPE
+      // level with template-literal types to work out the row shape, which
+      // only works on a literal — building it by concatenating lines widens it
+      // to `string`, the parse fails, and the result degrades to
+      // GenericStringError. That is a compile error at the .map() below, and
+      // it is why this is one long line instead of three readable ones.
+      .select(
+        'id, created_at, rating, title, body, author_name, height, usual_size, size_purchased, fit, colorway, activity, photo_url, verified',
+      )
       // The RLS policy already restricts this to published rows. Saying it
       // here too keeps the intent readable at the call site and means a policy
       // edit can't silently widen what the storefront shows.
@@ -145,7 +149,12 @@ async function fetchReviews(productHandle: string): Promise<Review[]> {
       console.warn('[reviews] read failed, rendering without reviews:', error.message);
       return [];
     }
-    return (data ?? []).map((r) => toReview(r as Row));
+    // Through `unknown` on purpose: the client is untyped (no generated
+    // database types), so whatever supabase-js infers here is not related to
+    // Row by structure and a direct cast is rejected. Row is the contract —
+    // if the select list above and Row ever drift, this cast will not catch
+    // it, so change them together.
+    return (data ?? []).map((r) => toReview(r as unknown as Row));
   } catch (err) {
     console.warn('[reviews] read threw, rendering without reviews:', err);
     return [];
