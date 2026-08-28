@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
 import ProductDetailClient from '@/components/ProductDetailClient';
 import { getProduct } from '@/lib/products';
-import { getReviews } from '@/lib/reviews';
+import { getSummary } from '@/lib/reviews';
 import ProductReviews from '@/components/ProductReviews';
 
 // Full product pages: the shorts and pant. Anything else redirects to the preview.
@@ -90,11 +90,11 @@ export default async function ProductPage({
   }
 
   // ── Full product page: shorts & pant ──
-  // Fetched together rather than in sequence: reviews don't depend on the
-  // product, and chaining them would add their latency to a page that already
-  // waits on Shopify. getReviews never throws — a Supabase outage costs the
-  // review section, not the page.
-  const [product, reviewSummary] = await Promise.all([getProduct(id), getReviews(id)]);
+  // Started together rather than chained: reviews don't depend on the product,
+  // and awaiting them in sequence would add their latency to a page that
+  // already waits on Shopify. The review read is cached for five minutes and
+  // never throws — an outage costs the review section, not the page.
+  const [product, reviewSummary] = await Promise.all([getProduct(id), getSummary(id)]);
   if (!product) {
     notFound();
   }
@@ -130,13 +130,28 @@ export default async function ProductPage({
     // the same threshold as the on-page section (lib/reviews.ts): claiming an
     // aggregate rating built from one review is both useless and, under
     // Google's structured-data policy, grounds for a manual action.
-    ...(reviewSummary.show && reviewSummary.average !== null
+    // Emitted only when the same reviews are visibly rendered on the page.
+    // An aggregate rating in the markup that a visitor can't see is exactly
+    // what Google issues manual actions for. Gated on the same threshold as
+    // the on-page summary (MIN_FOR_SUMMARY in lib/reviews.ts).
+    //
+    // Note there is one Product entity on this page, not two: the rating goes
+    // INTO this object. A second <script type="application/ld+json"> block
+    // describing the same product is a structured-data error.
+    ...(reviewSummary.showSummary
       ? {
           aggregateRating: {
             '@type': 'AggregateRating',
             ratingValue: reviewSummary.average,
             reviewCount: reviewSummary.count,
           },
+          review: reviewSummary.reviews.slice(0, 5).map((r) => ({
+            '@type': 'Review',
+            reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5 },
+            author: { '@type': 'Person', name: r.name },
+            datePublished: r.date,
+            reviewBody: r.body,
+          })),
         }
       : {}),
   };
@@ -147,8 +162,8 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
-      <ProductDetailClient product={product!} initialColor={color} />
-      <ProductReviews summary={reviewSummary} />
+      <ProductDetailClient product={product!} initialColor={color} reviews={reviewSummary} />
+      <ProductReviews summary={reviewSummary} productHandle={id} />
     </main>
   );
 }

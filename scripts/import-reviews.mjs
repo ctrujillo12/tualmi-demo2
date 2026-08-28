@@ -1,4 +1,14 @@
 #!/usr/bin/env node
+// ╔═══════════════════════════════════════════════════════════════════════╗
+// ║  NOT IN USE YET.                                                      ║
+// ║                                                                       ║
+// ║  Reviews currently live in src/data/reviews.json — adding one is an   ║
+// ║  edit and a push. This importer belongs with supabase/reviews.sql and ║
+// ║  only becomes useful if that migration happens. Until then, paste     ║
+// ║  Tally responses into the JSON file by hand; at this volume it is     ║
+// ║  faster than running this.                                           ║
+// ╚═══════════════════════════════════════════════════════════════════════╝
+
 /**
  * Load reviews from a CSV into Supabase.
  *

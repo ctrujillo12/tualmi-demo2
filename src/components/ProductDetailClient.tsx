@@ -14,10 +14,18 @@ import { LOW_STOCK_LABEL, SOLD_OUT_LABEL } from '@/lib/lowStock';
 import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/inventory';
 import ImageLightbox from '@/components/ImageLightbox';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
+import { ReviewStars, FitConsensus } from '@/components/ProductReviews';
+import type { ReviewSummary } from '@/lib/reviews';
 
 interface ProductDetailClientProps {
   product: Product;
   initialColor?: string;
+  /**
+   * Computed on the server and passed down rather than read here — this is a
+   * client component, and there is no reason to make the browser fetch reviews
+   * to render a number the server already knows.
+   */
+  reviews?: ReviewSummary;
 }
 
 // ─── Landing-page design tokens ───────────────────────────────────────────────
@@ -74,7 +82,7 @@ function HighlightGlyph({ icon }: { icon: HighlightIcon }) {
   }
 }
 
-export default function ProductDetailClient({ product, initialColor }: ProductDetailClientProps) {
+export default function ProductDetailClient({ product, initialColor, reviews }: ProductDetailClientProps) {
   const handle       = product.handle ?? '';
   const { canShop, ready } = useShopAccess();
   const isPreorder = PREORDER_HANDLES.includes(handle);
@@ -605,6 +613,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
             >
               ${(product.price / 100).toFixed(2)}
             </p>
+
+            {/* Insertion A — the highest-leverage piece of the review feature.
+                Everyone who lands sees this; only people who scroll reach the
+                reviews themselves. Anchors to #reviews further down. Renders
+                nothing until there are enough reviews to average honestly. */}
+            {reviews && <ReviewStars summary={reviews} />}
 
             {/* Feature highlights — Halfday-style icon strip. Sits here on
                 desktop, where there's room beside the gallery. On mobile the
@@ -1208,6 +1222,12 @@ export default function ProductDetailClient({ product, initialColor }: ProductDe
                     Full measurements in the <span style={{ color: maroon, fontWeight: 600 }}>size guide</span> below.
                   </p>
                 )}
+                {/* Insertion B — turns "true to size" from a claim we make
+                    into a count of customers, in the exact block where the
+                    sizing objection lives. Hidden until enough people have
+                    answered the fit question for a percentage to mean
+                    anything. */}
+                {reviews && <FitConsensus summary={reviews} />}
                 <p style={{ ...bodyStyle, marginTop: '16px' }}>
                   Fit question? Email <span style={{ color: maroon, fontWeight: 600 }}>hello@tualmi.com</span>
                 </p>

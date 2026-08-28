@@ -1,0 +1,40 @@
+{
+  "_comment": [
+    "Product reviews, keyed by site handle. Edit this file, commit, push — that's the whole workflow.",
+    "",
+    "A review only renders when \"published\" is true. Set it to false to hold one back;",
+    "\"holdReason\" says why, so a held review isn't a mystery six weeks later.",
+    "",
+    "NEVER write a review here that a customer did not write. Fix typos and trim length;",
+    "do not invent, and do not change what someone meant. The star markup on the product",
+    "page makes these claims machine-readable to Google, and the FTC's rule on fake",
+    "reviews treats invented ones as a deceptive practice.",
+    "",
+    "Fields: see the Review type in src/lib/reviews.ts. Everything except id, date,",
+    "rating, name and body is optional — older reviews collected before a question",
+    "existed simply render without that part."
+  ],
+
+  "sierra-shorts": [
+    {
+      "id": "2026-08-15-gracelyn-q",
+      "date": "2026-08-15",
+      "rating": 5,
+      "name": "Gracelyn Q.",
+      "body": "Material great! I've already worn them out for a paddle board day and at the climbing gym. A very versatile pair of shorts! Deeeep pockets too which is so nice ❤️",
+      "activity": "gym & climbing",
+      "verified": true,
+      "published": false,
+      "holdReason": "No publish consent on file — the Tally form had no consent checkbox when she answered, and no display-name field either (Gracelyn Q. is derived from her email address, which is not the same as her agreeing to be named). Email her, ask if she's happy to be shown as a first name plus last initial, and flip this to true when she says yes. Order 1053, submitted 15 Aug 2026.",
+      "_subRatings": {
+        "fit": 5,
+        "performance": 5,
+        "fun": 5,
+        "style": 5,
+        "_note": "The form asked four separate 1-5 questions and never asked for an overall rating. The 5 above is safe ONLY because all four are 5 and she answered 'Already have' to would-you-recommend. Do not average sub-scores into a star rating as a general rule — see the note in src/lib/reviews.ts."
+      }
+    }
+  ],
+
+  "juniper-pant": []
+}
