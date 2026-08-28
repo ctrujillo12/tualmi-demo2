@@ -87,6 +87,80 @@ async function overRateLimit(ip: string): Promise<boolean> {
   }
 }
 
+/**
+ * Tell Klaviyo a review came in, so a flow can email Cheyenne.
+ *
+ * Without this a review sits in Supabase unseen — which is the realistic
+ * failure mode here, far more than spam. Nobody checks a database on a
+ * Tuesday because a stranger might have typed something.
+ *
+ * Same shape as the Klaviyo event in app/api/returns/route.ts, but with one
+ * important difference: this one is FIRE AND FORGET. A returns request has to
+ * reach Klaviyo or it is lost, so that route fails loudly. A review is already
+ * safely in the database by the time this runs — Klaviyo being down must not
+ * turn a saved review into an error message for the customer. It is logged and
+ * swallowed.
+ *
+ * The profile is the REVIEWER's email, so the notification carries who wrote
+ * it. Set the flow up to email you, not them:
+ *
+ *   Klaviyo -> Flows -> Create -> Metric trigger -> "Review Submitted"
+ *   -> Email action -> send to your own address, not the profile
+ *
+ * Getting that backwards emails the customer a copy of their own review.
+ */
+async function notifyKlaviyo(fields: {
+  email: string;
+  name: string;
+  rating: number;
+  body: string;
+  fit: string | null;
+  size: string | null;
+  hasPhoto: boolean;
+}): Promise<void> {
+  const apiKey = process.env.KLAVIYO_PRIVATE_KEY;
+  if (!apiKey) return;
+
+  try {
+    const res = await fetch('https://a.klaviyo.com/api/events/', {
+      method: 'POST',
+      headers: {
+        Authorization: `Klaviyo-API-Key ${apiKey}`,
+        'Content-Type': 'application/json',
+        revision: '2024-02-15',
+      },
+      body: JSON.stringify({
+        data: {
+          type: 'event',
+          attributes: {
+            properties: {
+              rating: fields.rating,
+              review: fields.body,
+              shows_as: fields.name,
+              fit: fields.fit ?? 'not answered',
+              size_ordered: fields.size ?? 'not answered',
+              has_photo: fields.hasPhoto,
+              moderate_at: 'https://supabase.com/dashboard/project/_/editor',
+            },
+            metric: { data: { type: 'metric', attributes: { name: 'Review Submitted' } } },
+            profile: {
+              data: {
+                type: 'profile',
+                attributes: { email: fields.email, first_name: fields.name },
+              },
+            },
+          },
+        },
+      }),
+    });
+    if (!res.ok) {
+      console.warn('[reviews] Klaviyo rejected the notification:', res.status, (await res.text()).slice(0, 300));
+    }
+  } catch (err) {
+    console.warn('[reviews] Klaviyo notification failed:', err);
+  }
+}
+
 export async function POST(req: NextRequest) {
   // multipart/form-data, because a review can carry a photo. Text fields are
   // pulled out into the same shape the validation below already expected.
@@ -278,6 +352,17 @@ export async function POST(req: NextRequest) {
       { status: 500 },
     );
   }
+
+  // Saved. Now try to tell her about it — best effort, never blocking.
+  await notifyKlaviyo({
+    email,
+    name: authorName,
+    rating,
+    body: reviewBody,
+    fit: record.fit,
+    size: record.size_purchased,
+    hasPhoto: Boolean(record.photo_url),
+  });
 
   return NextResponse.json({ ok: true });
 }
