@@ -23,14 +23,23 @@
 --
 -- verified = true because there is a real order behind it (1053). Never set
 -- that flag on a review you can't tie to a purchase.
+--
+-- size_purchased = 'L' comes from the order itself, which is why it's safe to
+-- add. Height and fit are NOT set: she was never asked, and inventing them
+-- would be putting words in a real customer's mouth. If you want the card to
+-- carry them, ask her — two lines of email, and the card gets much stronger:
+--
+--   update public.reviews set height = '...', fit = 'true'   -- or 'small' / 'large'
+--    where order_number = '1053';
 -- ───────────────────────────────────────────────────────────────────────────
 
 update public.reviews
-   set status      = 'published',
-       author_name = 'G.',
-       consent     = true,
-       verified    = true,
-       hold_reason = 'Published with initial only — full name not yet confirmed with the customer.'
+   set status         = 'published',
+       author_name    = 'G.',
+       consent        = true,
+       verified       = true,
+       size_purchased = 'L',
+       hold_reason    = 'Published with initial only — full name not yet confirmed with the customer. Height and how-it-fit are unknown; ask her if you want them on the card.'
  where order_number = '1053';
 
 -- Check it worked:

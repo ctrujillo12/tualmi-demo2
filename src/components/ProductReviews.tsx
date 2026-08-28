@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { fitLine, MIN_FIT_SAMPLE, REVIEWABLE_HANDLES, type Review, type ReviewSummary } from '@/lib/reviews';
+import { fitFacts, MIN_FIT_SAMPLE, REVIEWABLE_HANDLES, type Review, type ReviewSummary } from '@/lib/reviews';
 
 /**
  * The review section on a product page, plus the star row that links to it.
@@ -92,7 +92,7 @@ export function FitConsensus({ summary }: { summary: ReviewSummary }) {
 }
 
 function ReviewCard({ review }: { review: Review }) {
-  const fit = fitLine(review);
+  const facts = fitFacts(review);
 
   return (
     <article className="rv-card">
@@ -117,8 +117,20 @@ function ReviewCard({ review }: { review: Review }) {
       <p className="rv-body">{review.body}</p>
 
       {/* Above the byline on purpose: this is the part that helps someone pick
-          a size, which is the objection the whole section exists to answer. */}
-      {fit && <p className="rv-fit">{fit}</p>}
+          a size, which is the objection the whole section exists to answer.
+          A definition list, not a sentence — each fact is labelled so it can be
+          scanned rather than read, and so a single fact still looks intentional
+          instead of like a field somebody forgot to fill in. */}
+      {facts.length > 0 && (
+        <dl className="rv-facts">
+          {facts.map((f) => (
+            <div key={f.label} className="rv-fact">
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
 
       <p className="rv-by">
         <span style={{ fontWeight: 600 }}>{review.name}</span>
@@ -233,9 +245,22 @@ const CSS = `
           font-family: ${sans}; font-size: 13.5px; line-height: 1.75;
           color: ${ink}; margin: 0 0 10px;
         }
-        .rv-fit {
-          font-family: ${sans}; font-size: 11.5px; letter-spacing: 0.03em;
-          color: ${maroon}; font-weight: 600; margin: 0 0 8px;
+        .rv-facts {
+          display: flex; flex-wrap: wrap; gap: 6px;
+          margin: 0 0 10px; padding: 0;
+        }
+        .rv-fact {
+          display: flex; align-items: baseline; gap: 5px;
+          background: #FBF1F5; border-radius: 999px; padding: 4px 10px;
+        }
+        .rv-fact dt {
+          font-family: ${sans}; font-size: 9.5px; font-weight: 600;
+          letter-spacing: 0.12em; text-transform: uppercase;
+          color: ${soft}; margin: 0;
+        }
+        .rv-fact dd {
+          font-family: ${sans}; font-size: 12px; font-weight: 700;
+          color: ${maroon}; margin: 0;
         }
         /* Pushes the byline to the bottom so cards line up in the two-column
            layout even when one review is twice as long as its neighbour. */

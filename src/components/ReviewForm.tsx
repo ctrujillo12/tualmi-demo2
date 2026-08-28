@@ -210,7 +210,12 @@ export default function ReviewForm() {
           </div>
         </div>
 
-        {/* ── Who ── */}
+        {/* ── Who ──
+            Email is required and is the proof-of-purchase check: it gets
+            searched against Shopify's orders before anything is published, so
+            a review from an address that never bought anything doesn't go up.
+            An order number would pin the lookup down faster, but it's another
+            box to fill and the email answers the same question on its own. */}
         <div className="rf-row">
           <div className="rf-field">
             <label className="rf-label" htmlFor="name">name to show</label>
@@ -218,11 +223,17 @@ export default function ReviewForm() {
             <p className="rf-hint">First name and last initial is perfect.</p>
           </div>
           <div className="rf-field">
-            <label className="rf-label" htmlFor="email">email <span className="rf-opt">never shown</span></label>
-            <input id="email" name="email" type="email" maxLength={160} />
-            <p className="rf-hint">So we can check it against your order.</p>
+            <label className="rf-label" htmlFor="email">
+              email <span className="rf-opt">never shown</span>
+            </label>
+            <input id="email" name="email" type="email" maxLength={160} required />
+            <p className="rf-hint">The one you ordered with.</p>
           </div>
         </div>
+        <p className="rf-hint rf-verify">
+          We only publish reviews from people who actually bought a pair. Your email
+          is never shown on the site.
+        </p>
 
         {/* ── Consent. Required, and never pre-ticked. ── */}
         <label className="rf-consent">
@@ -268,6 +279,7 @@ const CSS = `
     color: ${soft}; font-size: 11px;
   }
   .rf-hint { font-family: ${sans}; font-size: 11.5px; line-height: 1.6; color: ${soft}; margin: 6px 0 0; }
+  .rf-verify { margin: 0 0 20px; }
   .rf-center { text-align: center; margin-top: 14px; }
 
   .rf-root input[type="text"],

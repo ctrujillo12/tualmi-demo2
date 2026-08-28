@@ -101,6 +101,9 @@ export async function POST(req: NextRequest) {
   const authorName = str(body.name, MAX.name);
   const reviewBody = str(body.body, MAX.body);
   const rating = Number(body.rating);
+  const email = str(body.email, MAX.email)?.toLowerCase() ?? null;
+  // Shopify writes order numbers as "#1053"; people type them either way.
+  const orderNumber = str(body.orderNumber, MAX.short)?.replace(/^#/, '') ?? null;
 
   if (!productHandle || !VALID_HANDLES.includes(productHandle)) {
     return NextResponse.json({ error: 'Please choose which product you’re reviewing.' }, { status: 400 });
@@ -113,6 +116,21 @@ export async function POST(req: NextRequest) {
   }
   if (!reviewBody || reviewBody.length < 15) {
     return NextResponse.json({ error: 'Please write a little more — even a sentence or two helps.' }, { status: 400 });
+  }
+  // Proof of purchase. Required, because this is the value that gets searched
+  // against Shopify's orders before a review is published — a review from an
+  // address that never bought anything doesn't go up. Only shape is validated
+  // here; whether it corresponds to a real order is a human check at
+  // moderation time (see supabase/moderate.sql).
+  //
+  // The order number is accepted when offered but not demanded. It makes the
+  // lookup instant rather than a search, and that convenience isn't worth
+  // another required box on the form.
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return NextResponse.json(
+      { error: 'Please add the email you ordered with — it’s never shown on the site.' },
+      { status: 400 },
+    );
   }
   if (body.consent !== true) {
     return NextResponse.json(
@@ -156,8 +174,8 @@ export async function POST(req: NextRequest) {
     title:          str(body.title, MAX.title),
     body:           reviewBody,
     author_name:    authorName,
-    email:          str(body.email, MAX.email),
-    order_number:   str(body.orderNumber, MAX.short),
+    email,
+    order_number:   orderNumber,
     height:         str(body.height, MAX.short),
     usual_size:     str(body.usualSize, MAX.short),
     size_purchased: str(body.sizePurchased, MAX.short),

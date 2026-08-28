@@ -195,15 +195,37 @@ export async function getSummary(productHandle: string): Promise<ReviewSummary> 
   };
 }
 
-/** "5'7" · usually S · wearing S · jam" — whichever parts exist, else null. */
-export function fitLine(review: Review): string | null {
-  const parts = [
-    review.height,
-    review.usualSize ? `usually ${review.usualSize}` : null,
-    review.sizePurchased ? `wearing ${review.sizePurchased}` : null,
-    review.colorway ? review.colorway.toLowerCase() : null,
-  ].filter(Boolean);
-  return parts.length ? parts.join(' · ') : null;
+export type FitFact = { label: string; value: string };
+
+/**
+ * The fit details on a review, as labelled facts rather than one run-on line.
+ *
+ * This used to render as "5'7" · usually S · wearing S · jam" in small muted
+ * type under the review. That reads as a byline — decoration you skim past —
+ * when it is actually the most decision-useful thing on the card. A shopper
+ * working out whether to size up is scanning for exactly these numbers, and
+ * she should be able to find them without reading a sentence.
+ *
+ * Labelled also means it survives a sparse review. "L" on its own is a
+ * mystery; "ordered · L" is a fact, and a card carrying only that still looks
+ * deliberate rather than half-filled.
+ *
+ * Ordered by what someone checks first: their own body, then what that person
+ * chose, then whether it worked.
+ */
+export function fitFacts(review: Review): FitFact[] {
+  const facts: FitFact[] = [];
+  if (review.height) facts.push({ label: 'height', value: review.height });
+  if (review.usualSize) facts.push({ label: 'usually', value: review.usualSize });
+  if (review.sizePurchased) facts.push({ label: 'ordered', value: review.sizePurchased });
+  if (review.fit) {
+    facts.push({
+      label: 'fit',
+      value: { small: 'runs small', true: 'true to size', large: 'runs large' }[review.fit],
+    });
+  }
+  if (review.colorway) facts.push({ label: 'colour', value: review.colorway.toLowerCase() });
+  return facts;
 }
 
 /**
