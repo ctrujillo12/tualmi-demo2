@@ -34,6 +34,56 @@ const soft   = '#C9849A';
 const rule   = '#F0D9E1';
 const ink    = '#3B2F1E';
 
+/**
+ * Shrink a photo in the browser before it is uploaded.
+ *
+ * A photo straight off a phone is 4-8 MB. Vercel caps a request body at about
+ * 4.5 MB, so without this a perfectly ordinary picture fails at the platform
+ * before our route ever runs — and the error a shopper sees would be a generic
+ * network failure with no way to act on it.
+ *
+ * 1600px on the long edge at quality 0.82 lands around 200-500 KB, which is
+ * far more resolution than the 320px-wide slot on the review card will ever
+ * need, with room to spare if the card grows.
+ *
+ * `imageOrientation: 'from-image'` matters: a portrait phone photo carries its
+ * rotation in EXIF, and drawing to a canvas throws EXIF away. Without this
+ * flag, half the photos people send would appear on their side.
+ *
+ * Returns the original file if anything here fails — an odd format the canvas
+ * can't decode should mean "upload it as-is and let the server judge", not
+ * "you can't add a photo".
+ */
+async function shrinkImage(file: File): Promise<File> {
+  const MAX_EDGE = 1600;
+  try {
+    if (typeof createImageBitmap !== 'function') return file;
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+
+    const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+    const width = Math.round(bitmap.width * scale);
+    const height = Math.round(bitmap.height * scale);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close?.();
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, 'image/jpeg', 0.82),
+    );
+    if (!blob) return file;
+    // If "shrinking" made it bigger (already-tiny PNGs can), keep the original.
+    if (blob.size >= file.size) return file;
+    return new File([blob], 'review-photo.jpg', { type: 'image/jpeg' });
+  } catch {
+    return file;
+  }
+}
+
 const PRODUCT_HANDLE = 'sierra-shorts';
 const PRODUCT_NAME   = 'Sierra Shorts';
 
@@ -50,6 +100,10 @@ export default function ReviewForm() {
   const [hoverRating, setHoverRating] = useState(0);
   const [fit, setFit] = useState('');
   const [consent, setConsent] = useState(false);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const photoInput = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
 
@@ -59,6 +113,27 @@ export default function ReviewForm() {
   const renderedAt = useRef(Date.now());
   useEffect(() => { renderedAt.current = Date.now(); }, []);
 
+  // Object URLs hold the image in memory until they're revoked.
+  useEffect(() => () => { if (photoPreview) URL.revokeObjectURL(photoPreview); }, [photoPreview]);
+
+  async function onPickPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoBusy(true);
+    const shrunk = await shrinkImage(file);
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhoto(shrunk);
+    setPhotoPreview(URL.createObjectURL(shrunk));
+    setPhotoBusy(false);
+  }
+
+  function clearPhoto() {
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhoto(null);
+    setPhotoPreview(null);
+    if (photoInput.current) photoInput.current.value = '';
+  }
+
   const shown = hoverRating || rating;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -66,26 +141,24 @@ export default function ReviewForm() {
     setError(null);
     setStatus('sending');
 
+    // FormData rather than JSON, so the photo travels with the review in one
+    // request. Note there is no Content-Type header below: fetch sets it,
+    // including the multipart boundary, and setting it by hand breaks parsing.
     const form = new FormData(e.currentTarget);
-    const payload = {
-      productHandle: PRODUCT_HANDLE,
-      rating,
-      fit,
-      consent,
-      renderedAt: renderedAt.current,
-      name:          form.get('name'),
-      email:         form.get('email'),
-      body:          form.get('body'),
-      height:        form.get('height'),
-      sizePurchased: form.get('sizePurchased'),
-      website:       form.get('website'), // honeypot
-    };
+    form.set('productHandle', PRODUCT_HANDLE);
+    form.set('rating', String(rating));
+    form.set('fit', fit);
+    form.set('consent', String(consent));
+    form.set('renderedAt', String(renderedAt.current));
+    // The file input is uncontrolled and holds the ORIGINAL; replace it with
+    // the downscaled copy, or drop it entirely if they removed the photo.
+    form.delete('photo');
+    if (photo) form.set('photo', photo, photo.name);
 
     try {
       const res = await fetch('/api/reviews', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: form,
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -210,6 +283,45 @@ export default function ReviewForm() {
           </div>
         </div>
 
+        {/* ── Photo ──
+            Optional, and the highest-converting element on a review card when
+            it's there. Kept to a single tap: no drag-and-drop zone, no crop
+            step, no multi-file gallery — every one of those is a reason to
+            give up on a form that was already a favour. */}
+        <div className="rf-field">
+          <label className="rf-label" htmlFor="photo">
+            add a photo <span className="rf-opt">optional</span>
+          </label>
+
+          {!photoPreview ? (
+            <>
+              <input
+                ref={photoInput}
+                id="photo"
+                name="photo"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={onPickPhoto}
+                className="rf-file"
+              />
+              <p className="rf-hint">
+                {photoBusy ? 'getting it ready…' : 'Wearing them somewhere good? We’d love to see.'}
+              </p>
+            </>
+          ) : (
+            <div className="rf-photo">
+              {/* A plain <img>: this is a local object URL for a file that
+                  hasn't been uploaded, so there is nothing for next/image to
+                  optimise and it would refuse the blob: source anyway. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={photoPreview} alt="The photo you selected" />
+              <button type="button" onClick={clearPhoto} className="rf-photo-x" aria-label="Remove photo">
+                remove
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* ── Who ──
             Email is required and is the proof-of-purchase check: it gets
             searched against Shopify's orders before anything is published, so
@@ -325,6 +437,29 @@ const CSS = `
   .rf-block-h {
     font-family: ${sans}; font-size: 12px; font-weight: 700;
     letter-spacing: 0.06em; text-transform: lowercase; color: ${ink}; margin: 0 0 14px;
+  }
+
+  .rf-file {
+    font-family: ${sans}; font-size: 13px; color: ${ink};
+    border: 1px dashed ${rule}; border-radius: 10px;
+    padding: 14px 12px; width: 100%; box-sizing: border-box; background: #fff;
+  }
+  .rf-file::file-selector-button {
+    font-family: ${sans}; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: lowercase;
+    color: #fff; background: ${maroon};
+    border: 0; border-radius: 999px; padding: 8px 15px;
+    margin-right: 12px; cursor: pointer;
+  }
+  .rf-photo { display: flex; align-items: flex-start; gap: 12px; }
+  .rf-photo img {
+    width: 108px; height: 136px; object-fit: cover;
+    border-radius: 10px; display: block; background: #FBF1F5;
+  }
+  .rf-photo-x {
+    font-family: ${sans}; font-size: 12px; font-weight: 600;
+    color: ${soft}; background: none; border: 0; cursor: pointer;
+    text-decoration: underline; text-underline-offset: 3px; padding: 4px 0;
   }
 
   .rf-consent {

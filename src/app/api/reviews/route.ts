@@ -41,6 +41,21 @@ const VALID_FIT = ['small', 'true', 'large'];
 
 type Body = Record<string, unknown>;
 
+const PHOTO_BUCKET = 'review-photos';
+/**
+ * Server-side ceiling on an upload.
+ *
+ * The browser already downscales to roughly 200-500 KB before sending (see
+ * ReviewForm), so anything arriving near this limit did not come from our
+ * form. 5 MB is also the bucket's own limit in supabase/storage.sql, and
+ * comfortably under Vercel's ~4.5 MB request body cap once you account for
+ * the rest of the form — a photo bigger than that is refused by the platform
+ * before this code runs, which is why the client resize is the real defence
+ * rather than a nicety.
+ */
+const MAX_PHOTO_BYTES = 4 * 1024 * 1024;
+const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
 const str = (v: unknown, max: number): string | null => {
   if (typeof v !== 'string') return null;
   const s = v.trim().replace(/\s+/g, ' ');
@@ -73,9 +88,23 @@ async function overRateLimit(ip: string): Promise<boolean> {
 }
 
 export async function POST(req: NextRequest) {
+  // multipart/form-data, because a review can carry a photo. Text fields are
+  // pulled out into the same shape the validation below already expected.
   let body: Body;
+  let photo: File | null = null;
   try {
-    body = (await req.json()) as Body;
+    const form = await req.formData();
+    const entries: Body = {};
+    for (const [key, value] of form.entries()) {
+      if (typeof value === 'string') entries[key] = value;
+    }
+    body = entries;
+    body.rating = Number(entries.rating);
+    body.consent = entries.consent === 'true';
+    body.renderedAt = Number(entries.renderedAt);
+
+    const file = form.get('photo');
+    if (file instanceof File && file.size > 0) photo = file;
   } catch {
     return NextResponse.json({ error: 'Could not read that submission.' }, { status: 400 });
   }
@@ -132,6 +161,21 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
+  if (photo) {
+    if (!ALLOWED_PHOTO_TYPES.includes(photo.type)) {
+      return NextResponse.json(
+        { error: 'Photos need to be a JPEG, PNG or WEBP.' },
+        { status: 400 },
+      );
+    }
+    if (photo.size > MAX_PHOTO_BYTES) {
+      return NextResponse.json(
+        { error: 'That photo is too large — try one under 4MB.' },
+        { status: 400 },
+      );
+    }
+  }
+
   if (body.consent !== true) {
     return NextResponse.json(
       { error: 'We need your permission before we can show your review on the site.' },
@@ -188,10 +232,42 @@ export async function POST(req: NextRequest) {
     // order behind the review — that badge is a claim about a real purchase.
     verified:       false,
     status:         'pending',
+    photo_url:      null as string | null,
   };
 
+  const supabase = createClient(url, key);
+
+  /**
+   * Upload first, then insert with the URL.
+   *
+   * If the upload fails the review is still saved, without the photo. Losing
+   * someone's words because their picture didn't upload would be the worst
+   * possible trade — the words are the thing that took them four minutes and
+   * the thing the product page actually needs.
+   *
+   * The filename is random rather than derived from anything about the person.
+   * An unpublished review's photo is technically reachable by whoever holds
+   * its URL, so the URL should be unguessable, and it should not leak a name
+   * or an email address to anyone who sees it.
+   */
+  if (photo) {
+    const ext = photo.type === 'image/png' ? 'png' : photo.type === 'image/webp' ? 'webp' : 'jpg';
+    const path = `${crypto.randomUUID()}.${ext}`;
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from(PHOTO_BUCKET)
+        .upload(path, photo, { contentType: photo.type, upsert: false });
+
+      if (uploadError) throw new Error(uploadError.message);
+
+      record.photo_url = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(path).data.publicUrl;
+    } catch (err) {
+      console.error('[reviews] photo upload failed, saving the review without it:', err);
+    }
+  }
+
   try {
-    const { error } = await createClient(url, key).from('reviews').insert(record);
+    const { error } = await supabase.from('reviews').insert(record);
     if (error) throw new Error(error.message);
   } catch (err) {
     // Log the whole thing. A serverless function has no durable disk, so if

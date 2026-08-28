@@ -13,6 +13,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cdn.shopify.com',
       },
+      {
+        // Customer review photos, served from Supabase Storage. Without this
+        // entry next/image refuses the URL at request time and the review card
+        // throws — the photo is uploaded fine and the page still breaks.
+        protocol: 'https',
+        hostname: '**.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
     ],
   },
   // Server-side 301s so Google transfers ranking from the old product URLs

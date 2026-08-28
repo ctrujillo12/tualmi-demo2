@@ -102,14 +102,18 @@ function ReviewCard({ review }: { review: Review }) {
       </div>
 
       {review.photo && (
+        /* Fixed 4:5 frame with object-fit: cover, rather than letting each
+           photo set its own height. Customer photos arrive in every shape
+           there is, and a grid of cards that each jump to a different height
+           reads as broken. Cropping to one ratio is the price of a wall that
+           looks like a wall. */
         <div className="rv-photo">
           <Image
             src={review.photo}
-            alt=""
-            width={320}
-            height={400}
-            sizes="(max-width: 640px) 45vw, 260px"
-            style={{ width: '100%', height: 'auto', borderRadius: '10px', display: 'block' }}
+            alt={`Photo from ${review.name}’s review`}
+            fill
+            sizes="(max-width: 720px) 60vw, 220px"
+            style={{ objectFit: 'cover' }}
           />
         </div>
       )}
@@ -240,7 +244,11 @@ const CSS = `
           font-family: ${sans}; font-size: 13px; font-weight: 700;
           color: ${ink}; margin: 0; text-transform: lowercase;
         }
-        .rv-photo { margin: 0 0 10px; max-width: 220px; }
+        .rv-photo {
+          position: relative; margin: 0 0 10px;
+          width: 100%; max-width: 220px; aspect-ratio: 4 / 5;
+          border-radius: 10px; overflow: hidden; background: #FBF1F5;
+        }
         .rv-body {
           font-family: ${sans}; font-size: 13.5px; line-height: 1.75;
           color: ${ink}; margin: 0 0 10px;
