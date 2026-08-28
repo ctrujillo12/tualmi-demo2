@@ -4,10 +4,9 @@ import ReviewForm from '@/components/ReviewForm';
 /**
  * /review — the one link you send people.
  *
- * Works from anywhere: the Klaviyo post-delivery email, an Instagram story,
- * a packaging insert, or the "write a review" link on a product page. Add
- * ?product=sierra-shorts to preselect the product so the first question is
- * already answered.
+ * Works from anywhere: the Klaviyo post-delivery email, an Instagram story, a
+ * packaging insert, or the "write a review" link on the product page. Sierra
+ * Shorts only, so there is nothing to choose and no product question to ask.
  *
  * Not indexed — it's a form for customers, not a page for search results, and
  * an indexed review form attracts exactly the submissions you don't want.
@@ -23,13 +22,7 @@ const sans   = 'var(--font-montserrat), system-ui, sans-serif';
 const maroon = '#A9445C';
 const soft   = '#C9849A';
 
-export default async function ReviewPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ product?: string }>;
-}) {
-  const { product } = await searchParams;
-
+export default function ReviewPage() {
   return (
     <main style={{ backgroundColor: '#FAFAF7', minHeight: '100vh', padding: 'clamp(32px, 6vw, 64px) 20px clamp(56px, 8vw, 88px)' }}>
       <div style={{ maxWidth: '640px', margin: '0 auto' }}>
@@ -44,7 +37,7 @@ export default async function ReviewPage({
           these are right for her.
         </p>
 
-        <ReviewForm initialProduct={product} />
+        <ReviewForm />
       </div>
     </main>
   );

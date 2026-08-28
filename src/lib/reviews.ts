@@ -22,6 +22,13 @@ import { createClient } from '@supabase/supabase-js';
  * published rows. Writes never happen here; see app/api/reviews/route.ts.
  */
 
+/**
+ * Products the review form accepts. Sierra Shorts only for now — the pant is a
+ * preorder that hasn't shipped. Keep this in step with VALID_HANDLES in
+ * app/api/reviews/route.ts, which is the half that actually enforces it.
+ */
+export const REVIEWABLE_HANDLES = ['sierra-shorts'];
+
 export type Fit = 'small' | 'true' | 'large';
 
 export type Review = {

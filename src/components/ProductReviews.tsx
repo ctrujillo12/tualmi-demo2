@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { fitLine, MIN_FIT_SAMPLE, type Review, type ReviewSummary } from '@/lib/reviews';
+import { fitLine, MIN_FIT_SAMPLE, REVIEWABLE_HANDLES, type Review, type ReviewSummary } from '@/lib/reviews';
 
 /**
  * The review section on a product page, plus the star row that links to it.
@@ -136,7 +136,10 @@ export default function ProductReviews({
   summary: ReviewSummary;
   productHandle: string;
 }) {
-  const writeHref = `/review?product=${encodeURIComponent(productHandle)}`;
+  // The form only accepts Sierra Shorts, so the pant must not advertise a
+  // link that would reject whatever someone wrote in it.
+  const canReview = REVIEWABLE_HANDLES.includes(productHandle);
+  const writeHref = '/review';
 
   /**
    * No reviews yet: one quiet line, not an empty "what people are saying"
@@ -145,6 +148,7 @@ export default function ProductReviews({
    * one person who did buy somewhere to go.
    */
   if (!summary.showList) {
+    if (!canReview) return null;
     return (
       <section id="reviews" className="rv-root rv-empty">
         <style>{CSS}</style>
@@ -174,7 +178,7 @@ export default function ProductReviews({
             the people most likely to write one are past customers who came
             back to the page, and they shouldn't have to scroll the wall of
             reviews to find the link. */}
-        <Link href={writeHref} className="rv-write">write a review</Link>
+        {canReview && <Link href={writeHref} className="rv-write">write a review</Link>}
       </div>
 
       <div className="rv-list">

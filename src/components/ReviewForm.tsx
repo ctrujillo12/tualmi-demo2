@@ -6,15 +6,21 @@ import Link from 'next/link';
 /**
  * The review form. Posts to /api/reviews, which stores it as pending.
  *
- * ── WHAT IT ASKS FOR, AND WHY ────────────────────────────────────────────
- * Five required things and nothing else: product, rating, name, the review,
- * and permission to publish it. Every extra required field costs completions,
- * and a review with only those five is still worth having.
+ * Sierra Shorts only — the pant is a preorder that hasn't shipped, so there is
+ * nobody who could honestly review it yet. When it ships, add it back here and
+ * to VALID_HANDLES in app/api/reviews/route.ts.
  *
- * The fit questions — height, usual size, size ordered, how it ran — are the
- * ones that actually sell apparel ("she's my height and ordered her usual
- * size" is what stops someone worrying about a $68 gamble), so they get their
- * own clearly-optional block rather than being buried or made mandatory.
+ * ── WHAT IT ASKS, AND WHAT IT DELIBERATELY DOESN'T ───────────────────────
+ * Three required things: a rating, the review, and a name to show. Plus the
+ * consent checkbox, which isn't optional for legal reasons rather than design
+ * ones.
+ *
+ * Everything else was cut. An earlier version also asked for a headline, the
+ * size you usually wear, the colourway, where you wore them, and an order
+ * number — all defensible on their own, and collectively a wall that makes
+ * people close the tab. The three optional fields left (height, size ordered,
+ * how it ran) are the ones that answer "will these fit me", which is the
+ * objection the whole review section exists to solve.
  *
  * ── ON THE ONE OVERALL RATING ────────────────────────────────────────────
  * One question, not four. The old Tally form asked fit / performance / fun /
@@ -28,10 +34,8 @@ const soft   = '#C9849A';
 const rule   = '#F0D9E1';
 const ink    = '#3B2F1E';
 
-const PRODUCTS = [
-  { handle: 'sierra-shorts', name: 'Sierra Shorts', colorways: ['Jam', 'Picnic', 'Confetti'] },
-  { handle: 'juniper-pant',  name: 'Juniper Pant',  colorways: ['Birch', 'Olive'] },
-];
+const PRODUCT_HANDLE = 'sierra-shorts';
+const PRODUCT_NAME   = 'Sierra Shorts';
 
 const SIZES = ['2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL'];
 
@@ -41,10 +45,7 @@ const FIT_OPTIONS = [
   { value: 'large', label: 'runs large' },
 ];
 
-export default function ReviewForm({ initialProduct }: { initialProduct?: string }) {
-  const [productHandle, setProductHandle] = useState(
-    initialProduct && PRODUCTS.some((p) => p.handle === initialProduct) ? initialProduct : '',
-  );
+export default function ReviewForm() {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [fit, setFit] = useState('');
@@ -52,13 +53,12 @@ export default function ReviewForm({ initialProduct }: { initialProduct?: string
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
 
-  // Stamped once on mount. The API rejects anything submitted within three
-  // seconds of the form appearing — a human cannot read, rate and write that
-  // fast, and a bot usually does.
+  // Stamped on mount. The API rejects anything submitted within three seconds
+  // of the form appearing — a person cannot read, rate and write that fast; a
+  // bot usually does.
   const renderedAt = useRef(Date.now());
   useEffect(() => { renderedAt.current = Date.now(); }, []);
 
-  const product = PRODUCTS.find((p) => p.handle === productHandle);
   const shown = hoverRating || rating;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -68,21 +68,16 @@ export default function ReviewForm({ initialProduct }: { initialProduct?: string
 
     const form = new FormData(e.currentTarget);
     const payload = {
-      productHandle,
+      productHandle: PRODUCT_HANDLE,
       rating,
       fit,
-      renderedAt: renderedAt.current,
       consent,
+      renderedAt: renderedAt.current,
       name:          form.get('name'),
       email:         form.get('email'),
-      orderNumber:   form.get('orderNumber'),
-      title:         form.get('title'),
       body:          form.get('body'),
       height:        form.get('height'),
-      usualSize:     form.get('usualSize'),
       sizePurchased: form.get('sizePurchased'),
-      colorway:      form.get('colorway'),
-      activity:      form.get('activity'),
       website:       form.get('website'), // honeypot
     };
 
@@ -100,9 +95,7 @@ export default function ReviewForm({ initialProduct }: { initialProduct?: string
       }
       setStatus('done');
     } catch {
-      setError(
-        'We couldn’t reach the server. Please check your connection, or email hello@tualmi.com.',
-      );
+      setError('We couldn’t reach the server. Please check your connection, or email hello@tualmi.com.');
       setStatus('error');
     }
   }
@@ -114,8 +107,8 @@ export default function ReviewForm({ initialProduct }: { initialProduct?: string
         <div className="rf-done">
           <p className="rf-done-h">thank you — that really helps.</p>
           <p className="rf-done-b">
-            We read every one. Yours goes up on the product page once we&apos;ve had a look
-            at it, usually within a day or two.
+            We read every one. Yours goes up on the product page once we&apos;ve had a look,
+            usually within a day or two.
           </p>
           <p className="rf-done-b">
             Got a photo of them out in the wild? Send it to{' '}
@@ -134,34 +127,18 @@ export default function ReviewForm({ initialProduct }: { initialProduct?: string
     <div className="rf-root">
       <style>{CSS}</style>
       <form onSubmit={onSubmit} noValidate>
-        {/* Honeypot. Hidden from people, tempting to bots. Not display:none —
-            some bots skip those; off-screen with aria-hidden is stronger. */}
+        {/* Honeypot. Hidden from people, tempting to bots. Off-screen rather
+            than display:none — some bots skip anything set to none. */}
         <div className="rf-hp" aria-hidden="true">
           <label htmlFor="website">Website</label>
           <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
         </div>
 
-        {/* ── Which product ── */}
-        <fieldset className="rf-field">
-          <legend className="rf-label">which did you buy?</legend>
-          <div className="rf-chips">
-            {PRODUCTS.map((p) => (
-              <button
-                key={p.handle}
-                type="button"
-                className={`rf-chip ${productHandle === p.handle ? 'is-on' : ''}`}
-                onClick={() => setProductHandle(p.handle)}
-                aria-pressed={productHandle === p.handle}
-              >
-                {p.name.toLowerCase()}
-              </button>
-            ))}
-          </div>
-        </fieldset>
+        <p className="rf-product">{PRODUCT_NAME}</p>
 
-        {/* ── The one rating that matters ── */}
+        {/* ── Rating ── */}
         <fieldset className="rf-field">
-          <legend className="rf-label">overall, how would you rate them?</legend>
+          <legend className="rf-label">how would you rate them?</legend>
           <div className="rf-stars" onMouseLeave={() => setHoverRating(0)}>
             {[1, 2, 3, 4, 5].map((n) => (
               <button
@@ -184,11 +161,6 @@ export default function ReviewForm({ initialProduct }: { initialProduct?: string
 
         {/* ── The review ── */}
         <div className="rf-field">
-          <label className="rf-label" htmlFor="title">headline <span className="rf-opt">optional</span></label>
-          <input id="title" name="title" type="text" maxLength={90} placeholder="did 14 miles in these" />
-        </div>
-
-        <div className="rf-field">
           <label className="rf-label" htmlFor="body">your review</label>
           <textarea
             id="body"
@@ -198,33 +170,13 @@ export default function ReviewForm({ initialProduct }: { initialProduct?: string
             placeholder="What did you wear them for? How did they hold up?"
             required
           />
-          <p className="rf-hint">A sentence or two is plenty — what you did in them is the useful part.</p>
         </div>
 
-        {/* ── Fit block. Optional, and the most valuable thing here. ── */}
+        {/* ── Fit. Optional, and the most useful thing on the page. ── */}
         <div className="rf-block">
-          <p className="rf-block-h">fit <span className="rf-opt">all optional — but this is what helps people most</span></p>
-
-          <div className="rf-row">
-            <div className="rf-field">
-              <label className="rf-label" htmlFor="height">your height</label>
-              <input id="height" name="height" type="text" maxLength={40} placeholder={`5'6"`} />
-            </div>
-            <div className="rf-field">
-              <label className="rf-label" htmlFor="usualSize">size you usually wear</label>
-              <select id="usualSize" name="usualSize" defaultValue="">
-                <option value="">—</option>
-                {SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            <div className="rf-field">
-              <label className="rf-label" htmlFor="sizePurchased">size you ordered</label>
-              <select id="sizePurchased" name="sizePurchased" defaultValue="">
-                <option value="">—</option>
-                {SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-          </div>
+          <p className="rf-block-h">
+            fit <span className="rf-opt">optional — but this is what helps people most</span>
+          </p>
 
           <fieldset className="rf-field">
             <legend className="rf-label">how did they fit?</legend>
@@ -245,15 +197,15 @@ export default function ReviewForm({ initialProduct }: { initialProduct?: string
 
           <div className="rf-row">
             <div className="rf-field">
-              <label className="rf-label" htmlFor="colorway">colorway</label>
-              <select id="colorway" name="colorway" defaultValue="">
-                <option value="">—</option>
-                {(product?.colorways ?? []).map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
+              <label className="rf-label" htmlFor="height">your height</label>
+              <input id="height" name="height" type="text" maxLength={40} inputMode="text" />
             </div>
             <div className="rf-field">
-              <label className="rf-label" htmlFor="activity">where did you wear them?</label>
-              <input id="activity" name="activity" type="text" maxLength={40} placeholder="climbing gym" />
+              <label className="rf-label" htmlFor="sizePurchased">size you ordered</label>
+              <select id="sizePurchased" name="sizePurchased" defaultValue="">
+                <option value="">—</option>
+                {SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
             </div>
           </div>
         </div>
@@ -262,21 +214,17 @@ export default function ReviewForm({ initialProduct }: { initialProduct?: string
         <div className="rf-row">
           <div className="rf-field">
             <label className="rf-label" htmlFor="name">name to show</label>
-            <input id="name" name="name" type="text" maxLength={80} placeholder="Gracelyn Q." required />
+            <input id="name" name="name" type="text" maxLength={80} required />
             <p className="rf-hint">First name and last initial is perfect.</p>
           </div>
           <div className="rf-field">
             <label className="rf-label" htmlFor="email">email <span className="rf-opt">never shown</span></label>
-            <input id="email" name="email" type="email" maxLength={160} placeholder="you@example.com" />
-          </div>
-          <div className="rf-field">
-            <label className="rf-label" htmlFor="orderNumber">order # <span className="rf-opt">optional</span></label>
-            <input id="orderNumber" name="orderNumber" type="text" maxLength={40} placeholder="1053" />
-            <p className="rf-hint">Lets us mark you a verified buyer.</p>
+            <input id="email" name="email" type="email" maxLength={160} />
+            <p className="rf-hint">So we can check it against your order.</p>
           </div>
         </div>
 
-        {/* ── Consent. Required, and not pre-ticked. ── */}
+        {/* ── Consent. Required, and never pre-ticked. ── */}
         <label className="rf-consent">
           <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
           <span>
@@ -300,11 +248,15 @@ export default function ReviewForm({ initialProduct }: { initialProduct?: string
 }
 
 const CSS = `
-  .rf-root { max-width: 640px; margin: 0 auto; }
-  .rf-hp {
-    position: absolute; left: -9999px; width: 1px; height: 1px;
-    overflow: hidden;
+  .rf-root { max-width: 560px; margin: 0 auto; }
+  .rf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .rf-product {
+    font-family: ${sans}; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: ${soft};
+    margin: 0 0 22px; text-align: center;
   }
+
   .rf-field { margin-bottom: 20px; border: 0; padding: 0; min-width: 0; }
   .rf-label {
     display: block; font-family: ${sans}; font-size: 12px; font-weight: 700;
@@ -315,10 +267,7 @@ const CSS = `
     font-weight: 500; letter-spacing: 0.02em; text-transform: none;
     color: ${soft}; font-size: 11px;
   }
-  .rf-hint {
-    font-family: ${sans}; font-size: 11.5px; line-height: 1.6;
-    color: ${soft}; margin: 6px 0 0;
-  }
+  .rf-hint { font-family: ${sans}; font-size: 11.5px; line-height: 1.6; color: ${soft}; margin: 6px 0 0; }
   .rf-center { text-align: center; margin-top: 14px; }
 
   .rf-root input[type="text"],
@@ -326,53 +275,44 @@ const CSS = `
   .rf-root select,
   .rf-root textarea {
     width: 100%; box-sizing: border-box;
-    font-family: ${sans}; font-size: 15px; color: ${ink};
+    font-family: ${sans}; font-size: 16px; color: ${ink};
     background: #fff; border: 1px solid ${rule}; border-radius: 10px;
     padding: 11px 12px; line-height: 1.5;
     -webkit-appearance: none; appearance: none;
   }
-  .rf-root select { background-image: none; }
+  /* 16px is not a style choice: anything smaller makes iOS Safari zoom the
+     page on focus, and a form that lurches when you tap it feels broken. */
   .rf-root textarea { resize: vertical; min-height: 118px; }
   .rf-root input::placeholder, .rf-root textarea::placeholder { color: #D9C5CD; }
   .rf-root input:focus, .rf-root select:focus, .rf-root textarea:focus {
     outline: 2px solid ${maroon}; outline-offset: 1px; border-color: transparent;
   }
 
-  /* Three across on desktop, stacked on a phone. 15px inputs above are
-     deliberate: anything under 16px makes iOS Safari zoom on focus, and a
-     form that jumps when you tap it feels broken. */
-  .rf-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-  @media (max-width: 620px) { .rf-row { grid-template-columns: 1fr; gap: 0; } }
+  .rf-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 560px) { .rf-row { grid-template-columns: 1fr; gap: 0; } }
 
   .rf-chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .rf-chip {
     font-family: ${sans}; font-size: 13px; font-weight: 600;
     color: ${maroon}; background: #fff;
     border: 1px solid ${rule}; border-radius: 999px;
-    padding: 9px 16px; cursor: pointer; line-height: 1;
-    min-height: 40px;
+    padding: 9px 16px; cursor: pointer; line-height: 1; min-height: 40px;
   }
   .rf-chip.is-on { background: ${maroon}; border-color: ${maroon}; color: #fff; }
 
   .rf-stars { display: flex; align-items: center; gap: 2px; }
   .rf-star {
     background: none; border: 0; cursor: pointer; padding: 2px 3px;
-    font-size: 30px; line-height: 1; color: ${rule};
-    /* 44px of tappable height on a phone without a 44px-tall glyph. */
-    min-height: 44px;
+    font-size: 32px; line-height: 1; color: ${rule}; min-height: 44px;
   }
   .rf-star.is-on { color: ${maroon}; }
   .rf-star:focus-visible { outline: 2px solid ${maroon}; outline-offset: 2px; border-radius: 4px; }
   .rf-star-note { font-family: ${sans}; font-size: 12px; color: ${soft}; margin-left: 8px; }
 
-  .rf-block {
-    background: #FBF1F5; border-radius: 14px;
-    padding: 18px 16px 4px; margin: 0 0 22px;
-  }
+  .rf-block { background: #FBF1F5; border-radius: 14px; padding: 18px 16px 4px; margin: 0 0 22px; }
   .rf-block-h {
     font-family: ${sans}; font-size: 12px; font-weight: 700;
-    letter-spacing: 0.06em; text-transform: lowercase; color: ${ink};
-    margin: 0 0 14px;
+    letter-spacing: 0.06em; text-transform: lowercase; color: ${ink}; margin: 0 0 14px;
   }
 
   .rf-consent {
@@ -386,8 +326,7 @@ const CSS = `
     width: 100%; min-height: 50px;
     font-family: ${sans}; font-size: 14px; font-weight: 700;
     letter-spacing: 0.08em; text-transform: lowercase;
-    color: #fff; background: ${maroon};
-    border: 0; border-radius: 999px; cursor: pointer;
+    color: #fff; background: ${maroon}; border: 0; border-radius: 999px; cursor: pointer;
   }
   .rf-submit:disabled { opacity: 0.6; cursor: default; }
 
@@ -402,9 +341,6 @@ const CSS = `
     font-family: ${sans}; font-size: clamp(19px, 3vw, 24px); font-weight: 700;
     color: ${maroon}; margin: 0 0 12px; text-transform: lowercase;
   }
-  .rf-done-b {
-    font-family: ${sans}; font-size: 14px; line-height: 1.8;
-    color: ${ink}; margin: 0 0 12px;
-  }
+  .rf-done-b { font-family: ${sans}; font-size: 14px; line-height: 1.8; color: ${ink}; margin: 0 0 12px; }
   .rf-link { color: ${maroon}; font-weight: 600; text-underline-offset: 3px; }
 `;

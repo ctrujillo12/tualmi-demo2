@@ -32,7 +32,11 @@ const MAX = { name: 80, body: 2000, title: 90, short: 40, email: 160 };
 const RATE_LIMIT = 5;
 const RATE_WINDOW_SECONDS = 60 * 60;
 
-const VALID_HANDLES = ['sierra-shorts', 'juniper-pant'];
+// Sierra Shorts only. The pant is a preorder that hasn't shipped, so nobody
+// could honestly review it yet — and an open endpoint for a product with no
+// customers is a spam target with no upside. Add it back when it ships, here
+// and in components/ReviewForm.tsx.
+const VALID_HANDLES = ['sierra-shorts'];
 const VALID_FIT = ['small', 'true', 'large'];
 
 type Body = Record<string, unknown>;
