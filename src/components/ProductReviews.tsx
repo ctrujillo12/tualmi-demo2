@@ -210,7 +210,11 @@ const CSS = `
         .rv-root {
           max-width: 780px;
           margin: 0 auto;
-          padding: clamp(36px, 6vw, 60px) 20px clamp(48px, 7vw, 72px);
+          /* Tight to the accordion above it, with a hairline instead of a gap.
+             This reads as the next section of the same page; a large blank
+             band read as something that had failed to load. */
+          padding: clamp(22px, 3.5vw, 34px) 20px clamp(36px, 6vw, 56px);
+          border-top: 1px solid ${rule};
         }
         .rv-top {
           display: flex; align-items: baseline; gap: 12px;
@@ -284,7 +288,7 @@ const CSS = `
         }
         .rv-muted { color: ${soft}; }
 
-        .rv-empty { padding-top: clamp(28px, 4vw, 40px); padding-bottom: clamp(28px, 4vw, 40px); }
+        .rv-empty { padding-top: clamp(18px, 3vw, 26px); padding-bottom: clamp(18px, 3vw, 26px); }
         .rv-empty-line {
           font-family: ${sans}; font-size: 13.5px; color: ${soft};
           margin: 0; text-align: center;

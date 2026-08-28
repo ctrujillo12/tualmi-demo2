@@ -444,9 +444,19 @@ body {
      the thumbnail strip and the supporting shots all size off these, so they
      line up in one centred column no matter how many photos a product has. */
   .pdp-page {
-    padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+    /* The reserve for the sticky add-to-cart bar used to live here. It moved
+       to .pdp-main below, because .pdp-page stopped being the last thing on
+       the page when the review section was added underneath it — leaving 74px
+       of blush-coloured dead space between the accordion and the reviews on
+       every phone. The bar floats over the bottom of the whole page, so the
+       reserve belongs on the whole page. */
     --hero-h: min(66svh, calc((100vw - 40px) * 1.5));
     --hero-w: calc(var(--hero-h) / 1.5);
+  }
+
+  /* Clears the sticky add-to-cart bar, whatever the last section happens to be. */
+  .pdp-main {
+    padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -456,6 +466,11 @@ body {
     .pdp-page { --hero-h: min(66vh, calc((100vw - 40px) * 1.5)); }
   }
 }
+
+/* The product page and its review section are one surface, not two. Without
+   this the reviews sat on the body background and the colour change read as an
+   unfinished edge. */
+.pdp-main { background-color: #FBF1F5; }
 
 /* ── Product page gallery: desktop 2-up grid ── */
 .pdp-gallery {

@@ -62,6 +62,20 @@ const PAGE_METADATA: Record<string, Metadata> = {
   },
 };
 
+/**
+ * Regenerate this page at most every 5 minutes.
+ *
+ * Without this the page is prerendered at build time and never re-rendered,
+ * because generateStaticParams below makes it fully static. Publishing a review
+ * in Supabase would then change nothing on the live site until the next deploy
+ * — which is exactly what happened: the review was published and the page went
+ * on serving "write the first review" from the build output.
+ *
+ * The review read has its own 60s cache (lib/reviews.ts), so this is the outer
+ * of two windows and the one that actually decides how stale the page can be.
+ */
+export const revalidate = 300;
+
 export function generateStaticParams() {
   return [
     { id: 'sierra-shorts' },
@@ -157,7 +171,7 @@ export default async function ProductPage({
   };
 
   return (
-    <main>
+    <main className="pdp-main">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}

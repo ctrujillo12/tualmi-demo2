@@ -67,11 +67,14 @@ export const MIN_FIT_SAMPLE = 5;
 /**
  * How long a product page may serve reviews it already has.
  *
- * Five minutes. Publishing a review in the Supabase table editor can't call
- * revalidateTag, so freshness here is time-based — and reviews are not
- * time-critical. If you publish one and want it immediately, redeploy.
+ * One minute — deliberately shorter than the product page's own 5-minute
+ * revalidate. Publishing a review in the Supabase table editor can't call
+ * revalidateTag, so freshness is time-based, and if this window were the
+ * longer of the two the delays would stack: a review could take ten minutes to
+ * appear instead of five. Keeping it inside the page's window means the page
+ * regeneration always reads something current.
  */
-const REVALIDATE_SECONDS = 300;
+const REVALIDATE_SECONDS = 60;
 
 export type ReviewSummary = {
   reviews: Review[];
