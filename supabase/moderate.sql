@@ -6,6 +6,22 @@
 -- only the columns you need to make the call.
 -- ───────────────────────────────────────────────────────────────────────────
 
+-- 0. EVERYTHING, WHATEVER ITS STATUS
+-- Start here when the count looks wrong. Query 1 below shows only PENDING
+-- rows, so anything already published or rejected is invisible there — which
+-- reads as a missing review when it is really a moderated one.
+select
+  created_at,
+  status,
+  author_name,
+  email,
+  rating,
+  photo_url is not null as has_photo,
+  left(body, 60)        as body_start
+from public.reviews
+order by created_at desc;
+
+
 -- 1. WHAT'S WAITING
 -- For each row: search the email in Shopify (Orders -> filter by customer
 -- email). If there's a paid order for Sierra Shorts, it's real. If there is

@@ -133,7 +133,22 @@ function toReview(r: Row): Review {
 async function fetchReviews(productHandle: string): Promise<Review[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return [];
+  if (!url || !key) {
+    // Loud, because the silent version of this is indistinguishable from
+    // "nobody has written a review yet". .env.local is gitignored, so these
+    // have to be set separately in Vercel — and the anon key in particular is
+    // easy to miss, since nothing else on the site reads it (the newsletter
+    // route uses the service role key instead).
+    console.error(
+      '[reviews] Missing ' +
+      (!url ? 'NEXT_PUBLIC_SUPABASE_URL' : '') +
+      (!url && !key ? ' and ' : '') +
+      (!key ? 'NEXT_PUBLIC_SUPABASE_ANON_KEY' : '') +
+      ' — the product page will render as if there are no reviews. Set it in ' +
+      'Vercel → Settings → Environment Variables and redeploy.',
+    );
+    return [];
+  }
 
   try {
     const { data, error } = await createClient(url, key)
@@ -166,7 +181,20 @@ async function fetchReviews(productHandle: string): Promise<Review[]> {
     // it, so change them together.
     return (data ?? []).map((r) => toReview(r as unknown as Row));
   } catch (err) {
-    console.warn('[reviews] read threw, rendering without reviews:', err);
+    // Log the CAUSE, not just the message. Node's fetch reports every network
+    // problem as the same useless "TypeError: fetch failed" and hides the
+    // actual reason — DNS failure, connection refused, TLS reset, a paused
+    // Supabase project — one level down in err.cause. Without this line the
+    // log tells you something broke and nothing about what.
+    const cause = err instanceof Error ? err.cause : undefined;
+    console.error(
+      '[reviews] read threw, rendering without reviews:',
+      err instanceof Error ? err.message : err,
+      '— cause:',
+      cause ?? '(none reported)',
+      '— host:',
+      process.env.NEXT_PUBLIC_SUPABASE_URL ?? '(NEXT_PUBLIC_SUPABASE_URL not set)',
+    );
     return [];
   }
 }

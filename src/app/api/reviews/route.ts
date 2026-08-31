@@ -188,6 +188,10 @@ export async function POST(req: NextRequest) {
   // 200 rather than an error: telling a bot it was detected teaches whoever
   // wrote it to adapt, and nothing is lost by letting it think it succeeded.
   if (str(body.website, 200)) {
+    // Logged, because a silent drop is indistinguishable from a bug when
+    // someone says "I submitted a review and it never appeared". This is the
+    // only trace that the request existed at all.
+    console.warn('[reviews] dropped: honeypot filled', { name: body.name, email: body.email });
     return NextResponse.json({ ok: true });
   }
 
@@ -196,6 +200,11 @@ export async function POST(req: NextRequest) {
   // pick a rating and write a paragraph in under three seconds.
   const renderedAt = typeof body.renderedAt === 'number' ? body.renderedAt : 0;
   if (renderedAt && Date.now() - renderedAt < 3000) {
+    console.warn('[reviews] dropped: submitted within 3s of page load', {
+      name: body.name,
+      email: body.email,
+      elapsedMs: Date.now() - renderedAt,
+    });
     return NextResponse.json({ ok: true });
   }
 
@@ -263,6 +272,7 @@ export async function POST(req: NextRequest) {
     req.headers.get('x-real-ip') ||
     'unknown';
   if (await overRateLimit(ip)) {
+    console.warn('[reviews] refused: rate limit', { ip, email: body.email });
     return NextResponse.json(
       { error: 'That’s a few reviews in a short time — try again a bit later, or email hello@tualmi.com.' },
       { status: 429 },
