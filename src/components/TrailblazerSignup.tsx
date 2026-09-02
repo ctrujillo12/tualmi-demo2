@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { getReferralCode } from '@/lib/referralClient';
 
 const sans  = 'var(--font-montserrat)';
 const brown = '#3B2F1E';
@@ -27,7 +28,7 @@ export default function TrailblazerSignup({ light = false }: { light?: boolean }
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source }),
+        body: JSON.stringify({ email, source, ref: getReferralCode() }),
       });
       const data = await res.json();
       if (!res.ok) {

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getAttribution } from '@/lib/attribution';
+import { getReferralCode } from '@/lib/referralClient';
 
 const sans = 'var(--font-montserrat), system-ui, sans-serif';
 
@@ -109,7 +110,7 @@ export default function PhoneOptIn({
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, phone, smsConsent: true, source, attribution: getAttribution() }),
+        body: JSON.stringify({ email, phone, smsConsent: true, source, attribution: getAttribution(), ref: getReferralCode() }),
       });
       const data = await res.json();
       if (!res.ok) {

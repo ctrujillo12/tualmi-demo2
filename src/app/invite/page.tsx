@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import PhoneOptIn, { PHONE_THEMES } from '@/components/PhoneOptIn';
 import { getAttribution } from '@/lib/attribution';
+import { getReferralCode } from '@/lib/referralClient';
 
 // ─── Landing-page design tokens ───────────────────────────────────────────────
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
@@ -31,7 +32,7 @@ export default function InvitePage() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'invite', attribution: getAttribution() }),
+        body: JSON.stringify({ email, source: 'invite', attribution: getAttribution(), ref: getReferralCode() }),
       });
       const data = await res.json();
       if (!res.ok) {

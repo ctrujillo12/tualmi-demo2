@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import PhoneOptIn, { PHONE_THEMES } from './PhoneOptIn';
 import { getAttribution } from '@/lib/attribution';
 import { klaviyoIdentify } from '@/lib/klaviyo';
+import { getReferralCode } from '@/lib/referralClient';
 
 const STORAGE_KEY = 'tualmi_welcome_shown';
 
@@ -78,8 +79,7 @@ export default function WelcomePopup() {
         body: JSON.stringify({
           email,
           source: 'welcome-popup',
-          attribution: getAttribution(),
-        }),
+          attribution: getAttribution(), ref: getReferralCode() }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'something went wrong');

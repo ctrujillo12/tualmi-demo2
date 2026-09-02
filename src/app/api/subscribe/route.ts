@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { klaviyoPrivateKey } from '@/lib/klaviyoKey';
+import { getOrCreateReferralCode, recordReferral } from '@/lib/referrals';
 
 /**
  * Normalize a US-entered phone number to E.164 (+1XXXXXXXXXX).
@@ -57,15 +58,65 @@ async function attachProperties(
   }
 }
 
+/**
+ * Fire a Klaviyo event against a specific profile.
+ *
+ * The referral reward needs this because Klaviyo flows are profile-scoped: the
+ * friend's signup belongs to the FRIEND, so a flow triggered by it can only
+ * email the friend. To reward the referrer you have to put an event on the
+ * referrer's own profile — which is exactly what this does, with their email
+ * rather than the person who filled in the form.
+ *
+ * Never throws. The signup has already succeeded before this runs.
+ */
+async function fireKlaviyoEvent(
+  apiKey: string,
+  metric: string,
+  profileEmail: string,
+  properties: Record<string, unknown>,
+): Promise<void> {
+  try {
+    const res = await fetch('https://a.klaviyo.com/api/events/', {
+      method: 'POST',
+      headers: {
+        Authorization: `Klaviyo-API-Key ${apiKey}`,
+        'Content-Type': 'application/json',
+        revision: '2024-02-15',
+      },
+      body: JSON.stringify({
+        data: {
+          type: 'event',
+          attributes: {
+            properties,
+            metric: { data: { type: 'metric', attributes: { name: metric } } },
+            profile: { data: { type: 'profile', attributes: { email: profileEmail } } },
+          },
+        },
+      }),
+    });
+    if (!res.ok) {
+      console.error(
+        `[subscribe] Klaviyo rejected the "${metric}" event —`,
+        res.status,
+        (await res.text()).slice(0, 300),
+      );
+    }
+  } catch (err) {
+    console.error(`[subscribe] "${metric}" event threw:`, err);
+  }
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
-  const { email, phone, smsConsent, source, attribution } = body as {
+  const { email, phone, smsConsent, source, attribution, ref } = body as {
     email?: string;
     phone?: string;
     smsConsent?: boolean;
     source?: string;
     /** UTM params + referring channel, captured client-side. See lib/attribution.ts. */
     attribution?: Record<string, string>;
+    /** Referral code from ?ref= on the link a friend shared. */
+    ref?: string;
   };
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -181,9 +232,54 @@ export async function POST(req: NextRequest) {
       );
     } else {
       console.log('[subscribe] Klaviyo success:', email, phoneNumber ? '(+sms)' : '');
-      // Best-effort only. Attribution is nice to have; the subscription is the
-      // thing that matters and has already succeeded by this point, so a
-      // failure here must never affect the response.
+
+      // ── Refer a friend ────────────────────────────────────────────────
+      // Everything below is best-effort. The subscription has succeeded by
+      // this point, and no referral problem may undo it or change the
+      // response the visitor sees.
+
+      // 1. Give this person their own link, whether or not they were referred.
+      //    Goes onto the profile as {{ person.referral_link }} so the welcome
+      //    email can include it — a referral programme nobody can find is a
+      //    referral programme nobody uses.
+      const ownCode = await getOrCreateReferralCode(email);
+      if (ownCode) {
+        properties.referral_code = ownCode;
+        properties.referral_link = `https://tualmi.com/invite?ref=${ownCode}`;
+      }
+
+      // 2. If they arrived on someone's link, try to reward both sides.
+      if (typeof ref === 'string' && ref.trim()) {
+        const outcome = await recordReferral(ref, email);
+
+        if (outcome.status === 'rewarded') {
+          properties.referred_by = outcome.referrerEmail;
+
+          // The friend's 10%. Fires on the friend's own profile.
+          await fireKlaviyoEvent(apiKey, 'Referred Signup', email, {
+            referred_by: outcome.referrerEmail,
+          });
+
+          // The referrer's 10%. Fires on the REFERRER's profile, which is the
+          // only way a Klaviyo flow can email them about someone else's
+          // signup — flows can only ever message the profile they trigger on.
+          await fireKlaviyoEvent(apiKey, 'Referral Completed', outcome.referrerEmail, {
+            friend_email: email,
+            friend_number: outcome.friendNumber,
+          });
+
+          console.log(
+            `[subscribe] referral rewarded — ${outcome.referrerEmail} -> ${email}` +
+            ` (their #${outcome.friendNumber})`,
+          );
+        } else {
+          // Logged, not silent: "why didn't my friend's referral count?" is a
+          // question you will be asked, and this is the answer.
+          console.log(`[subscribe] referral not rewarded (${ref}): ${outcome.reason}`);
+        }
+      }
+
+      // Attribution, referral code and referred_by all go on in one call.
       await attachProperties(apiKey, email, properties);
     }
 
