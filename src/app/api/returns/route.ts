@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { klaviyoPrivateKey } from '@/lib/klaviyoKey';
 
 /**
  * Returns / exchanges portal submissions.
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest) {
     reason: String(reason),
   };
 
-  const apiKey = process.env.KLAVIYO_API_KEY;
+  const apiKey = klaviyoPrivateKey();
 
   // No key = nothing can be delivered. Log the whole submission so it's at
   // least recoverable from Vercel logs, and tell the customer it failed.

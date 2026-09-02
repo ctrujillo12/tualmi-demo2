@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Redis } from '@upstash/redis';
+import { klaviyoPrivateKey } from '@/lib/klaviyoKey';
 
 /**
  * Review submissions from the form at /review.
@@ -118,7 +119,7 @@ async function notifyKlaviyo(fields: {
   size: string | null;
   hasPhoto: boolean;
 }): Promise<void> {
-  const apiKey = process.env.KLAVIYO_PRIVATE_KEY;
+  const apiKey = klaviyoPrivateKey();
   if (!apiKey) return;
 
   try {

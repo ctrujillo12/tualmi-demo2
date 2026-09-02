@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { klaviyoPrivateKey } from '@/lib/klaviyoKey';
 
 /**
  * Normalize a US-entered phone number to E.164 (+1XXXXXXXXXX).
@@ -85,7 +86,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const apiKey = process.env.KLAVIYO_API_KEY;
+  const apiKey = klaviyoPrivateKey();
   const listId = process.env.KLAVIYO_LIST_ID;
 
   if (!apiKey || !listId) {
