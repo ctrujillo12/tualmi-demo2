@@ -238,7 +238,21 @@ export async function POST(req: NextRequest) {
       // this point, and no referral problem may undo it or change the
       // response the visitor sees.
 
-      // 1. Give this person their own link, whether or not they were referred.
+      // 1. If they arrived on someone's link, try to reward both sides.
+      //
+      //    ORDER MATTERS, and getting it wrong is silent. recordReferral()
+      //    rejects a friend who is "already on the list", which it detects by
+      //    looking for an existing referral code. Issuing this person's own
+      //    code FIRST (as this block used to) creates exactly that row a
+      //    moment before the check reads it, so every single referral was
+      //    rejected as self-evidently pre-existing. The reward must be decided
+      //    against the state of the world BEFORE this signup.
+      let outcome: Awaited<ReturnType<typeof recordReferral>> | null = null;
+      if (typeof ref === 'string' && ref.trim()) {
+        outcome = await recordReferral(ref, email);
+      }
+
+      // 2. Give this person their own link, whether or not they were referred.
       //    Goes onto the profile as {{ person.referral_link }} so the welcome
       //    email can include it — a referral programme nobody can find is a
       //    referral programme nobody uses.
@@ -248,10 +262,8 @@ export async function POST(req: NextRequest) {
         properties.referral_link = `https://tualmi.com/invite?ref=${ownCode}`;
       }
 
-      // 2. If they arrived on someone's link, try to reward both sides.
-      if (typeof ref === 'string' && ref.trim()) {
-        const outcome = await recordReferral(ref, email);
-
+      // 3. Fire the reward events, if step 1 said this one counts.
+      if (outcome) {
         if (outcome.status === 'rewarded') {
           properties.referred_by = outcome.referrerEmail;
 
