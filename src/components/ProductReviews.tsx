@@ -5,8 +5,9 @@ import { fitFacts, MIN_FIT_SAMPLE, REVIEWABLE_HANDLES, type Review, type ReviewS
 /**
  * The review section on a product page, plus the star row that links to it.
  *
- * A server component with no state and no fetch — the data is a static import,
- * so this prerenders into the HTML. No spinner, no layout shift.
+ * A server component with no state and no fetch of its own — the data is read
+ * on the server and passed in, so this renders into the HTML. No spinner, no
+ * layout shift.
  *
  * Two exports:
  *   <ReviewStars>   the summary row, used up beside the price
@@ -164,7 +165,11 @@ export default function ProductReviews({
    * one person who did buy somewhere to go.
    */
   if (!summary.showList) {
-    if (!canReview) return null;
+    // A failed read is not a product nobody has reviewed. Inviting a shopper
+    // to "write the first review" under shorts that have sixteen is worse
+    // than showing her nothing, so a degraded read renders nothing at all and
+    // the next request — with a working read — fills the section back in.
+    if (!canReview || summary.degraded) return null;
     return (
       <section id="reviews" className="rv-root rv-empty">
         <style>{CSS}</style>

@@ -15,8 +15,21 @@ import { createClient } from '@supabase/supabase-js';
  * timing out. So the read is cached: unstable_cache holds the result for
  * REVALIDATE_SECONDS across every visitor, which means a product page does at
  * most one review query per five minutes per region rather than one per view.
- * And it still never throws — an outage costs the review section, not the
- * page.
+ *
+ * ── WHY THE FETCH THROWS AND THE CALLER CATCHES ──────────────────────────
+ * It used to swallow its own errors and return [] — an outage cost the review
+ * section, not the page. That was the bug. unstable_cache cannot tell a
+ * legitimately empty result from a swallowed failure, so it cached the []
+ * and served it for the rest of the window, to everyone. Worse, the cache
+ * serves stale while it revalidates: one timed-out read at 21:50 was still
+ * being handed to visitors at 22:06, long after Supabase had recovered, and
+ * only the visitor who happened to trigger the background refresh got it back.
+ * That is what "the reviews come and go" looks like from the outside.
+ *
+ * So the fetch throws, which unstable_cache does not store, and readReviews
+ * below catches — falling back to the last good read rather than to nothing.
+ * A failed read still costs the review section, not the page; it just no
+ * longer costs it for everyone else for the next several minutes.
  *
  * Reads use the anon key and are constrained by row-level security to
  * published rows. Writes never happen here; see app/api/reviews/route.ts.
@@ -76,6 +89,18 @@ export const MIN_FIT_SAMPLE = 5;
  */
 const REVALIDATE_SECONDS = 60;
 
+/**
+ * A read that hangs is worse than one that fails: the product page is waiting
+ * on it. The error in the logs was `write ETIMEDOUT` — a socket that accepted
+ * the connection and then never completed the write — and nothing in the
+ * default stack puts a ceiling on how long that takes to give up. Four seconds
+ * is far past a healthy Supabase read and far short of a shopper's patience.
+ */
+const READ_TIMEOUT_MS = 4_000;
+
+const timeoutFetch: typeof fetch = (input, init) =>
+  fetch(input, { ...init, signal: AbortSignal.timeout(READ_TIMEOUT_MS) });
+
 export type ReviewSummary = {
   reviews: Review[];
   count: number;
@@ -86,11 +111,17 @@ export type ReviewSummary = {
   showSummary: boolean;
   /** Render the review section at all. */
   showList: boolean;
+  /**
+   * The read failed and this is a fallback, not an answer. Distinguishes
+   * "nobody has reviewed this yet" from "we could not find out" — see the
+   * empty state in components/ProductReviews.tsx.
+   */
+  degraded: boolean;
 };
 
 const EMPTY: ReviewSummary = {
   reviews: [], count: 0, average: 0, fitTruePct: 0, fitSample: 0,
-  showSummary: false, showList: false,
+  showSummary: false, showList: false, degraded: false,
 };
 
 type Row = {
@@ -129,7 +160,10 @@ function toReview(r: Row): Review {
   };
 }
 
-/** Uncached fetch. Wrapped below — call getSummary, not this. */
+/**
+ * Uncached fetch. Throws on failure, deliberately — see the note up top.
+ * Wrapped below; call getSummary, not this.
+ */
 async function fetchReviews(productHandle: string): Promise<Review[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -151,7 +185,7 @@ async function fetchReviews(productHandle: string): Promise<Review[]> {
   }
 
   try {
-    const { data, error } = await createClient(url, key)
+    const { data, error } = await createClient(url, key, { global: { fetch: timeoutFetch } })
       .from('reviews')
       // One string literal, deliberately. supabase-js parses this at the TYPE
       // level with template-literal types to work out the row shape, which
@@ -170,9 +204,10 @@ async function fetchReviews(productHandle: string): Promise<Review[]> {
       .order('created_at', { ascending: false })
       .limit(100);
 
+    // Thrown, not returned as []: a caching layer that cannot tell the
+    // difference will happily serve "no reviews" to everyone for a minute.
     if (error) {
-      console.warn('[reviews] read failed, rendering without reviews:', error.message);
-      return [];
+      throw new Error(`Supabase rejected the read: ${error.message}`);
     }
     // Through `unknown` on purpose: the client is untyped (no generated
     // database types), so whatever supabase-js infers here is not related to
@@ -188,14 +223,16 @@ async function fetchReviews(productHandle: string): Promise<Review[]> {
     // log tells you something broke and nothing about what.
     const cause = err instanceof Error ? err.cause : undefined;
     console.error(
-      '[reviews] read threw, rendering without reviews:',
+      '[reviews] read threw:',
       err instanceof Error ? err.message : err,
       '— cause:',
       cause ?? '(none reported)',
       '— host:',
       process.env.NEXT_PUBLIC_SUPABASE_URL ?? '(NEXT_PUBLIC_SUPABASE_URL not set)',
     );
-    return [];
+    // Rethrown so the failure is never what gets cached. readReviews decides
+    // what the page shows instead.
+    throw err;
   }
 }
 
@@ -204,10 +241,40 @@ const cachedReviews = unstable_cache(fetchReviews, ['product-reviews'], {
   tags: ['reviews'],
 });
 
+/**
+ * The last read that worked, per handle, in module scope.
+ *
+ * Not a second cache — it is never consulted while the real one is healthy,
+ * has no expiry, and holds one small array per product. It exists so that a
+ * single failed read degrades to yesterday's reviews rather than to a page
+ * that claims the shorts have never been reviewed. It lives for as long as
+ * the warm instance does, which is exactly the right lifetime: long enough to
+ * cover a blip, gone on the next deploy.
+ */
+const lastGood = new Map<string, Review[]>();
+
+async function readReviews(
+  productHandle: string,
+): Promise<{ reviews: Review[]; degraded: boolean }> {
+  try {
+    const reviews = await cachedReviews(productHandle);
+    lastGood.set(productHandle, reviews);
+    return { reviews, degraded: false };
+  } catch {
+    // fetchReviews has already logged what went wrong and why.
+    const fallback = lastGood.get(productHandle);
+    console.warn(
+      `[reviews] serving ${fallback ? `the last good read (${fallback.length})` : 'nothing'} ` +
+      `for ${productHandle}; the failure was not cached, so the next request retries.`,
+    );
+    return { reviews: fallback ?? [], degraded: true };
+  }
+}
+
 export async function getSummary(productHandle: string): Promise<ReviewSummary> {
-  const reviews = await cachedReviews(productHandle);
+  const { reviews, degraded } = await readReviews(productHandle);
   const count = reviews.length;
-  if (!count) return EMPTY;
+  if (!count) return { ...EMPTY, degraded };
 
   const average = Math.round((reviews.reduce((s, r) => s + r.rating, 0) / count) * 10) / 10;
   const withFit = reviews.filter((r) => r.fit);
@@ -223,6 +290,7 @@ export async function getSummary(productHandle: string): Promise<ReviewSummary> 
     fitSample: withFit.length,
     showSummary: count >= MIN_FOR_SUMMARY,
     showList: true,
+    degraded,
   };
 }
 
