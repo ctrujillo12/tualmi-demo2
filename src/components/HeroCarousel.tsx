@@ -42,16 +42,19 @@ import LaunchCountdown from '@/components/LaunchCountdown';
  * just the full portrait shot. Keep the wide file at least ~1600px across.
  * Nothing in this component needs to change — the paths stay the same.
  *
- * Current sources: shorts = confetti2.png (centre band, whole crouch in frame);
- * pants = model/olive-1.jpg (waist to knee, so the fold-over waist, both cargo
- * pockets, the carabiner and the flare are all visible). The pants file is the
- * one weak link — only a 1065px-wide copy of that shot exists in the repo, so
- * the wide crop is upscaled slightly. Drop in the original export and it
- * sharpens up with no code change.
+ * Current sources: pants = the two-model road shot, cropped from a 3081x2431
+ * original to 2560x1600 (wide) and 1440x2160 (tall), both composed so the two
+ * figures and both colourways stay whole. Shorts = confetti2.png (centre band,
+ * whole crouch in frame).
  * ─────────────────────────────────────────────────────────────────────────
  */
 
 const sans = 'var(--font-montserrat), system-ui, sans-serif';
+
+/** Sampled from the approved hero comp — the same sage as the shipping strip. */
+const sage     = '#7C8252';
+const sageDeep = '#6B7145';
+const cream    = '#FEFFF9';
 
 /** Tall ÷ wide of the PORTRAIT files. Sizes the phone hero so nothing crops. */
 const PHOTO_RATIO = 1.5;
@@ -63,11 +66,15 @@ const HEADER_FALLBACK_PX = 72;
 const WIDE_FROM_PX = 821;
 
 /**
- * The product shown in the static desktop hero. Sierra Shorts because it is
- * the one that's actually in stock — a preorder makes a poor first screen when
- * the alternative can ship in two days. Change the handle to switch it.
+ * The product shown in the static desktop hero.
+ *
+ * The Juniper Pant, because the pant is what we are promoting first. This used
+ * to be the Sierra Shorts on the reasoning that a preorder makes a poor first
+ * screen when the alternative ships in two days — that reasoning still holds
+ * and is now a deliberate trade, not an oversight. If the pant's ship date
+ * slips, this one line is how you put the shorts back in front.
  */
-const DESKTOP_SLIDE = 'sierra-shorts';
+const DESKTOP_SLIDE = 'juniper-pant';
 
 type Slide = {
   handle: string;
@@ -77,6 +84,12 @@ type Slide = {
   /** Fallback cents, used only when Shopify is unreachable at build time. */
   fallbackPrice: number;
   cta: string;
+  /**
+   * Headline treatment for the lead slide: a line of positioning instead of
+   * the availability eyebrow and the price. A slide WITHOUT one keeps the
+   * original eyebrow + price treatment, so the two can coexist.
+   */
+  tagline?: string;
   /** Landscape crop, desktop. */
   imageWide: string;
   /** Full portrait frame, phones. */
@@ -88,6 +101,17 @@ const HERO = '/images-2/hero';
 
 const SLIDES: Slide[] = [
   {
+    handle: 'juniper-pant',
+    eyebrow: 'preorder · ships mid sept',
+    name: 'the juniper pants:',
+    tagline: 'The most flattering hiking pants. Ever.',
+    fallbackPrice: 10800,
+    cta: 'shop pants',
+    imageWide: `${HERO}/pants-wide.jpg`,
+    image: `${HERO}/pants-tall.jpg`,
+    alt: 'Two friends running down a mountain road, laughing, in the Juniper Pant in Birch and Olive',
+  },
+  {
     handle: 'sierra-shorts',
     eyebrow: 'in stock · ships in 2–3 days',
     name: 'the sierra shorts',
@@ -96,16 +120,6 @@ const SLIDES: Slide[] = [
     imageWide: `${HERO}/shorts-wide.jpg`,
     image: `${HERO}/shorts-tall.jpg`,
     alt: 'Woman in the Sierra Shorts climbing sandstone at golden hour',
-  },
-  {
-    handle: 'juniper-pant',
-    eyebrow: 'preorder · ships mid sept',
-    name: 'the juniper pant',
-    fallbackPrice: 10800,
-    cta: 'shop pants',
-    imageWide: `${HERO}/pants-wide.jpg`,
-    image: `${HERO}/pants-tall.jpg`,
-    alt: 'Woman wearing the Juniper Pant in the Olive colorway',
   },
 ];
 
@@ -296,15 +310,54 @@ export default function HeroCarousel({
           opacity: 0.92;
           text-shadow: 0 1px 8px rgba(24, 14, 10, 0.5);
         }
+        /* Caps here, lowercase everywhere else on the site. The hero is the
+           one place the brand shouts; the lowercase treatment resumes at the
+           section headings directly below it. Change text-transform to
+           lowercase if you want the quieter original back. */
+        /* Sizes below are measured off the approved comp (1822x1044), not
+           chosen: the headline's cap height there is 25px, which is a ~36px
+           face — 1.98vw. The headline and the tagline come out very nearly
+           the SAME size; the tagline is distinguished by weight and case, not
+           by scale. Getting that wrong is what made the first pass read as a
+           different design. */
+        /* Weight 700, not 800. Everything else on this site — panel headings,
+           buttons, the footer — is Montserrat 700, and an 800 hero was the
+           single thing on the page set heavier than the rest of it.
+           A NOTE ON THE COMP: it was set in a condensed face, not Montserrat.
+           Montserrat is a wide typeface, so the same words at the same cap
+           height run noticeably longer here than they do in the comp. That gap
+           is a font difference, not a sizing bug, and it closes only by adding
+           a condensed family to layout.tsx — which would be a new font on the
+           site rather than the one we have. */
+        /* ── All numbers below are measured off the close-up comp crop ──
+           Scaled back to the comp's own 1822px width, it reads:
+             headline    1.87vw, cap height 24px
+             tagline     1.96vw  — LARGER than the headline, not smaller
+             button text 1.87vw  — the same size as the headline
+             button box  25vw wide, ~6.3% of frame height
+             gaps        ~26px between all three, evenly
+           The tagline being the biggest thing in the block is the detail that
+           makes the comp read the way it does. */
         .hc-name {
           font-family: ${sans};
           font-weight: 700;
-          font-size: clamp(32px, 5vw, 64px);
-          letter-spacing: -0.03em;
-          line-height: 1.04;
-          text-transform: lowercase;
+          font-size: clamp(19px, 1.87vw, 38px);
+          letter-spacing: -0.04em;
+          line-height: 1.1;
+          text-transform: uppercase;
           margin: 0;
           text-shadow: 0 2px 18px rgba(24, 14, 10, 0.55);
+        }
+        /* Sentence case on purpose — it is a sentence, and setting it in caps
+           next to the name flattens the two into one block of shouting. */
+        .hc-tagline {
+          font-family: ${sans};
+          font-weight: 400;
+          font-size: clamp(20px, 1.96vw, 40px);
+          letter-spacing: -0.03em;
+          line-height: 1.2;
+          margin: 0;
+          text-shadow: 0 2px 16px rgba(24, 14, 10, 0.55);
         }
         .hc-price {
           font-family: ${sans};
@@ -318,22 +371,50 @@ export default function HeroCarousel({
           display: inline-flex;
           align-items: center;
           gap: 10px;
-          margin-top: 8px;
-          padding: 16px 38px;
-          border-radius: 999px;
-          background: #fff;
-          color: #1A1210;
+          /* Gap on .hc-copy spaces this evenly with the two lines above it,
+             which is what the comp does — no extra top margin. */
+          margin-top: 0;
+          /* Comp: box is ~25vw wide around ~11vw of text, so the horizontal
+             padding is generous — roughly 7vw a side. Corner is ~44% of the
+             box height: emphatically rounded, but with flat top and bottom
+             edges, so still a box rather than a pill. */
+          /* Dialled back ~15% from the comp's own measurements, which made a
+             button wide enough to compete with the headline above it. Same
+             proportions, smaller box. */
+          padding: clamp(11px, 1.3vh, 19px) clamp(32px, 5.8vw, 108px);
+          border-radius: clamp(12px, 1.4vw, 26px);
+          background: ${sage};
+          color: ${cream};
           font-family: ${sans};
-          font-size: clamp(13px, 1.5vw, 15px);
+          font-size: clamp(14px, 1.6vw, 32px);
           font-weight: 700;
-          letter-spacing: 0.12em;
-          text-transform: lowercase;
+          letter-spacing: -0.02em;
+          text-transform: uppercase;
           text-decoration: none;
           box-shadow: 0 8px 28px rgba(24, 14, 10, 0.28);
           transition: transform 0.18s ease, background 0.18s ease;
         }
-        .hc-cta:hover { transform: translateY(-2px); background: #F6EFEA; }
-        .hc-cta:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+        .hc-cta:hover { transform: translateY(-2px); background: ${sageDeep}; }
+        .hc-cta:focus-visible { outline: 2px solid ${cream}; outline-offset: 4px; }
+
+        /* Desktop: the copy sits left of centre because the models are on the
+           right. Centred text would land on top of them. Below 821px the
+           carousel takes over and the block re-centres, where the phone crop
+           puts the models in the middle. */
+        @media (min-width: ${WIDE_FROM_PX}px) {
+          .hc-copy {
+            /* All three lines in the comp are centred on 34.2% of the viewport
+               width — left of centre, clear of the two models on the right.
+               A full-width block spanning 0 to 68.4% centres its text on
+               exactly that, at every width, with no clamp to drift. */
+            right: auto;
+            left: 0;
+            width: 68.4%;
+            /* Comp: the pill's bottom edge sits ~18% of the frame height up. */
+            bottom: clamp(84px, 18vh, 200px);
+            gap: clamp(14px, 2.5vh, 30px);
+          }
+        }
 
         .hc-dot {
           position: relative;
@@ -387,8 +468,15 @@ export default function HeroCarousel({
             gap: 10px;
           }
           .hc-copy { bottom: clamp(52px, 9vh, 88px); gap: 10px; }
-          .hc-name { font-size: clamp(32px, 8vw, 44px); }
-          .hc-cta { padding: 15px 32px; }
+          /* Same relationship as desktop — tagline a touch larger than the
+             name, button text level with the name. */
+          .hc-name { font-size: clamp(22px, 5.8vw, 34px); }
+          .hc-tagline { font-size: clamp(23px, 6.1vw, 36px); }
+          .hc-cta {
+            padding: 12px clamp(26px, 7.6vw, 54px);
+            font-size: clamp(15px, 4vw, 22px);
+            border-radius: 14px;
+          }
         }
         @media (max-width: 400px) {
           .hc-name { font-size: 30px; }
@@ -454,11 +542,18 @@ export default function HeroCarousel({
               <div className="hc-scrim" />
 
               <div className="hc-copy">
-                <p className="hc-eyebrow">{s.eyebrow}</p>
+                {/* A slide with a tagline is the lead slide and follows the
+                    approved comp: name, one line of positioning, button. Any
+                    other slide keeps the original availability + price
+                    treatment, which is still the more useful pair for a
+                    product that is in stock. */}
+                {!s.tagline && <p className="hc-eyebrow">{s.eyebrow}</p>}
                 {/* h2, not h1 — the page's one h1 is the positioning line in
                     the about section. Two rotating h1s would fight it. */}
                 <h2 className="hc-name">{s.name}</h2>
-                <p className="hc-price">{price}</p>
+                {s.tagline
+                  ? <p className="hc-tagline">{s.tagline}</p>
+                  : <p className="hc-price">{price}</p>}
                 <Link
                   href={`/products/${s.handle}`}
                   className="hc-cta"
@@ -468,7 +563,6 @@ export default function HeroCarousel({
                   tabIndex={active ? 0 : -1}
                 >
                   {s.cta}
-                  <span aria-hidden>→</span>
                 </Link>
                 <LaunchCountdown tone="light" />
               </div>

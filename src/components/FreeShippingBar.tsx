@@ -123,10 +123,11 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
       )
     ) : (
       <>
-        {/* "earn" rather than a flat statement of fact — the idle state is the
-            one a shopper sees before they've added anything, so it should read
-            as something to go get, not a policy line. */}
-        earn free US shipping over <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong>
+        {/* Set from the approved comp, which states the offer flat rather than
+            framing it as something to earn. The threshold stays interpolated
+            so this line can never disagree with lib/shipping.ts. Rendered in
+            caps by .ship-strip, not written in caps here. */}
+        free U.S. shipping on orders over <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong>
       </>
     );
 

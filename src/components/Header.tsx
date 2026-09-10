@@ -7,22 +7,47 @@ import { useEffect, useState } from 'react';
 import { useCartStore } from '@/store/cartStore';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon = '#A9445C';
+/* Brick rather than the old #A9445C maroon: it sits in the palette beside
+   the sage without clashing, and stays in the same red family as
+   logo2-maroon.png, which is a fixed image asset. */
+const maroon = '#A9503A';
+/** Nav ink while the header floats on the hero photo. */
+const cream  = '#FEFFF9';
 
+/**
+ * Nav labels and order come from the approved hero comp: home / socials / shop
+ * on the left, join the club on the right, then the bag.
+ *
+ * NOTE: this drops "our story" from the nav — the comp has no slot for it. The
+ * story page is still linked from the about section on the landing page and
+ * from the footer, and /story still resolves. If you want it back in the nav,
+ * add it here; it is the one destination this list no longer reaches.
+ */
 const LEFT_LINKS = [
-  { name: 'our story', href: '/story' },
-  { name: 'shop drop one', href: '/#collection' },
+  { name: 'home', href: '/' },
+  { name: 'socials', href: '/#socials' },
+  { name: 'shop', href: '/#collection' },
 ];
 
 const RIGHT_LINKS = [
-  { name: 'socials', href: '/#socials' },
-  { name: 'the club', href: '/invite' },
+  { name: 'join the club', href: '/invite' },
 ];
 
 /**
  * Global site nav — rendered once from layout.tsx on every page.
- * Always maroon, including over the homepage hero, so the logo and every link
- * read as one consistent colour.
+ *
+ * Two states, which is what the approved hero comp shows:
+ *
+ *   over the hero  — no background at all, cream links sitting directly on the
+ *                    photo, exactly as drawn in the comp
+ *   everywhere else — the translucent cream bar with brick links
+ *
+ * The bar exists for a real reason (see the note on backgroundColor below):
+ * without it, links collided with whatever scrolled underneath them. That is
+ * why the transparent state is scoped to the hero — the one screen where what
+ * sits under the nav is a photo we control, chosen to be dark enough behind
+ * the links. `pastHero` was already being tracked for this and simply wasn't
+ * being used.
  */
 export default function Header() {
   const pathname = usePathname();
@@ -45,8 +70,9 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [isHome]);
 
-  // One colour everywhere — logo, links, and cart all maroon.
-  const color = maroon;
+  // Floating on the photo only at the top of the landing page.
+  const overHero = isHome && !pastHero;
+  const color = overHero ? cream : maroon;
 
   const linkStyle: React.CSSProperties = {
     fontFamily: sans,
@@ -58,6 +84,8 @@ export default function Header() {
     letterSpacing: '0.01em',
     lineHeight: 1,
     transition: 'color 0.3s ease',
+    // Keeps the links readable across the brighter parts of the hero photo.
+    textShadow: overHero ? '0 1px 10px rgba(24, 14, 10, 0.45)' : 'none',
   };
 
   return (
@@ -73,19 +101,28 @@ export default function Header() {
         // with the nav links — photos and text bleeding through "our story" /
         // "shop drop one". Translucent blush + blur keeps the airy look while
         // making the links readable over anything.
-        backgroundColor: 'rgba(251, 241, 245, 0.88)',
-        backdropFilter: 'saturate(140%) blur(10px)',
-        WebkitBackdropFilter: 'saturate(140%) blur(10px)',
-        borderBottom: '1px solid rgba(169, 68, 92, 0.10)',
+        // Cream rather than blush, and a sage hairline instead of a maroon
+        // one. The background itself stays — see the note above; without it
+        // the links collided with whatever scrolled under them.
+        backgroundColor: overHero ? 'transparent' : 'rgba(247, 242, 228, 0.88)',
+        backdropFilter: overHero ? 'none' : 'saturate(140%) blur(10px)',
+        WebkitBackdropFilter: overHero ? 'none' : 'saturate(140%) blur(10px)',
+        borderBottom: overHero ? '1px solid transparent' : '1px solid rgba(124, 130, 82, 0.16)',
+        transition: 'background-color 0.3s ease, border-color 0.3s ease',
       }}
     >
+    {/* Free-shipping promo — live progress once the cart has something in it.
+        Above the nav, per the comp: it is the first thing on the page. */}
+    <FreeShippingBar variant="strip" />
+
     <div
       className="site-nav"
       style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '14px clamp(20px, 3vw, 40px)',
+        // Comp puts the first nav link at ~5.4% of the viewport width.
+        padding: '18px clamp(20px, 5.4vw, 100px)',
       }}
     >
       <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 3vw, 44px)' }}>
@@ -114,9 +151,14 @@ export default function Header() {
         ))}
         {/* Cart */}
         <Link href="/cart" aria-label="Cart" style={{ position: 'relative', display: 'flex', alignItems: 'center', color }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 8h12l-1 12H7L6 8Z" />
-            <path d="M9 8a3 3 0 0 1 6 0" />
+          {/* An actual trolley. The previous glyph was a tote — a tapered box
+              with a half-circle handle — which reads as a bag or, at 20px, as
+              a box with a line over it. Handle, basket, two wheels is the
+              shape people actually recognise as a cart. */}
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M2.5 3.5h2.1l2.4 10.6a1.7 1.7 0 0 0 1.66 1.32h7.94a1.7 1.7 0 0 0 1.66-1.3L21 8.2H5.6" />
+            <circle cx="10" cy="19.6" r="1.45" />
+            <circle cx="17.4" cy="19.6" r="1.45" />
           </svg>
           {mounted && itemCount > 0 && (
             <span
@@ -144,9 +186,6 @@ export default function Header() {
         </Link>
       </nav>
     </div>
-
-    {/* Free-shipping promo — live progress once the cart has something in it. */}
-    <FreeShippingBar variant="strip" />
     </header>
   );
 }

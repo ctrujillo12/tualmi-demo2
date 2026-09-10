@@ -8,8 +8,25 @@ import { getProduct } from '@/lib/products';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon = '#A9445C';
-const blushBg = '#FBF1F5';
+
+/**
+ * Palette.
+ *
+ * Anchored on the sage sampled from the approved hero comp (#7C8252) — the
+ * same green as the shipping strip above the nav, so the top of the page and
+ * the bottom of it are visibly the same brand.
+ *
+ * The page used to run on #A9445C maroon over #FBF1F5 blush, with a #F79EC6
+ * socials band that was the loudest thing on the site and the reason the whole
+ * page read as "bright pink". Pink is still here — it owns the shorts band and
+ * the small eyebrows — it just no longer runs the page.
+ */
+const sage     = '#7C8252';  // green  — hero CTA, shipping strip, socials
+const sageDeep = '#5F6742';  // green  — headings and labels on light grounds
+const cream    = '#F7F2E4';  // cream  — the light ground, replacing blush
+const ink      = '#5F5C46';  // body copy; blush-pink text on cream is unreadable
+const rose     = '#C97C93';  // pink   — eyebrows and accents
+const brick    = '#A9503A';  // red    — links and the shorts band accent
 
 // Product structured data — all items are shown on this page. Availability +
 // verified fabric per item; PreOrder for the drop, InStock for the tote.
@@ -87,33 +104,42 @@ const LANDING_COVERS: Record<string, Record<string, string>> = {
 const coverFor = (handle: string, color: string) =>
   LANDING_COVERS[handle]?.[color] ?? PRODUCT_COLOR_IMAGES[handle]?.[color]?.[0] ?? '';
 
+/**
+ * Order matters: this array is the order of the coloured bands down the page,
+ * and the pant leads because the pant is what we are promoting. The hero sends
+ * people to the same product (DESKTOP_SLIDE in HeroCarousel) — change one and
+ * change the other, or the first screen and the first band disagree.
+ *
+ * The bands also alternate green then pink, which is why the pant's band is
+ * the sage one: it carries the hero's colour straight down into the page.
+ */
 const DROP_PRODUCTS: DropProduct[] = [
-  {
-    handle: 'sierra-shorts',
-    name: 'the sierra shorts',
-    availability: '',
-    shopLabel: 'shop shorts',
-    price: 6800,
-    bg: '#EED0C1',
-    accent: '#A94E38',
-    colorways: (PRODUCT_COLORS['sierra-shorts'] ?? []).map((c) => ({
-      color: c.name,
-      swatch: c.value,
-      image: coverFor('sierra-shorts', c.name),
-    })),
-  },
   {
     handle: 'juniper-pant',
     name: 'the juniper pant',
     availability: 'preorder · ships mid sept',
     shopLabel: 'shop pants',
     price: 10800,
-    bg: '#C9D3AC',
-    accent: '#68764A',
+    bg: '#D7DDC3',
+    accent: sageDeep,
     colorways: (PRODUCT_COLORS['juniper-pant'] ?? []).map((c) => ({
       color: c.name,
       swatch: c.value,
       image: coverFor('juniper-pant', c.name),
+    })),
+  },
+  {
+    handle: 'sierra-shorts',
+    name: 'the sierra shorts',
+    availability: '',
+    shopLabel: 'shop shorts',
+    price: 6800,
+    bg: '#EFDBE0',
+    accent: brick,
+    colorways: (PRODUCT_COLORS['sierra-shorts'] ?? []).map((c) => ({
+      color: c.name,
+      swatch: c.value,
+      image: coverFor('sierra-shorts', c.name),
     })),
   },
 ];
@@ -188,7 +214,7 @@ export default async function Home() {
       {/* ══ 2 · ABOUT ═════════════════════════════════════════════════════ */}
       {/* Kept short on mobile (see .home-about in globals.css): every pixel of
           brand copy here is a pixel between an ad click and a product. */}
-      <section className="home-about" style={{ backgroundColor: blushBg, padding: 'clamp(80px, 12vw, 160px) clamp(24px, 6vw, 72px)', position: 'relative' }}>
+      <section className="home-about" style={{ backgroundColor: cream, padding: 'clamp(80px, 12vw, 160px) clamp(24px, 6vw, 72px)', position: 'relative' }}>
         <div style={{ maxWidth: '860px', margin: '0 auto', textAlign: 'center' }}>
           {/* The slogan, matched to the story page's heading so the two read
               as one brand rather than two drafts.
@@ -207,7 +233,7 @@ export default async function Home() {
               fontWeight: 700,
               fontSize: 'clamp(15px, 4.4vw, 45px)',
               letterSpacing: '-0.03em',
-              color: maroon,
+              color: sageDeep,
               margin: '0 0 clamp(32px, 5vw, 56px)',
               textTransform: 'lowercase',
               whiteSpace: 'nowrap',
@@ -223,21 +249,21 @@ export default async function Home() {
 
               No em dashes anywhere in this section. */}
           
-          <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
+          <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: ink, margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
             Why is so much women&apos;s outdoor gear still boxy, muted, and designed around the same
             very specific idea of what an &ldquo;outdoorsy person&rdquo; should look like?
           </p>
-          <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
+          <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: ink, margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
             Tualmi makes technical outdoor gear designed for women from the start. Flattering fits,
             playful prints, and the performance to keep up with wherever you&apos;re headed; because you don&apos;t have to look, dress, or act a certain way to belong outside.
           </p>
-          <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: '#D48CA0', margin: '0 0 clamp(28px, 4vw, 44px)', textAlign: 'left' }}>
+          <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: ink, margin: '0 0 clamp(28px, 4vw, 44px)', textAlign: 'left' }}>
             We make everything with a WRAP Gold Standard certified manufacturer, sustainably,
             ethically, and designed to last because we&apos;re not interested in adding to the pile.
           </p>
 
           <div style={{ textAlign: 'left' }}>
-            <Link href="/invite" style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: maroon, textTransform: 'lowercase', textDecorationThickness: '1px', textUnderlineOffset: '4px' }}>
+            <Link href="/invite" style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: brick, textTransform: 'lowercase', textDecorationThickness: '1px', textUnderlineOffset: '4px' }}>
               join the club
             </Link>
           </div>
@@ -262,7 +288,7 @@ export default async function Home() {
             fontFamily: sans,
             fontSize: '13px',
             fontWeight: 500,
-            color: maroon,
+            color: brick,
             textDecoration: 'none',
             textTransform: 'lowercase',
             whiteSpace: 'nowrap',
@@ -354,9 +380,9 @@ export default async function Home() {
       </div>
 
       {/* ══ 4b · COMING SOON (afterthought) ═══════════════════════════════ */}
-      <section style={{ position: 'relative', zIndex: 1, backgroundColor: blushBg, padding: 'clamp(56px, 8vw, 96px) clamp(24px, 6vw, 72px)' }}>
+      <section style={{ position: 'relative', zIndex: 1, backgroundColor: cream, padding: 'clamp(56px, 8vw, 96px) clamp(24px, 6vw, 72px)' }}>
         <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '12px', letterSpacing: '0.22em', color: '#C9849A', margin: '0 0 20px', textTransform: 'lowercase' }}>
+          <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '12px', letterSpacing: '0.22em', color: rose, margin: '0 0 20px', textTransform: 'lowercase' }}>
             also coming soon
           </p>
           <div style={{ display: 'inline-flex', gap: 'clamp(18px, 4vw, 40px)', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -365,7 +391,7 @@ export default async function Home() {
                 <div style={{ position: 'relative', aspectRatio: '4 / 5', borderRadius: '10px', overflow: 'hidden', backgroundColor: 'white', opacity: 0.75 }}>
                   <Image src={cs.image} alt={cs.name} fill sizes="180px" style={{ objectFit: 'cover' }} />
                 </div>
-                <p style={{ fontFamily: sans, fontWeight: 600, fontSize: '13px', color: '#C9849A', margin: '10px 0 0', textTransform: 'lowercase' }}>
+                <p style={{ fontFamily: sans, fontWeight: 600, fontSize: '13px', color: sageDeep, margin: '10px 0 0', textTransform: 'lowercase' }}>
                   {cs.name}
                 </p>
               </div>
@@ -380,7 +406,10 @@ export default async function Home() {
         style={{
           position: 'relative',
           zIndex: 1, // sits above the last sticky panel
-          backgroundColor: '#F79EC6',
+          // Sage, not the old #F79EC6 hot pink. This band and the shipping
+          // strip at the very top are now the same green, so the page opens
+          // and closes on the same colour.
+          backgroundColor: sage,
           padding: 'clamp(56px, 8vw, 96px) clamp(24px, 6vw, 72px) clamp(64px, 9vw, 110px)',
         }}
       >

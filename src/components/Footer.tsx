@@ -18,6 +18,10 @@ const LINK_COL_1 = [
 ];
 
 const LINK_COL_2 = [
+  // The nav follows the hero comp, which has no slot for the story page. Its
+  // only other link is in the about section and is hidden below xl, so without
+  // this entry /story is unreachable on most screens.
+  { name: 'our story',            href: '/story' },
   { name: 'in the wild',          href: '/in-the-wild' },
   { name: 'contact us',           href: 'mailto:hello@tualmi.com' },
   { name: 'privacy policy',       href: '/footer-pages/privacy' },

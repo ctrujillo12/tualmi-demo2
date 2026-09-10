@@ -30,16 +30,23 @@ export default function PanelShopLink({
     <Link
       href={href}
       style={{
+        // Was an underlined text link. It is the main call to action on each
+        // band, so it now looks like one — same soft box and same weight as
+        // the hero button, filled in the band's own accent colour.
+        display: 'inline-block',
+        padding: '14px 34px',
+        borderRadius: '14px',
+        background: accent,
+        color: '#FEFFF9',
         fontFamily: sans,
-        fontSize: '13px',
+        fontSize: '13.5px',
         fontWeight: 700,
-        color: accent,
         textTransform: 'lowercase',
-        letterSpacing: '0.04em',
-        textUnderlineOffset: '4px',
+        letterSpacing: '0.06em',
+        textDecoration: 'none',
       }}
     >
-      {open ? `${label} →` : 'preview →'}
+      {open ? label : 'preview'}
     </Link>
   );
 }
