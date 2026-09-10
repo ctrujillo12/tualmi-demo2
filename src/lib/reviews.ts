@@ -273,32 +273,58 @@ const cachedReviews = unstable_cache(fetchReviews, ['product-reviews'], {
 });
 
 /**
+ * How long a fallback may stand in for a real read.
+ *
+ * ── WHY THIS EXISTS ──────────────────────────────────────────────────────
+ * The fallback originally had no expiry: it lived as long as the warm
+ * instance did. That is fine for the failure it was written for (a blip) and
+ * badly wrong for a case nobody thought about — unpublishing a review.
+ * Setting status away from 'published' has to actually take a review off the
+ * site, and a fallback with no clock will happily keep serving the copy it
+ * captured before the change, for as long as that instance stays warm. A
+ * moderation decision must not be quietly outlived by a cache.
+ *
+ * Five minutes: long enough to ride out a Supabase blip, short enough that
+ * "I took that review down" stays true. Past it, the page shows no reviews
+ * rather than reviews that may no longer be publishable.
+ */
+const FALLBACK_MAX_AGE_MS = 5 * 60_000;
+
+/**
  * The last read that worked, per handle, in module scope.
  *
  * Not a second cache — it is never consulted while the real one is healthy,
- * has no expiry, and holds one small array per product. It exists so that a
- * single failed read degrades to yesterday's reviews rather than to a page
- * that claims the shorts have never been reviewed. It lives for as long as
- * the warm instance does, which is exactly the right lifetime: long enough to
- * cover a blip, gone on the next deploy.
+ * and holds one small array per product. It exists so that a single failed
+ * read degrades to the previous reviews rather than to a page that claims the
+ * shorts have never been reviewed. Bounded by FALLBACK_MAX_AGE_MS above, and
+ * gone entirely on the next deploy.
  */
-const lastGood = new Map<string, Review[]>();
+const lastGood = new Map<string, { reviews: Review[]; at: number }>();
 
 async function readReviews(
   productHandle: string,
 ): Promise<{ reviews: Review[]; degraded: boolean }> {
   try {
     const reviews = await cachedReviews(productHandle);
-    lastGood.set(productHandle, reviews);
+    lastGood.set(productHandle, { reviews, at: Date.now() });
     return { reviews, degraded: false };
   } catch {
     // fetchReviews has already logged what went wrong and why.
-    const fallback = lastGood.get(productHandle);
+    const held = lastGood.get(productHandle);
+    const ageMs = held ? Date.now() - held.at : Infinity;
+    const usable = held && ageMs < FALLBACK_MAX_AGE_MS ? held.reviews : undefined;
+
+    // Drop a fallback the moment it is too old to stand behind, so a later
+    // failure cannot resurrect it.
+    if (held && !usable) lastGood.delete(productHandle);
+
     console.warn(
-      `[reviews] serving ${fallback ? `the last good read (${fallback.length})` : 'nothing'} ` +
-      `for ${productHandle}; the failure was not cached, so the next request retries.`,
+      `[reviews] serving ${usable ? `the last good read (${usable.length}, ${Math.round(ageMs / 1000)}s old)` : 'nothing'} ` +
+      `for ${productHandle}` +
+      (held && !usable ? ` — the held copy was ${Math.round(ageMs / 1000)}s old, past the ${FALLBACK_MAX_AGE_MS / 1000}s limit, and has been discarded` : '') +
+      `; the failure was not cached, so the next request retries.`,
     );
-    return { reviews: fallback ?? [], degraded: true };
+    return { reviews: usable ?? [], degraded: true };
   }
 }
 
