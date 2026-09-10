@@ -120,7 +120,7 @@ const SLIDES: Slide[] = [
     name: 'the juniper pants:',
     tagline: 'The most flattering hiking pants. Ever.',
     fallbackPrice: 10800,
-    cta: 'shop pants',
+    cta: 'shop',
     imageWide: `${HERO}/pants-wide.jpg`,
     image: `${HERO}/pants-tall.jpg`,
     alt: 'Two friends running down a mountain road, laughing, in the Juniper Pant in Birch and Olive',
@@ -134,7 +134,7 @@ const SLIDES: Slide[] = [
     // second "most flattering ... ever", which would read as a template.
     tagline: 'Built for the trail. Cute everywhere else.',
     fallbackPrice: 6800,
-    cta: 'shop shorts',
+    cta: 'shop',
     imageWide: `${HERO}/shorts-wide.jpg`,
     image: `${HERO}/shorts-tall.jpg`,
     alt: 'Woman in the Sierra Shorts climbing sandstone at golden hour',
