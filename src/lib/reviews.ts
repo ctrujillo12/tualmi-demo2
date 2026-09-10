@@ -93,10 +93,23 @@ const REVALIDATE_SECONDS = 60;
  * A read that hangs is worse than one that fails: the product page is waiting
  * on it. The error in the logs was `write ETIMEDOUT` — a socket that accepted
  * the connection and then never completed the write — and nothing in the
- * default stack puts a ceiling on how long that takes to give up. Four seconds
- * is far past a healthy Supabase read and far short of a shopper's patience.
+ * default stack puts a ceiling on how long that takes to give up.
+ *
+ * ── WHY THIS IS 10s AND NOT 4s ───────────────────────────────────────────
+ * It was 4s for two days, on the reasoning that four seconds is "far past a
+ * healthy Supabase read". That reasoning was wrong, and production said so:
+ * 150 aborted reads across 115 visitors in 40 hours, against roughly 20
+ * genuine network failures in the equivalent window before the ceiling
+ * existed. A large share of reads from this function legitimately take longer
+ * than four seconds — so the ceiling was not catching hangs, it was cutting
+ * off reads that were about to succeed.
+ *
+ * Ten seconds is still a bound, which is the point: it ends the unbounded
+ * hang that started all this. It is not a latency target. If reads are
+ * routinely taking anywhere near this long, that is the actual problem and
+ * this constant is not where it gets fixed.
  */
-const READ_TIMEOUT_MS = 4_000;
+const READ_TIMEOUT_MS = 10_000;
 
 const timeoutFetch: typeof fetch = (input, init) =>
   fetch(input, { ...init, signal: AbortSignal.timeout(READ_TIMEOUT_MS) });
@@ -206,8 +219,26 @@ async function fetchReviews(productHandle: string): Promise<Review[]> {
 
     // Thrown, not returned as []: a caching layer that cannot tell the
     // difference will happily serve "no reviews" to everyone for a minute.
+    //
+    // WHY ALL FOUR FIELDS GET LOGGED. supabase-js does not throw on a network
+    // failure — it catches the fetch error and hands it back here as an error
+    // whose message is the literal string "TypeError: fetch failed", with no
+    // cause and no host. That is indistinguishable, in a log, from Supabase
+    // answering and refusing, which is why twenty failures in a day told us
+    // nothing about where they happened. details/hint/code are empty on a
+    // network failure and populated on a genuine PostgREST rejection, so
+    // printing all of them is what separates "never reached Supabase" from
+    // "Supabase said no".
     if (error) {
-      throw new Error(`Supabase rejected the read: ${error.message}`);
+      console.error(
+        '[reviews] Supabase read returned an error —',
+        'message:', error.message,
+        '| details:', error.details || '(none — likely a network failure, not a PostgREST rejection)',
+        '| hint:', error.hint || '(none)',
+        '| code:', error.code || '(none)',
+        '| host:', url,
+      );
+      throw new Error(`Supabase read failed: ${error.message}`);
     }
     // Through `unknown` on purpose: the client is untyped (no generated
     // database types), so whatever supabase-js infers here is not related to
