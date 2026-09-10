@@ -78,8 +78,15 @@ const DESKTOP_SLIDE = 'juniper-pant';
 
 type Slide = {
   handle: string;
-  /** Small line above the name — availability, not marketing. */
-  eyebrow: string;
+  /**
+   * Small line above the name — availability, not marketing.
+   *
+   * Optional, and it is an ALL-OR-NOTHING field: on a phone both slides are
+   * seen one after the other, and a slide carrying an extra line the next one
+   * lacks makes the copy jump as the carousel turns. Set it on every slide or
+   * on none. Currently none, because the comp has no eyebrow.
+   */
+  eyebrow?: string;
   name: string;
   /** Fallback cents, used only when Shopify is unreachable at build time. */
   fallbackPrice: number;
@@ -90,6 +97,14 @@ type Slide = {
    * original eyebrow + price treatment, so the two can coexist.
    */
   tagline?: string;
+  /**
+   * Show the live price under the tagline. Same all-or-nothing rule as
+   * eyebrow. Off on both slides today: the approved hero comp has no price in
+   * it, and desktop shows the pant slide only, so turning it on for the pant
+   * would put a price on a screen the comp says has none. Flip both to true
+   * if you decide the hero should quote prices.
+   */
+  showPrice?: boolean;
   /** Landscape crop, desktop. */
   imageWide: string;
   /** Full portrait frame, phones. */
@@ -102,7 +117,6 @@ const HERO = '/images-2/hero';
 const SLIDES: Slide[] = [
   {
     handle: 'juniper-pant',
-    eyebrow: 'preorder · ships mid sept',
     name: 'the juniper pants:',
     tagline: 'The most flattering hiking pants. Ever.',
     fallbackPrice: 10800,
@@ -113,8 +127,12 @@ const SLIDES: Slide[] = [
   },
   {
     handle: 'sierra-shorts',
-    eyebrow: 'in stock · ships in 2–3 days',
-    name: 'the sierra shorts',
+    name: 'the sierra shorts:',
+    // Same shape as the pant's line — name, then one line of positioning — so
+    // the two slides don't visibly change layout as the carousel turns. The
+    // wording is the brand's own line from the site metadata rather than a
+    // second "most flattering ... ever", which would read as a template.
+    tagline: 'Built for the trail. Cute everywhere else.',
     fallbackPrice: 6800,
     cta: 'shop shorts',
     imageWide: `${HERO}/shorts-wide.jpg`,
@@ -347,6 +365,7 @@ export default function HeroCarousel({
           text-transform: uppercase;
           margin: 0;
           text-shadow: 0 2px 18px rgba(24, 14, 10, 0.55);
+          text-wrap: balance;
         }
         /* Sentence case on purpose — it is a sentence, and setting it in caps
            next to the name flattens the two into one block of shouting. */
@@ -355,9 +374,16 @@ export default function HeroCarousel({
           font-weight: 400;
           font-size: clamp(20px, 1.96vw, 40px);
           letter-spacing: -0.03em;
-          line-height: 1.2;
+          line-height: 1.25;
           margin: 0;
           text-shadow: 0 2px 16px rgba(24, 14, 10, 0.55);
+          /* On a phone this line is wider than the screen and has to wrap.
+             text-wrap: balance splits it into two even lines instead of
+             leaving one orphaned word under a full one. Ignored by older
+             browsers, which just get the ordinary ragged wrap.
+             (No backticks in here -- this stylesheet is a JS template
+             literal, and one would end it mid-rule.) */
+          text-wrap: balance;
         }
         .hc-price {
           font-family: ${sans};
@@ -477,8 +503,11 @@ export default function HeroCarousel({
           .hc-copy { bottom: clamp(52px, 9vh, 88px); gap: 10px; }
           /* Same relationship as desktop — tagline a touch larger than the
              name, button text level with the name. */
-          .hc-name { font-size: clamp(22px, 5.8vw, 34px); }
-          .hc-tagline { font-size: clamp(23px, 6.1vw, 36px); }
+          .hc-name { font-size: clamp(20px, 5.4vw, 32px); }
+          /* 5.6vw rather than the desktop 1.96vw ratio: at 390px the tagline
+             is ~40 characters and has to take two lines whatever we do, so it
+             is sized for two comfortable lines instead of two cramped ones. */
+          .hc-tagline { font-size: clamp(17px, 5.6vw, 30px); }
           .hc-cta {
             padding: 12px clamp(26px, 7.6vw, 54px);
             font-size: clamp(15px, 4vw, 22px);
@@ -550,18 +579,16 @@ export default function HeroCarousel({
               <div className="hc-scrim" />
 
               <div className="hc-copy">
-                {/* A slide with a tagline is the lead slide and follows the
-                    approved comp: name, one line of positioning, button. Any
-                    other slide keeps the original availability + price
-                    treatment, which is still the more useful pair for a
-                    product that is in stock. */}
-                {!s.tagline && <p className="hc-eyebrow">{s.eyebrow}</p>}
+                {/* Every slide renders the same three or four elements, so
+                    the carousel does not change shape between them. Which
+                    optional lines appear is decided once in SLIDES, for all
+                    slides at once — not per slide. */}
+                {s.eyebrow && <p className="hc-eyebrow">{s.eyebrow}</p>}
                 {/* h2, not h1 — the page's one h1 is the positioning line in
                     the about section. Two rotating h1s would fight it. */}
                 <h2 className="hc-name">{s.name}</h2>
-                {s.tagline
-                  ? <p className="hc-tagline">{s.tagline}</p>
-                  : <p className="hc-price">{price}</p>}
+                {s.tagline && <p className="hc-tagline">{s.tagline}</p>}
+                {s.showPrice && <p className="hc-price">{price}</p>}
                 <Link
                   href={`/products/${s.handle}`}
                   className="hc-cta"

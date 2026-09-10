@@ -11,8 +11,6 @@ const sans   = 'var(--font-montserrat), system-ui, sans-serif';
    the sage without clashing, and stays in the same red family as
    logo2-maroon.png, which is a fixed image asset. */
 const maroon = '#A9503A';
-/** Nav ink while the header floats on the hero photo. */
-const cream  = '#FEFFF9';
 
 /**
  * Nav labels and order come from the approved hero comp: home / socials / shop
@@ -70,27 +68,41 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [isHome]);
 
-  // Floating on the photo only at the top of the landing page.
+  /**
+   * Whether the nav is sitting on the hero photo.
+   *
+   * This is only HALF the condition — the other half is the viewport, and it
+   * lives in CSS. On a phone the hero photo starts BELOW the header (slides
+   * are inset by the header's own height, see --hc-top-inset), so there is no
+   * photo behind the nav and cream links land on the page's pale background:
+   * white on white, unreadable. That was a real bug.
+   *
+   * So this only raises a flag; globals.css decides what to do with it, and
+   * honours it only above the carousel breakpoint where the photo genuinely
+   * is behind the nav. Keeping the viewport half in CSS rather than JS also
+   * means the right colours are painted on the first frame, with no flash of
+   * the wrong state while a matchMedia effect catches up.
+   */
   const overHero = isHome && !pastHero;
-  const color = overHero ? cream : maroon;
 
   const linkStyle: React.CSSProperties = {
     fontFamily: sans,
     fontSize: 'clamp(12px, 1.3vw, 15px)',
     fontWeight: 500,
-    color,
     textDecoration: 'none',
     textTransform: 'lowercase',
     letterSpacing: '0.01em',
     lineHeight: 1,
     transition: 'color 0.3s ease',
-    // Keeps the links readable across the brighter parts of the hero photo.
-    textShadow: overHero ? '0 1px 10px rgba(24, 14, 10, 0.45)' : 'none',
+    // No colour here on purpose: inline styles beat every stylesheet rule, so
+    // a colour set here could not be overridden by the media query that has
+    // to own this decision. Ink lives in globals.css.
   };
 
   return (
     <header
       className="site-nav-wrap"
+      data-over-hero={overHero ? 'true' : 'false'}
       style={{
         position: 'fixed',
         top: 0,
@@ -104,11 +116,7 @@ export default function Header() {
         // Cream rather than blush, and a sage hairline instead of a maroon
         // one. The background itself stays — see the note above; without it
         // the links collided with whatever scrolled under them.
-        backgroundColor: overHero ? 'transparent' : 'rgba(247, 242, 228, 0.88)',
-        backdropFilter: overHero ? 'none' : 'saturate(140%) blur(10px)',
-        WebkitBackdropFilter: overHero ? 'none' : 'saturate(140%) blur(10px)',
-        borderBottom: overHero ? '1px solid transparent' : '1px solid rgba(124, 130, 82, 0.16)',
-        transition: 'background-color 0.3s ease, border-color 0.3s ease',
+        // Bar surface and link ink: globals.css, under .site-nav-wrap.
       }}
     >
     {/* Free-shipping promo — live progress once the cart has something in it.
@@ -150,12 +158,12 @@ export default function Header() {
           </Link>
         ))}
         {/* Cart */}
-        <Link href="/cart" aria-label="Cart" style={{ position: 'relative', display: 'flex', alignItems: 'center', color }}>
+        <Link href="/cart" aria-label="Cart" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           {/* An actual trolley. The previous glyph was a tote — a tapered box
               with a half-circle handle — which reads as a bag or, at 20px, as
               a box with a line over it. Handle, basket, two wheels is the
               shape people actually recognise as a cart. */}
-          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="M2.5 3.5h2.1l2.4 10.6a1.7 1.7 0 0 0 1.66 1.32h7.94a1.7 1.7 0 0 0 1.66-1.3L21 8.2H5.6" />
             <circle cx="10" cy="19.6" r="1.45" />
             <circle cx="17.4" cy="19.6" r="1.45" />
