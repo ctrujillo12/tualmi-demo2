@@ -382,7 +382,14 @@ export default function HeroCarousel({
              button wide enough to compete with the headline above it. Same
              proportions, smaller box. */
           padding: clamp(11px, 1.3vh, 19px) clamp(32px, 5.8vw, 108px);
-          border-radius: clamp(12px, 1.4vw, 26px);
+          /* In em, not px or vw, so the corner stays the same PROPORTION of
+             the button at every breakpoint. On a vw clamp it drifted — 43% of
+             the button's height at 1440 and 46% at 1822, which is why the
+             curve looked inconsistent between screens.
+             0.93em lands at ~48% of the height: smooth almost all the way
+             round, with just enough straight edge top and bottom that it is
+             still a box and not a pill. Raise toward 1em for a true pill. */
+          border-radius: 0.93em;
           background: ${sage};
           color: ${cream};
           font-family: ${sans};
@@ -475,7 +482,8 @@ export default function HeroCarousel({
           .hc-cta {
             padding: 12px clamp(26px, 7.6vw, 54px);
             font-size: clamp(15px, 4vw, 22px);
-            border-radius: 14px;
+            /* border-radius intentionally not set here — the em rule above
+               already scales it with the smaller mobile font size. */
           }
         }
         @media (max-width: 400px) {
