@@ -15,7 +15,7 @@ import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/i
 import ImageLightbox from '@/components/ImageLightbox';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 import { ReviewStars, FitConsensus } from '@/components/ProductReviews';
-import { modelForImage, modelTag, modelNoteFor } from '@/lib/models';
+import { modelNoteFor } from '@/lib/models';
 import type { ReviewSummary } from '@/lib/reviews';
 
 interface ProductDetailClientProps {
@@ -438,13 +438,9 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
     : product.colors.indexOf(selectedColor);
   const gallery     = getColorImages(Math.max(0, activeColorIdx));
 
-  // Who is wearing what, per photograph. Picnic is shot on two models, so this
-  // cannot be one line on the product — see lib/models.ts.
+  // Who is wearing what. Derived per photograph in lib/models.ts, but shown as
+  // a single line in the fit block rather than stamped on every image.
   const productHandle = product.handle ?? product.id;
-  const tagFor = (src: string) => {
-    const m = modelForImage(productHandle, selectedColor, src);
-    return m ? modelTag(m) : null;
-  };
   const modelLine = modelNoteFor(productHandle, selectedColor, gallery);
 
   /**
@@ -522,7 +518,6 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                     // than silently cropped.
                     style={{ objectFit: 'contain' }}
                   />
-                  {tagFor(image) && <p className="pdp-model-tag">{tagFor(image)}</p>}
                 </div>
               ))}
             </div>
@@ -577,7 +572,6 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                       // rather than silently cropped.
                       style={{ objectFit: 'contain' }}
                     />
-                    {tagFor(image) && <p className="pdp-model-tag">{tagFor(image)}</p>}
                   </figure>
                 ))}
               </div>

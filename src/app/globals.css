@@ -1309,31 +1309,3 @@ body {
   }
 }
 
-/* == Model attribution on a product photo ================================
-   Who is wearing it and what size, sat on the photograph itself rather than
-   in one line further down the page — Picnic is shot on two models, so a
-   single sentence under the fold cannot say which is which. */
-.pdp-model-tag {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-  z-index: 2;
-  margin: 0;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  font-family: var(--font-montserrat), system-ui, sans-serif;
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: #5F5C46;
-  text-transform: lowercase;
-  white-space: nowrap;
-  /* The whole tile is the click target for the lightbox. */
-  pointer-events: none;
-}
-@media (max-width: 520px) {
-  .pdp-model-tag { font-size: 10px; padding: 4px 9px; left: 8px; bottom: 8px; }
-}

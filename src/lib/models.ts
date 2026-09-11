@@ -10,7 +10,10 @@
  *
  * A height on a product page is not decoration: it is the number a shopper
  * sizes herself against. A wrong one is a return. So attribution is attached
- * to the photograph, which is the only level at which it is actually true.
+ * to the photograph, which is the only level at which it is actually true —
+ * even though it now surfaces as one line in the fit block rather than as a
+ * caption per photo. Picnic still needs the per-image mapping: it is what
+ * makes that line name both models instead of only the first.
  *
  * A colourway with no entry here renders no line at all, rather than falling
  * back to something generic. Silence is the correct default: no claim beats a
@@ -22,18 +25,18 @@ export type Model = {
   name: string;
   /** As displayed, e.g. 5'7" */
   height: string;
-  /** Bare size word; the article is added at render time. */
+  /** Size code, matching the size pills on the page: XS / S / M. */
   size: string;
 };
 
 export const MODELS = {
-  cheyenne:  { name: 'cheyenne',  height: `5'4"`,  size: 'small' },
-  fia:       { name: 'fia',       height: `5'10"`, size: 'medium' },
-  haley:     { name: 'haley',     height: `4'11"`, size: 'medium' },
+  cheyenne:  { name: 'cheyenne',  height: `5'4"`,  size: 'S' },
+  fia:       { name: 'fia',       height: `5'10"`, size: 'M' },
+  haley:     { name: 'haley',     height: `4'11"`, size: 'M' },
   // Logan shot both the Picnic shorts and the Birch pant, at the same height
   // and the same size — one entry, referenced from both.
-  logan:     { name: 'logan',     height: `5'7"`,  size: 'small' },
-  stephanie: { name: 'stephanie', height: `5'2"`,  size: 'extra small' },
+  logan:     { name: 'logan',     height: `5'7"`,  size: 'S' },
+  stephanie: { name: 'stephanie', height: `5'2"`,  size: 'XS' },
 } satisfies Record<string, Model>;
 
 type ModelKey = keyof typeof MODELS;
@@ -62,17 +65,10 @@ const BY_IMAGE: { test: RegExp; model: ModelKey }[] = [
   { test: /sierra-picnic0\d\.jpg$/, model: 'stephanie' },
 ];
 
-const withArticle = (size: string) => (/^e/i.test(size) ? `an ${size}` : `a ${size}`);
-
 export function modelForImage(handle: string, colorName: string, src: string): Model | undefined {
   for (const rule of BY_IMAGE) if (rule.test.test(src)) return MODELS[rule.model];
   const key = BY_COLORWAY[handle]?.[colorName];
   return key ? MODELS[key] : undefined;
-}
-
-/** Caption under a photo: "logan · 5'7" · wearing a small" */
-export function modelTag(m: Model): string {
-  return `${m.name} · ${m.height} · wearing ${withArticle(m.size)}`;
 }
 
 /**
@@ -87,5 +83,5 @@ export function modelNoteFor(handle: string, colorName: string, images: string[]
     if (m && !seen.some((s) => s.name === m.name)) seen.push(m);
   }
   if (seen.length === 0) return undefined;
-  return seen.map((m) => `${m.name} is ${m.height} and wearing ${withArticle(m.size)}`).join('; ');
+  return seen.map((m) => `${m.name} is ${m.height} and wearing ${m.size}`).join('; ');
 }
