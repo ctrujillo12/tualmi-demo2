@@ -15,6 +15,7 @@ import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/i
 import ImageLightbox from '@/components/ImageLightbox';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 import { ReviewStars, FitConsensus } from '@/components/ProductReviews';
+import { modelForImage, modelTag, modelNoteFor } from '@/lib/models';
 import type { ReviewSummary } from '@/lib/reviews';
 
 interface ProductDetailClientProps {
@@ -437,6 +438,51 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
     : product.colors.indexOf(selectedColor);
   const gallery     = getColorImages(Math.max(0, activeColorIdx));
 
+  // Who is wearing what, per photograph. Picnic is shot on two models, so this
+  // cannot be one line on the product — see lib/models.ts.
+  const productHandle = product.handle ?? product.id;
+  const tagFor = (src: string) => {
+    const m = modelForImage(productHandle, selectedColor, src);
+    return m ? modelTag(m) : null;
+  };
+  const modelLine = modelNoteFor(productHandle, selectedColor, gallery);
+
+  /**
+   * Mobile carousel position.
+   *
+   * Read OUT of the scroll container rather than driving it: the track is a
+   * native scroll-snap element, so the finger is the source of truth and React
+   * only follows. Stepping by the measured slide width means the 92vw in the
+   * stylesheet is not duplicated here and cannot drift from it.
+   */
+  const swipeRef = useRef<HTMLDivElement | null>(null);
+  const slideStep = () => {
+    const el = swipeRef.current;
+    const first = el?.firstElementChild as HTMLElement | null;
+    if (!el || !first) return 0;
+    return first.getBoundingClientRect().width + 8; // + gap, see .pdp-swipe
+  };
+  const onSwipeScroll = () => {
+    const el = swipeRef.current;
+    const step = slideStep();
+    if (!el || step <= 0) return;
+    const i = Math.round(el.scrollLeft / step);
+    setFocusIdx(Math.min(gallery.length - 1, Math.max(0, i)));
+  };
+  const scrollToSlide = (i: number) => {
+    const el = swipeRef.current;
+    const step = slideStep();
+    if (!el || step <= 0) return;
+    el.scrollTo({ left: i * step, behavior: 'smooth' });
+  };
+
+  // A colourway change swaps the whole gallery. Without this the track stays
+  // where it was and the dots claim "photo 7" over a set that now has six.
+  useEffect(() => {
+    setFocusIdx(0);
+    swipeRef.current?.scrollTo({ left: 0 });
+  }, [selectedColor]);
+
   return (
     <div className="pdp-page" style={{ minHeight: '100vh', backgroundColor: blushBg }}>
       <div className="pdp-shell" style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -476,76 +522,80 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                     // than silently cropped.
                     style={{ objectFit: 'contain' }}
                   />
+                  {tagFor(image) && <p className="pdp-model-tag">{tagFor(image)}</p>}
                 </div>
               ))}
             </div>
 
-            {/* Mobile lead: ONE hero photo, sized so the buy box below it is
-                already peeking at the fold, plus the tappable thumbnail strip.
-                The two big supporting shots move BELOW the buy box (.pdp-m-rest)
-                — they used to sit between the photo and the price, which is why
-                the price landed ~1,050px down and add-to-cart ~1,450px down:
-                two deliberate swipes on an audience that leaves in 5 seconds. */}
+            {/* ── Mobile: one full-bleed swipe carousel ─────────────────
+                This was three separate ways of looking at the same photographs:
+                a ratio-locked hero inset on blush, a thumbnail strip under it,
+                and two more shots stranded in a narrow centred column below the
+                buy box. The hero read as a card floating in a frame rather than
+                a photo, and the pair underneath started at a different left edge
+                from everything around them.
+
+                Now every photo lives in one horizontal snap-scrolling track
+                running edge to edge, out past the shell's padding. Slides are
+                92vw, so the next one always peeks at the right edge — that
+                sliver IS the swipe affordance, which is why there are no
+                arrows. Tapping any slide opens the existing lightbox, where
+                double-tap, the zoom button and native pinch all work.
+
+                Desktop is untouched: .pdp-gallery still renders the 2-up grid
+                and this whole block is display:none above 767px. */}
             <div className="pdp-m-lead">
               <div
-                className="pdp-m-hero pdp-tile--zoom"
-                onClick={() => setLightboxIdx(focusIdx)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && setLightboxIdx(focusIdx)}
-                aria-label="View photo full screen"
+                className="pdp-swipe"
+                ref={swipeRef}
+                onScroll={onSwipeScroll}
+                aria-roledescription="carousel"
+                aria-label={`${product.name} photos`}
               >
-                <Image
-                  src={gallery[focusIdx] ?? gallery[0]}
-                  alt={`${product.name} — ${selectedColor}`}
-                  fill
-                  // LCP element on mobile — same reasoning as the desktop tile.
-                  priority
-                  quality={82}
-                  sizes="100vw"
-                  // contain, not cover. The box is already 2:3, so for the
-                  // current shoot the two are identical — but if a future photo
-                  // isn't exactly 2:3, this shows it whole on blush instead of
-                  // silently cropping it. Matches the desktop tiles.
-                  style={{ objectFit: 'contain' }}
-                />
+                {gallery.map((image, i) => (
+                  <figure
+                    key={image}
+                    className="pdp-swipe-slide"
+                    onClick={() => setLightboxIdx(i)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === 'Enter' && setLightboxIdx(i)}
+                    aria-label={`Photo ${i + 1} of ${gallery.length} — open to zoom`}
+                  >
+                    <Image
+                      src={image}
+                      alt={`${product.name} — ${selectedColor} ${i + 1}`}
+                      fill
+                      // The first slide is the mobile LCP. The rest are lazy:
+                      // they are off-screen in the track until swiped to.
+                      priority={i === 0}
+                      quality={82}
+                      sizes="92vw"
+                      // contain on a white slide: the shoot is 2:3 and so is
+                      // the box, so nothing letterboxes — and if a future photo
+                      // is a different ratio it is shown whole against white
+                      // rather than silently cropped.
+                      style={{ objectFit: 'contain' }}
+                    />
+                    {tagFor(image) && <p className="pdp-model-tag">{tagFor(image)}</p>}
+                  </figure>
+                ))}
               </div>
+
               {gallery.length > 1 && (
-                <div className="pdp-m-thumbs">
+                <div className="pdp-swipe-dots">
                   {gallery.map((image, i) => (
                     <button
                       key={image}
                       className={i === focusIdx ? 'active' : ''}
-                      onClick={() => setFocusIdx(i)}
-                      aria-label={`View photo ${i + 1}`}
-                    >
-                      <Image src={image} alt="" fill sizes="58px" style={{ objectFit: 'cover' }} />
-                    </button>
+                      onClick={() => scrollToSlide(i)}
+                      aria-label={`Photo ${i + 1} of ${gallery.length}`}
+                      aria-current={i === focusIdx}
+                    />
                   ))}
                 </div>
               )}
             </div>
-
-            {/* The rest of the mobile gallery — rendered after the buy box. */}
-            {(gallery[1] || gallery[2]) && (
-              <div className="pdp-m-rest">
-                <div className="pdp-m-big2">
-                  {[1, 2].map((i) => gallery[i] && (
-                    <div
-                      key={gallery[i]}
-                      className="pdp-tile pdp-tile--zoom"
-                      onClick={() => setLightboxIdx(i)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => e.key === 'Enter' && setLightboxIdx(i)}
-                      aria-label="View photo full screen"
-                    >
-                      <Image src={gallery[i]} alt={`${product.name} — ${selectedColor} ${i + 1}`} fill sizes="50vw" style={{ objectFit: 'cover' }} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* ── Right: details ── */}
@@ -1212,9 +1262,12 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 {fabricDetail.fit.split('\n\n').map((block, i) => (
                   <p key={i} style={{ ...bodyStyle, margin: i > 0 ? '10px 0 0' : 0 }}>{block}</p>
                 ))}
-                {fabricDetail.modelNote && (
+                {/* Built from the models actually present in the gallery on
+                    screen, so it lists both of them on Picnic and cannot drift
+                    out of step with the photographs. */}
+                {(modelLine ?? fabricDetail.modelNote) && (
                   <p style={{ ...bodyStyle, fontSize: '12.5px', fontStyle: 'italic', marginTop: '12px' }}>
-                    {fabricDetail.modelNote}
+                    {modelLine ?? fabricDetail.modelNote}
                   </p>
                 )}
                 {fabricDetail.sizeChart && (

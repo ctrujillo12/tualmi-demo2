@@ -415,8 +415,7 @@ body {
   }
   .pdp-m-lead  { order: 1; min-width: 0; }
   .pdp-buybox  { order: 2; min-width: 0; }
-  .pdp-m-rest  { order: 3; min-width: 0; }
-  .pdp-details { order: 4; min-width: 0; }
+  .pdp-details { order: 3; min-width: 0; }
 
   /* Inside the buy box, the one thing that doesn't earn its place above the
      size picker is the feature-icon strip — it's a nice-to-know, not part of
@@ -443,27 +442,9 @@ body {
      Also the single source of truth for the mobile gallery's width — the hero,
      the thumbnail strip and the supporting shots all size off these, so they
      line up in one centred column no matter how many photos a product has. */
-  .pdp-page {
-    /* The reserve for the sticky add-to-cart bar used to live here. It moved
-       to .pdp-main below, because .pdp-page stopped being the last thing on
-       the page when the review section was added underneath it — leaving 74px
-       of blush-coloured dead space between the accordion and the reviews on
-       every phone. The bar floats over the bottom of the whole page, so the
-       reserve belongs on the whole page. */
-    --hero-h: min(66svh, calc((100vw - 40px) * 1.5));
-    --hero-w: calc(var(--hero-h) / 1.5);
-  }
-
   /* Clears the sticky add-to-cart bar, whatever the last section happens to be. */
   .pdp-main {
     padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
-  }
-}
-
-/* svh isn't universal; vh is the fallback for anything that doesn't have it. */
-@supports not (height: 1svh) {
-  @media (max-width: 767px) {
-    .pdp-page { --hero-h: min(66vh, calc((100vw - 40px) * 1.5)); }
   }
 }
 
@@ -497,102 +478,86 @@ body {
 }
 
 /* ── Product page gallery: mobile ── */
-.pdp-m-lead,
-.pdp-m-rest { display: none; max-width: 100%; }
+.pdp-m-lead { display: none; max-width: 100%; }
 @media (max-width: 767px) {
   .pdp-gallery { display: none; }          /* hide the desktop grid */
   .pdp-m-lead  { display: block; }
-  .pdp-m-rest  { display: block; }
 }
-.pdp-m-hero {
-  position: relative;
+/* == Mobile gallery: one full-bleed swipe track ===========================
+   Replaces .pdp-m-hero / .pdp-m-thumbs / .pdp-m-big2 -- a ratio-locked hero
+   inset on blush, a thumbnail strip, and a pair of supporting shots in a
+   narrow centred column below the buy box.
 
-  /* The shoot is 2:3 (1067x1600). A fixed height cropped it hard — a 390px-wide
-     box 363px tall is landscape, so `cover` was cutting roughly a third off the
-     top and bottom of every frame.
+   The old hero was sized from the photo's ratio so nothing ever cropped --
+   right instinct, but it left the photo as a rounded card floating in a blush
+   frame at ~90% width, which is why it read as small. Edge to edge gains only
+   a few dozen pixels of width and looks far bigger, because there is no longer
+   a frame around it.
 
-     So: size the box FROM the photo's ratio, never against it. `--hero-h` is
-     the smaller of a share of the viewport height and the height a full-width
-     2:3 photo would need, and the width is derived from it. Whichever limit
-     bites, the box stays exactly 2:3 and the photo is shown whole.
-
-       - tall phones (412x915):  full width, ~558px tall
-       - typical  (390x844):     full width, ~525px tall
-       - short    (375x667):     ~293px wide, centred on blush
-
-     1.5 is 3/2, the inverse of the 2:3 frame. --hero-h / --hero-w are defined
-     once on .pdp-page so the thumbnail strip and the supporting shots can size
-     off the same numbers and stay in one centred column. */
-  height: var(--hero-h);
-  width: var(--hero-w);
-  max-width: 100%;
-  margin: 0 auto;
-
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: #FBF1F5;
-}
-
-/* ── Supporting shots + thumbnail strip ───────────────────────────────────
-   Both are pinned to the hero's width and centred inside it. On a narrow
-   phone the hero doesn't fill the column (it's ratio-locked, so it can be
-   ~293px inside a 335px shell) — a full-width grid underneath it started
-   further left than the photo and read as misaligned. Everything in the
-   mobile gallery now shares one centred column, at any photo count.       */
-.pdp-m-big2 {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  width: var(--hero-w);
-  max-width: 100%;
-  margin: 8px auto 0;
-}
-/* Two per row by default; an odd one out centres on its own row rather than
-   hanging off the left edge. */
-.pdp-m-big2 > * {
-  flex: 0 1 calc((100% - 8px) / 2);
-  min-width: 0;
-}
-/* A product with a single supporting shot gets it at the hero's full width —
-   a lone half-width tile floating in the middle looks like a mistake. */
-.pdp-m-big2 > *:only-child {
-  flex-basis: 100%;
-}
-.pdp-m-thumbs {
+   Slides are 92vw. The missing 8vw is the next photo peeking at the right
+   edge, which is the whole reason a shopper knows to swipe -- hence no arrows.
+   Snap is native, so momentum, rubber-banding and accessibility come free. */
+.pdp-swipe {
   display: flex;
   gap: 8px;
-  /* `safe` keeps the overflow reachable when there are more thumbs than fit:
-     plain `center` would push the first ones past the left scroll origin.
-     Browsers without `safe` fall back to the plain `center` above it. */
-  justify-content: center;
-  justify-content: safe center;
   overflow-x: auto;
-  width: var(--hero-w);
-  max-width: 100%;
-  margin: 8px auto 0;
-  padding-bottom: 4px;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  /* Full bleed: out past whatever horizontal padding the shell carries. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  /* Lets the LAST slide still reach the start edge when snapped. */
+  padding-right: 8vw;
+  /* The peek is the affordance; a scrollbar over it is noise. */
+  scrollbar-width: none;
 }
-.pdp-m-thumbs button {
+.pdp-swipe::-webkit-scrollbar { display: none; }
+
+.pdp-swipe-slide {
   position: relative;
-  flex: 0 0 auto;
-  /* 44, not 58 — every pixel here is a pixel of buy box pushed below the
-     fold, and 44x59 is still a comfortable tap. */
-  width: 44px;
-  aspect-ratio: 3 / 4;
-  border-radius: 8px;
+  flex: 0 0 92vw;
+  /* 1.5 is the inverse of the 2:3 shoot, so the box matches the photograph
+     exactly and `contain` never letterboxes. The svh cap is for short phones,
+     where a full 2:3 frame would push price and size off the bottom. */
+  height: min(calc(92vw * 1.5), 78svh);
+  margin: 0;
+  scroll-snap-align: start;
   overflow: hidden;
-  border: 1.5px solid transparent;
-  padding: 0;
+  /* White, not blush: the shoot is on white, so on the rare viewport where the
+     svh cap bites, the contain bars are invisible rather than pink. */
   background-color: #fff;
-  cursor: pointer;
-  opacity: 0.55;
-  transition: opacity 0.15s, border-color 0.15s;
+  cursor: zoom-in;
 }
-.pdp-m-thumbs button.active {
-  opacity: 1;
-  border-color: #A9445C;
+
+.pdp-swipe-dots {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px auto 0;
+  padding: 0 16px;
+}
+.pdp-swipe-dots button {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background-color: rgba(169, 80, 58, 0.3);
+  cursor: pointer;
+  transition: background-color 0.2s ease, width 0.2s ease;
+}
+.pdp-swipe-dots button.active {
+  width: 18px;
+  background-color: #A9503A;
+}
+/* A 6px dot is not a tap target; this grows it to ~32px without drawing it. */
+.pdp-swipe-dots button::before {
+  content: '';
+  position: absolute;
+  inset: -13px -5px;
 }
 
 /* ── Size selector: keep all pills on one row on mobile ── */
@@ -1342,4 +1307,33 @@ body {
     color: #FEFFF9;
     text-shadow: 0 1px 10px rgba(24, 14, 10, 0.45);
   }
+}
+
+/* == Model attribution on a product photo ================================
+   Who is wearing it and what size, sat on the photograph itself rather than
+   in one line further down the page — Picnic is shot on two models, so a
+   single sentence under the fold cannot say which is which. */
+.pdp-model-tag {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 2;
+  margin: 0;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #5F5C46;
+  text-transform: lowercase;
+  white-space: nowrap;
+  /* The whole tile is the click target for the lightbox. */
+  pointer-events: none;
+}
+@media (max-width: 520px) {
+  .pdp-model-tag { font-size: 10px; padding: 4px 9px; left: 8px; bottom: 8px; }
 }

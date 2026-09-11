@@ -86,7 +86,10 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not iron',
     ],
     fit: 'Low rise with a relaxed flared leg. True to size. If you’re between sizes, size down.',
-    modelNote: 'rachel is 5\'6" and wearing a size small',
+    // modelNote removed: it said "rachel is 5'6"" on every colourway, which
+    // the September 2026 shoot made false — it was shot with a different model
+    // per colourway, and Picnic with two. This is now derived per photograph
+    // from lib/models.ts. Edit it there, not here.
     // No shipNote — the preorder callout above the add-to-cart button (in
     // ProductDetailClient) already states the ship window, and having both
     // showed two competing preorder cards. Set this only for a genuinely
@@ -133,7 +136,10 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not iron',
     ],
     fit: 'Mid-rise, relaxed fit with a 3" inseam. True to size.',
-    modelNote: 'rachel is 5\'6" and wearing a size small',
+    // modelNote removed: it said "rachel is 5'6"" on every colourway, which
+    // the September 2026 shoot made false — it was shot with a different model
+    // per colourway, and Picnic with two. This is now derived per photograph
+    // from lib/models.ts. Edit it there, not here.
     sizeChart: {
       note: 'Garment measurements in inches, taken flat. Inseam is 3" on every size.',
       sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],

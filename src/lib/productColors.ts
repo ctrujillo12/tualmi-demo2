@@ -68,6 +68,13 @@ export const PRODUCT_COLOR_IMAGES: Record<string, Record<string, string[]>> = {
       `${SS}/sierra-picnic5.jpg`,  // back
       `${SS}/sierra-picnic8.jpg`,  // waist-to-thigh, how it sits
       `${SS}/sierra-picnic2.jpg`,  // gingham close-up + woven label
+      // Second model, same colourway. Kept as a block at the end rather than
+      // interleaved, so the gallery reads as "and here she is on someone
+      // else" instead of looking like the first model changed mid-scroll.
+      // These are the zero-padded filenames — see BY_IMAGE in lib/models.ts.
+      `${SS}/sierra-picnic05.jpg`, // three-quarter from behind
+      `${SS}/sierra-picnic03.jpg`, // side profile
+      `${SS}/sierra-picnic01.jpg`, // seated
     ],
     Confetti: [
       `${SS}/sierra-confetti9.jpg`, // front, full length
