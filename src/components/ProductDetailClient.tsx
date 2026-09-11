@@ -36,6 +36,17 @@ const blushBg = '#FBF1F5';
 const soft    = '#C9849A';
 const rule    = '#F0D9E1';
 
+/**
+ * Space between the size row and the colour row, on every product page.
+ *
+ * One constant because it has to be identical on the shorts and the pant, and
+ * because it is the number to nudge if the "color · picnic" line sits too close
+ * to the size pills (raise it) or too far from them (lower it). It lives on the
+ * colour block rather than the size block so it cannot be changed by whatever
+ * does or does not render inside the size block on a given product.
+ */
+const COLOUR_BLOCK_GAP = '24px';
+
 const eyebrowStyle: React.CSSProperties = {
   fontFamily: sans,
   fontWeight: 700,
@@ -701,15 +712,18 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
               <div
                 ref={sizeRef}
                 style={{
-                  // 28, not 16. The size pills and the colour dots are both
-                  // rows of small round targets; at 16px they read as one
-                  // eight-item control rather than two separate choices, and
-                  // the "color · picnic" label got lost between them.
-                  marginBottom: '28px',
+                  // No bottom margin on purpose — the gap to the colour block
+                  // is owned by the colour block itself (COLOUR_BLOCK_GAP
+                  // below). It used to live here, which made it depend on
+                  // whether the low-stock warning inside this div happened to
+                  // render: present on one product, absent on another, so the
+                  // shorts and the pant did not match.
+                  marginBottom: 0,
                   // Flashes when someone taps buy without choosing a size.
                   borderRadius: '12px',
                   padding: flashSize ? '10px' : 0,
-                  margin: flashSize ? '-10px -10px 24px' : undefined,
+                  // Cancels the 10px padding above exactly, on every side.
+                  margin: flashSize ? '-10px' : undefined,
                   backgroundColor: flashSize ? '#FBF1F5' : 'transparent',
                   boxShadow: flashSize ? `0 0 0 2px ${maroon}` : 'none',
                   transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
@@ -829,8 +843,11 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 CTA further down. It now lives with fit & sizing, where someone
                 actually looking for it will go. */}
             {swatchColors.length > 0 && (
-              <div style={{ marginBottom: '16px' }}>
-                <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '8px' }}>
+              <div style={{ marginTop: COLOUR_BLOCK_GAP, marginBottom: '16px' }}>
+                {/* 12px under the label, not 8: it needs to read as the heading
+                    for the dots below it rather than as a caption hanging off
+                    the size row above. */}
+                <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '12px' }}>
                   color · {selectedColor.toLowerCase()}
                 </p>
                 {/* gap 0: each button is a 42px tap target around a 26px dot,
