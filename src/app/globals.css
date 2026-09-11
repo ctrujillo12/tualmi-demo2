@@ -752,9 +752,15 @@ body {
 .pdp-strip-sep  { color: #F0D9E1; margin-right: 5px; }
 
 @media (max-width: 768px) {
-  /* Centre both strips and shrink with the viewport so all three items stay
-     on a single row down to the narrowest phones. */
-  .pdp-strip { justify-content: center; gap: 6px; }
+  /* Shrink with the viewport so all three items stay on a single row down to
+     the narrowest phones.
+
+     Only the assurance strip centres. The trust strip sits at the top of the
+     buy box, above the product name, where every other line — name, price,
+     "size", "color · picnic" — is flush left; a centred row there was the one
+     thing in the column not lining up with the rest. */
+  .pdp-strip { gap: 6px; }
+  .pdp-strip--assure { justify-content: center; }
   .pdp-strip-item { font-size: clamp(8.5px, 2.7vw, 11px); gap: 3px; }
   .pdp-strip-sep { margin-right: 3px; }
 }

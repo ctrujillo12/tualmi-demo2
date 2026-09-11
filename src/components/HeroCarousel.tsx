@@ -92,6 +92,12 @@ type Slide = {
   fallbackPrice: number;
   cta: string;
   /**
+   * Colourway the CTA should open on. Without it the PDP falls back to the
+   * first entry in PRODUCT_COLORS, which is Jam for the shorts — not the one
+   * the hero is selling.
+   */
+  ctaColor?: string;
+  /**
    * Headline treatment for the lead slide: a line of positioning instead of
    * the availability eyebrow and the price. A slide WITHOUT one keeps the
    * original eyebrow + price treatment, so the two can coexist.
@@ -128,6 +134,7 @@ const SLIDES: Slide[] = [
   {
     handle: 'sierra-shorts',
     name: 'the sierra shorts:',
+    ctaColor: 'Picnic',
     // Same shape as the pant's line — name, then one line of positioning — so
     // the two slides don't visibly change layout as the carousel turns. The
     // wording is the brand's own line from the site metadata rather than a
@@ -590,7 +597,11 @@ export default function HeroCarousel({
                 {s.tagline && <p className="hc-tagline">{s.tagline}</p>}
                 {s.showPrice && <p className="hc-price">{price}</p>}
                 <Link
-                  href={`/products/${s.handle}`}
+                  href={
+                    s.ctaColor
+                      ? `/products/${s.handle}?color=${encodeURIComponent(s.ctaColor)}`
+                      : `/products/${s.handle}`
+                  }
                   className="hc-cta"
                   // On desktop the other slides are display:none, so they're
                   // already out of the tab order. On a phone this keeps the

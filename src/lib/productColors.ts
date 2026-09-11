@@ -80,7 +80,8 @@ export const PRODUCT_COLOR_IMAGES: Record<string, Record<string, string[]>> = {
       `${SS}/sierra-confetti9.jpg`, // front, full length
       `${SS}/sierra-confetti7.jpg`, // three-quarter, walking
       `${SS}/sierra-confetti6.jpg`, // side profile
-      `${SS}/sierra-confetti3.jpg`, // back, three-quarter
+      // confetti3 (back three-quarter) removed: too close to the side profile
+      // directly above it to earn its own frame.
       `${SS}/sierra-confetti2.jpg`, // back, close — the print at scale
       `${SS}/sierra-confetti0.jpg`, // pocket + woven label
     ],

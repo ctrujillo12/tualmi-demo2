@@ -126,6 +126,28 @@ const coverFor = (handle: string, color: string) =>
   LANDING_COVERS[handle]?.[color] ?? PRODUCT_COLOR_IMAGES[handle]?.[color]?.[0] ?? '';
 
 /**
+ * Colourway tiles for one band, in the order they should appear HERE.
+ *
+ * PRODUCT_COLORS is deliberately not reordered to achieve this. It also drives
+ * the swatch order on the product page and — because the gallery is indexed off
+ * it — which colourway a PDP opens on. Sorting it to fix this row would have
+ * silently changed the shorts page's default colour as a side effect.
+ *
+ * Anything missing from `order` keeps its original position at the end, so a
+ * new colourway appears rather than vanishing.
+ */
+const colorwaysFor = (handle: string, order?: string[]) => {
+  const all = PRODUCT_COLORS[handle] ?? [];
+  const rank = (name: string) => {
+    const i = order ? order.indexOf(name) : -1;
+    return i === -1 ? Number.MAX_SAFE_INTEGER : i;
+  };
+  return [...all]
+    .sort((a, b) => rank(a.name) - rank(b.name))
+    .map((c) => ({ color: c.name, swatch: c.value, image: coverFor(handle, c.name) }));
+};
+
+/**
  * Order matters: this array is the order of the coloured bands down the page,
  * and the pant leads because the pant is what we are promoting. The hero sends
  * people to the same product (DESKTOP_SLIDE in HeroCarousel) — change one and
@@ -143,11 +165,7 @@ const DROP_PRODUCTS: DropProduct[] = [
     price: 10800,
     bg: '#D7DDC3',
     accent: sageDeep,
-    colorways: (PRODUCT_COLORS['juniper-pant'] ?? []).map((c) => ({
-      color: c.name,
-      swatch: c.value,
-      image: coverFor('juniper-pant', c.name),
-    })),
+    colorways: colorwaysFor('juniper-pant'),
   },
   {
     handle: 'sierra-shorts',
@@ -157,11 +175,7 @@ const DROP_PRODUCTS: DropProduct[] = [
     price: 6800,
     bg: '#EFDBE0',
     accent: brick,
-    colorways: (PRODUCT_COLORS['sierra-shorts'] ?? []).map((c) => ({
-      color: c.name,
-      swatch: c.value,
-      image: coverFor('sierra-shorts', c.name),
-    })),
+    colorways: colorwaysFor('sierra-shorts', ['Picnic', 'Confetti', 'Jam']),
   },
 ];
 

@@ -701,11 +701,15 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
               <div
                 ref={sizeRef}
                 style={{
-                  marginBottom: '16px',
+                  // 28, not 16. The size pills and the colour dots are both
+                  // rows of small round targets; at 16px they read as one
+                  // eight-item control rather than two separate choices, and
+                  // the "color · picnic" label got lost between them.
+                  marginBottom: '28px',
                   // Flashes when someone taps buy without choosing a size.
                   borderRadius: '12px',
                   padding: flashSize ? '10px' : 0,
-                  margin: flashSize ? '-10px -10px 12px' : undefined,
+                  margin: flashSize ? '-10px -10px 24px' : undefined,
                   backgroundColor: flashSize ? '#FBF1F5' : 'transparent',
                   boxShadow: flashSize ? `0 0 0 2px ${maroon}` : 'none',
                   transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
