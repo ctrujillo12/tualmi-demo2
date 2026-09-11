@@ -31,6 +31,12 @@ const brick    = '#A9503A';  // red    — links and the shorts band accent
 // Product structured data — all items are shown on this page. Availability +
 // verified fabric per item; PreOrder for the drop, InStock for the tote.
 const SITE = 'https://tualmi.com';
+
+// Declared here, not next to LANDING_COVERS below: productsJsonLd uses them a
+// few lines down, and a const referenced above its own declaration is a
+// module-load ReferenceError, not just a lint complaint.
+const SS = '/images-2/sierra-newest-shoot-pics';
+const JS = '/images-2/juniper-newest-shoot-pics';
 const productsJsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -42,7 +48,7 @@ const productsJsonLd = {
       material: '100% recycled nylon',
       description:
         'Mid-rise, relaxed-fit women’s hiking shorts with a flattering, women-engineered cut, deep pockets sized for a full phone, and bold, print-forward colorways. Made from 100% recycled nylon.',
-      image: `${SITE}/images-2/model/jam-2.jpg`,
+      image: `${SITE}${SS}/sierra-jam2.jpg`,
       offers: {
         '@type': 'Offer', price: '68.00', priceCurrency: 'USD',
         availability: 'https://schema.org/PreOrder', url: `${SITE}/products/sierra-shorts`,
@@ -56,7 +62,7 @@ const productsJsonLd = {
       material: 'Sustainable, recycled materials',
       description:
         'Fashion-forward flare cargo pants that are genuinely trail-ready, with a flattering fold-over waist, functional cargo pockets, and a flared leg crafted for women’s proportions, not scaled down from a men’s pattern. Made from sustainable, recycled materials.',
-      image: `${SITE}/images-2/model/birch-3.jpg`,
+      image: `${SITE}${JS}/birch-juniper2.jpg`,
       offers: {
         '@type': 'Offer', price: '108.00', priceCurrency: 'USD',
         availability: 'https://schema.org/PreOrder', url: `${SITE}/products/juniper-pant`,
@@ -89,15 +95,30 @@ const priceLabel = (cents: number) => {
 // gallery order (PRODUCT_COLOR_IMAGES) so the landing can lead with a different
 // photo than the PDP. Falls back to the gallery lead if unset.
 const MP = '/images-2/model';
+/**
+ * Moved onto the September 2026 studio shoot alongside the product galleries —
+ * leaving these on the old set would have put two different shoots of the same
+ * shorts on one scroll.
+ *
+ * These are the same frames the galleries lead with. The block above still
+ * exists so the landing CAN lead with something different; delete a colourway
+ * here and coverFor() falls back to that colourway's gallery lead anyway.
+ */
 const LANDING_COVERS: Record<string, Record<string, string>> = {
   'sierra-shorts': {
-    Jam:      `${MP}/jam-6.jpg`,
-    Picnic:   `${MP}/picnic-1.jpg`,
-    Confetti: `${MP}/confetti-5.jpg`,
+    Jam:      `${SS}/sierra-jam2.jpg`,
+    Picnic:   `${SS}/sierra-picnic16.jpg`,
+    // Leaning three-quarter — not in the Confetti gallery, so the landing tile
+    // and the product page do not open on the same photograph.
+    Confetti: `${SS}/sierra-confetti4.jpg`,
   },
   'juniper-pant': {
-    Birch: `${MP}/birch-4.jpg`,
-    Olive: `${MP}/olive-3.jpg`,
+    Birch: `${JS}/birch-juniper5.jpg`,
+    // Not the gallery lead for Olive: a second full-length standing shot beside
+    // Birch's made the pants band repetitive. This one is a waist-to-hem crop —
+    // fold-over waist, cargo pocket, label and flare in one frame — which fills
+    // the 2:3 tile and gives the row something to look at.
+    Olive: `${JS}/olive-juniper4.jpg`,
   },
 };
 

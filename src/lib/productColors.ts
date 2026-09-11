@@ -25,22 +25,77 @@ export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> =
 // Explicit gallery images per colorway (used when a product has different
 // numbers of photos per color). Lead/front shot first.
 const PP = '/images-2/model';
+
+/**
+ * The September 2026 studio shoot. Both folders are shot on white at
+ * 2400x3600 — the same 2:3 as the set they replace, so the gallery geometry
+ * is unchanged.
+ *
+ * The old /images-2/model files are still on disk and still used by the
+ * lifestyle strip and the landing page, so nothing here is destructive: point
+ * a list back at `${PP}/...` to restore any previous gallery.
+ *
+ * NOTE: scripts/import-product-photos.py no longer drives these lists. It
+ * numbered files jam-1.jpg, jam-2.jpg ... in gallery order; these are hand
+ * picked from a much larger take, so the filename numbers are the
+ * photographer's, not a running order. Re-running that script will NOT
+ * regenerate this.
+ */
+const SS = '/images-2/sierra-newest-shoot-pics';
+const JS = '/images-2/juniper-newest-shoot-pics';
+
 export const PRODUCT_COLOR_IMAGES: Record<string, Record<string, string[]>> = {
-  // Files are numbered in gallery order by scripts/import-product-photos.py —
-  // -1 is the lead shot (full-body front), then back / lifestyle / detail.
-  // Re-running that script regenerates them, so keep these lists in sync with
-  // the PLAN dict there rather than reordering by hand.
+  /**
+   * Order is the same for every colourway, because a shopper who flips
+   * between them should not have the gallery rearrange under her:
+   *
+   *   1 front full   2 three-quarter   3 side   4 back   5-7 details
+   */
   'sierra-shorts': {
-    Jam:      [`${PP}/jam-1.jpg`, `${PP}/jam-2.jpg`, `${PP}/jam-3.jpg`, `${PP}/jam-4.jpg`, `${PP}/jam-5.jpg`, `${PP}/jam-6.jpg`],
-    // Picnic gained a fifth frame when it moved off the older "Pink Shorts"
-    // HEICs onto the retouched "fixed photos" set — the same source Jam and
-    // Confetti use, so all three colourways finally match each other.
-    Picnic:   [`${PP}/picnic-1.jpg`, `${PP}/picnic-2.jpg`, `${PP}/picnic-3.jpg`, `${PP}/picnic-4.jpg`, `${PP}/picnic-5.jpg`],
-    Confetti: [`${PP}/confetti-1.jpg`, `${PP}/confetti-2.jpg`, `${PP}/confetti-3.jpg`, `${PP}/confetti-4.jpg`, `${PP}/confetti-5.jpg`],
+    Jam: [
+      `${SS}/sierra-jam2.jpg`,   // front, full length
+      `${SS}/sierra-jam7.jpg`,   // three-quarter, hand on hip
+      `${SS}/sierra-jam5.jpg`,   // side profile
+      `${SS}/sierra-jam13.jpg`,  // back
+      `${SS}/sierra-jam11.jpg`,  // waistband, held at the elastic
+      `${SS}/sierra-jam15.jpg`,  // hem + woven label
+      `${SS}/sierra-jam8.jpg`,   // folded forward — closes the set on movement
+    ],
+    Picnic: [
+      `${SS}/sierra-picnic16.jpg`, // front, full length
+      `${SS}/sierra-picnic11.jpg`, // three-quarter, hand on hip
+      `${SS}/sierra-picnic13.jpg`, // side profile
+      `${SS}/sierra-picnic5.jpg`,  // back
+      `${SS}/sierra-picnic8.jpg`,  // waist-to-thigh, how it sits
+      `${SS}/sierra-picnic2.jpg`,  // gingham close-up + woven label
+    ],
+    Confetti: [
+      `${SS}/sierra-confetti9.jpg`, // front, full length
+      `${SS}/sierra-confetti7.jpg`, // three-quarter, walking
+      `${SS}/sierra-confetti6.jpg`, // side profile
+      `${SS}/sierra-confetti3.jpg`, // back, three-quarter
+      `${SS}/sierra-confetti2.jpg`, // back, close — the print at scale
+      `${SS}/sierra-confetti0.jpg`, // pocket + woven label
+    ],
   },
   'juniper-pant': {
-    Birch: [`${PP}/birch-1.jpg`, `${PP}/birch-2.jpg`, `${PP}/birch-3.jpg`, `${PP}/birch-4.jpg`, `${PP}/birch-5.jpg`, `${PP}/birch-6.jpg`, `${PP}/birch-7.jpg`],
-    Olive: [`${PP}/olive-1.jpg`, `${PP}/olive-2.jpg`, `${PP}/olive-3.jpg`, `${PP}/olive-4.jpg`],
+    Birch: [
+      `${JS}/birch-juniper2.jpg`,  // front, full length
+      `${JS}/birch-juniper5.jpg`,  // three-quarter
+      `${JS}/birch-juniper3.jpg`,  // side profile
+      `${JS}/birch-juniper4.jpg`,  // back
+      `${JS}/birch-juniper8.jpg`,  // fold-over waist + cargo pocket
+      `${JS}/birch-juniper12.jpg`, // cargo pocket + woven label
+      `${JS}/birch-juniper13.jpg`, // flare over the boot
+    ],
+    Olive: [
+      `${JS}/olive-juniper0.jpg`,  // front, full length
+      `${JS}/olive-juniper6.jpg`,  // three-quarter, hands in pockets
+      `${JS}/olive-juniper2.jpg`,  // side profile
+      `${JS}/olive-juniper7.jpg`,  // back
+      `${JS}/olive-juniper4.jpg`,  // fold-over waist + cargo pocket
+      `${JS}/olive-juniper9.jpg`,  // cargo pocket, opened
+    ],
   },
 };
 
