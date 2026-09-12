@@ -30,7 +30,7 @@ export const localProducts: Product[] = [
       'Meet the Juniper, the most flattering hiking pants you’ll own. They feel like your favorite pair of everyday pants, just built for the trail. Fold-over waist, real cargo pockets, and a flared leg in colorways that go with everything. Cinch hem for when the trail gets muddy.',
     price: 10800,
     // Gallery driven by PRODUCT_COLOR_IMAGES; lead shot per colorway
-    images: ['/images-2/model/birch-3.jpg', '/images-2/model/olive-2.jpg'],
+    images: ['/images-2/reedited-photos/Highlights/birch-front-1.jpg', '/images-2/reedited-photos/Highlights/olive-front-1.jpg'],
     category: 'Bottoms',
     sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Birch', 'Olive'],
@@ -65,9 +65,9 @@ export const localProducts: Product[] = [
     // Gallery is driven per-colorway by PRODUCT_COLOR_IMAGES; these are the
     // lead shots (also used for the cart thumbnail + schema image)
     images: [
-      '/images-2/model/jam-4.jpg',
-      '/images-2/model/picnic-2.jpg',
-      '/images-2/model/confetti-3.jpg',
+      '/images-2/reedited-photos/Highlights/jam-front-5.jpg',
+      '/images-2/reedited-photos/Highlights/picnic-front-1.jpg',
+      '/images-2/reedited-photos/Highlights/confetti-front-1.jpg',
     ],
     category: 'Bottoms',
     sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],

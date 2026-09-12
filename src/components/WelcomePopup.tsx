@@ -6,6 +6,7 @@ import PhoneOptIn, { PHONE_THEMES } from './PhoneOptIn';
 import { getAttribution } from '@/lib/attribution';
 import { klaviyoIdentify } from '@/lib/klaviyo';
 import { getReferralCode } from '@/lib/referralClient';
+import { WELCOME_CODE, saveWelcomeCode } from '@/lib/discount';
 
 const STORAGE_KEY = 'tualmi_welcome_shown';
 
@@ -84,6 +85,10 @@ export default function WelcomePopup() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'something went wrong');
       setStatus('success');
+      // Pre-apply the 10% so the offer is real the moment they keep shopping,
+      // instead of a code they have to go dig out of an email. Skipped if a
+      // creator code is already live this session — see saveWelcomeCode().
+      saveWelcomeCode();
       // Bind this browser to the profile so Klaviyo can attribute onsite
       // browse events to a real inbox. Without it, every Viewed Product after
       // a signup still lands on an anonymous cookie and can't trigger a
@@ -102,6 +107,19 @@ export default function WelcomePopup() {
     fontFamily: sans, fontWeight: 700, fontSize: '12px',
     letterSpacing: '0.14em', color: soft, margin: '0 0 14px',
     textTransform: 'lowercase',
+  };
+
+  const bodyText: React.CSSProperties = {
+    fontFamily: sans, fontSize: '14px', fontWeight: 500,
+    color: soft, lineHeight: 1.8, margin: 0,
+  };
+
+  /** The code, big enough to read and copy off the screen. */
+  const codeChip: React.CSSProperties = {
+    fontFamily: sans, fontWeight: 700, fontSize: '17px',
+    letterSpacing: '0.12em', color: maroon,
+    backgroundColor: 'white', border: `1.5px dashed ${maroon}`,
+    borderRadius: '12px', padding: '12px 16px', textAlign: 'center',
   };
 
   const heading: React.CSSProperties = {
@@ -151,8 +169,12 @@ export default function WelcomePopup() {
           <div>
             <p style={eyebrow}>welcome to the club</p>
             <h2 style={{ ...heading, margin: '0 0 14px' }}>you&apos;re in ✦</h2>
-            <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 500, color: soft, lineHeight: 1.8, margin: 0 }}>
-              we&apos;ll let you know the moment the next piece drops.
+            <p style={{ ...bodyText, margin: '0 0 14px' }}>
+              here&apos;s 10% off your first order — already applied at checkout.
+            </p>
+            <div style={codeChip}>{WELCOME_CODE}</div>
+            <p style={{ ...bodyText, fontSize: '12px', margin: '12px 0 0' }}>
+              it&apos;s in your inbox too, for whenever you&apos;re ready.
             </p>
 
             {smsStage === 'ask' ? (
@@ -183,7 +205,7 @@ export default function WelcomePopup() {
         ) : (
           <>
             <p style={eyebrow}>the trailblazing club</p>
-            <h2 style={heading}>get notified when our next pieces drop.</h2>
+            <h2 style={heading}>get 10% off your first order.</h2>
 
             <ul
               style={{
@@ -192,9 +214,9 @@ export default function WelcomePopup() {
               }}
             >
               {[
-                'first look, 24 hours early',
-                'a vote on what we make next',
-                'restock alerts',
+                '10% off, the second you join',
+                'special perks, discounts + early access to new drops',
+                'insider info and behind-the-scenes sneak peeks',
               ].map((perk) => (
                 <li
                   key={perk}

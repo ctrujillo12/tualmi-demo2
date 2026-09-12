@@ -23,7 +23,12 @@ const maroon = '#A9503A';
  */
 const LEFT_LINKS = [
   { name: 'home', href: '/' },
-  { name: 'socials', href: '/#socials' },
+  // Our story sits in the nav on every page and at every width. It was
+  // dropped when the nav was matched to the hero comp, which left /story
+  // reachable only from a link hidden below xl — see the note in page.tsx.
+  // Socials gave up the slot: the handle is in the socials band on the
+  // landing page and in the footer, so nothing is actually lost.
+  { name: 'our story', href: '/story' },
   { name: 'shop', href: '/#collection' },
 ];
 

@@ -57,12 +57,13 @@ const BY_COLORWAY: Record<string, Record<string, ModelKey>> = {
 /**
  * Per-image overrides, for a colourway shot with more than one model.
  *
- * Picnic: Stephanie's frames are the zero-padded ones — sierra-picnic00.jpg
- * through sierra-picnic05.jpg. Note the pattern needs TWO digits, so
- * sierra-picnic0.jpg (Logan) does not match, and neither does picnic5.
+ * Picnic: Stephanie's frames are now named for her — picnic-steph-*.jpg. This
+ * used to key off zero-padded numbers in the old filenames, which worked but
+ * was a trap: picnic05 was hers and picnic5 was Logan's. The re-edited set is
+ * named by model, so the rule says what it means.
  */
 const BY_IMAGE: { test: RegExp; model: ModelKey }[] = [
-  { test: /sierra-picnic0\d\.jpg$/, model: 'stephanie' },
+  { test: /picnic-steph-/, model: 'stephanie' },
 ];
 
 export function modelForImage(handle: string, colorName: string, src: string): Model | undefined {

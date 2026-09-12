@@ -47,6 +47,14 @@ const rule    = '#F0D9E1';
  */
 const COLOUR_BLOCK_GAP = '24px';
 
+/**
+ * Trust strip claims for a product that doesn't name its own.
+ *
+ * True of the shorts (100% recycled nylon). A product whose fabric is not
+ * recycled must set trustClaims in lib/productDetails.ts — the pant does.
+ */
+const DEFAULT_TRUST_CLAIMS = ['women-owned', 'WRAP-certified', 'recycled fabric'];
+
 const eyebrowStyle: React.CSSProperties = {
   fontFamily: sans,
   fontWeight: 700,
@@ -617,7 +625,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 header for the product rather than as a second footnote row
                 stacked under the shipping/returns line. */}
             <div className="pdp-strip pdp-strip--trust">
-              {['women-owned', 'WRAP-certified', 'recycled fabric'].map((claim, i) => (
+              {(fabricDetail?.trustClaims ?? DEFAULT_TRUST_CLAIMS).map((claim, i) => (
                 <span key={claim} className="pdp-strip-item">
                   {i > 0 && <span className="pdp-strip-sep">·</span>}
                   <span className="pdp-strip-mark">✦</span>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import PhoneOptIn, { PHONE_THEMES } from '@/components/PhoneOptIn';
 import { getAttribution } from '@/lib/attribution';
 import { getReferralCode } from '@/lib/referralClient';
+import { WELCOME_CODE, saveWelcomeCode } from '@/lib/discount';
 
 // ─── Landing-page design tokens ───────────────────────────────────────────────
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
@@ -40,6 +41,7 @@ export default function InvitePage() {
         setStep('error');
       } else {
         // Email is banked at this point — now the optional phone ask.
+        saveWelcomeCode();
         setStep('phone');
       }
     } catch {
@@ -157,8 +159,9 @@ export default function InvitePage() {
           }}
         >
           {[
-            'vote on what we make for our next collection',
-            '24-hour early access to our launch before anyone else',
+            '10% off your first order, the second you join',
+            'special perks, discounts + early access to new drops',
+            'insider info and behind-the-scenes sneak peeks',
           ].map((item) => (
             <li
               key={item}
@@ -196,9 +199,9 @@ export default function InvitePage() {
 
         {step === 'success' && (
           <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: maroon, margin: 0, textTransform: 'lowercase' }}>
-            {joinedSms
-              ? 'done — you’ll get the drop link by text first ✦'
-              : 'you’re in — we’ll be in touch ✦'}
+            you’re in ✦ 10% off your first order with code{' '}
+            <span style={{ letterSpacing: '0.1em' }}>{WELCOME_CODE}</span>
+            {joinedSms ? ' — and you’ll get the drop link by text first.' : ' — it’s in your inbox too.'}
           </p>
         )}
 

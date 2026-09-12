@@ -5,6 +5,7 @@ import { useState } from 'react';
 import PhoneOptIn, { PHONE_THEMES } from './PhoneOptIn';
 import { getAttribution } from '@/lib/attribution';
 import { getReferralCode } from '@/lib/referralClient';
+import { WELCOME_CODE, saveWelcomeCode } from '@/lib/discount';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
 const serif  = "'Cormorant Garamond', Georgia, serif";
@@ -47,6 +48,8 @@ export default function Footer() {
         body: JSON.stringify({ email, source: 'footer', attribution: getAttribution(), ref: getReferralCode() }),
       });
       setStatus(res.ok ? 'success' : 'error');
+      // Same welcome offer as the popup — one club, one code.
+      if (res.ok) saveWelcomeCode();
     } catch {
       setStatus('error');
     }
@@ -106,7 +109,7 @@ export default function Footer() {
                 textTransform: 'lowercase',
               }}
             >
-              get notified when our next pieces drop.
+              get 10% off your first order.
             </h3>
 
             {/* Same three perks as the welcome popup — one consistent ask. */}
@@ -117,9 +120,9 @@ export default function Footer() {
               }}
             >
               {[
-                'first look, 24 hours early',
-                'a vote on what we make next',
-                'restock alerts',
+                '10% off, the second you join',
+                'special perks, discounts + early access to new drops',
+                'insider info and behind-the-scenes sneak peeks',
               ].map((perk) => (
                 <li
                   key={perk}
@@ -144,9 +147,9 @@ export default function Footer() {
               />
             ) : status === 'success' ? (
               <p style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: '#fff', margin: 0, textTransform: 'lowercase' }}>
-                {joinedSms
-                  ? 'you’re in — we’ll text you the moment the next piece drops ✦'
-                  : 'you’re in — we’ll let you know the moment the next piece drops ✦'}
+                you’re in ✦ here’s 10% off your first order:{' '}
+                <span style={{ letterSpacing: '0.1em' }}>{WELCOME_CODE}</span>
+                {joinedSms ? ' — and we’ll text you when the next piece drops.' : ' — it’s in your inbox too.'}
               </p>
             ) : (
               <>

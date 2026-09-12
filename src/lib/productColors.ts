@@ -24,16 +24,15 @@ export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> =
 
 // Explicit gallery images per colorway (used when a product has different
 // numbers of photos per color). Lead/front shot first.
-const PP = '/images-2/model';
 
 /**
  * The September 2026 studio shoot. Both folders are shot on white at
  * 2400x3600 — the same 2:3 as the set they replace, so the gallery geometry
  * is unchanged.
  *
- * The old /images-2/model files are still on disk and still used by the
- * lifestyle strip and the landing page, so nothing here is destructive: point
- * a list back at `${PP}/...` to restore any previous gallery.
+ * /images-2/model and the two per-shoot folders have been deleted from disk,
+ * so there is nothing left to fall back to — these paths are the only product
+ * photography the site has.
  *
  * NOTE: scripts/import-product-photos.py no longer drives these lists. It
  * numbered files jam-1.jpg, jam-2.jpg ... in gallery order; these are hand
@@ -41,68 +40,82 @@ const PP = '/images-2/model';
  * photographer's, not a running order. Re-running that script will NOT
  * regenerate this.
  */
-const SS = '/images-2/sierra-newest-shoot-pics';
-const JS = '/images-2/juniper-newest-shoot-pics';
+/**
+ * The re-edited September 2026 studio set. Every product photo on the site
+ * comes from this one folder now; the per-shoot folders it replaced are gone
+ * from disk, so any path still pointing at them is a 404.
+ *
+ * Filenames are colourway-angle-n, assigned by going through all 99 frames:
+ * front / 34 / side / back / detail / fun, plus picnic-steph-* for the second
+ * Picnic model and group-all-* for the multi-model frames. The number is just
+ * a counter within that colourway and angle — it carries no ranking.
+ */
+const RE = '/images-2/reedited-photos/Highlights';
 
 export const PRODUCT_COLOR_IMAGES: Record<string, Record<string, string[]>> = {
   /**
-   * Order is the same for every colourway, because a shopper who flips
-   * between them should not have the gallery rearrange under her:
+   * Same running order for every colourway, so flipping between them does not
+   * rearrange the gallery:
    *
-   *   1 front full   2 three-quarter   3 side   4 back   5-7 details
+   *   1 front  2 three-quarter  3 side  4 back  5-7 details  8 a fun frame
    */
   'sierra-shorts': {
     Jam: [
-      `${SS}/sierra-jam2.jpg`,   // front, full length
-      `${SS}/sierra-jam7.jpg`,   // three-quarter, hand on hip
-      `${SS}/sierra-jam5.jpg`,   // side profile
-      `${SS}/sierra-jam13.jpg`,  // back
-      `${SS}/sierra-jam11.jpg`,  // waistband, held at the elastic
-      `${SS}/sierra-jam15.jpg`,  // hem + woven label
-      `${SS}/sierra-jam8.jpg`,   // folded forward — closes the set on movement
+      `${RE}/jam-front-5.jpg`,
+      `${RE}/jam-34-1.jpg`,
+      `${RE}/jam-side-1.jpg`,
+      `${RE}/jam-back-1.jpg`,
+      `${RE}/jam-detail-2.jpg`,   // waistband held at the elastic
+      `${RE}/jam-detail-4.jpg`,   // hem + woven label
+      `${RE}/jam-fun-1.jpg`,      // folded forward
+      `${RE}/jam-fun-6.jpg`,      // lying down
     ],
     Picnic: [
-      `${SS}/sierra-picnic16.jpg`, // front, full length
-      `${SS}/sierra-picnic11.jpg`, // three-quarter, hand on hip
-      `${SS}/sierra-picnic13.jpg`, // side profile
-      `${SS}/sierra-picnic5.jpg`,  // back
-      `${SS}/sierra-picnic8.jpg`,  // waist-to-thigh, how it sits
-      `${SS}/sierra-picnic2.jpg`,  // gingham close-up + woven label
-      // Second model, same colourway. Kept as a block at the end rather than
-      // interleaved, so the gallery reads as "and here she is on someone
-      // else" instead of looking like the first model changed mid-scroll.
-      // These are the zero-padded filenames — see BY_IMAGE in lib/models.ts.
-      `${SS}/sierra-picnic05.jpg`, // three-quarter from behind
-      `${SS}/sierra-picnic03.jpg`, // side profile
-      `${SS}/sierra-picnic01.jpg`, // seated
+      `${RE}/picnic-front-1.jpg`,
+      `${RE}/picnic-34-1.jpg`,
+      `${RE}/picnic-side-1.jpg`,
+      `${RE}/picnic-back-2.jpg`,
+      `${RE}/picnic-detail-2.jpg`, // gingham + woven label
+      `${RE}/picnic-fun-4.jpg`,
+      // Second model, kept as a block at the end so the gallery reads as
+      // "and here she is on someone else" — see lib/models.ts.
+      `${RE}/picnic-steph-34-2.jpg`,
+      `${RE}/picnic-steph-side-1.jpg`,
+      `${RE}/picnic-steph-fun-4.jpg`,
     ],
     Confetti: [
-      `${SS}/sierra-confetti9.jpg`, // front, full length
-      `${SS}/sierra-confetti7.jpg`, // three-quarter, walking
-      `${SS}/sierra-confetti6.jpg`, // side profile
-      // confetti3 (back three-quarter) removed: too close to the side profile
-      // directly above it to earn its own frame.
-      `${SS}/sierra-confetti2.jpg`, // back, close — the print at scale
-      `${SS}/sierra-confetti0.jpg`, // pocket + woven label
+      `${RE}/confetti-front-1.jpg`,
+      `${RE}/confetti-34-1.jpg`,
+      `${RE}/confetti-side-1.jpg`,
+      `${RE}/confetti-34-3.jpg`,   // three-quarter from behind
+      `${RE}/confetti-detail-2.jpg`,
+      `${RE}/confetti-detail-3.jpg`,
+      `${RE}/confetti-fun-1.jpg`,
     ],
   },
   'juniper-pant': {
     Birch: [
-      `${JS}/birch-juniper2.jpg`,  // front, full length
-      `${JS}/birch-juniper5.jpg`,  // three-quarter
-      `${JS}/birch-juniper3.jpg`,  // side profile
-      `${JS}/birch-juniper4.jpg`,  // back
-      `${JS}/birch-juniper8.jpg`,  // fold-over waist + cargo pocket
-      `${JS}/birch-juniper12.jpg`, // cargo pocket + woven label
-      `${JS}/birch-juniper13.jpg`, // flare over the boot
+      `${RE}/birch-front-1.jpg`,
+      `${RE}/birch-34-1.jpg`,
+      `${RE}/birch-side-1.jpg`,
+      `${RE}/birch-back-1.jpg`,
+      `${RE}/birch-detail-2.jpg`,  // fold-over waist + cargo pocket
+      `${RE}/birch-detail-4.jpg`,  // cargo pocket + woven label
+      `${RE}/birch-detail-5.jpg`,  // flare over the boot
+      `${RE}/birch-fun-8.jpg`,
     ],
+    // Olive runs full-length first, then close, then two poses. It is the one
+    // colourway with no side profile in the gallery: olive-side-1 is the only
+    // side frame in the set and it was cut, so there is nothing to put back.
     Olive: [
-      `${JS}/olive-juniper0.jpg`,  // front, full length
-      `${JS}/olive-juniper6.jpg`,  // three-quarter, hands in pockets
-      `${JS}/olive-juniper2.jpg`,  // side profile
-      `${JS}/olive-juniper7.jpg`,  // back
-      `${JS}/olive-juniper4.jpg`,  // fold-over waist + cargo pocket
-      `${JS}/olive-juniper9.jpg`,  // cargo pocket, opened
+      `${RE}/olive-front-1.jpg`,
+      `${RE}/olive-34-1.jpg`,
+      `${RE}/olive-back-1.jpg`,
+      `${RE}/olive-front-3.jpg`,   // waist to hem — the flare and both pockets
+      `${RE}/olive-detail-1.jpg`,  // fold-over waist + cargo pocket
+      `${RE}/olive-detail-5.jpg`,  // cargo pocket label
+      `${RE}/olive-fun-1.jpg`,     // crouched, tying a boot
+      `${RE}/olive-fun-2.jpg`,     // lying down, knees up
     ],
   },
 };

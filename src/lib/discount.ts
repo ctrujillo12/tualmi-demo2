@@ -69,3 +69,36 @@ export function clearDiscountCode(): void {
     /* no-op */
   }
 }
+
+/**
+ * ── The club welcome offer ────────────────────────────────────────────────
+ *
+ * Handed out for joining the Trailblazing Club (popup, footer, /invite).
+ *
+ * This string must match a real, ACTIVE discount code in Shopify
+ * (Discounts → Amount off order → 10%). If the Shopify code is renamed or
+ * expires, checkout silently drops it — Shopify ignores an unknown code
+ * rather than erroring — and the shopper pays full price after we promised
+ * 10%. Change it in one place: here.
+ *
+ * The same string also has to appear in the Klaviyo welcome email, which is
+ * the copy that survives after this browser session ends.
+ */
+export const WELCOME_CODE = 'TRAILBLAZER10';
+
+/**
+ * Pre-apply the welcome code after a successful signup.
+ *
+ * NEVER overwrites a creator/affiliate code already picked up at
+ * /discount/[code] this session. Shopify only accepts one code per checkout
+ * here (cartCreate sends a single-entry discountCodes array), so overwriting
+ * would quietly take a sale off a creator's ledger to save the shopper the
+ * same 10% they were already getting. The creator's code wins; the welcome
+ * code is still in their email for next time.
+ */
+export function saveWelcomeCode(): void {
+  if (typeof window === 'undefined') return;
+  const existing = getDiscountCode();
+  if (existing && existing !== WELCOME_CODE) return;
+  saveDiscountCode(WELCOME_CODE);
+}

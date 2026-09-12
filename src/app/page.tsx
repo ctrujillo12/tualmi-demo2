@@ -35,8 +35,7 @@ const SITE = 'https://tualmi.com';
 // Declared here, not next to LANDING_COVERS below: productsJsonLd uses them a
 // few lines down, and a const referenced above its own declaration is a
 // module-load ReferenceError, not just a lint complaint.
-const SS = '/images-2/sierra-newest-shoot-pics';
-const JS = '/images-2/juniper-newest-shoot-pics';
+const RE = '/images-2/reedited-photos/Highlights';
 const productsJsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -48,7 +47,7 @@ const productsJsonLd = {
       material: '100% recycled nylon',
       description:
         'Mid-rise, relaxed-fit women’s hiking shorts with a flattering, women-engineered cut, deep pockets sized for a full phone, and bold, print-forward colorways. Made from 100% recycled nylon.',
-      image: `${SITE}${SS}/sierra-jam2.jpg`,
+      image: `${SITE}${RE}/jam-front-5.jpg`,
       offers: {
         '@type': 'Offer', price: '68.00', priceCurrency: 'USD',
         availability: 'https://schema.org/PreOrder', url: `${SITE}/products/sierra-shorts`,
@@ -62,7 +61,7 @@ const productsJsonLd = {
       material: 'Sustainable, recycled materials',
       description:
         'Fashion-forward flare cargo pants that are genuinely trail-ready, with a flattering fold-over waist, functional cargo pockets, and a flared leg crafted for women’s proportions, not scaled down from a men’s pattern. Made from sustainable, recycled materials.',
-      image: `${SITE}${JS}/birch-juniper2.jpg`,
+      image: `${SITE}${RE}/birch-front-1.jpg`,
       offers: {
         '@type': 'Offer', price: '108.00', priceCurrency: 'USD',
         availability: 'https://schema.org/PreOrder', url: `${SITE}/products/juniper-pant`,
@@ -94,7 +93,6 @@ const priceLabel = (cents: number) => {
 // Landing-page cover shot per colorway. Kept separate from the product-page
 // gallery order (PRODUCT_COLOR_IMAGES) so the landing can lead with a different
 // photo than the PDP. Falls back to the gallery lead if unset.
-const MP = '/images-2/model';
 /**
  * Moved onto the September 2026 studio shoot alongside the product galleries —
  * leaving these on the old set would have put two different shoots of the same
@@ -106,19 +104,22 @@ const MP = '/images-2/model';
  */
 const LANDING_COVERS: Record<string, Record<string, string>> = {
   'sierra-shorts': {
-    Jam:      `${SS}/sierra-jam2.jpg`,
-    Picnic:   `${SS}/sierra-picnic16.jpg`,
+    // Smiling, straight-on — the only open-smile front frame in the Jam set.
+    // Not the Jam gallery lead (that's jam-front-5), so the tile and the PDP
+    // open on different photographs.
+    Jam:      `${RE}/jam-front-3.jpg`,
+    Picnic:   `${RE}/picnic-front-1.jpg`,
     // Leaning three-quarter — not in the Confetti gallery, so the landing tile
     // and the product page do not open on the same photograph.
-    Confetti: `${SS}/sierra-confetti4.jpg`,
+    Confetti: `${RE}/confetti-34-2.jpg`,
   },
   'juniper-pant': {
-    Birch: `${JS}/birch-juniper5.jpg`,
+    Birch: `${RE}/birch-34-1.jpg`,
     // Not the gallery lead for Olive: a second full-length standing shot beside
     // Birch's made the pants band repetitive. This one is a waist-to-hem crop —
     // fold-over waist, cargo pocket, label and flare in one frame — which fills
     // the 2:3 tile and gives the row something to look at.
-    Olive: `${JS}/olive-juniper4.jpg`,
+    Olive: `${RE}/olive-detail-1.jpg`,
   },
 };
 
@@ -180,8 +181,11 @@ const DROP_PRODUCTS: DropProduct[] = [
 ];
 
 const COMING_SOON = [
-  { name: 'tioga tee', image: '/images-2/model/tioga-1.jpg' },
-  { name: 'frolic fleece', image: '/images-2/model/frolic-1.jpg' },
+  // The /images-2/model shoot is gone from disk, and the re-edited set has no
+  // tee or fleece in it — neither garment was shot. These are the only images
+  // of them left in the repo.
+  { name: 'tioga tee', image: '/images-2/Website Photos/Top Coming Soon/2.png' },
+  { name: 'frolic fleece', image: '/images-2/Website Photos/Fleece Coming Soon/1.png' },
 ];
 
 // ─── Social TikToks ───────────────────────────────────────────────────────────
@@ -297,41 +301,21 @@ export default async function Home() {
             ethically, and designed to last because we&apos;re not interested in adding to the pile.
           </p>
 
-          <div style={{ textAlign: 'left' }}>
+          {/* Both links live in the flow, so they are there at every width.
+              "read our full story" used to be an absolutely-positioned link
+              shown only above xl — this section is the only place on the
+              landing page that tells the brand story, and on a phone it ended
+              with no way to hear the rest of it. */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '18px', textAlign: 'left' }}>
             <Link href="/invite" style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: brick, textTransform: 'lowercase', textDecorationThickness: '1px', textUnderlineOffset: '4px' }}>
               join the club
+            </Link>
+            <Link href="/story" style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: sageDeep, textTransform: 'lowercase', textDecorationThickness: '1px', textUnderlineOffset: '4px' }}>
+              read our full story
             </Link>
           </div>
         </div>
 
-        {/* Marginal link out to the story page.
-            It's absolutely positioned against the section, so it doesn't push
-            the centred column aside, it floats over whatever is there. That's
-            fine when the window is wide enough for the column to sit well
-            clear of it, and a mess when it isn't: at md/lg this was landing on
-            top of the paragraph text (43px into it at 768px, 17px at 1024px).
-            Widening the label to "read our story" made that worse, so the
-            breakpoint moved from md to xl, where the column starts at x=210
-            and the link ends at x=143. Nothing is lost at smaller widths,
-            because "our story" is in the header nav at every size. */}
-        <Link
-          href="/story"
-          style={{
-            position: 'absolute',
-            left: 'clamp(20px, 4vw, 56px)',
-            top: '50%',
-            fontFamily: sans,
-            fontSize: '13px',
-            fontWeight: 500,
-            color: brick,
-            textDecoration: 'none',
-            textTransform: 'lowercase',
-            whiteSpace: 'nowrap',
-          }}
-          className="hidden xl:block"
-        >
-          read our story
-        </Link>
       </section>
 
       {/* ══ 3 · THE DROP — one panel per product, all colorways shown ═════ */}

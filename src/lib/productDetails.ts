@@ -33,6 +33,14 @@ export interface FabricDetail {
   sizeChart?: SizeChart;
   /** Optional highlighted note near the CTA — e.g. a ship-date delay */
   shipNote?: string;
+  /**
+   * The three claims in the strip above the product name.
+   *
+   * Per product, because they are factual claims about THIS garment and not
+   * every garment is made the same way. Omit to get DEFAULT_TRUST_CLAIMS in
+   * components/ProductDetailClient.tsx.
+   */
+  trustClaims?: string[];
 }
 
 export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
@@ -61,6 +69,9 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
   },
 
   'juniper-pant': {
+    // NOT 'recycled fabric': the pant's shell is virgin nylon/spandex. The
+    // default claim list says recycled and would have been false here.
+    trustClaims: ['women-owned', 'WRAP-certified', 'designed in LA'],
     shell: '90% Nylon, 10% Spandex',
     lining: '84% Nylon, 16% Spandex',
     weight: '200 GSM',
@@ -69,7 +80,10 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       { icon: 'stretch',  label: '4-way stretch' },
       { icon: 'pocket',   label: 'Cargo pockets' },
       { icon: 'cinch',    label: 'Drawcord hem' },
-      { icon: 'recycled', label: 'Recycled materials' },
+      // Was 'Recycled materials' — the same false claim as the trust strip,
+      // on the same page. Removing one and leaving the other would have been
+      // incoherent.
+      { icon: 'women',    label: 'Women-engineered fit' },
     ],
     features: [
       '4-way stretch shell for full range of motion',
