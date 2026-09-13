@@ -174,6 +174,24 @@ body {
   }
 }
 
+/* Where the "you might also like" row sits.
+
+   Desktop: full width under both columns, after the checkout button — the
+   total is what the shopper came to read, and pushing it down the page to
+   merchandise a second item is how you lose the first one.
+
+   Mobile: between the items and the order summary. The single-column summary
+   is a long scroll of its own (shipping bar, four price rows, the fine print,
+   the button), so anything placed after it is effectively past the end of the
+   page — nobody scrolls back up from a checkout button to browse. */
+.cart-upsell-slot { grid-column: 1 / -1; }
+
+@media (max-width: 768px) {
+  .cart-items-col     { order: 1; }
+  .cart-upsell-slot   { order: 2; margin-top: 4px; }
+  .cart-summary-panel { order: 3; }
+}
+
 /* A cart line on a phone.
    The 100px thumb + 20px gap left roughly 230px for the details column on a
    390px screen, and the name row has to share that with the price. The result

@@ -183,7 +183,7 @@ export default function CartPage() {
         <div className="cart-grid">
 
           {/* Left: items */}
-          <div>
+          <div className="cart-items-col">
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {items.map((item, index) => (
                 <CartItem
@@ -319,13 +319,16 @@ export default function CartPage() {
             </p>
           </div>
 
-        </div>
+          {/* The colourways of the drop that aren't in this cart yet.
+              Inside the grid rather than after it so the two layouts can put
+              it in different places (see .cart-upsell-slot in globals.css):
+              full width under both columns on desktop, where the total is
+              still the first thing read; between the items and the summary on
+              a phone, where the summary is a long scroll of its own and
+              anything below it is effectively past the end of the page. */}
+          <CartUpsell className="cart-upsell-slot" />
 
-        {/* Under everything, below the checkout button: the colourways of the
-            drop that aren't in this cart yet. Deliberately last — the total is
-            what they came to read, and pushing it down the page to sell a
-            second item is how you lose the first one. */}
-        <CartUpsell />
+        </div>
       </div>
     </main>
   );

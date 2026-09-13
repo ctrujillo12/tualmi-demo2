@@ -111,6 +111,7 @@ export const PRODUCT_COLOR_IMAGES: Record<string, Record<string, string[]>> = {
       `${RE}/olive-front-1.jpg`,
       `${RE}/olive-34-1.jpg`,
       `${RE}/olive-back-1.jpg`,
+      `${RE}/olive-back-2.jpg`,    // second back angle — slot 4
       `${RE}/olive-detail-1.jpg`,  // fold-over waist + cargo pocket
       `${RE}/olive-detail-5.jpg`,  // cargo pocket label
       `${RE}/olive-fun-1.jpg`,     // crouched, tying a boot

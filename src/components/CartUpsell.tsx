@@ -63,7 +63,10 @@ const ADDON_HANDLES = ['trailblazing-tote'];
  * true of this one — the fabric and the size — are what make it worth a tap.
  */
 const ADDON_NOTES: Record<string, string> = {
-  'trailblazing-tote': '100% organic cotton · extra-wide',
+  // U+2011 non-breaking hyphen: at three tiles across, a normal hyphen let
+  // "extra-wide" break as "extra-" / "wide" and turned a two-line note into a
+  // ragged three.
+  'trailblazing-tote': '100% organic cotton · extra\u2011wide',
 };
 
 /** Everything fetched in one call, add-ons first. */
@@ -87,7 +90,7 @@ type Tile = {
   note?: string;
 };
 
-export default function CartUpsell() {
+export default function CartUpsell({ className = '' }: { className?: string }) {
   const items = useCartStore((s) => s.items);
   const [products, setProducts] = useState<Product[] | null>(null);
 
@@ -175,7 +178,7 @@ export default function CartUpsell() {
   }
 
   return (
-    <section className="cu-root" aria-labelledby="cu-heading">
+    <section className={`cu-root ${className}`.trim()} aria-labelledby="cu-heading">
       <style>{`
         .cu-root {
           margin-top: clamp(48px, 7vw, 76px);
@@ -193,8 +196,34 @@ export default function CartUpsell() {
         @media (max-width: 900px) {
           .cu-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         }
+        /* Three across on a phone rather than two.
+           This row now sits BETWEEN the items and the order summary on mobile
+           (see .cart-upsell-slot in globals.css), so its height is spent
+           before the shopper reaches the total — two big tiles per row put
+           three rows of merchandising in front of the number she came to
+           read. At three across all five options fit in two short rows.
+
+           The price moves to its own line here: "confetti · $68" does not fit
+           on one line in a ~100px tile, and .cu-meta is a flex row, so it
+           overflowed the tile rather than wrapping. */
         @media (max-width: 560px) {
-          .cu-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .cu-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 14px;
+          }
+          .cu-tile  { padding: 6px 6px 8px; border-radius: 10px; }
+          /* Slightly squarer than the 3/4 above — a tall crop at this width is
+             mostly leg, and the height is what we're trying to save. */
+          .cu-photo { aspect-ratio: 4 / 5; border-radius: 6px; }
+          .cu-meta  { flex-wrap: wrap; font-size: 10.5px; gap: 4px; margin-top: 7px; }
+          .cu-sep   { display: none; }
+          /* flex-basis alone gives it the whole line but leaves the text
+             ranged left inside it, out of line with everything else. */
+          .cu-price { flex-basis: 100%; text-align: center; }
+          .cu-swatch { width: 8px; height: 8px; }
+          .cu-name  { font-size: 9.5px; }
+          .cu-note  { font-size: 9px; margin-top: 1px; }
         }
         .cu-tile {
           background: #fff;
@@ -320,10 +349,10 @@ export default function CartUpsell() {
                 <>
                   <span className="cu-swatch" style={{ background: t.swatch ?? 'transparent' }} aria-hidden />
                   {t.color.toLowerCase()}
-                  <span aria-hidden style={{ opacity: 0.45 }}>·</span>
+                  <span className="cu-sep" aria-hidden style={{ opacity: 0.45 }}>·</span>
                 </>
               ) : null}
-              <span style={{ fontWeight: 700 }}>{priceLabel(t.product.price)}</span>
+              <span className="cu-price" style={{ fontWeight: 700 }}>{priceLabel(t.product.price)}</span>
             </p>
             <p className="cu-name">{t.product.name.toLowerCase()}</p>
             {t.note && <p className="cu-note">{t.note}</p>}
