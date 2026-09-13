@@ -9,8 +9,16 @@ import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import type { Product } from '@/types';
 
 /**
- * "You might also like" — every colourway of the drop that isn't already in
- * the cart, addable without leaving the page.
+ * "You might also like" — the standard DTC cart recommendation row: every
+ * colourway of the drop that isn't already in the cart, plus the one-size
+ * add-ons, all addable without leaving the page.
+ *
+ * The tote sits in here as an ordinary tile rather than in the order summary.
+ * A cheap add-on pinned under the subtotal, next to a shipping number, reads
+ * as a squeeze — the shopper can see you're selling her the gap. In the
+ * recommendation row it's just the cheapest thing on offer, one tap away, and
+ * she can do the free-shipping arithmetic herself if she wants to. Nothing
+ * here mentions the threshold; <FreeShippingBar> already owns that message.
  *
  * Sits under the whole cart, below the checkout button. The order of operations
  * matters: someone reads the total, decides they're done, and only then is it
@@ -39,6 +47,28 @@ const soft   = '#C9849A';
 /** Which products to offer, in order. Colourways come from PRODUCT_COLORS. */
 const UPSELL_HANDLES = ['sierra-shorts', 'juniper-pant'];
 
+/**
+ * One-size add-ons, shown first — they're the low-commitment tile, which is
+ * where the eye goes and what most carts actually add. No colourway, no size
+ * step, no product-page link (the tote is unlisted; see UNLISTED_HANDLES in
+ * lib/products.ts, and there's no merchandised page to send anyone to).
+ */
+const ADDON_HANDLES = ['trailblazing-tote'];
+
+/**
+ * The one detail an add-on tile has to earn its click with.
+ *
+ * A tote is a shape everyone thinks they already know, so "tote bag · $__"
+ * tells a shopper nothing she can decide on. The two things that are actually
+ * true of this one — the fabric and the size — are what make it worth a tap.
+ */
+const ADDON_NOTES: Record<string, string> = {
+  'trailblazing-tote': '100% organic cotton · extra-wide',
+};
+
+/** Everything fetched in one call, add-ons first. */
+const ALL_HANDLES = [...ADDON_HANDLES, ...UPSELL_HANDLES];
+
 /** $68 / $68.50 — whole dollars read cleaner on a small tile. */
 const priceLabel = (cents: number) => {
   const d = cents / 100;
@@ -49,9 +79,12 @@ type Tile = {
   key: string;
   product: Product;
   handle: string;
-  color: string;
-  swatch: string;
+  /** null for a one-size add-on — no colourway, no swatch, no page link. */
+  color: string | null;
+  swatch: string | null;
   image?: string;
+  /** Add-ons only: the fabric/fit line under the name. */
+  note?: string;
 };
 
 export default function CartUpsell() {
@@ -63,7 +96,7 @@ export default function CartUpsell() {
   // variants, which is what makes the added line survive checkout.
   useEffect(() => {
     let alive = true;
-    fetch(`/api/products?handles=${UPSELL_HANDLES.join(',')}`)
+    fetch(`/api/products?handles=${ALL_HANDLES.join(',')}`)
       .then(async (r) => {
         if (!r.ok) throw new Error(`/api/products responded ${r.status}`);
         return r.json();
@@ -95,7 +128,24 @@ export default function CartUpsell() {
         i.selectedColor.toLowerCase() === color.toLowerCase(),
     );
 
-  const tiles: Tile[] = UPSELL_HANDLES.flatMap((handle) => {
+  const addonTiles: Tile[] = ADDON_HANDLES.flatMap((handle) => {
+    const product = byHandle.get(handle);
+    if (!product) return [];
+    // Already in the cart — offering it again is the thing that makes a
+    // recommendation row feel like an upsell rather than a suggestion.
+    if (items.some((i) => (i.product.handle ?? i.product.id) === handle)) return [];
+    return [{
+      key: handle,
+      product,
+      handle,
+      color: null,
+      swatch: null,
+      image: product.images?.[0],
+      note: ADDON_NOTES[handle],
+    }];
+  });
+
+  const colorTiles: Tile[] = UPSELL_HANDLES.flatMap((handle) => {
     const product = byHandle.get(handle);
     if (!product) return [];
     return (PRODUCT_COLORS[handle] ?? [])
@@ -109,6 +159,8 @@ export default function CartUpsell() {
         image: PRODUCT_COLOR_IMAGES[handle]?.[c.name]?.[0] ?? product.images?.[0],
       }));
   });
+
+  const tiles: Tile[] = [...addonTiles, ...colorTiles];
 
   // Cart already has one of everything — say nothing rather than show an
   // empty heading.
@@ -189,6 +241,18 @@ export default function CartUpsell() {
           text-transform: lowercase;
           margin: 3px 0 0;
         }
+        .cu-note {
+          font-family: ${sans};
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 0.02em;
+          color: ${soft};
+          text-align: center;
+          text-transform: lowercase;
+          margin: 2px 0 0;
+          opacity: 0.85;
+          line-height: 1.4;
+        }
         /* Pushes the button to the bottom so tiles line up even when a name
            wraps to two lines. */
         .cu-add { margin-top: auto; }
@@ -224,34 +288,50 @@ export default function CartUpsell() {
       <div className="cu-grid">
         {tiles.map((t) => (
           <div key={t.key} className="cu-tile">
-            <Link
-              href={`/products/${t.handle}?color=${encodeURIComponent(t.color)}`}
-              className="cu-photo"
-              aria-label={`${t.product.name} in ${t.color}`}
-            >
-              {t.image && (
+            {(() => {
+              const alt = t.color ? `${t.product.name} in ${t.color}` : t.product.name;
+              const photo = t.image ? (
                 <Image
                   src={t.image}
-                  alt={`${t.product.name} in ${t.color}`}
+                  alt={alt}
                   fill
                   sizes="(max-width: 560px) 45vw, (max-width: 900px) 30vw, 240px"
                   style={{ objectFit: 'cover' }}
                 />
-              )}
-            </Link>
+              ) : null;
+
+              // An add-on has no product page to link to, so its photo is a
+              // plain frame. A dead link here would be worse than none.
+              return t.color ? (
+                <Link
+                  href={`/products/${t.handle}?color=${encodeURIComponent(t.color)}`}
+                  className="cu-photo"
+                  aria-label={alt}
+                >
+                  {photo}
+                </Link>
+              ) : (
+                <div className="cu-photo">{photo}</div>
+              );
+            })()}
 
             <p className="cu-meta">
-              <span className="cu-swatch" style={{ background: t.swatch }} aria-hidden />
-              {t.color.toLowerCase()}
-              <span aria-hidden style={{ opacity: 0.45 }}>·</span>
+              {t.color ? (
+                <>
+                  <span className="cu-swatch" style={{ background: t.swatch ?? 'transparent' }} aria-hidden />
+                  {t.color.toLowerCase()}
+                  <span aria-hidden style={{ opacity: 0.45 }}>·</span>
+                </>
+              ) : null}
               <span style={{ fontWeight: 700 }}>{priceLabel(t.product.price)}</span>
             </p>
             <p className="cu-name">{t.product.name.toLowerCase()}</p>
+            {t.note && <p className="cu-note">{t.note}</p>}
 
             <div className="cu-add">
               <QuickAdd
                 product={t.product}
-                color={t.color}
+                color={t.color ?? ''}
                 accent={maroon}
                 stayOnPage
                 sizeVariant="link"

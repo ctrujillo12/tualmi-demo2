@@ -97,7 +97,21 @@ const ALT_SHOPIFY_HANDLES: Record<string, string[]> = {
 };
 
 // Products removed from the site entirely (may still exist in Shopify)
-const REMOVED_HANDLES = ['carabiner', 'trailblazing-tote'];
+const REMOVED_HANDLES = ['carabiner'];
+
+/**
+ * Real, buyable products that are deliberately kept OUT of every listing.
+ *
+ * The tote is a cart-page add-on, not a line in the shop: it exists to bridge
+ * the last few dollars to free shipping, and putting it in the grid next to
+ * the pant would just give a shopper a cheaper thing to buy instead. So
+ * getProducts() (the shop, the landing page) skips it, while getProduct()
+ * still resolves it by handle for /api/products and the cart add-on.
+ *
+ * This is the difference between "unlisted" and REMOVED_HANDLES above, which
+ * is "gone" — a removed handle 404s on purpose.
+ */
+const UNLISTED_HANDLES = ['trailblazing-tote'];
 
 /**
  * The Shopify handle that actually answered, per site handle.
@@ -156,7 +170,10 @@ export async function getProducts(): Promise<Product[]> {
       return shopifyProducts
         .map(toProduct)
         .map(normalizeProduct)
-        .filter((p) => !REMOVED_HANDLES.includes(p.handle ?? p.id));
+        .filter((p) => {
+          const h = p.handle ?? p.id;
+          return !REMOVED_HANDLES.includes(h) && !UNLISTED_HANDLES.includes(h);
+        });
     }
   } catch (err) {
     console.warn('[products] Shopify fetch failed, using local data:', err);

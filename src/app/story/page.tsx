@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'our story',
@@ -84,7 +85,6 @@ export default function StoryPage() {
             She came home with an idea: gear that felt more like the women actually wearing it.
             Together with her co-founder Cheyenne, she built Tualmi.
           </p>
-
           <p style={bodyStyle}>
             Tualmi makes technical outdoor gear designed for women from the start. Flattering fits,
             playful prints, and the performance to keep up with wherever you&apos;re headed.
@@ -103,6 +103,62 @@ export default function StoryPage() {
           <p style={bodyStyle}>
             Love, Rachel &amp; Cheyenne🌸
           </p>
+
+          {/*
+            The founders, at the end — the sign-off is the moment a reader
+            looks up, and a photo is a better last thing than a paragraph.
+
+            PERFORMANCE, because the original took a visible beat to appear:
+            this points at founders-web.jpg, not the 669KB camera original.
+            That file is pre-cropped to the 4:5 the layout wants and resized to
+            1040px — 2x the 520px it ever renders at — which is 166KB before
+            Next touches it. The crop is baked into the file rather than done
+            with objectPosition, so nothing is downloaded only to be hidden.
+
+            It sits below the fold, so it stays lazy (no `priority` — that
+            would make it compete with the text above it). The base64 blur is
+            a 10x13 thumbnail of itself, inline, so the space is filled the
+            instant the page paints instead of sitting blank until the photo
+            lands.
+          */}
+          <figure style={{ margin: 'clamp(16px, 3vw, 28px) 0 0', textAlign: 'center' }}>
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                maxWidth: '520px',
+                margin: '0 auto',
+                aspectRatio: '4 / 5',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                backgroundColor: '#F0D9E1',
+              }}
+            >
+              <Image
+                src="/images-2/founders-web.jpg"
+                alt="Rachel and Cheyenne, Tualmi's founders, beside an alpine lake"
+                fill
+                sizes="(max-width: 720px) 100vw, 520px"
+                quality={82}
+                placeholder="blur"
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANAAoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwAkuZ/Pjiebb5nyq5OKi8yPvGxP41PcxhoickDYTinxxgxqc9h2pOVx8ttj/9k="
+                style={{ objectFit: 'cover' }}
+              />
+            </div>
+            <figcaption
+              style={{
+                fontFamily: sans,
+                fontWeight: 600,
+                fontSize: '12px',
+                letterSpacing: '0.04em',
+                color: soft,
+                textTransform: 'lowercase',
+                margin: '12px 0 0',
+              }}
+            >
+              rachel &amp; cheyenne
+            </figcaption>
+          </figure>
         </div>
       </main>
     </div>

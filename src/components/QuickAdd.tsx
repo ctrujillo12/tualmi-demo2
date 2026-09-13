@@ -84,6 +84,18 @@ export default function QuickAdd({
 
   const sizes = product.sizes.filter((s) => s && s !== 'One Size');
 
+  /**
+   * One-size products (the tote) have nothing to pick, so the usual
+   * "+ add" → size row would open on an empty row. They add in one tap.
+   *
+   * The value passed through still comes off the product rather than a
+   * hardcoded string: findVariant() keys off Shopify's own option names, so a
+   * product that declares "One Size" has to be matched with it, and a plain
+   * single-variant product has to be matched with nothing.
+   */
+  const oneSize  = sizes.length === 0;
+  const soleSize = product.sizes?.length === 1 ? product.sizes[0] : '';
+
   const add = (size: string) => {
     const gallery = PRODUCT_COLOR_IMAGES[handle]?.[color] ?? product.images;
     const shopifyImg = product.images.find((u) => u.startsWith('http'));
@@ -169,7 +181,7 @@ export default function QuickAdd({
 
   return (
     <button
-      onClick={() => setOpen(true)}
+      onClick={() => (oneSize ? add(soleSize) : setOpen(true))}
       className="qa-btn"
       style={{ color: accent, borderColor: accent }}
     >

@@ -15,8 +15,9 @@ import { trackShippingNudge } from '@/lib/analytics';
  * Free-shipping messaging, shown in two places with the same numbers.
  *
  * ── WHY THIS STOPPED SAYING "$62 TO GO" ──────────────────────────────────
- * The gap number is only motivating when the gap is closeable. Every item in
- * this shop costs at least $68, so a one-item cart is never a small top-up
+ * (Figures below are from the $130 era; the reasoning is unchanged at $125.)
+ * The gap number is only motivating when the gap is closeable. Every garment
+ * in this shop costs at least $68, so a one-item cart is never a small top-up
  * away from the threshold — it is a whole second purchase away. "$62 away from
  * free US shipping" asked a shopper to spend $62 to save $7.99, which reads as
  * a penalty for buying one thing, and it was the loudest element on a screen
@@ -37,7 +38,8 @@ import { trackShippingNudge } from '@/lib/analytics';
  * Both fire trackShippingNudge so checkout completion can be compared between
  * them, and against the "$X to go" period before 27 Aug 2026.
  *
- * The threshold itself is unchanged and deliberate — $130, see lib/shipping.ts.
+ * The threshold itself is deliberate — see lib/shipping.ts for the number and
+ * the basket maths behind it.
  * This is a copy change. It moves no margin.
  *
  * `variant`:
@@ -80,9 +82,11 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
    * instead, and <CartUpsell> below is free to offer the $68 shorts on its own
    * terms.
    *
-   * 1.5× is a judgement call, not a discovered constant. It keeps the one-pair
-   * shorts cart (needs $62, add $68) and rejects the one-pant cart. Move it if
-   * the price ladder changes.
+   * 1.5× is a judgement call, not a discovered constant. At $125 it keeps the
+   * one-pair shorts cart (needs $57, add $68) and rejects the one-pant cart
+   * (needs $17, and a $108 pant is not the answer to $17). That cart gets the
+   * plain line, and the tote in <CartUpsell> is the cheap thing sitting there
+   * if she wants it. Move the multiplier if the price ladder changes.
    */
   const PROPORTIONATE = 1.5;
   const secondPairClears =

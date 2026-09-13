@@ -15,8 +15,11 @@ export const PUBLIC_LAUNCH_MS = new Date('2026-07-31T11:00:00-07:00').getTime();
 
 const STORAGE_KEY = 'tualmi_early_access';
 
-// Products that can be added to cart at launch
-export const SELLABLE_HANDLES = ['sierra-shorts', 'juniper-pant'];
+// Products that can be added to cart at launch.
+// The tote is here but NOT in GATED_HANDLES, so it stays addable even while
+// the main drop is gated — it's a shipping-threshold add-on, not part of the
+// launch sequence.
+export const SELLABLE_HANDLES = ['sierra-shorts', 'juniper-pant', 'trailblazing-tote'];
 // The whole shop opens together at launch (early access, then public).
 export const GATED_HANDLES = ['sierra-shorts', 'juniper-pant'];
 // Preorder items (ship later) — the tote & shorts ship right away

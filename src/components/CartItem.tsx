@@ -52,7 +52,7 @@ export default function CartItem({ item }: CartItemProps) {
   );
 
   return (
-    <div style={{ display: 'flex', gap: '20px', paddingBottom: '28px', marginBottom: '28px', borderBottom: `1px solid ${rule}` }}>
+    <div className="cart-line" style={{ display: 'flex', gap: '20px', paddingBottom: '28px', marginBottom: '28px', borderBottom: `1px solid ${rule}` }}>
 
       {/* Product image.
           The cart stores whatever image was current when the item was added, so
@@ -62,6 +62,7 @@ export default function CartItem({ item }: CartItemProps) {
           this can never be empty again. */}
       <Link
         href={productUrl}
+        className="cart-line-thumb"
         style={{ position: 'relative', width: '100px', height: '130px', flexShrink: 0, backgroundColor: '#FBF1F5', display: 'block', borderRadius: '8px', overflow: 'hidden' }}
       >
         {thumb ? (
@@ -69,7 +70,7 @@ export default function CartItem({ item }: CartItemProps) {
             src={thumb}
             alt={item.product.name}
             fill
-            sizes="100px"
+            sizes="(max-width: 640px) 80px, 100px"
             style={{ objectFit: 'cover' }}
           />
         ) : (
@@ -124,7 +125,7 @@ export default function CartItem({ item }: CartItemProps) {
               </p>
             )}
           </div>
-          <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: maroon, whiteSpace: 'nowrap', margin: 0 }}>
+          <p className="cart-line-price" style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: maroon, whiteSpace: 'nowrap', margin: 0 }}>
             ${((item.product.price * item.quantity) / 100).toFixed(2)}
           </p>
         </div>

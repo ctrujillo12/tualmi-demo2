@@ -7,7 +7,7 @@
  *
  * IMPORTANT: this is only the storefront messaging. The actual discount has to
  * exist in Shopify (Settings → Shipping and delivery → add a Free shipping
- * rate with a $130 minimum, or a Free Shipping discount with a minimum
+ * rate with a $125 minimum, or a Free Shipping discount with a minimum
  * purchase amount). Without it the site promises something checkout won't
  * honour. If you change the number here, change it there in the same sitting.
  */
@@ -15,20 +15,24 @@
 /**
  * Orders at or above this qualify. Cents, to match cart maths.
  *
- * $130. What each basket does at this number:
- *   1 × Sierra Shorts  $68  → $62 short
+ * $125 (was $130 until 13 Sept 2026). What each basket does at this number:
+ *   1 × Sierra Shorts  $68  → $57 short
  *   2 × Sierra Shorts  $136 → clears
- *   1 × Juniper Pant   $108 → $22 short, so a single pant still pays shipping
+ *   1 × Juniper Pant   $108 → $17 short — the cart-page tote is the closer
  *   shorts + pant      $176 → clears
  *
- * Tuned so that a second pair of shorts is the thing that clears it. A lower
- * threshold was tried briefly (23 Aug 2026) so a single pant would ship free;
- * that put the shipping cost on margin and was reverted. $130 is the number
- * Cheyenne wants — don't drift it back without saying so out loud.
+ * A single pant deliberately does NOT clear it on its own; the tote add-on in
+ * the cart is what bridges the last $17, which only works while the tote is
+ * priced at $17 or more. If the tote is ever priced below that, this number
+ * and that assumption have to be revisited together.
+ *
+ * A much lower threshold was tried briefly (23 Aug 2026) so a single pant
+ * would ship free; that put the shipping cost straight on margin and was
+ * reverted. Don't drift this down without saying so out loud.
  *
  * Must match the minimum on the Shopify free-shipping rule.
  */
-export const FREE_SHIPPING_THRESHOLD = 13000;
+export const FREE_SHIPPING_THRESHOLD = 12500;
 
 // "US" is load-bearing: the Shopify rule is United States only and excludes
 // rates over $11, so international orders still pay. Claiming plain "free
