@@ -185,6 +185,15 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
           padding-top: clamp(28px, 4vw, 40px);
           border-top: 1px solid #F0D9E1;
         }
+        /* On a phone this row moves above the order summary, where that big
+           desktop margin becomes a dead band under "back to shop". Lives here
+           rather than in globals.css on purpose: this <style> block is
+           rendered in the body, so it beats a same-specificity rule in the
+           stylesheet no matter what that rule says. 768px, not 560px, to match
+           the breakpoint that does the reordering. */
+        @media (max-width: 768px) {
+          .cu-root { margin-top: 0; padding-top: 22px; }
+        }
         .cu-grid {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -196,34 +205,60 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
         @media (max-width: 900px) {
           .cu-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         }
-        /* Three across on a phone rather than two.
-           This row now sits BETWEEN the items and the order summary on mobile
-           (see .cart-upsell-slot in globals.css), so its height is spent
-           before the shopper reaches the total — two big tiles per row put
-           three rows of merchandising in front of the number she came to
-           read. At three across all five options fit in two short rows.
+        /* ── Phone: one swipeable row, not a grid ──────────────────────
+           This row sits BETWEEN the items and the order summary on mobile
+           (see .cart-upsell-slot in globals.css), so every pixel of its height
+           is spent before the shopper reaches her total. A grid cost two rows
+           of tiles no matter how small they got; a scroller costs one, and
+           it holds any number of colourways without ever getting taller.
 
-           The price moves to its own line here: "confetti · $68" does not fit
-           on one line in a ~100px tile, and .cu-meta is a flex row, so it
-           overflowed the tile rather than wrapping. */
+           Tiles are 40% wide so two and a half are visible — the cut-off
+           third is what tells you the row scrolls. Bleeding out to the screen
+           edges does the same job: a row that stops short of the margin reads
+           as finished. The negative margin repeats the page's own side
+           padding from cart/page.tsx, so the two can't drift apart. */
         @media (max-width: 560px) {
           .cu-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            display: flex;
+            grid-template-columns: none;
             gap: 8px;
             margin-top: 14px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            margin-inline: calc(-1 * clamp(20px, 4vw, 48px));
+            padding-inline: clamp(20px, 4vw, 48px);
+            /* Room for the tile shadow and the snap to settle without
+               clipping; the scrollbar itself is hidden below. */
+            padding-bottom: 2px;
+            scrollbar-width: none;
           }
-          .cu-tile  { padding: 6px 6px 8px; border-radius: 10px; }
-          /* Slightly squarer than the 3/4 above — a tall crop at this width is
-             mostly leg, and the height is what we're trying to save. */
-          .cu-photo { aspect-ratio: 4 / 5; border-radius: 6px; }
-          .cu-meta  { flex-wrap: wrap; font-size: 10.5px; gap: 4px; margin-top: 7px; }
+          .cu-grid::-webkit-scrollbar { display: none; }
+
+          .cu-tile {
+            flex: 0 0 40%;
+            scroll-snap-align: start;
+            padding: 7px 7px 9px;
+            border-radius: 10px;
+          }
+          /* Squarer than the 3/4 above — a tall crop at this width is mostly
+             leg, and height is the whole point of this exercise. */
+          .cu-photo { aspect-ratio: 4 / 5; border-radius: 7px; }
+          .cu-meta  { flex-wrap: wrap; font-size: 11px; gap: 4px; margin-top: 7px; }
           .cu-sep   { display: none; }
           /* flex-basis alone gives it the whole line but leaves the text
              ranged left inside it, out of line with everything else. */
           .cu-price { flex-basis: 100%; text-align: center; }
-          .cu-swatch { width: 8px; height: 8px; }
-          .cu-name  { font-size: 9.5px; }
-          .cu-note  { font-size: 9px; margin-top: 1px; }
+          .cu-swatch { width: 9px; height: 9px; }
+          .cu-name  { font-size: 10px; }
+          .cu-note  { font-size: 9.5px; margin-top: 1px; }
+
+          /* An add-on drops its name here and lets the note carry the tile.
+             "trailblazing tote" above "100% organic cotton · extra-wide" is
+             two lines saying one thing, and in a row this short the taller
+             tile sets the height for every other tile in it. The photo
+             already says it's a tote; the note says the part worth knowing. */
+          .cu-tile--addon .cu-name { display: none; }
         }
         .cu-tile {
           background: #fff;
@@ -316,7 +351,7 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
 
       <div className="cu-grid">
         {tiles.map((t) => (
-          <div key={t.key} className="cu-tile">
+          <div key={t.key} className={t.color ? 'cu-tile' : 'cu-tile cu-tile--addon'}>
             {(() => {
               const alt = t.color ? `${t.product.name} in ${t.color}` : t.product.name;
               const photo = t.image ? (

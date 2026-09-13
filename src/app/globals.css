@@ -188,7 +188,9 @@ body {
 
 @media (max-width: 768px) {
   .cart-items-col     { order: 1; }
-  .cart-upsell-slot   { order: 2; margin-top: 4px; }
+  /* Spacing for this block lives in CartUpsell's own <style> — see the note
+     there. This rule only does the reordering. */
+  .cart-upsell-slot   { order: 2; }
   .cart-summary-panel { order: 3; }
 }
 
@@ -200,6 +202,10 @@ body {
    look like a page of warnings. Twenty-six pixels back from the thumb and the
    gap is enough to pull both onto one line fewer. */
 @media (max-width: 640px) {
+  /* The last cart line already ends on 28px of padding plus 28px of margin,
+     so another 8px above "back to shop" and the grid gap below it stacked
+     into a dead band between the cart and the row underneath it. */
+  .cart-back-link { margin-top: 0 !important; }
   .cart-line { gap: 14px !important; }
   .cart-line-thumb { width: 80px !important; height: 104px !important; }
   .cart-line-price { font-size: 13.5px !important; }

@@ -194,6 +194,7 @@ export default function CartPage() {
             </div>
             <Link
               href="/"
+              className="cart-back-link"
               style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: soft, textDecoration: 'underline', textUnderlineOffset: '4px', display: 'inline-block', marginTop: '8px', textTransform: 'lowercase' }}
             >
               back to shop
