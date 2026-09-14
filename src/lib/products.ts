@@ -13,7 +13,11 @@ export const localProducts: Product[] = [
     description:
       'A mid-weight fleece with the patterns and fit the big brands never figured out. Chest zip pocket, snap collar, kangaroo pocket. The Wildflower daisy print looks vintage-shop, and the Golden Hour stripe is pink stripes that are somehow also functional. Made by women. It finally fits like it should.',
     price: 14900,
-    images: ['/images-2/fleece-pink-bg.png', '/images-2/fleece-yellow-bg.png'],
+    // The four *-bg.png files these two entries pointed at have never existed
+    // in public/. Harmless today (neither product has a detail page), but they
+    // are the images a Shopify outage would fall back to. Pointed at the real
+    // "coming soon" tiles the landing page already uses.
+    images: ['/images-2/Website Photos/Fleece Coming Soon/1.png'],
     category: 'Outerwear',
     sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Wildflower', 'Golden Hour'],
@@ -46,7 +50,7 @@ export const localProducts: Product[] = [
     description:
       'The layer you actually want under your fleece, and the top you wear when you ditch it. UPF 40 protection, second-skin fit, and the kind of cut that makes your shoulders look good on the summit. Light, breathable, and designed for the girl who doesn\'t leave her style at the trailhead.',
     price: 6900,
-    images: ['/images-2/shirt-yellow-bg.png', '/images-2/shirt-pink-bg.png'],
+    images: ['/images-2/Website Photos/Top Coming Soon/2.png'],
     category: 'Tops',
     sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
     colors: ['Solstice', 'Petal'],
