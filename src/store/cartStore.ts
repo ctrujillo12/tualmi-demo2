@@ -8,6 +8,7 @@ import type { ShopifyVariant } from '@/lib/shopify';
 import { findVariant, maxPurchasable } from '@/lib/inventory';
 import { attributionCartAttributes } from '@/lib/attribution';
 import { getDiscountCode } from '@/lib/discount';
+import { galleryImageFor } from '@/lib/productColors';
 import { trackBeginCheckout } from '@/lib/analytics';
 import { getGaIds } from '@/lib/ga';
 
@@ -203,8 +204,17 @@ export const useCartStore = create<CartStore>()(
             const key = item.product.handle ?? item.product.id;
             const d = byHandle[key];
             if (!d || !d.ok) return item;
+            // The gallery first, for the reason documented on cartThumbFor():
+            // Shopify's per-variant images are all the same product-level photo
+            // today, so imageByColor returns one colourway's picture for every
+            // colour. This runs on EVERY cart load, so getting it wrong here
+            // silently re-broke any thumbnail the add path got right. The old
+            // `?? d.featured` tail was worse still — featured is by definition
+            // a single colourway's photo.
             const colorImg =
-              d.imageByColor?.[(item.selectedColor || '').toLowerCase()] ?? d.featured ?? item.product.images[0];
+              galleryImageFor(item.product.handle ?? item.product.id, item.selectedColor) ??
+              d.imageByColor?.[(item.selectedColor || '').toLowerCase()] ??
+              item.product.images[0];
             return {
               ...item,
               product: {

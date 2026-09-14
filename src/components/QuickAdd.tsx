@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import type { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { useShopAccess, isBuyable } from '@/lib/useShopAccess';
-import { PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
+import { cartThumbFor } from '@/lib/productColors';
 import { trackAddToCart } from '@/lib/analytics';
 import { availability, isColorSoldOut } from '@/lib/inventory';
 import { SOLD_OUT_LABEL } from '@/lib/lowStock';
@@ -97,9 +97,10 @@ export default function QuickAdd({
   const soleSize = product.sizes?.length === 1 ? product.sizes[0] : '';
 
   const add = (size: string) => {
-    const gallery = PRODUCT_COLOR_IMAGES[handle]?.[color] ?? product.images;
-    const shopifyImg = product.images.find((u) => u.startsWith('http'));
-    const image = shopifyImg ?? gallery?.[0] ?? product.images[0];
+    // Same order as the PDP, so a landing tile and a product page bank the
+    // same photo. Both steps are colour-scoped — the old chain took the
+    // product's FIRST Shopify image regardless of colourway.
+    const image = cartThumbFor(handle, color, product.variants) ?? product.images[0];
 
     const shipWindow = product.shippingWindow ?? '';
     const shipsLater = !!shipWindow && !shipWindow.toLowerCase().startsWith('in stock');

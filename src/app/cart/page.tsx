@@ -201,7 +201,11 @@ export default function CartPage() {
             </Link>
           </div>
 
-          {/* Right: order summary */}
+          {/* Right: order summary.
+              The wrapper is the grid item; the white card inside it is what
+              sticks. That nesting is load-bearing — see .cart-summary-col in
+              globals.css. */}
+          <div className="cart-summary-col">
           <div className="cart-summary-panel" style={{ backgroundColor: 'white', borderRadius: '14px', padding: 'clamp(20px, 3vw, 32px)' }}>
             <h2 style={{ fontFamily: sans, fontWeight: 700, fontSize: '20px', letterSpacing: '-0.02em', color: maroon, margin: '0 0 24px', textTransform: 'lowercase' }}>
               order summary
@@ -318,6 +322,7 @@ export default function CartPage() {
                 hello@tualmi.com
               </a>
             </p>
+          </div>
           </div>
 
           {/* The colourways of the drop that aren't in this cart yet.

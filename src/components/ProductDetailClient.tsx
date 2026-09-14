@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { PRODUCT_DETAILS, type HighlightIcon } from '@/lib/productDetails';
-import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, PRODUCT_LIFESTYLE_IMAGES } from '@/lib/productColors';
+import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, PRODUCT_LIFESTYLE_IMAGES, cartThumbFor } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
 import { FREE_SHIPPING_LABEL } from '@/lib/shipping';
@@ -186,15 +186,13 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
         : product.colors.indexOf(selectedColor);
       const colorImages = getColorImages(Math.max(0, colorIdx));
 
-      // Cart image: prefer the Shopify variant image for the selected color,
-      // then the Shopify product image, then the local gallery as a fallback.
-      const colorLower = selectedColor.toLowerCase();
-      const variantImg = product.variants?.find((v) =>
-        v.image?.url &&
-        v.selectedOptions?.some((o) => o.name.toLowerCase() === 'color' && o.value.toLowerCase() === colorLower),
-      )?.image?.url;
-      const shopifyProductImg = product.images.find((u) => u.startsWith('http'));
-      const cartImg = variantImg ?? shopifyProductImg ?? colorImages[0];
+      // Cart image, colour-scoped at every step. Shopify's image for THIS
+      // colourway wins (so re-uploading the shoot to Shopify updates the cart),
+      // then the local gallery for the same colourway. The old chain ended in
+      // `product.images.find(u => u.startsWith('http'))` — the product's first
+      // Shopify image regardless of colour — which is how a Picnic line could
+      // end up showing a Jam photo.
+      const cartImg = cartThumbFor(handle, selectedColor, product.variants) ?? colorImages[0];
 
       // Items with a future ship window (e.g. the pant's mid-September window)
       // are flagged as preorder so the date carries onto the Shopify order.

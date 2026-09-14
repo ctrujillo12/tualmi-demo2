@@ -70,7 +70,9 @@ const productsJsonLd = {
         availability: 'https://schema.org/PreOrder', url: `${SITE}/products/juniper-pant`,
       },
     },
-    // Tioga Tee & Frolic Fleece are "coming soon" — not listed as products yet.
+    // Only the two products actually for sale. The Tioga Tee and Frolic
+    // Fleece are not on the site at all — the "also coming soon" strip that
+    // teased them was removed 14 Sept 2026.
   ],
 };
 
@@ -181,14 +183,6 @@ const DROP_PRODUCTS: DropProduct[] = [
     accent: brick,
     colorways: colorwaysFor('sierra-shorts', ['Picnic', 'Confetti', 'Jam']),
   },
-];
-
-const COMING_SOON = [
-  // The /images-2/model shoot is gone from disk, and the re-edited set has no
-  // tee or fleece in it — neither garment was shot. These are the only images
-  // of them left in the repo.
-  { name: 'tioga tee', image: '/images-2/Website Photos/Top Coming Soon/2.png' },
-  { name: 'frolic fleece', image: '/images-2/Website Photos/Fleece Coming Soon/1.png' },
 ];
 
 // ─── Social TikToks ───────────────────────────────────────────────────────────
@@ -400,27 +394,6 @@ export default async function Home() {
         );
         })}
       </div>
-
-      {/* ══ 4b · COMING SOON (afterthought) ═══════════════════════════════ */}
-      <section style={{ position: 'relative', zIndex: 1, backgroundColor: cream, padding: 'clamp(56px, 8vw, 96px) clamp(24px, 6vw, 72px)' }}>
-        <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '12px', letterSpacing: '0.22em', color: rose, margin: '0 0 20px', textTransform: 'lowercase' }}>
-            also coming soon
-          </p>
-          <div style={{ display: 'inline-flex', gap: 'clamp(18px, 4vw, 40px)', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {COMING_SOON.map((cs) => (
-              <div key={cs.name} style={{ width: 'clamp(120px, 30vw, 180px)' }}>
-                <div style={{ position: 'relative', aspectRatio: '4 / 5', borderRadius: '10px', overflow: 'hidden', backgroundColor: 'white', opacity: 0.75 }}>
-                  <Image src={cs.image} alt={cs.name} fill sizes="180px" style={{ objectFit: 'cover' }} />
-                </div>
-                <p style={{ fontFamily: sans, fontWeight: 600, fontSize: '13px', color: sageDeep, margin: '10px 0 0', textTransform: 'lowercase' }}>
-                  {cs.name}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ══ 5 · SOCIALS ═══════════════════════════════════════════════════ */}
       <section

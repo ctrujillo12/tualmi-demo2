@@ -141,3 +141,86 @@ export const PRODUCT_LIFESTYLE_IMAGES: Record<string, Record<string, string[]>> 
     Confetti: [`${LP}/confetti-life-1.jpg`, `${LP}/confetti-life-2.jpg`, `${LP}/confetti-life-3.jpg`, `${LP}/confetti-life-4.jpg`, `${LP}/confetti-life-5.jpg`, `${LP}/confetti-life-6.jpg`],
   },
 };
+
+/**
+ * The photo the cart should show for a given colourway.
+ *
+ * PRODUCT_COLOR_IMAGES above is the exact source the product-page gallery
+ * renders from, so this returns, by construction, the first photo the shopper
+ * was just looking at.
+ *
+ * IT DELIBERATELY BEATS SHOPIFY'S OWN IMAGE. The re-edited studio photos live
+ * here, in the repo; Shopify still holds the original shoot. Every add-to-cart
+ * path used to prefer the Shopify CDN URL and fall back to this, which is why
+ * cart thumbnails were the old photos. Worse, two of those paths fell back to
+ * the product's FIRST Shopify image rather than the selected variant's, so a
+ * Picnic line could show a Jam photo — wrong shoot and wrong colourway.
+ *
+ * Matching is case-insensitive: cart lines persist in localStorage, so an old
+ * entry can carry whatever casing was in use the day it was added.
+ */
+export function galleryImageFor(
+  handle: string | undefined | null,
+  color: string | undefined | null,
+): string | undefined {
+  if (!handle) return undefined;
+  const gallery = PRODUCT_COLOR_IMAGES[handle];
+  if (!gallery) return undefined;
+
+  const want = (color ?? '').trim().toLowerCase();
+  const key = Object.keys(gallery).find((k) => k.toLowerCase() === want);
+  const hit = key ? gallery[key]?.[0] : undefined;
+
+  // No colourway match (a renamed colour, or a product with one gallery) —
+  // the product's own first photo still beats a stale Shopify URL.
+  return hit ?? Object.values(gallery)[0]?.[0];
+}
+
+/**
+ * The Shopify image for a specific colourway.
+ *
+ * THIS IS THE COLOURWAY FIX. Every add-to-cart path used to fall back to
+ * `product.images.find(u => u.startsWith('http'))` — the product's FIRST
+ * Shopify image, which belongs to whichever colourway Shopify happens to list
+ * first. Adding Picnic could bank a Jam photo. A variant-scoped lookup can
+ * only ever return the colour the shopper actually chose, so the fallback
+ * below is the local gallery for that same colour, never a colour-agnostic
+ * product image.
+ */
+export function shopifyImageForColor(
+  variants: { image?: { url?: string } | null; selectedOptions?: { name: string; value: string }[] }[] | undefined | null,
+  color: string | undefined | null,
+): string | undefined {
+  const want = (color ?? '').trim().toLowerCase();
+  if (!want || !variants?.length) return undefined;
+  return variants.find((v) =>
+    v.image?.url &&
+    v.selectedOptions?.some((o) => o.name.toLowerCase() === 'color' && o.value.toLowerCase() === want),
+  )?.image?.url ?? undefined;
+}
+
+/**
+ * The cart thumbnail for a colourway: the local gallery first, Shopify second.
+ *
+ * WHY THE GALLERY WINS, checked against live Shopify data on 14 Sept 2026:
+ * the photos are uploaded to the PRODUCT but not assigned to the VARIANTS, so
+ * every variant inherits the product's featured image. All 21 Sierra Shorts
+ * variants — Jam, Picnic and Confetti alike — report `picnic-front-2.jpg`,
+ * and both Juniper colourways report `birch-front-1.jpg`. Shopify is
+ * currently incapable of saying which photo is which colourway, so trusting it
+ * would put a Picnic photo on a Jam line. PRODUCT_COLOR_IMAGES is keyed BY
+ * colourway, so it cannot make that mistake.
+ *
+ * If the images are later assigned per variant in Shopify (Products → the
+ * product → Variants → select a variant → its image), this order still holds
+ * and stays correct — both sources would then agree, and the gallery is the
+ * one that also feeds the product page, so the cart keeps matching the page
+ * the item was added from.
+ */
+export function cartThumbFor(
+  handle: string | undefined | null,
+  color: string | undefined | null,
+  variants?: { image?: { url?: string } | null; selectedOptions?: { name: string; value: string }[] }[] | null,
+): string | undefined {
+  return galleryImageFor(handle, color) ?? shopifyImageForColor(variants, color);
+}

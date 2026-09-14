@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CartItem as CartItemType } from '@/types';
 import { useCartStore } from '@/store/cartStore';
-import { PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
+import { galleryImageFor } from '@/lib/productColors';
 import { availability } from '@/lib/inventory';
 import { SOLD_OUT_LABEL } from '@/lib/lowStock';
 import { hasDetailPage } from '@/lib/catalog';
@@ -50,11 +50,18 @@ export default function CartItem({ item }: CartItemProps) {
   // straight to the homepage. CartUpsell already guards this; this didn't.
   const productUrl = hasDetailPage(handle) ? `/products/${handle}` : null;
 
-  const galleryFallback =
-    PRODUCT_COLOR_IMAGES[handle]?.[item.selectedColor]?.[0] ?? item.product.images?.[1];
-  const thumb = [item.product.images?.[0], galleryFallback].find(
-    (src): src is string => typeof src === 'string' && src.trim().length > 0
-  );
+  // The snapshot first — it is written by the add paths and rewritten by
+  // refreshFromShopify(), both of which are now colour-scoped. The fallback is
+  // the gallery for THIS colourway, never `images[1]`, which was just "the
+  // product's second photo" and had no relationship to the chosen colour.
+  //
+  // Carts persist in localStorage, so lines added before this fix can still
+  // hold a wrong-colourway URL. refreshFromShopify() runs on every cart load
+  // and overwrites it, so those repair themselves on the next visit.
+  const thumb = [
+    item.product.images?.[0],
+    galleryImageFor(handle, item.selectedColor),
+  ].find((src): src is string => typeof src === 'string' && src.trim().length > 0);
 
   return (
     <div className="cart-line" style={{ display: 'flex', gap: '20px', paddingBottom: '28px', marginBottom: '28px', borderBottom: `1px solid ${rule}` }}>

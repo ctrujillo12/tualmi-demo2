@@ -158,10 +158,26 @@ body {
   gap: clamp(28px, 4vw, 56px);
   align-items: start;
 }
-/* Summary panel is a self-contained white card (styled inline) */
+/* Summary panel is a self-contained white card (styled inline).
+   Sticks below the fixed nav while the items column scrolls. */
 .cart-summary-panel {
   position: sticky;
-  top: 88px; /* sit below the fixed nav while items scroll on desktop */
+  top: 88px;
+}
+
+/* The wrapper that makes that sticky safe — do not remove.
+   Chrome confines a sticky GRID ITEM to the whole grid container, not to its
+   own row. Once "you might also like" moved inside .cart-grid (so mobile could
+   put it above the summary), the container grew to include it and the sticky
+   card rode straight down over it — 180px of overlap at 1045px wide, measured
+   against the dev server.
+   Nesting the card in a plain wrapper makes the WRAPPER the grid item, so the
+   card's containing block is one column of row 1 and it cannot travel past it.
+   `align-self: stretch` gives the wrapper the row's full height — .cart-grid
+   sets `align-items: start`, which would otherwise shrink it to the card and
+   kill the sticky travel altogether. */
+.cart-summary-col {
+  align-self: stretch;
 }
 
 @media (max-width: 768px) {
@@ -191,7 +207,8 @@ body {
   /* Spacing for this block lives in CartUpsell's own <style> — see the note
      there. This rule only does the reordering. */
   .cart-upsell-slot   { order: 2; }
-  .cart-summary-panel { order: 3; }
+  /* The wrapper is the grid item now, so it carries the order. */
+  .cart-summary-col   { order: 3; }
 }
 
 /* A cart line on a phone.
