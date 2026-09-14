@@ -29,7 +29,7 @@ const OG_BY_DESTINATION: { match: string; title: string; description: string; im
   {
     match: 'juniper-pant',
     title: 'Juniper Pant — Tualmi',
-    description: 'Flare cargo hiking pants, engineered for women. Sustainable recycled materials.',
+    description: 'Flare cargo hiking pants, engineered for women. Designed in LA, made ethically.',
     image: '/og/juniper-pant-og.jpg',
   },
 ];

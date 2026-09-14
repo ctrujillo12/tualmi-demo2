@@ -50,10 +50,13 @@ const COLOUR_BLOCK_GAP = '24px';
 /**
  * Trust strip claims for a product that doesn't name its own.
  *
- * True of the shorts (100% recycled nylon). A product whose fabric is not
- * recycled must set trustClaims in lib/productDetails.ts — the pant does.
+ * ONLY claims true of EVERY product belong here. This used to include
+ * 'recycled fabric', which is true of the shorts and false of the pant — so a
+ * product that forgot to set `trustClaims` silently printed a false material
+ * claim. Both live products now name their own claims in lib/productDetails.ts;
+ * this is the safe floor for anything new.
  */
-const DEFAULT_TRUST_CLAIMS = ['women-owned', 'WRAP-certified', 'recycled fabric'];
+const DEFAULT_TRUST_CLAIMS = ['women-owned', 'WRAP-certified', 'designed in LA'];
 
 const eyebrowStyle: React.CSSProperties = {
   fontFamily: sans,

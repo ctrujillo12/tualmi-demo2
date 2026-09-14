@@ -23,14 +23,24 @@ const nextConfig = {
       },
     ],
   },
-  // Server-side 301s so Google transfers ranking from the old product URLs
+  // Server-side permanent redirects (Next emits 308, not 301 — same effect
+  // for Google) so the old product URLs pass their ranking to the new ones.
+  // /products/horizon-shorts is not hypothetical: it was the single busiest
+  // landing page on the site in the last 30 days.
   async redirects() {
     return [
       { source: '/products/horizon-shorts', destination: '/products/sierra-shorts', permanent: true },
       { source: '/products/summit-pant', destination: '/products/juniper-pant', permanent: true },
       { source: '/products/pinnacles-pant', destination: '/products/juniper-pant', permanent: true },
+      // Was missing while its three siblings were all here, so this one alone
+      // fell through to the catch-all in products/[id]/page.tsx and landed on
+      // /#collection — wrong page, and a 307 that passes no ranking.
+      { source: '/products/juniper-pants', destination: '/products/juniper-pant', permanent: true },
       { source: '/products/carabiner', destination: '/', permanent: true },
-      { source: '/products/trailblazing-tote', destination: '/', permanent: true },
+      // NO entry for /products/trailblazing-tote. It is a real, buyable
+      // product (SELLABLE_HANDLES) that is merely unlisted, and a permanent
+      // redirect told Google the URL was gone for good. Nothing links to it —
+      // CartItem and CartUpsell both check hasDetailPage() first.
       { source: '/collections', destination: '/#collection', permanent: false },
     ];
   },

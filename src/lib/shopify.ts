@@ -415,7 +415,10 @@ export function toProduct(sp: ShopifyProduct): Product {
     name: sp.title,
     description: sp.description,
     price: priceInCents,
-    images: images.length ? images : ['/images-2/placeholder.png'],
+    // /images-2/placeholder.png never existed — if a Shopify product ever came
+    // back with no images this rendered a 404'd <Image> on the live PDP. The OG
+    // card is a real file that ships with the site.
+    images: images.length ? images : ['/og/home-og.jpg'],
     category: sp.productType,
     sizes: sizes.length ? sizes : ['One Size'],
     colors: colors.length ? colors : ['Default'],

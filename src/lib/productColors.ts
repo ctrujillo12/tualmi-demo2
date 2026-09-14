@@ -1,4 +1,4 @@
-// Shared color swatch definitions — used by ProductCard and ProductDetailClient.
+// Shared color swatch definitions — used by ProductDetailClient, CartUpsell and the landing page.
 // Keep these in sync with product.colors values from Shopify/localProducts.
 
 export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> = {

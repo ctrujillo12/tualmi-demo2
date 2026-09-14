@@ -55,14 +55,41 @@ export interface ShopAccess {
  *   (There is no force-open flag — access comes only from the link + time,
  *   so a stray env var can't open the shop to everyone.)
  */
-export function useShopAccess(): ShopAccess {
-  const [state, setState] = useState<ShopAccess>({
+/**
+ * The part of the gate that can be known WITHOUT a browser.
+ *
+ * PUBLIC_LAUNCH_MS is a fixed date and NEXT_PUBLIC_SHOP_OPEN is inlined at
+ * build time, so the server can already answer "is the shop open to the
+ * public?". Only the early-access unlock needs localStorage.
+ *
+ * WHY THIS EXISTS: this used to start at `canShop: false`, which meant the
+ * SERVER rendered every product page with `lockedForLaunch` true — a maroon
+ * "opens friday · 11am pt" pill where the buy button goes — and only swapped
+ * in "add to cart" once React hydrated. Every visitor's first paint said the
+ * shop was shut. On fast wifi you never see it; on a 4G phone coming off an
+ * Instagram link, which is most of the traffic, it is the first thing on the
+ * screen. Verified live on 13 Sept 2026: fetching the page without JS returned
+ * the "opens friday" markup while the hydrated page showed "add to cart".
+ *
+ * Same value on server and client, so there is no hydration mismatch. The one
+ * edge is a visitor loading the page across the launch instant itself, which
+ * is six weeks past.
+ */
+function initialAccess(): ShopAccess {
+  const publicOpen = Date.now() >= PUBLIC_LAUNCH_MS;
+  return {
+    // Still false: the early-access unlock genuinely isn't known until the
+    // effect reads localStorage. Anything keyed off `ready` keeps waiting.
     ready: false,
-    canShop: false,
+    canShop: publicOpen && envFlag() !== 'closed',
     hasEarly: false,
-    publicOpen: false,
+    publicOpen,
     opensAt: PUBLIC_LAUNCH_MS,
-  });
+  };
+}
+
+export function useShopAccess(): ShopAccess {
+  const [state, setState] = useState<ShopAccess>(initialAccess);
 
   useEffect(() => {
     // Unlock from the secret link, then clean the URL

@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/products/sierra-shorts`, priority: 0.8 },
     { url: `${BASE}/products/juniper-pant`, priority: 0.8 },
     { url: `${BASE}/invite`, priority: 0.6 },
+    { url: `${BASE}/footer-pages/exchanges`, priority: 0.3 },
     { url: `${BASE}/footer-pages/shipping`, priority: 0.3 },
     { url: `${BASE}/footer-pages/returns`, priority: 0.3 },
     { url: `${BASE}/footer-pages/size-fit`, priority: 0.3 },

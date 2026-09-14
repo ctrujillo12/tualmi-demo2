@@ -7,6 +7,7 @@ import { useCartStore } from '@/store/cartStore';
 import { PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import { availability } from '@/lib/inventory';
 import { SOLD_OUT_LABEL } from '@/lib/lowStock';
+import { hasDetailPage } from '@/lib/catalog';
 
 interface CartItemProps {
   item: CartItemType;
@@ -29,8 +30,6 @@ export default function CartItem({ item }: CartItemProps) {
     removeItem(item.product.id, item.selectedSize, item.selectedColor);
   };
 
-  const productUrl = `/products/${item.product.handle ?? item.product.id}`;
-
   /**
    * Live availability of this exact line. The cart re-syncs variants from
    * Shopify on load (cartStore.refreshFromShopify), so this reflects stock as
@@ -45,6 +44,12 @@ export default function CartItem({ item }: CartItemProps) {
    * rather than failing loudly.
    */
   const handle = item.product.handle ?? item.product.id;
+
+  // Only products with a real page get linked. The tote is buyable but has no
+  // detail page, so linking it sent a shopper who tapped her own cart item
+  // straight to the homepage. CartUpsell already guards this; this didn't.
+  const productUrl = hasDetailPage(handle) ? `/products/${handle}` : null;
+
   const galleryFallback =
     PRODUCT_COLOR_IMAGES[handle]?.[item.selectedColor]?.[0] ?? item.product.images?.[1];
   const thumb = [item.product.images?.[0], galleryFallback].find(
@@ -60,12 +65,9 @@ export default function CartItem({ item }: CartItemProps) {
           no longer exists — which rendered as a blank white box next to a $146
           total. Fall back through the live gallery, then to a branded tile, so
           this can never be empty again. */}
-      <Link
-        href={productUrl}
-        className="cart-line-thumb"
-        style={{ position: 'relative', width: '100px', height: '130px', flexShrink: 0, backgroundColor: '#FBF1F5', display: 'block', borderRadius: '8px', overflow: 'hidden' }}
-      >
-        {thumb ? (
+      {(() => {
+        const thumbStyle: React.CSSProperties = { position: 'relative', width: '100px', height: '130px', flexShrink: 0, backgroundColor: '#FBF1F5', display: 'block', borderRadius: '8px', overflow: 'hidden' };
+        const inner = thumb ? (
           <Image
             src={thumb}
             alt={item.product.name}
@@ -85,20 +87,27 @@ export default function CartItem({ item }: CartItemProps) {
           >
             {item.product.name}
           </span>
-        )}
-      </Link>
+        );
+        return productUrl ? (
+          <Link href={productUrl} className="cart-line-thumb" style={thumbStyle}>{inner}</Link>
+        ) : (
+          <div className="cart-line-thumb" style={thumbStyle}>{inner}</div>
+        );
+      })()}
 
       {/* Details */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
           <div>
-            <Link
-              href={productUrl}
-              style={{ fontFamily: sans, fontSize: '16px', fontWeight: 700, letterSpacing: '-0.01em', color: maroon, textDecoration: 'none', display: 'block', marginBottom: '6px', textTransform: 'lowercase' }}
-            >
-              {item.product.name}
-            </Link>
+            {(() => {
+              const nameStyle: React.CSSProperties = { fontFamily: sans, fontSize: '16px', fontWeight: 700, letterSpacing: '-0.01em', color: maroon, textDecoration: 'none', display: 'block', marginBottom: '6px', textTransform: 'lowercase' };
+              return productUrl ? (
+                <Link href={productUrl} style={nameStyle}>{item.product.name}</Link>
+              ) : (
+                <span style={nameStyle}>{item.product.name}</span>
+              );
+            })()}
             <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, margin: '0 0 2px' }}>
               Size: {item.selectedSize}
             </p>

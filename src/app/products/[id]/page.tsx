@@ -6,7 +6,8 @@ import { getSummary } from '@/lib/reviews';
 import ProductReviews from '@/components/ProductReviews';
 
 // Full product pages: the shorts and pant. Anything else redirects to the preview.
-const DETAIL_HANDLES = ['sierra-shorts', 'juniper-pant'];
+// Single source of truth — see lib/catalog.ts.
+import { DETAIL_HANDLES, hasDetailPage } from '@/lib/catalog';
 
 // NOTE ON LINK PREVIEWS
 // The `openGraph` block is what Instagram, iMessage, Linktree, WhatsApp etc.
@@ -43,20 +44,20 @@ const PAGE_METADATA: Record<string, Metadata> = {
   'juniper-pant': {
     title: 'juniper pant — flare cargo hiking pants',
     description:
-      'Fashion-forward flare cargo hiking pants with a flattering, women-engineered fit and cargo pockets. Made from sustainable, recycled materials. Preorder now — ships mid September.',
+      'Fashion-forward flare cargo hiking pants with a flattering, women-engineered fit and real cargo pockets. Made ethically in a WRAP-certified facility. Preorder now — ships mid September.',
     alternates: { canonical: '/products/juniper-pant' },
     openGraph: {
       ...OG_BASE,
       title: 'Juniper Pant — Tualmi',
       description:
-        'Flare cargo hiking pants, engineered for women. Sustainable recycled materials, real pockets.',
+        'Flare cargo hiking pants, engineered for women. Real pockets, fold-over waist, flared leg.',
       url: '/products/juniper-pant',
       images: [{ url: '/og/juniper-pant-og.jpg', width: 1200, height: 630, alt: 'Tualmi Juniper Pant' }],
     },
     twitter: {
       card: 'summary_large_image',
       title: 'Juniper Pant — Tualmi',
-      description: 'Flare cargo hiking pants, engineered for women. Sustainable recycled materials.',
+      description: 'Flare cargo hiking pants, engineered for women. Designed in LA, made ethically.',
       images: ['/og/juniper-pant-og.jpg'],
     },
   },
@@ -85,7 +86,12 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  return PAGE_METADATA[id] ?? PAGE_METADATA['sierra-shorts'];
+  // No silent fallback to the shorts: an id with no entry used to ship
+  // <title>sierra shorts</title> and a canonical pointing at the shorts,
+  // self-canonicalising a different product onto it. Masked today because
+  // hasDetailPage() redirects first, but it would go live the moment a third
+  // product is added without its metadata.
+  return PAGE_METADATA[id] ?? {};
 }
 
 export default async function ProductPage({
@@ -99,7 +105,7 @@ export default async function ProductPage({
   const { color } = await searchParams;
 
   // ── Anything without a full detail page redirects to the landing preview ──
-  if (!DETAIL_HANDLES.includes(id)) {
+  if (!hasDetailPage(id)) {
     redirect('/#collection');
   }
 

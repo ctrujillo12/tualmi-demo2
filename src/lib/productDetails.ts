@@ -126,6 +126,11 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
   },
 
   'sierra-shorts': {
+    // Stated outright rather than inherited from DEFAULT_TRUST_CLAIMS. The
+    // default used to carry 'recycled fabric' and the shorts relied on it,
+    // which is exactly how the pant ended up claiming it too. The product that
+    // can truthfully say this is the one that says it.
+    trustClaims: ['women-owned', 'WRAP-certified', 'recycled fabric'],
     shell: '100% Recycled Nylon',
     weight: '130-140 GSM',
     highlights: [
