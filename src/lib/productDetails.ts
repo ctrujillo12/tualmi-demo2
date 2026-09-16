@@ -88,8 +88,12 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     features: [
       '4-way stretch shell for full range of motion',
       'Moisture-wicking + quick-dry',
-'Fold-over-style waistband',
-      'Two cargo side pockets',
+      // The single most-asked question about light-coloured hiking pants, and
+      // Birch is cream — worth stating outright rather than leaving a shopper
+      // to guess from the photos.
+      'Fully opaque — not see-through, in any colourway',
+      'Fold-over-style waistband',
+      'Two cargo side pockets, each with a snap-button closure',
       'Adjustable drawcord at each hem',
       'Relaxed flared leg silhouette',
     ],
