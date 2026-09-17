@@ -120,6 +120,60 @@ type Slide = {
 
 const HERO = '/images-2/hero';
 
+/**
+ * ── THE OPTIMISED HERO FILES ────────────────────────────────────
+ * The .jpg files in SLIDES are now the FALLBACK. What a visitor actually gets
+ * is one of the AVIF or WebP files in /images-2/hero/opt/, at the width her
+ * screen needs.
+ *
+ * This section used to say the optimiser had nothing left to do because the
+ * files were "pre-sized and compressed". Both halves of that were wrong, and
+ * the hero was the slowest image on the site as a result:
+ *
+ *   • FORMAT. next.config.js asks for AVIF and WebP, and every product photo
+ *     is served as one — but only because they go through next/image. A raw
+ *     <img> ships the .jpg untouched. AVIF is 6–7× smaller here.
+ *   • WIDTH. One file per breakpoint means a phone downloaded the same
+ *     1440px, 554KB file as a tablet, to paint it about 780px wide.
+ *
+ *   phone,  390px at 2×:  554KB jpg →  69KB avif
+ *   laptop, 1440px at 1×:  676KB jpg →  96KB avif
+ *   laptop, 1440px at 2×:  676KB jpg → 257KB avif, at twice the resolution
+ *
+ * Static files rather than next/image, for two reasons. next/image serves ONE
+ * source at every width, and the whole point of this hero is a different crop
+ * per breakpoint — that part of the original note was right, and <picture> is
+ * still the only thing that does it. And because these are pre-built, the
+ * first visitor after a deploy gets them straight off the CDN instead of
+ * waiting on an on-demand resize of the one image that IS the LCP.
+ *
+ * ── SWAPPING A PHOTO ─────────────────────────────────────────
+ * Replace the .jpg in /images-2/hero/ as before, then run
+ *
+ *     python3 scripts/build-hero-images.py
+ *
+ * which rebuilds /images-2/hero/opt/ from it. Nothing in this file changes —
+ * the widths below and the ones in that script are the same list, and it will
+ * tell you if they have drifted apart.
+ */
+const HERO_OPT = `${HERO}/opt`;
+
+/** Keep in step with WIDE_WIDTHS / TALL_WIDTHS in scripts/build-hero-images.py. */
+const WIDE_WIDTHS = [1280, 1600, 1920, 2560];
+const TALL_WIDTHS = [640, 828, 1080, 1440];
+
+/**
+ * The srcset for one crop in one format.
+ *
+ * Derived from the .jpg path already in SLIDES rather than from a new field,
+ * so a slide cannot end up pointing its fallback at one photo and its srcset
+ * at another.
+ */
+function heroSrcSet(jpgPath: string, widths: number[], ext: 'avif' | 'webp'): string {
+  const stem = jpgPath.slice(jpgPath.lastIndexOf('/') + 1).replace(/\.jpg$/, '');
+  return widths.map((w) => `${HERO_OPT}/${stem}-${w}.${ext} ${w}w`).join(', ');
+}
+
 const SLIDES: Slide[] = [
   {
     handle: 'juniper-pant',
@@ -562,13 +616,42 @@ export default function HeroCarousel({
                   }
                 : {})}
             >
-              {/* Plain <picture>, not next/image: next/image serves one file at
-                  every width, and the whole point here is a different CROP per
-                  breakpoint. These files are pre-sized and compressed, so the
-                  optimiser has nothing left to do anyway. */}
+              {/* Six candidates, first match wins, in this order: the wide crop
+                  as AVIF then WebP then its original jpg, and below the
+                  breakpoint the tall crop the same way (its jpg being the
+                  <img> itself). The two jpg entries are what a browser with
+                  neither modern format gets — and the wide one has to be its
+                  own <source>, or such a browser would fall through to the
+                  <img> and show a desktop visitor the PHONE crop.
+
+                  sizes is 100vw because this hero is edge to edge at every
+                  width; that is what lets the browser pick by real pixels
+                  rather than downloading the largest file in the set. */}
               <figure className="hc-figure">
                 <picture>
+                  <source
+                    media={`(min-width: ${WIDE_FROM_PX}px)`}
+                    type="image/avif"
+                    sizes="100vw"
+                    srcSet={heroSrcSet(s.imageWide, WIDE_WIDTHS, 'avif')}
+                  />
+                  <source
+                    media={`(min-width: ${WIDE_FROM_PX}px)`}
+                    type="image/webp"
+                    sizes="100vw"
+                    srcSet={heroSrcSet(s.imageWide, WIDE_WIDTHS, 'webp')}
+                  />
                   <source media={`(min-width: ${WIDE_FROM_PX}px)`} srcSet={s.imageWide} />
+                  <source
+                    type="image/avif"
+                    sizes="100vw"
+                    srcSet={heroSrcSet(s.image, TALL_WIDTHS, 'avif')}
+                  />
+                  <source
+                    type="image/webp"
+                    sizes="100vw"
+                    srcSet={heroSrcSet(s.image, TALL_WIDTHS, 'webp')}
+                  />
                   <img
                     className="hc-photo"
                     src={s.image}

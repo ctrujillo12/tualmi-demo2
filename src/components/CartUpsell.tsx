@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import QuickAdd from '@/components/QuickAdd';
 import { useCartStore } from '@/store/cartStore';
-import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
+import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, cardFraming } from '@/lib/productColors';
 import type { Product } from '@/types';
 
 /**
@@ -56,6 +56,24 @@ const UPSELL_HANDLES = ['sierra-shorts', 'juniper-pant'];
 const ADDON_HANDLES = ['trailblazing-tote'];
 
 /**
+ * How much of a tile's height the model should fill, and where her centre
+ * should sit — the same treatment the product page's "you may also like" row
+ * uses, and the same numbers, so a shopper who came from that page sees the
+ * garment at the size she just saw it at. See cardFraming() in
+ * lib/productColors.ts for the arithmetic and why it is needed at all: the
+ * studio set is not framed to a common scale, so jam's model is a fifth
+ * larger than picnic's in the raw files.
+ *
+ * These work at BOTH of this tile's aspect ratios (3/4 on desktop, 4/5 on a
+ * phone) without a second set of numbers. object-fit: contain fits a 2:3
+ * source by its height in any box wider than 2:3, so the frame's height maps
+ * 1:1 onto the tile's height at either ratio and the scale means the same
+ * thing in both.
+ */
+const TILE_SUBJECT_HEIGHT = 0.84;
+const TILE_SUBJECT_ANCHOR = 0.50;
+
+/**
  * The one detail an add-on tile has to earn its click with.
  *
  * A tote is a shape everyone thinks they already know, so "tote bag · $__"
@@ -98,6 +116,8 @@ type Tile = {
   image?: string;
   /** Add-ons only: the fabric/fit line under the name. */
   note?: string;
+  /** Scale + shift that make every model the same size. null = unmeasured. */
+  framing?: { scale: number; shiftPct: number } | null;
 };
 
 export default function CartUpsell({ className = '' }: { className?: string }) {
@@ -170,6 +190,7 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
         color: c.name,
         swatch: c.value,
         image: PRODUCT_COLOR_IMAGES[handle]?.[c.name]?.[0] ?? product.images?.[0],
+        framing: cardFraming(handle, c.name, TILE_SUBJECT_HEIGHT, TILE_SUBJECT_ANCHOR),
       }));
   });
 
@@ -227,49 +248,6 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
            edges does the same job: a row that stops short of the margin reads
            as finished. The negative margin repeats the page's own side
            padding from cart/page.tsx, so the two can't drift apart. */
-        @media (max-width: 560px) {
-          .cu-grid {
-            display: flex;
-            grid-template-columns: none;
-            gap: 8px;
-            margin-top: 14px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x mandatory;
-            margin-inline: calc(-1 * clamp(20px, 4vw, 48px));
-            padding-inline: clamp(20px, 4vw, 48px);
-            /* Room for the tile shadow and the snap to settle without
-               clipping; the scrollbar itself is hidden below. */
-            padding-bottom: 2px;
-            scrollbar-width: none;
-          }
-          .cu-grid::-webkit-scrollbar { display: none; }
-
-          .cu-tile {
-            flex: 0 0 40%;
-            scroll-snap-align: start;
-            padding: 7px 7px 9px;
-            border-radius: 10px;
-          }
-          /* Squarer than the 3/4 above — a tall crop at this width is mostly
-             leg, and height is the whole point of this exercise. */
-          .cu-photo { aspect-ratio: 4 / 5; border-radius: 7px; }
-          .cu-meta  { flex-wrap: wrap; font-size: 11px; gap: 4px; margin-top: 7px; }
-          .cu-sep   { display: none; }
-          /* flex-basis alone gives it the whole line but leaves the text
-             ranged left inside it, out of line with everything else. */
-          .cu-price { flex-basis: 100%; text-align: center; }
-          .cu-swatch { width: 9px; height: 9px; }
-          .cu-name  { font-size: 10px; }
-          .cu-note  { font-size: 9.5px; margin-top: 1px; }
-
-          /* An add-on drops its name here and lets the note carry the tile.
-             "trailblazing tote" above "100% organic cotton · extra-wide" is
-             two lines saying one thing, and in a row this short the taller
-             tile sets the height for every other tile in it. The photo
-             already says it's a tote; the note says the part worth knowing. */
-          .cu-tile--addon .cu-name { display: none; }
-        }
         .cu-tile {
           background: #fff;
           border-radius: 12px;
@@ -277,6 +255,11 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
           display: flex;
           flex-direction: column;
         }
+        /* White, not blush. The whole studio set is shot on white paper, so a
+           photo drawn with object-fit: contain letterboxes into a background
+           the eye cannot separate from the photo — which is what makes it safe
+           to stop cropping these (see .cu-shot). The tote still fills its tile
+           edge to edge, so on that one tile this colour is never visible. */
         .cu-photo {
           position: relative;
           display: block;
@@ -284,7 +267,17 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
           aspect-ratio: 3 / 4;
           border-radius: 8px;
           overflow: hidden;
-          background: #FBF1F5;
+          background: #fff;
+        }
+        /* Carries the per-photo normalisation. Its own box, not the <img>'s,
+           because next/image owns that element's style and this has to
+           survive any change there. A tile with no measurement (the tote,
+           whose photo comes from Shopify at runtime and cannot be measured
+           here) gets no custom properties and the defaults leave it alone. */
+        .cu-shot {
+          position: absolute;
+          inset: 0;
+          transform: translateY(var(--cu-shift, 0%)) scale(var(--cu-scale, 1));
         }
         .cu-meta {
           display: flex;
@@ -337,6 +330,60 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
         /* Pushes the button to the bottom so tiles line up even when a name
            wraps to two lines. */
         .cu-add { margin-top: auto; }
+
+        /* ── Phone ── ORDER MATTERS, and it did not use to ───────────────
+           This block sat ABOVE the base rules it overrides. Media queries
+           add no specificity, so on a phone every property declared in
+           both places lost to the desktop value further down the sheet:
+           the 4/5 photo stayed 3/4, 7px tile padding stayed 10px, the 9px
+           swatch stayed 10px, and the 11px/10px/9.5px type all stayed at
+           desktop size. Only the handful of properties with no base rule
+           — the grid's flex scroller, .cu-sep, .cu-price — ever applied,
+           which is why it looked broadly right and was wrong in detail.
+           Nothing here changed except where it sits. Keep it last. */
+        @media (max-width: 560px) {
+          .cu-grid {
+            display: flex;
+            grid-template-columns: none;
+            gap: 8px;
+            margin-top: 14px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            margin-inline: calc(-1 * clamp(20px, 4vw, 48px));
+            padding-inline: clamp(20px, 4vw, 48px);
+            /* Room for the tile shadow and the snap to settle without
+               clipping; the scrollbar itself is hidden below. */
+            padding-bottom: 2px;
+            scrollbar-width: none;
+          }
+          .cu-grid::-webkit-scrollbar { display: none; }
+
+          .cu-tile {
+            flex: 0 0 40%;
+            scroll-snap-align: start;
+            padding: 7px 7px 9px;
+            border-radius: 10px;
+          }
+          /* Squarer than the 3/4 above — a tall crop at this width is mostly
+             leg, and height is the whole point of this exercise. */
+          .cu-photo { aspect-ratio: 4 / 5; border-radius: 7px; }
+          .cu-meta  { flex-wrap: wrap; font-size: 11px; gap: 4px; margin-top: 7px; }
+          .cu-sep   { display: none; }
+          /* flex-basis alone gives it the whole line but leaves the text
+             ranged left inside it, out of line with everything else. */
+          .cu-price { flex-basis: 100%; text-align: center; }
+          .cu-swatch { width: 9px; height: 9px; }
+          .cu-name  { font-size: 10px; }
+          .cu-note  { font-size: 9.5px; margin-top: 1px; }
+
+          /* An add-on drops its name here and lets the note carry the tile.
+             "trailblazing tote" above "100% organic cotton · extra-wide" is
+             two lines saying one thing, and in a row this short the taller
+             tile sets the height for every other tile in it. The photo
+             already says it's a tote; the note says the part worth knowing. */
+          .cu-tile--addon .cu-name { display: none; }
+        }
       `}</style>
 
       <h2
@@ -372,13 +419,31 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
             {(() => {
               const alt = t.color ? `${t.product.name} in ${t.color}` : t.product.name;
               const photo = t.image ? (
-                <Image
-                  src={t.image}
-                  alt={alt}
-                  fill
-                  sizes="(max-width: 560px) 45vw, (max-width: 900px) 30vw, 240px"
-                  style={{ objectFit: 'cover' }}
-                />
+                <span
+                  className="cu-shot"
+                  style={
+                    t.framing
+                      ? ({
+                          '--cu-scale': String(t.framing.scale),
+                          '--cu-shift': `${t.framing.shiftPct}%`,
+                        } as React.CSSProperties)
+                      : undefined
+                  }
+                >
+                  <Image
+                    src={t.image}
+                    alt={alt}
+                    fill
+                    sizes="(max-width: 560px) 45vw, (max-width: 900px) 30vw, 240px"
+                    /* contain once the photo has been measured, because the
+                       scale above already decides how big the model is and a
+                       crop on top of it would cut whatever the scale-up pushes
+                       past the edge. An unmeasured photo keeps cover, so it
+                       still fills its tile rather than floating in a white box
+                       at whatever size it happens to be. */
+                    style={{ objectFit: t.framing ? 'contain' : 'cover' }}
+                  />
+                </span>
               ) : null;
 
               // An add-on has no product page to link to, so its photo is a
