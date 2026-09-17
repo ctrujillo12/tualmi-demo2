@@ -398,7 +398,9 @@ export default function InTheWildPage() {
                 className="wild-inset-map"
                 viewBox={`0 0 ${AU_VIEWBOX.width} ${AU_VIEWBOX.height}`}
                 role="img"
-                aria-label="Map of Australia with one place marked, near Melbourne."
+                aria-label={`Map of Australia with ${auPins.length} ${
+                  auPins.length === 1 ? 'place' : 'places'
+                } marked.`}
               >
                 <path className="wild-country" d={AU_PATH} />
                 {auPins.map(([x, y]) => (

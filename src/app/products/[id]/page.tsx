@@ -4,6 +4,7 @@ import ProductDetailClient from '@/components/ProductDetailClient';
 import { getProduct } from '@/lib/products';
 import { getSummary } from '@/lib/reviews';
 import ProductReviews from '@/components/ProductReviews';
+import AlsoLike from '@/components/AlsoLike';
 
 // Full product pages: the shorts and pant. Anything else redirects to the preview.
 // Single source of truth — see lib/catalog.ts.
@@ -114,7 +115,22 @@ export default async function ProductPage({
   // and awaiting them in sequence would add their latency to a page that
   // already waits on Shopify. The review read is cached for five minutes and
   // never throws — an outage costs the review section, not the page.
-  const [product, reviewSummary] = await Promise.all([getProduct(id), getSummary(id)]);
+  //
+  // The cross-sell row at the bottom joins the same batch. Its products are
+  // fetched here rather than inside <AlsoLike> so they overlap with the two
+  // requests this page already makes instead of adding a third round-trip
+  // after them — the section is below the fold, and nothing below the fold
+  // has earned the right to delay the hero.
+  const siblings = DETAIL_HANDLES.filter((h) => h !== id);
+  const [product, reviewSummary, alsoLike] = await Promise.all([
+    getProduct(id),
+    getSummary(id),
+    // Individually caught: a sibling that fails to resolve costs its own tile,
+    // not the product page it was recommended on.
+    Promise.all(siblings.map((h) => getProduct(h).catch(() => null))).then((ps) =>
+      ps.filter((sp): sp is NonNullable<typeof sp> => sp !== null),
+    ),
+  ]);
   if (!product) {
     notFound();
   }
@@ -184,6 +200,11 @@ export default async function ProductPage({
       />
       <ProductDetailClient product={product!} initialColor={color} reviews={reviewSummary} />
       <ProductReviews summary={reviewSummary} productHandle={id} />
+      {/* Last, on purpose. Somebody still reading the reviews has not decided
+          yet; somebody past them has, one way or the other, and that is the
+          moment a different product is a suggestion rather than an
+          interruption. */}
+      <AlsoLike products={alsoLike} />
     </main>
   );
 }

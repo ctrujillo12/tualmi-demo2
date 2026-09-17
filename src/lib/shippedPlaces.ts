@@ -25,10 +25,17 @@
  * component), so a metro area reads as one place rather than a smudge.
  *
  * Seeded from the USPS labels in Shopify, extended 18 Aug 2026 from a second
- * batch of shipping addresses, and reconciled 4 Sep 2026 against the full
- * order stream (orders #1001-#1089). Coordinates for the rows added in that
- * pass are Shopify's own geocoding of the shipping address; the rest were
- * checked programmatically to fall inside the state they claim.
+ * batch of shipping addresses, reconciled 4 Sep 2026 against the full order
+ * stream (orders #1001-#1089), and again 17 Sep 2026 against orders
+ * #1090-#1121 as they arrive in Klaviyo's Placed Order feed — which is where
+ * the order stream is readable from without an Admin API token. Coordinates
+ * for the rows added in those passes are Shopify's own geocoding of the
+ * shipping address; the rest were checked programmatically to fall inside the
+ * state they claim.
+ *
+ * Orders #1036-#1040 are absent from that feed (they predate the current
+ * Shopify-Klaviyo connection), so the rows they contributed are still here
+ * from the earlier passes and must not be pruned by a rebuild-from-scratch.
  *
  * One row per town, not per order — a town that has ordered a dozen times is
  * still one dot, and neighbouring towns merge into one pin when the page
@@ -66,18 +73,24 @@ export type ShippedPlace = {
 const PLACES: ShippedPlace[] = [
   { state: 'AR', city: 'Searcy',           lat:  35.2490, lon:   -91.7268 },
   { state: 'AZ', city: 'Phoenix',          lat:  33.3860, lon:  -112.0530 },
+  { state: 'AZ', city: 'Tempe',            lat:  33.3894, lon:  -111.9617 },
+  { state: 'CA', city: 'Alameda',          lat:  37.7584, lon:  -122.2578 },
+  { state: 'CA', city: 'Avery',            lat:  38.2070, lon:  -120.3724 },
   { state: 'CA', city: 'Claremont',        lat:  34.1064, lon:  -117.7083 },
   { state: 'CA', city: 'Davis',            lat:  38.5449, lon:  -121.7405 },
   { state: 'CA', city: 'Elk Grove',        lat:  38.4191, lon:  -121.4758 },
   { state: 'CA', city: 'Huntington Beach', lat:  33.6595, lon:  -117.9988 },
   { state: 'CA', city: 'La Jolla',         lat:  32.8328, lon:  -117.2713 },
+  { state: 'CA', city: 'Lakeside',         lat:  32.8591, lon:  -116.9507 },
   { state: 'CA', city: 'Lomita',           lat:  33.7922, lon:  -118.3151 },
   { state: 'CA', city: 'Los Angeles',      lat:  34.0280, lon:  -118.4110 },
   { state: 'CA', city: 'Menlo Park',       lat:  37.4530, lon:  -122.1817 },
   { state: 'CA', city: 'Mill Valley',      lat:  37.9061, lon:  -122.5450 },
   { state: 'CA', city: 'Monterey',         lat:  36.6002, lon:  -121.8947 },
   { state: 'CA', city: 'Moreno Valley',    lat:  33.8919, lon:  -117.2089 },
+  { state: 'CA', city: 'Northridge',       lat:  34.2280, lon:  -118.5567 },
   { state: 'CA', city: 'Oakland',          lat:  37.8020, lon:  -122.2689 },
+  { state: 'CA', city: 'Olympic Valley',   lat:  39.1998, lon:  -120.2378 },
   { state: 'CA', city: 'Pacific Grove',    lat:  36.6177, lon:  -121.9166 },
   { state: 'CA', city: 'Palo Alto',        lat:  37.4489, lon:  -122.1576 },
   { state: 'CA', city: 'Rancho Cucamonga', lat:  34.1386, lon:  -117.5618 },
@@ -92,6 +105,7 @@ const PLACES: ShippedPlace[] = [
   { state: 'CA', city: 'Solana Beach',     lat:  32.9912, lon:  -117.2712 },
   { state: 'CA', city: 'Stockton',         lat:  37.9577, lon:  -121.2908 },
   { state: 'CA', city: 'Torrance',         lat:  33.8400, lon:  -118.3560 },
+  { state: 'CA', city: 'Tustin',           lat:  33.7524, lon:  -117.8104 },
   { state: 'CA', city: 'Ventura',          lat:  34.2783, lon:  -119.2932 },
   { state: 'CA', city: 'Westminster',      lat:  33.7503, lon:  -117.9742 },
   { state: 'CO', city: 'Aspen',            lat:  39.1911, lon:  -106.8175 },
@@ -99,15 +113,22 @@ const PLACES: ShippedPlace[] = [
   { state: 'CO', city: 'Broomfield',       lat:  39.9205, lon:  -105.0867 },
   { state: 'CO', city: 'Canon City',       lat:  38.4409, lon:  -105.2422 },
   { state: 'CO', city: 'Fort Collins',     lat:  40.5853, lon:  -105.0844 },
+  { state: 'CO', city: 'Golden',           lat:  39.7483, lon:  -105.2247 },
+  { state: 'CO', city: 'Gunnison',         lat:  38.5525, lon:  -106.9224 },
   { state: 'CO', city: 'Pine',             lat:  39.4180, lon:  -105.3450 },
   { state: 'CO', city: 'Westminster',      lat:  39.8367, lon:  -105.0372 },
   { state: 'CO', city: 'Windsor',          lat:  40.4775, lon:  -104.9014 },
   { state: 'DE', city: 'Rehoboth Beach',   lat:  38.6990, lon:   -75.1145 },
+  { state: 'FL', city: 'Marco Island',     lat:  25.9546, lon:   -81.7318 },
+  { state: 'FL', city: 'Miami Beach',      lat:  25.8648, lon:   -80.1255 },
   { state: 'GA', city: 'Athens',           lat:  33.9576, lon:   -83.4014 },
+  { state: 'GA', city: 'Roswell',          lat:  34.0073, lon:   -84.3963 },
   { state: 'HI', city: 'Honolulu',         lat:  21.2793, lon:  -157.8270 },
   { state: 'ID', city: 'Driggs',           lat:  43.7230, lon:  -111.1110 },
+  { state: 'IL', city: 'Chicago',          lat:  41.9312, lon:   -87.6423 },
   { state: 'IL', city: 'Northfield',       lat:  42.0989, lon:   -87.7795 },
   { state: 'IL', city: 'Oakbrook Terrace', lat:  41.8535, lon:   -87.9754 },
+  { state: 'IL', city: 'Saint Charles',    lat:  41.9559, lon:   -88.3748 },
   { state: 'MD', city: 'Columbia',         lat:  39.2037, lon:   -76.8610 },
   { state: 'ME', city: 'Falmouth',         lat:  43.7276, lon:   -70.2420 },
   { state: 'ME', city: 'Kittery',          lat:  43.0898, lon:   -70.7361 },
@@ -117,18 +138,24 @@ const PLACES: ShippedPlace[] = [
   { state: 'NC', city: 'Durham',           lat:  35.9940, lon:   -78.8986 },
   { state: 'NM', city: 'Albuquerque',      lat:  35.0844, lon:  -106.6504 },
   { state: 'NV', city: 'Las Vegas',        lat:  36.1838, lon:  -115.3327 },
+  { state: 'NY', city: 'Brooklyn',         lat:  40.6905, lon:   -73.9537 },
   { state: 'NY', city: 'Buffalo',          lat:  42.8864, lon:   -78.8784 },
   { state: 'NY', city: 'Hamilton',         lat:  42.8171, lon:   -75.5337 },
+  { state: 'NY', city: 'Hartwick',         lat:  42.6817, lon:   -75.0708 },
   { state: 'NY', city: 'New York',         lat:  40.7850, lon:   -73.9770 },
   { state: 'NY', city: 'Olean',            lat:  42.0776, lon:   -78.4297 },
   { state: 'OH', city: 'Massillon',        lat:  40.7967, lon:   -81.5215 },
   { state: 'OR', city: 'Portland',         lat:  45.5152, lon:  -122.6784 },
   { state: 'TN', city: 'Jacksboro',        lat:  36.3283, lon:   -84.1964 },
   { state: 'TN', city: 'Knoxville',        lat:  35.9200, lon:   -83.9400 },
+  { state: 'TX', city: 'Austin',           lat:  30.2981, lon:   -97.6746 },
   { state: 'TX', city: 'Boerne',           lat:  29.8197, lon:   -98.7302 },
   { state: 'TX', city: 'Dallas',           lat:  32.8755, lon:   -96.7359 },
+  { state: 'TX', city: 'Fort Worth',       lat:  32.7093, lon:   -97.3642 },
+  { state: 'TX', city: 'Friendswood',      lat:  29.4973, lon:   -95.1728 },
   { state: 'TX', city: 'Houston',          lat:  29.8970, lon:   -95.3349 },
   { state: 'TX', city: 'Katy',             lat:  29.7979, lon:   -95.7417 },
+  { state: 'TX', city: 'Manchaca',         lat:  30.1346, lon:   -97.8328 },
   { state: 'UT', city: 'Herriman',         lat:  40.4970, lon:  -112.0330 },
   { state: 'UT', city: 'Highland',         lat:  40.4272, lon:  -111.7930 },
   { state: 'UT', city: 'North Salt Lake',  lat:  40.8460, lon:  -111.9069 },
@@ -172,8 +199,11 @@ export type InternationalPlace = {
 
 const INTERNATIONAL: InternationalPlace[] = [
   { country: 'Australia', city: 'Mount Evelyn, Victoria', lat: -37.7833, lon: 145.3833 },
+  { country: 'Australia', city: 'Kallangur, Queensland',  lat: -27.2542, lon: 152.9909 },
+  { country: 'Australia', city: 'Crawley, Western Australia', lat: -31.9751, lon: 115.8171 },
   { country: 'Austria' },
   { country: 'France' },
+  { country: 'Germany' },
   { country: 'New Zealand' },
 ];
 
