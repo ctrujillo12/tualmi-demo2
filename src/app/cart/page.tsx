@@ -52,7 +52,7 @@ export default function CartPage() {
    *
    * This note used to say "the first collection is available 7/31" — a launch
    * date hardcoded in July that went stale in August and then contradicted the
-   * pant's own mid-September window on the same screen. Derived from the cart
+   * pant's own ship window on the same screen. Derived from the cart
    * so it can't drift again. Prefer the live product record over the snapshot
    * taken when the line was added: a cart persists in localStorage for weeks,
    * and the snapshot can predate a date change.

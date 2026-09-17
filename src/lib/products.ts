@@ -41,7 +41,12 @@ export const localProducts: Product[] = [
     stock: 100,
     variants: [],
     isPreorder: true,
-    shippingWindow: 'Ships mid September',
+    // A named week, not a vague "mid September". Stock lands Sat 19 Sept 2026
+    // and goes out the following week, so this is the first week orders
+    // actually move. Dated copy — when the week passes, change it here and the
+    // badge, the cart line, the preorder callout and the Shopify order note
+    // all follow.
+    shippingWindow: 'Ships the week of September 21',
   },
   {
     id: 'alpine-baby-tee',

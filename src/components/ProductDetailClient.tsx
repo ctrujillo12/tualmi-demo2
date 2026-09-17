@@ -114,7 +114,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const lockedForLaunch = isGated && !canShop;     // sellable but shop not open yet
 
   const shippingLabel = isPreorder
-    ? (product.shippingWindow || 'Ships mid September')
+    ? (product.shippingWindow || 'Ships the week of September 21')
     : buyable
       ? 'In stock, ships in 1–2 business days'
       : (product.shippingWindow ?? 'Coming soon');
@@ -194,7 +194,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
       // end up showing a Jam photo.
       const cartImg = cartThumbFor(handle, selectedColor, product.variants) ?? colorImages[0];
 
-      // Items with a future ship window (e.g. the pant's mid-September window)
+      // Items with a future ship window (e.g. the pant's preorder week)
       // are flagged as preorder so the date carries onto the Shopify order.
       const shipWindow = product.shippingWindow ?? '';
       const shipsLater = !!shipWindow && !shipWindow.toLowerCase().startsWith('in stock');
