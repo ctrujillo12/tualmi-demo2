@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
+import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, cardFraming } from '@/lib/productColors';
 import type { Product } from '@/types';
 
 /**
@@ -61,6 +61,19 @@ const maroon = '#A9445C';
 const soft   = '#C9849A';
 const rule   = '#F0D9E1';
 
+/**
+ * How much of a card's height the model should fill, and where her centre
+ * should sit. See cardFraming() in lib/productColors.ts for what these do.
+ *
+ * 0.84 leaves 8% of clear card above her head and below her feet. It is
+ * generous on purpose: the measured boxes are the model INCLUDING hair and
+ * boots, and a tighter target starts shaving both on the colourways that have
+ * to scale up. 0.50 puts her dead centre, which is where she reads as
+ * deliberately placed rather than as slightly slipped.
+ */
+const CARD_SUBJECT_HEIGHT = 0.84;
+const CARD_SUBJECT_ANCHOR = 0.50;
+
 /** $68 / $68.50 — whole dollars read cleaner on a card. */
 const priceLabel = (cents: number) => {
   const d = cents / 100;
@@ -88,6 +101,8 @@ type Card = {
   color: string;
   swatch: string;
   image?: string;
+  /** Scale + shift that make every model the same size. null = not measured. */
+  framing: { scale: number; shiftPct: number } | null;
 };
 
 export default function AlsoLike({ products }: { products: Product[] }) {
@@ -101,6 +116,7 @@ export default function AlsoLike({ products }: { products: Product[] }) {
       color: c.name,
       swatch: c.value,
       image: PRODUCT_COLOR_IMAGES[handle]?.[c.name]?.[0] ?? product.images?.[0],
+      framing: cardFraming(handle, c.name, CARD_SUBJECT_HEIGHT, CARD_SUBJECT_ANCHOR),
     }));
   });
 
@@ -219,6 +235,10 @@ export default function AlsoLike({ products }: { products: Product[] }) {
           text-decoration: none;
           -webkit-tap-highlight-color: transparent;
         }
+        /* White, not blush: the whole studio set is shot on white paper, so a
+           photo drawn with object-fit: contain letterboxes into a background
+           the eye cannot tell from the photo's own. That is what makes it
+           safe to stop cropping — see .al-shot below. */
         .al-photo {
           position: relative;
           display: block;
@@ -226,7 +246,29 @@ export default function AlsoLike({ products }: { products: Product[] }) {
           aspect-ratio: 3 / 4;
           border-radius: 14px;
           overflow: hidden;
-          background: #F3DCE5;
+          background: #fff;
+        }
+
+        /* ── Two nested boxes, two jobs ──
+           .al-shot carries the per-photo normalisation (a fixed scale and
+           shift, from the measured subject box). .al-frame carries the hover
+           zoom. They are separate elements because a single element can only
+           have one transform: writing the hover zoom onto the same box would
+           overwrite the normalisation and snap the model back to whatever
+           size the photographer happened to frame her at, which is the bug
+           this whole mechanism exists to fix.
+
+           Composing them in one declaration with calc() and custom properties
+           would work but could not be eased — an unregistered custom property
+           is not animatable, so the zoom would jump rather than glide. */
+        .al-frame {
+          position: absolute;
+          inset: 0;
+        }
+        .al-shot {
+          position: absolute;
+          inset: 0;
+          transform: translateY(var(--al-shift, 0%)) scale(var(--al-scale, 1));
         }
         .al-body {
           display: flex;
@@ -293,14 +335,14 @@ export default function AlsoLike({ products }: { products: Product[] }) {
            card is clickable before you click it. Behind (hover: hover) so a
            phone never leaves a card stuck in its hover state after a tap. */
         @media (hover: hover) {
-          .al-photo img { transition: transform 260ms ease; }
-          .al-link:hover .al-photo img { transform: scale(1.04); }
+          .al-frame { transition: transform 260ms ease; }
+          .al-link:hover .al-frame { transform: scale(1.04); }
           .al-link:hover .al-cta { background: ${maroon}; color: #fff; }
         }
         .al-link:active .al-cta { background: ${maroon}; color: #fff; }
         @media (prefers-reduced-motion: reduce) {
-          .al-photo img,
-          .al-link:hover .al-photo img { transition: none; transform: none; }
+          .al-frame,
+          .al-link:hover .al-frame { transition: none; transform: none; }
         }
       `}</style>
 
@@ -315,20 +357,39 @@ export default function AlsoLike({ products }: { products: Product[] }) {
               className="al-link"
             >
               <span className="al-photo">
-                {c.image && (
-                  <Image
-                    src={c.image}
-                    alt={`${c.name} in ${c.color}`}
-                    fill
-                    /* Phone first: at 62% of a 390px screen the card is about
-                       240px wide, and the desktop cap is 360px. Getting this
-                       wrong is the most expensive mistake on a cellular
-                       connection — a full-width source here would be
-                       megabytes fetched below the fold. */
-                    sizes="(max-width: 700px) 65vw, 360px"
-                    style={{ objectFit: 'cover' }}
-                  />
-                )}
+                <span className="al-frame">
+                  <span
+                    className="al-shot"
+                    style={
+                      c.framing
+                        ? ({
+                            '--al-scale': String(c.framing.scale),
+                            '--al-shift': `${c.framing.shiftPct}%`,
+                          } as React.CSSProperties)
+                        : undefined
+                    }
+                  >
+                    {c.image && (
+                      <Image
+                        src={c.image}
+                        alt={`${c.name} in ${c.color}`}
+                        fill
+                        /* Phone first: at 62% of a 390px screen the card is
+                           about 240px wide, and the desktop cap is 360px.
+                           Getting this wrong is the most expensive mistake on
+                           a cellular connection — a full-width source here
+                           would be megabytes fetched below the fold. */
+                        sizes="(max-width: 700px) 65vw, 360px"
+                        /* contain, not cover: the normalisation above already
+                           decides how big the model is, and a crop on top of
+                           it would take the decision back by cutting whatever
+                           the scale-up pushes past the edge. Nothing is lost
+                           to letterboxing because the card is white. */
+                        style={{ objectFit: 'contain' }}
+                      />
+                    )}
+                  </span>
+                </span>
               </span>
 
               <span className="al-body">
