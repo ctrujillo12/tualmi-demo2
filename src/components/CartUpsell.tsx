@@ -72,6 +72,16 @@ const ADDON_NOTES: Record<string, string> = {
 /** Everything fetched in one call, add-ons first. */
 const ALL_HANDLES = [...ADDON_HANDLES, ...UPSELL_HANDLES];
 
+/**
+ * What stands in for a colourway on a one-size tile.
+ *
+ * "One Size" rather than something invented: it is the same words Shopify
+ * puts on the variant and the same words QuickAdd and the cart line already
+ * use for it, so a shopper sees one phrase for this idea across the whole
+ * checkout rather than three.
+ */
+const ONE_SIZE_LABEL = 'One Size';
+
 /** $68 / $68.50 — whole dollars read cleaner on a small tile. */
 const priceLabel = (cents: number) => {
   const d = cents / 100;
@@ -296,6 +306,13 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
           flex-shrink: 0;
           box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
         }
+        /* A one-size tile keeps the swatch's SPACE so its label starts on the
+           same line as every other label, but not its fill — an invented
+           colour would be a claim about a product that doesn't come in one.
+           The ring above is inherited, so what's left is an empty circle,
+           which reads as "nothing to pick here" rather than as a dot that
+           failed to load. */
+        .cu-swatch[data-empty='true'] { background: transparent; }
         .cu-name {
           font-family: ${sans};
           font-size: 11px;
@@ -379,14 +396,23 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
               );
             })()}
 
+            {/* Swatch · label · price, on every tile without exception.
+                The add-on used to render the price ALONE here, so in a row of
+                tiles that all read "● jam · $68" the tote read "$17" — centred,
+                on its own, at a different height from every price beside it.
+                One tile built differently from its neighbours is the thing the
+                eye catches first, and what it catches is "broken", not
+                "cheaper". A one-size product has no colourway to name, so it
+                says so. */}
             <p className="cu-meta">
-              {t.color ? (
-                <>
-                  <span className="cu-swatch" style={{ background: t.swatch ?? 'transparent' }} aria-hidden />
-                  {t.color.toLowerCase()}
-                  <span className="cu-sep" aria-hidden style={{ opacity: 0.45 }}>·</span>
-                </>
-              ) : null}
+              <span
+                className="cu-swatch"
+                data-empty={t.color ? undefined : 'true'}
+                style={t.swatch ? { background: t.swatch } : undefined}
+                aria-hidden
+              />
+              {(t.color ?? ONE_SIZE_LABEL).toLowerCase()}
+              <span className="cu-sep" aria-hidden style={{ opacity: 0.45 }}>·</span>
               <span className="cu-price" style={{ fontWeight: 700 }}>{priceLabel(t.product.price)}</span>
             </p>
             <p className="cu-name">{t.product.name.toLowerCase()}</p>
