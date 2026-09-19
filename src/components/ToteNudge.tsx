@@ -9,15 +9,23 @@ import { trackAddToCart } from '@/lib/analytics';
 import type { Product } from '@/types';
 
 /**
- * "You're $17 from free shipping — add the tote?" — one checkbox, under the
- * cart items.
+ * "Add the tote to unlock free shipping" — one checkbox, under the cart items.
  *
  * The arithmetic this exists for is in lib/shipping.ts: the threshold is $125
  * and a single Juniper Pant is $108, so the most common one-item cart on the
- * site lands $17 short, and the tote is priced to close exactly that gap. That
- * shopper is one tap from a better order and, today, has to find the tote in
- * the recommendation row at the bottom of the page to do it. This puts the tap
+ * site lands a little short, and the tote covers the difference. That shopper
+ * is one tap from a better order and, today, has to find the tote in the
+ * recommendation row at the bottom of the page to do it. This puts the tap
  * where the decision happens.
+ *
+ * ── NO PRICE IS WRITTEN DOWN ANYWHERE IN HERE ────────────────────────────
+ * Every figure the shopper sees comes from the live Shopify product. An
+ * earlier draft of these comments said the tote was $17, having borrowed that
+ * number from the note in lib/shipping.ts — where $17 is the GAP a lone pant
+ * leaves, not the tote's price. It is not the same number and it was never
+ * the same number. Do not restate the price here, or in a test, or in a
+ * comment: read it off `tote.price` and let Shopify be the only place it
+ * lives.
  *
  * ── WHY IT IS NOT PRE-TICKED ─────────────────────────────────────────────
  * Because a pre-ticked box that adds a paid item charges the people who did
@@ -79,7 +87,7 @@ export function shouldOfferTote(opts: {
 }): boolean {
   // Already taken: keep the row on screen and ticked, whatever else is true,
   // so it can be undone. A control that vanishes the moment you use it is a
-  // trap, and this one can add $17 to an order.
+  // trap, and this one puts a paid item in the order.
   if (opts.inCart) return true;
   // Nothing to unlock.
   if (opts.qualified) return false;
@@ -95,6 +103,7 @@ export default function ToteNudge() {
   const removeItem = useCartStore((s) => s.removeItem);
 
   const [tote, setTote] = useState<Product | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   // Client-side, like <CartUpsell>: the cart page is a client component and
   // cannot call getProduct(). The product carries its Shopify variants, which
@@ -131,18 +140,6 @@ export default function ToteNudge() {
     return null;
   }
 
-  /**
-   * The total WITH the tote, not the gap without it.
-   *
-   * <FreeShippingBar> worked this out the hard way and the note above it is
-   * worth reading: "$17 away from free US shipping" asks a shopper to do
-   * arithmetic on a deficit and reads as a penalty for what she already
-   * chose. A total she can check against the threshold she has been shown all
-   * session says the same thing as an outcome. Same pattern as that
-   * component's "add a second pair — $136 total" line, so the cart speaks with
-   * one voice.
-   */
-  const withTote = money(total + tote.price);
 
   // One-size product: the same resolution <QuickAdd> uses, off the product
   // rather than a hardcoded 'One Size', because findVariant() keys on
@@ -173,24 +170,38 @@ export default function ToteNudge() {
 
   const thumb = cartThumbFor(TOTE_HANDLE, '', tote.variants) ?? tote.images?.[0];
 
+  const lead = tote.images?.[0] ?? thumb;
+
   return (
-    <label className="tn-row" data-on={inCart}>
+    <div className="tn-wrap">
+    <div className="tn-row" data-on={inCart}>
       <style>{`
         /* Small on purpose — this is a footnote to the cart, not a second
            product card. Capped rather than full-width so it reads as an aside
            beside the items rather than as another row of the list. */
+        .tn-wrap { max-width: 440px; margin: 14px 0 0; }
         .tn-row {
           display: flex;
           align-items: center;
           gap: 10px;
-          max-width: 440px;
-          margin: 14px 0 0;
-          padding: 9px 12px 9px 10px;
+          padding: 9px 10px 9px 10px;
           border: 1px solid ${rule};
           border-radius: 10px;
           background: #fff;
-          cursor: pointer;
           -webkit-tap-highlight-color: transparent;
+        }
+        /* The label is only the part that TICKS. It used to wrap the whole
+           row, which was fine until the row grew a second control: a <button>
+           inside a <label> fires the label too, so opening the details would
+           silently have added the tote to the order. The two jobs are two
+           elements now. */
+        .tn-main {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex: 1 1 auto;
+          min-width: 0;
+          cursor: pointer;
         }
         @media (hover: hover) {
           .tn-row { transition: border-color 140ms ease, background 140ms ease; }
@@ -215,14 +226,86 @@ export default function ToteNudge() {
           cursor: pointer;
         }
 
+        /* The photo is a button, because "click the picture to see the thing"
+           needs no instructions. The written link beside it exists anyway:
+           a picture that happens to be clickable is not an affordance unless
+           you already suspected it was one. */
         .tn-thumb {
           position: relative;
           flex: 0 0 auto;
           width: 34px;
           height: 34px;
+          padding: 0;
+          border: 0;
           border-radius: 7px;
           overflow: hidden;
           background: #FBF1F5;
+          cursor: pointer;
+        }
+
+        .tn-more {
+          flex: 0 0 auto;
+          align-self: center;
+          padding: 6px 2px 6px 8px;
+          border: 0;
+          background: none;
+          font-family: ${sans};
+          font-size: 11px;
+          font-weight: 700;
+          color: ${soft};
+          text-decoration: underline;
+          text-underline-offset: 3px;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+        @media (hover: hover) { .tn-more:hover { color: ${maroon}; } }
+
+        /* ── The details ──
+           The tote has no product page of its own (it is unlisted — see
+           UNLISTED_HANDLES in lib/products.ts), so this panel is the only
+           place on the whole site that says what it actually is. Everything
+           in it comes off the live Shopify product. */
+        .tn-details {
+          display: flex;
+          gap: 12px;
+          margin: 6px 0 0;
+          padding: 12px;
+          border: 1px solid ${rule};
+          border-radius: 10px;
+          background: #fff;
+        }
+        .tn-shot {
+          position: relative;
+          flex: 0 0 auto;
+          width: 96px;
+          height: 120px;
+          border-radius: 8px;
+          overflow: hidden;
+          background: #FBF1F5;
+        }
+        .tn-d-body { min-width: 0; }
+        .tn-d-name {
+          font-family: ${sans};
+          font-size: 13px;
+          font-weight: 700;
+          color: ${maroon};
+          margin: 0;
+          text-transform: lowercase;
+        }
+        .tn-d-price {
+          font-family: ${sans};
+          font-size: 12px;
+          font-weight: 700;
+          color: ${soft};
+          margin: 3px 0 0;
+        }
+        .tn-d-copy {
+          font-family: ${sans};
+          font-size: 11.5px;
+          font-weight: 500;
+          line-height: 1.55;
+          color: ${soft};
+          margin: 7px 0 0;
         }
 
         /* No text-transform: lowercase here, unlike most copy on the site.
@@ -239,12 +322,17 @@ export default function ToteNudge() {
         .tn-text strong { font-weight: 700; color: ${maroon}; }
 
         @media (max-width: 560px) {
-          .tn-row { max-width: none; gap: 9px; padding: 9px 10px; }
+          .tn-wrap { max-width: none; }
+          .tn-row { gap: 9px; padding: 9px 8px; }
+          .tn-main { gap: 9px; }
           .tn-text { font-size: 11.5px; }
           .tn-thumb { width: 30px; height: 30px; }
+          .tn-more { font-size: 10.5px; padding-left: 6px; }
+          .tn-shot { width: 76px; height: 95px; }
         }
       `}</style>
 
+      <label className="tn-main">
       <input
         type="checkbox"
         className="tn-box"
@@ -252,24 +340,73 @@ export default function ToteNudge() {
         onChange={toggle}
       />
 
-      {thumb && (
-        <span className="tn-thumb">
-          <Image src={thumb} alt="" fill sizes="34px" style={{ objectFit: 'cover' }} />
-        </span>
-      )}
-
+      {/* One sentence, one offer.
+          This tried three other shapes first and they were all the same
+          mistake in different clothes: "you're $X from free US shipping",
+          then "$125 total, and US shipping's free". Both handed the shopper a
+          sum to check before she could see what she was being offered, and the
+          sum is not the point — the row only appears when the tote DOES close
+          the gap, so the offer is simply the offer. Price in brackets because
+          she is about to be charged it, outcome in bold because that is the
+          reason to say yes. */}
       <span className="tn-text">
         {inCart ? (
           <>
-            {tote.name.toLowerCase()} added ({price}) — <strong>US shipping&rsquo;s free</strong>
+            <strong>free US shipping unlocked</strong>&#160;&#10022;
           </>
         ) : (
           <>
-            add the {tote.name.toLowerCase()} ({price}) — <strong>{withTote}</strong> total, and{' '}
-            <strong>US shipping&rsquo;s free</strong>
+            add the {tote.name.toLowerCase()} ({price}) to{' '}
+            <strong>unlock free US shipping</strong>
           </>
         )}
       </span>
-    </label>
+      </label>
+
+      {/* Outside the label on purpose — see .tn-main. */}
+      {thumb && (
+        <button
+          type="button"
+          className="tn-thumb"
+          aria-expanded={showDetails}
+          aria-controls="tn-details"
+          aria-label={`what is the ${tote.name.toLowerCase()}?`}
+          onClick={() => setShowDetails((v) => !v)}
+        >
+          <Image src={thumb} alt="" fill sizes="34px" style={{ objectFit: 'cover' }} />
+        </button>
+      )}
+      <button
+        type="button"
+        className="tn-more"
+        aria-expanded={showDetails}
+        aria-controls="tn-details"
+        onClick={() => setShowDetails((v) => !v)}
+      >
+        {showDetails ? 'close' : 'details'}
+      </button>
+    </div>
+
+    {showDetails && (
+      <div className="tn-details" id="tn-details">
+        {lead && (
+          <span className="tn-shot">
+            <Image
+              src={lead}
+              alt={tote.name}
+              fill
+              sizes="(max-width: 560px) 76px, 96px"
+              style={{ objectFit: 'cover' }}
+            />
+          </span>
+        )}
+        <div className="tn-d-body">
+          <p className="tn-d-name">{tote.name.toLowerCase()}</p>
+          <p className="tn-d-price">{price} · one size</p>
+          {tote.description && <p className="tn-d-copy">{tote.description}</p>}
+        </div>
+      </div>
+    )}
+    </div>
   );
 }

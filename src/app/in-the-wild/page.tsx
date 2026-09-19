@@ -157,12 +157,27 @@ export default function InTheWildPage() {
   const countries = getInternationalCountries();
   const stamps = countries
     .filter((name) => COUNTRY_MAPS[name])
-    .map((name) => ({
-      name,
-      pins: getInternationalPins(name)
+    .map((name) => {
+      const known = getInternationalPins(name)
         .map((p) => projectCountry(name, p.lat, p.lon))
-        .filter((p): p is [number, number] => p !== null),
-    }));
+        .filter((p): p is [number, number] => p !== null);
+      return {
+        name,
+        // No town on file: one stand-in dot in the middle of the country, so
+        // every stamp carries a mark. A tinted outline with nothing on it
+        // reads as a country we forgot to finish rather than one we shipped
+        // to — which was the whole complaint about the first version.
+        //
+        // The stand-in is NOT a place. It is the centroid of the country's
+        // largest landmass (see `centre` in lib/countryMaps.ts), and it is
+        // here because Austria, France and New Zealand predate the Klaviyo
+        // order feed and only their country name was ever recorded. Add the
+        // town and its lat/lon to INTERNATIONAL in lib/shippedPlaces.ts and
+        // the real pin replaces it automatically, with nothing to change here.
+        pins: known.length > 0 ? known : [COUNTRY_MAPS[name].centre as [number, number]],
+        approx: known.length === 0,
+      };
+    });
 
   // The written list under the map: states first, then countries.
   const everywhere = [...shippedStates.map((s) => s.name), ...countries];
@@ -433,12 +448,15 @@ export default function InTheWildPage() {
                 className="wild-inset-map"
                 viewBox={`0 0 ${COUNTRY_VIEWBOX.width} ${COUNTRY_VIEWBOX.height}`}
                 role="img"
+                /* The stand-in dot must not claim to be a town here either:
+                   a screen reader gets "a country we have shipped to", not
+                   "1 place marked". */
                 aria-label={
-                  stamp.pins.length > 0
-                    ? `Map of ${stamp.name} with ${stamp.pins.length} ${
+                  stamp.approx
+                    ? `Map of ${stamp.name}, a country we have shipped to.`
+                    : `Map of ${stamp.name} with ${stamp.pins.length} ${
                         stamp.pins.length === 1 ? 'place' : 'places'
                       } marked.`
-                    : `Map of ${stamp.name}, a country we have shipped to.`
                 }
               >
                 <path className="wild-country" d={COUNTRY_MAPS[stamp.name].path} />
