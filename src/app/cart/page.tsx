@@ -6,6 +6,7 @@ import CartItem from '@/components/CartItem';
 import DiscountBadge from '@/components/DiscountBadge';
 import FreeShippingBar from '@/components/FreeShippingBar';
 import CartUpsell from '@/components/CartUpsell';
+import ToteNudge from '@/components/ToteNudge';
 import { freeShippingProgress, FLAT_SHIPPING_CENTS, money } from '@/lib/shipping';
 import { useCartStore, unsellableLines } from '@/store/cartStore';
 import { useShopAccess } from '@/lib/useShopAccess';
@@ -199,6 +200,11 @@ export default function CartPage() {
             >
               back to shop
             </Link>
+
+            {/* The one-tap tote, directly under the items it is about. Goes
+                quiet on its own unless the cart is short of free shipping by
+                no more than the tote costs — see the component. */}
+            <ToteNudge />
           </div>
 
           {/* Right: order summary.

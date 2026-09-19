@@ -184,10 +184,10 @@ const PLACES: ShippedPlace[] = [
  * `city` is here for the same reason it is on ShippedPlace above, so a human
  * can maintain the file, and is never sent to the browser.
  *
- * `lat`/`lon` are optional and only worth filling in for a country that has
- * its own inset map to be drawn on. Right now that's Australia (see
- * src/lib/auMap.ts). Everywhere else the coordinates would go unused, so
- * they're left off rather than collected for nothing.
+ * `lat`/`lon` are optional. Every country in this list now has an outline to
+ * be drawn on (src/lib/countryMaps.ts), so coordinates are worth filling in
+ * wherever we actually know the town — the country tints either way, and the
+ * pin is the difference between "we shipped here" and "we shipped HERE".
  */
 export type InternationalPlace = {
   country: string;
@@ -198,12 +198,18 @@ export type InternationalPlace = {
 };
 
 const INTERNATIONAL: InternationalPlace[] = [
-  { country: 'Australia', city: 'Mount Evelyn, Victoria', lat: -37.7833, lon: 145.3833 },
-  { country: 'Australia', city: 'Kallangur, Queensland',  lat: -27.2542, lon: 152.9909 },
+  { country: 'Australia', city: 'Mount Evelyn, Victoria',     lat: -37.7833, lon: 145.3833 },
+  { country: 'Australia', city: 'Kallangur, Queensland',      lat: -27.2542, lon: 152.9909 },
   { country: 'Australia', city: 'Crawley, Western Australia', lat: -31.9751, lon: 115.8171 },
+  { country: 'Germany',   city: 'Berlin',                     lat:  52.4319, lon:  13.2132 },
+  { country: 'Germany',   city: 'Jestetten, Baden-Württemberg', lat: 47.6515, lon: 8.5836 },
+  // No coordinates on file for these three — they predate the Klaviyo order
+  // feed, which is the only order stream readable without a Shopify Admin
+  // token, and the earlier passes recorded the country and not the town. Their
+  // outlines still draw and still tint; they just carry no pin. Add a town and
+  // its lat/lon here and the pin appears, with nothing else to change.
   { country: 'Austria' },
   { country: 'France' },
-  { country: 'Germany' },
   { country: 'New Zealand' },
 ];
 

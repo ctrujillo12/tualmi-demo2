@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { US_STATES, US_VIEWBOX, projectAlbersUsa } from '@/lib/usMap';
-import { AU_PATH, AU_VIEWBOX, projectAustralia } from '@/lib/auMap';
+import { COUNTRY_MAPS, COUNTRY_VIEWBOX, projectCountry } from '@/lib/countryMaps';
 import Image from 'next/image';
 import {
   getInternationalCountries,
@@ -141,14 +141,28 @@ export default function InTheWildPage() {
     a.name.localeCompare(b.name),
   );
 
-  // Orders that landed outside the US. They can't go on an Albers USA map, so
-  // they reach the page two ways: every one of them by name in the list under
-  // the map, and Australia — the only one we hold coordinates for — as a pin
-  // on its own small inset beside the big map.
+  // Orders that landed outside the US. Albers USA is a US-only projection, so
+  // none of them can go on the big map; each gets its own small square inset
+  // instead, tinted the same as a shipped state.
+  //
+  // This used to draw Australia and nothing else, because Australia was the
+  // only country we had an outline for — the page said "5 countries" over a
+  // map showing one. Every country in the list now has a shape (see
+  // lib/countryMaps.ts) and gets a stamp.
+  //
+  // A country keeps its stamp whether or not we know the town. The tint is the
+  // claim being made ("we shipped here") and the pin is a detail on top of it,
+  // exactly as on the US map; three of these carry no coordinates yet and so
+  // carry no pin.
   const countries = getInternationalCountries();
-  const auPins = getInternationalPins('Australia')
-    .map((p) => projectAustralia(p.lat, p.lon))
-    .filter((p): p is [number, number] => p !== null);
+  const stamps = countries
+    .filter((name) => COUNTRY_MAPS[name])
+    .map((name) => ({
+      name,
+      pins: getInternationalPins(name)
+        .map((p) => projectCountry(name, p.lat, p.lon))
+        .filter((p): p is [number, number] => p !== null),
+    }));
 
   // The written list under the map: states first, then countries.
   const everywhere = [...shippedStates.map((s) => s.name), ...countries];
@@ -174,25 +188,35 @@ export default function InTheWildPage() {
         }
         @media (max-width: 640px) { .wild-map { max-width: none; } }
 
-        /* ── The two maps side by side ──
-           Australia rides along as an inset rather than as its own section:
-           the US map already tucks Alaska and Hawaii into corner insets, so a
-           second box in the same row reads as part of one map, not a second
-           map. Bottom-aligned, because the inset is much shorter and hanging
-           it off the top of the row would leave a hole under it.
+        /* ── The US map, then a row of country stamps ──
+           This was a flex ROW holding the US map and one Australia inset
+           side by side, bottom-aligned. That worked for exactly one inset.
+           With five, the row wrapped into a ragged second line of boxes
+           hanging off the end of the map, at whatever width was left over.
 
-           At phone width the row wraps and the inset would sit alone on a
-           line at 120px wide, which looks like a mistake. Below 640px it goes
-           full-width under the US map instead and is allowed to grow. */
-        .wild-maps {
+           So the countries get their own line under the map: a row of equal
+           squares, all the same size, wrapping as a unit. Same idea as before
+           — one drawing, not a map plus a gallery of maps — but the stamps now
+           read as a set rather than as leftovers.
+
+           Left-aligned with the map above rather than centred, so the row
+           starts on the same vertical line as everything else on the page. */
+        .wild-maps { display: block; }
+        .wild-stamps {
           display: flex;
-          align-items: flex-end;
-          gap: clamp(16px, 3vw, 36px);
           flex-wrap: wrap;
+          align-items: flex-start;
+          gap: clamp(12px, 2.2vw, 26px);
+          margin: clamp(18px, 3vw, 30px) 0 0;
+          padding: 0;
+          list-style: none;
         }
         .wild-inset { flex: 0 0 auto; }
+        /* Smaller than the lone Australia inset was (96–132px): five of these
+           sit in a row where one used to sit beside the map, and at the old
+           size they crowded the map they are supposed to be a footnote to. */
         .wild-inset-map {
-          width: clamp(96px, 13vw, 132px);
+          width: clamp(64px, 8.5vw, 98px);
           height: auto;
           display: block;
         }
@@ -203,17 +227,21 @@ export default function InTheWildPage() {
           color: ${soft};
           text-transform: lowercase;
           margin: 6px 0 0;
+          text-align: center;
         }
+        /* On a phone the map goes full-bleed-ish and the stamps get tighter,
+           three or four to a line, which is what the wrap does on its own at
+           this size. Nothing here needs a different layout — just less air. */
         @media (max-width: 640px) {
-          .wild-maps { display: block; }
-          .wild-inset { margin-top: 24px; }
-          .wild-inset-map { width: 40%; }
+          .wild-stamps { gap: 14px 16px; margin-top: 22px; }
+          .wild-inset-map { width: 62px; }
+          .wild-inset-label { font-size: 10px; }
         }
 
         .wild-state { fill: #F5E3EA; stroke: #EACBD8; stroke-width: 1; }
         .wild-state[data-shipped='true'] { fill: #EFCBDA; }
-        /* The inset country is always somewhere we've shipped — it only gets
-           drawn because there's a pin to put on it. */
+        /* Same fill as a shipped state, because it means the same thing.
+           A country is drawn because we shipped there, pin or no pin. */
         .wild-country { fill: #EFCBDA; stroke: #EACBD8; stroke-width: 1; }
         /* Colour only. Pin SIZE lives on the elements themselves as real SVG
            r / stroke-width attributes — see the note above the two <g> groups
@@ -380,37 +408,48 @@ export default function InTheWildPage() {
             </g>
           </svg>
 
-          {/* ── Australia ──
-              Drawn only when there's actually a pin to put on it. An empty
-              country outline sitting next to the US map would be a claim we
-              haven't earned, and this way the inset disappears by itself if
-              the order data ever stops including one. Same fill, stroke and
-              pin colours as the main map, so it reads as the same drawing.
+          <div className="wild-stamps">
+          {/* ── The countries ──
+              One square stamp each, in the same row as the US map so the whole
+              thing reads as one drawing rather than as a map plus a gallery of
+              other maps. Same fill, stroke and pin colours throughout.
 
-              The pin size is a plain SVG attribute for exactly the reason
-              spelled out over the US pins below — a CSS `r` is not something
-              every renderer honours, and the failure mode is an invisible pin
-              rather than a small one. No phone/wide pair here because this
-              box barely changes size between breakpoints. */}
-          {auPins.length > 0 && (
-            <div className="wild-inset">
+              Drawn whether or not the country has a pin, unlike the single
+              Australia inset this replaces. That one hid itself when it had no
+              coordinates, which was right when it was the only inset — an
+              empty box beside the US map is a claim you have not earned — and
+              wrong the moment there were five countries, because then four of
+              them vanished and the page promised "5 countries" over a map
+              showing one. The tint is the claim; the pin is a detail.
+
+              Pin size is a plain SVG attribute for exactly the reason spelled
+              out over the US pins above: a CSS `r` is not something every
+              renderer honours, and the failure mode is an invisible pin rather
+              than a small one. No phone/wide pair here because these boxes
+              barely change size between breakpoints. */}
+          {stamps.map((stamp) => (
+            <div className="wild-inset" key={stamp.name}>
               <svg
                 className="wild-inset-map"
-                viewBox={`0 0 ${AU_VIEWBOX.width} ${AU_VIEWBOX.height}`}
+                viewBox={`0 0 ${COUNTRY_VIEWBOX.width} ${COUNTRY_VIEWBOX.height}`}
                 role="img"
-                aria-label={`Map of Australia with ${auPins.length} ${
-                  auPins.length === 1 ? 'place' : 'places'
-                } marked.`}
+                aria-label={
+                  stamp.pins.length > 0
+                    ? `Map of ${stamp.name} with ${stamp.pins.length} ${
+                        stamp.pins.length === 1 ? 'place' : 'places'
+                      } marked.`
+                    : `Map of ${stamp.name}, a country we have shipped to.`
+                }
               >
-                <path className="wild-country" d={AU_PATH} />
-                {auPins.map(([x, y]) => (
+                <path className="wild-country" d={COUNTRY_MAPS[stamp.name].path} />
+                {stamp.pins.map(([x, y]) => (
                   <circle
-                    key={`au-${Math.round(x)}-${Math.round(y)}`}
+                    key={`${stamp.name}-${Math.round(x)}-${Math.round(y)}`}
                     className="wild-pin"
                     cx={x}
                     cy={y}
-                    r={9}
-                    strokeWidth={2.2}
+                    r={7}
+                    strokeWidth={1.8}
                   />
                 ))}
               </svg>
@@ -418,9 +457,10 @@ export default function InTheWildPage() {
                   recognisable US outline; a small shape on its own does not
                   identify itself, and "which country is that" is a worse
                   question to leave hanging than the label is clutter. */}
-              <p className="wild-inset-label">australia</p>
+              <p className="wild-inset-label">{stamp.name.toLowerCase()}</p>
             </div>
-          )}
+          ))}
+          </div>
           </div>
 
           {/* The same information as text — a screen reader shouldn't have to
