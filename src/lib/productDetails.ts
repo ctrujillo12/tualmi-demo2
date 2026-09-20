@@ -132,15 +132,23 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    // Surfaces the front rise off the size chart below: the number was already
-    // measured and sitting in a table nobody opens, and "low rise" on its own
-    // is the vaguest possible answer to the question people are asking.
+    // Read on a phone, in a few seconds, standing up. Five short lines, no em
+    // dashes, nothing that needs a second pass. The previous version ran to
+    // clauses inside clauses and buried the numbers people actually came for.
+    //
+    // The rise line is the size chart's own figure, deliberately. A hand
+    // measurement of 9½" was taken on 19 Sept 2026 and then withdrawn as a bad
+    // measurement, so the chart stands unchallenged and this line agrees with
+    // it. Don't reintroduce 9½" without re-measuring.
+    //
+    // The 29" inseam IS measured, and is the one dimension that does not move
+    // across sizes, which is why it leads.
     fit: [
-      'Low rise — 8¾" front rise on a small',
+      '29" inseam, the same on every size',
+      'Low rise, 8¾" front rise on a small',
       'Relaxed flared leg, roomy through the hip and thigh',
-      'Petite-friendly — the hem drawcords take up length',
-      'True to size. Between sizes, size down: the elastic waist and drawstring keep the smaller size comfortable',
-      'Waist and hip pointing at different sizes? Go by hip — the waist adjusts, the hip doesn’t',
+      'True to size. Between sizes, size down.',
+      'Waist and hip different sizes? Go by hip. The waist adjusts.',
     ],
     // modelNote removed: it said "rachel is 5'6"" on every colourway, which
     // the September 2026 shoot made false — it was shot with a different model
@@ -154,7 +162,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       {
         q: 'Can I unfold the waistband?',
         a: 'Partly. It’s stitched down at the sides with the front and back left loose, so you can pull it up for a '
-         + 'bit more coverage — useful under a pack strap. It won’t open all the way out into a mid-rise. Elastic '
+         + 'bit more coverage, useful under a pack strap. It won’t open all the way out into a mid-rise. Elastic '
          + 'tape holds it up, and there’s an internal drawstring if you want it tighter.',
       },
       {
@@ -176,10 +184,14 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       },
     ],
     sizeChart: {
-      note: 'Garment measurements in inches, taken flat.',
+      note: 'Garment measurements in inches, taken flat. Inseam is 29" on every size.',
       sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
       rows: [
         { label: 'Length (top to hem)',        values: ['36.5"', '36.75"', '37.25"', '37.5"', '38"', '38.5"', '38.75"'] },
+        // Constant across sizes, and the single most-asked pant measurement.
+        // Kept as a row anyway so it is visible in the table people scan, not
+        // only in the note above it.
+        { label: 'Inseam',                     values: ['29"', '29"', '29"', '29"', '29"', '29"', '29"'] },
         { label: 'Waist',                       values: ['22.75"', '24.75"', '26.75"', '28.75"', '30.75"', '32.75"', '34.75"'] },
         { label: 'Hip',                         values: ['33.75"', '35.75"', '37.75"', '39.75"', '41.75"', '43.75"', '45.75"'] },
         { label: 'Thigh',                       values: ['20"', '21.25"', '22.5"', '23.5"', '24.75"', '26"', '27.25"'] },
