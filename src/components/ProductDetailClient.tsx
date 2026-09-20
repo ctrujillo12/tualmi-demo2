@@ -355,6 +355,26 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   // ── Accordion content ──
   const accordionItems: { key: string; label: string; content: React.ReactNode }[] = [];
 
+  // First in the accordion, above the spec list. These are the questions that
+  // decide whether someone buys; the spec list is reference material they open
+  // afterwards, if at all.
+  if (fabricDetail?.faq && fabricDetail.faq.length > 0) {
+    accordionItems.push({
+      key: 'faq',
+      label: 'questions we get',
+      content: (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          {fabricDetail.faq.map((item) => (
+            <div key={item.q}>
+              <p style={{ margin: 0, fontWeight: 700, color: maroon }}>{item.q}</p>
+              <p style={{ margin: '3px 0 0', opacity: 0.85 }}>{item.a}</p>
+            </div>
+          ))}
+        </div>
+      ),
+    });
+  }
+
   if (fabricDetail) {
     accordionItems.push({
       key: 'material',

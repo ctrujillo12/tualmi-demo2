@@ -34,6 +34,18 @@ export interface FabricDetail {
   /** Optional highlighted note near the CTA — e.g. a ship-date delay */
   shipNote?: string;
   /**
+   * The questions people actually ask before buying, answered.
+   *
+   * Rendered FIRST in the accordion, above the spec list, because these are
+   * decision questions and the spec list is reference material.
+   *
+   * Every answer here is a factual claim about the garment and gets held to
+   * the same bar as the feature list: if nobody has confirmed it, it does not
+   * go in. An unanswered question costs a sale; a wrong answer costs a return
+   * and the customer.
+   */
+  faq?: { q: string; a: string }[];
+  /**
    * The three claims in the strip above the product name.
    *
    * Per product, because they are factual claims about THIS garment and not
@@ -78,24 +90,28 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     highlights: [
       { icon: 'moisture', label: 'Moisture-wicking' },
       { icon: 'stretch',  label: '4-way stretch' },
-      { icon: 'pocket',   label: 'Cargo pockets' },
-      { icon: 'cinch',    label: 'Drawcord hem' },
+      { icon: 'pocket',   label: 'Snap-close pockets' },
+      { icon: 'cinch',    label: 'Cinchable hem' },
       // Was 'Recycled materials' — the same false claim as the trust strip,
       // on the same page. Removing one and leaving the other would have been
       // incoherent.
       { icon: 'women',    label: 'Women-engineered fit' },
     ],
     features: [
-      '4-way stretch shell for full range of motion',
-      'Moisture-wicking + quick-dry',
+      '4-way stretch — scramble, squat and sit cross-legged without fighting the pant',
+      'Moisture-wicking and quick-dry',
       // The single most-asked question about light-coloured hiking pants, and
       // Birch is cream — worth stating outright rather than leaving a shopper
       // to guess from the photos.
-      'Fully opaque — not see-through, in any colourway',
-      'Fold-over-style waistband',
-      'Two cargo side pockets, each with a snap-button closure',
-      'Adjustable drawcord at each hem',
-      'Relaxed flared leg silhouette',
+      'Fully opaque — not see-through, in any colourway, Birch included',
+      // Confirmed 19 Sept 2026: stitched at the sides, loose front and back.
+      // Described precisely because "fold-over waistband" on its own invites
+      // the assumption that it unfolds into a mid-rise, and it does not.
+      'Fold-over waistband, stitched at the sides with the front and back left loose — pull it up for a little more coverage under a pack',
+      'Elastic tape through the waistband plus an internal drawstring, so it stays put without digging in',
+      'Two deep cargo side pockets, each with a snap closure',
+      '10" of drawcord at each hem — wear it flared, or cinch it above the mud',
+      'Roomy through the hip and thigh, relaxed flared leg',
     ],
     care: [
       'Machine wash cold',
@@ -103,7 +119,14 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Low rise with a relaxed flared leg. True to size. If you’re between sizes, size down.',
+    // Surfaces the front rise off the size chart below: the number was already
+    // measured and sitting in a table nobody opens, and "low rise" on its own
+    // is the vaguest possible answer to the question people are asking.
+    fit:
+      'Low rise — 8¾" front rise on a small — with a relaxed flared leg, cut roomy through the hip and thigh. '
+      + 'Petite-friendly; the hem drawcords take up length if you need them to. '
+      + 'True to size. Between sizes, size down: the waist is elastic with a drawstring, so the smaller size still '
+      + 'moves with you and still stays up. Full garment measurements for every size are in the size guide.',
     // modelNote removed: it said "rachel is 5'6"" on every colourway, which
     // the September 2026 shoot made false — it was shot with a different model
     // per colourway, and Picnic with two. This is now derived per photograph
@@ -112,6 +135,40 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     // ProductDetailClient) already states the ship window, and having both
     // showed two competing preorder cards. Set this only for a genuinely
     // different message, e.g. an unexpected delay.
+    faq: [
+      {
+        q: 'Can I unfold the waistband?',
+        a: 'Partly. It’s stitched down at the sides, with the front and back left loose, so you can pull it up for '
+         + 'a bit more coverage — useful under a pack strap. It won’t open all the way out into a mid-rise.',
+      },
+      {
+        q: 'What actually holds them up?',
+        a: 'Elastic tape through the waistband, plus an internal drawstring if you want it tighter.',
+      },
+      {
+        q: 'I’m between sizes. What do I order?',
+        a: 'Size down. The cut is roomy through the hip and thigh and the waist is elastic with a drawstring, so the '
+         + 'smaller size still has room to move and still stays put. If your waist and hip point at different sizes, '
+         + 'go by your hip — the waist adjusts and the hip doesn’t.',
+      },
+      {
+        q: 'Are they see-through? Especially Birch?',
+        a: 'No. Fully opaque in every colourway, Birch included.',
+      },
+      {
+        q: 'What fits in the pockets?',
+        a: 'Two deep cargo pockets, one on each leg, each with a snap. A phone goes in and stays in.',
+      },
+      {
+        q: 'Are they water resistant?',
+        a: 'No. The fabric is moisture-wicking and quick-dry, so it handles sweat and dries fast, but it is not a '
+         + 'rain pant.',
+      },
+      {
+        q: 'Do they make that hiking-pant noise?',
+        a: 'A bit of rustle when you walk. It’s a technical nylon, not a cotton pant.',
+      },
+    ],
     sizeChart: {
       note: 'Garment measurements in inches, taken flat.',
       sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
