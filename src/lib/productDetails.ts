@@ -25,7 +25,19 @@ export interface FabricDetail {
   /** Short, icon-backed selling points shown as a strip near the top */
   highlights?: Highlight[];
   care?: string[];
-  fit?: string;
+  /**
+   * Fit and sizing.
+   *
+   * A string renders as prose (paragraphs split on a blank line); an array
+   * renders as bullets. Bullets for anything with more than one idea in it:
+   * this block sits beside the size picker and gets scanned, not read, and a
+   * five-clause paragraph about rise, length and what to do between sizes is
+   * the kind of thing people skip and then get wrong.
+   *
+   * Do not end it with a pointer to the size guide — the component already
+   * renders that line whenever a sizeChart exists.
+   */
+  fit?: string | string[];
   /** Model reference line, e.g. "rachel is 5'6\" and wearing a size small" */
   modelNote?: string;
   origin?: string;
@@ -97,21 +109,22 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       // incoherent.
       { icon: 'women',    label: 'Flattering fit' },
     ],
+    // ── WHO OWNS WHAT ───────────────────────────────────────────
+    // Three blocks describe this pant and they kept saying the same things in
+    // different words. Each fact now lives in exactly one of them:
+    //
+    //   fit       — how it sits on you and what size to order
+    //   features  — the spec sheet: fabric and hardware, terse, no sentences
+    //   faq       — the questions with a nuance or a "no" in the answer
+    //
+    // So: no silhouette or rise here (that is fit), and no explaining (that is
+    // the faq). If you add a line here, check it is not already answered.
     features: [
-      '4-way stretch — scramble, squat and sit cross-legged without fighting the pant',
-      'Moisture-wicking and quick-dry',
-      // The single most-asked question about light-coloured hiking pants, and
-      // Birch is cream — worth stating outright rather than leaving a shopper
-      // to guess from the photos.
-      'Fully opaque — not see-through, in any colourway, Birch included',
-      // Confirmed 19 Sept 2026: stitched at the sides, loose front and back.
-      // Described precisely because "fold-over waistband" on its own invites
-      // the assumption that it unfolds into a mid-rise, and it does not.
-      'Fold-over waistband, stitched at the sides with the front and back left loose — pull it up for a little more coverage under a pack',
-      'Elastic tape through the waistband plus an internal drawstring, so it stays put without digging in',
-      'Two deep cargo side pockets, each with a snap closure',
-      '10" of drawcord at each hem — wear it flared, or cinch it above the mud',
-      'Roomy through the hip and thigh, relaxed flared leg',
+      '4-way stretch',
+      'Moisture-wicking, quick-dry',
+      'Elastic-tape waistband with an internal drawstring',
+      'Two cargo side pockets, snap closures',
+      '10" drawcord at each hem',
     ],
     care: [
       'Machine wash cold',
@@ -122,11 +135,13 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     // Surfaces the front rise off the size chart below: the number was already
     // measured and sitting in a table nobody opens, and "low rise" on its own
     // is the vaguest possible answer to the question people are asking.
-    fit:
-      'Low rise — 8¾" front rise on a small — with a relaxed flared leg, cut roomy through the hip and thigh. '
-      + 'Petite-friendly; the hem drawcords take up length if you need them to. '
-      + 'True to size. Between sizes, size down: the waist is elastic with a drawstring, so the smaller size still '
-      + 'moves with you and still stays up. Full garment measurements for every size are in the size guide.',
+    fit: [
+      'Low rise — 8¾" front rise on a small',
+      'Relaxed flared leg, roomy through the hip and thigh',
+      'Petite-friendly — the hem drawcords take up length',
+      'True to size. Between sizes, size down: the elastic waist and drawstring keep the smaller size comfortable',
+      'Waist and hip pointing at different sizes? Go by hip — the waist adjusts, the hip doesn’t',
+    ],
     // modelNote removed: it said "rachel is 5'6"" on every colourway, which
     // the September 2026 shoot made false — it was shot with a different model
     // per colourway, and Picnic with two. This is now derived per photograph
@@ -138,18 +153,9 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     faq: [
       {
         q: 'Can I unfold the waistband?',
-        a: 'Partly. It’s stitched down at the sides, with the front and back left loose, so you can pull it up for '
-         + 'a bit more coverage — useful under a pack strap. It won’t open all the way out into a mid-rise.',
-      },
-      {
-        q: 'What actually holds them up?',
-        a: 'Elastic tape through the waistband, plus an internal drawstring if you want it tighter.',
-      },
-      {
-        q: 'I’m between sizes. What do I order?',
-        a: 'Size down. The cut is roomy through the hip and thigh and the waist is elastic with a drawstring, so the '
-         + 'smaller size still has room to move and still stays put. If your waist and hip point at different sizes, '
-         + 'go by your hip — the waist adjusts and the hip doesn’t.',
+        a: 'Partly. It’s stitched down at the sides with the front and back left loose, so you can pull it up for a '
+         + 'bit more coverage — useful under a pack strap. It won’t open all the way out into a mid-rise. Elastic '
+         + 'tape holds it up, and there’s an internal drawstring if you want it tighter.',
       },
       {
         q: 'Are they see-through? Especially Birch?',

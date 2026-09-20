@@ -1303,9 +1303,15 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
             {fabricDetail?.fit && (
               <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
                 <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '12px' }}>fit & sizing</p>
-                {fabricDetail.fit.split('\n\n').map((block, i) => (
-                  <p key={i} style={{ ...bodyStyle, margin: i > 0 ? '10px 0 0' : 0 }}>{block}</p>
-                ))}
+                {Array.isArray(fabricDetail.fit) ? (
+                  <ul style={{ ...bodyStyle, margin: 0, padding: '0 0 0 16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {fabricDetail.fit.map((point) => <li key={point}>{point}</li>)}
+                  </ul>
+                ) : (
+                  fabricDetail.fit.split('\n\n').map((block, i) => (
+                    <p key={i} style={{ ...bodyStyle, margin: i > 0 ? '10px 0 0' : 0 }}>{block}</p>
+                  ))
+                )}
                 {/* Built from the models actually present in the gallery on
                     screen, so it lists both of them on Picnic and cannot drift
                     out of step with the photographs. */}
