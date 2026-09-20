@@ -95,7 +95,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       // Was 'Recycled materials' — the same false claim as the trust strip,
       // on the same page. Removing one and leaving the other would have been
       // incoherent.
-      { icon: 'women',    label: 'Women-engineered fit' },
+      { icon: 'women',    label: 'Flattering fit' },
     ],
     features: [
       '4-way stretch — scramble, squat and sit cross-legged without fighting the pant',

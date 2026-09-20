@@ -45,7 +45,7 @@ const PAGE_METADATA: Record<string, Metadata> = {
   'juniper-pant': {
     title: 'juniper pant — flare cargo hiking pants',
     description:
-      'Fashion-forward flare cargo hiking pants with a flattering, women-engineered fit and real cargo pockets. Made ethically in a WRAP-certified facility. Preorder now — ships the week of September 21.',
+      'Fashion-forward flare cargo hiking pants with a flattering fit and real cargo pockets. Made ethically in a WRAP-certified facility. Preorder now — ships the week of September 21.',
     alternates: { canonical: '/products/juniper-pant' },
     openGraph: {
       ...OG_BASE,
