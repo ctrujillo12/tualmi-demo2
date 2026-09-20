@@ -9,7 +9,7 @@ import { PRODUCT_DETAILS, type HighlightIcon } from '@/lib/productDetails';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, PRODUCT_LIFESTYLE_IMAGES, cartThumbFor } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
-import { FREE_SHIPPING_LABEL } from '@/lib/shipping';
+import { FREE_SHIPPING_LABEL, PREORDER_SHIP_LABEL } from '@/lib/shipping';
 import { LOW_STOCK_LABEL, SOLD_OUT_LABEL } from '@/lib/lowStock';
 import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/inventory';
 import ImageLightbox from '@/components/ImageLightbox';
@@ -96,8 +96,8 @@ function HighlightGlyph({ icon }: { icon: HighlightIcon }) {
       return <svg {...common}><rect x="4.5" y="4.5" width="15" height="15" rx="2.5" /><path d="M8.5 4.5v3a3.5 3.5 0 0 0 7 0v-3" /></svg>;
     case 'stretch': // expand both ways
       return <svg {...common}><path d="M3.5 12h17" /><path d="M7 8.5 3.5 12 7 15.5" /><path d="M17 8.5 20.5 12 17 15.5" /></svg>;
-    case 'women': // female symbol
-      return <svg {...common}><circle cx="12" cy="8" r="4.5" /><path d="M12 12.5v8M8.75 17.5h6.5" /></svg>;
+    case 'fit': // flared-leg pant silhouette -- the cut itself, not a gender symbol
+      return <svg {...common}><path d="M7.4 4.5h9.2l.4 5H7Z" /><path d="M7 9.5c-.6 4-1.3 7.2-2.2 10h3.6c.9-3.5 1.9-6.4 3.6-8.2 1.7 1.8 2.7 4.7 3.6 8.2h3.6c-.9-2.8-1.6-6-2.2-10" /></svg>;
     case 'cinch': // cinched hem / drawstring
       return <svg {...common}><path d="M8 4v6M16 4v6" /><path d="M8 10c1.3 1.3 2.5 1.3 4 1.3s2.7 0 4-1.3" /><path d="M9.5 11.2 8 20M14.5 11.2 16 20" /></svg>;
     default:
@@ -114,7 +114,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const lockedForLaunch = isGated && !canShop;     // sellable but shop not open yet
 
   const shippingLabel = isPreorder
-    ? (product.shippingWindow || 'Ships the week of September 21')
+    ? (product.shippingWindow || PREORDER_SHIP_LABEL)
     : buyable
       ? 'In stock, ships in 1–2 business days'
       : (product.shippingWindow ?? 'Coming soon');

@@ -34,6 +34,10 @@
  */
 export const FREE_SHIPPING_THRESHOLD = 12500;
 
+// "$125 or more", not "over $125": freeShippingProgress() qualifies at >=, and
+// so does the Shopify minimum-purchase rule, so a cart landing exactly on the
+// threshold ships free. The copy said "over" on five surfaces and was quietly
+// promising less than checkout delivers.
 // "US" is load-bearing: the Shopify rule is United States only and excludes
 // rates over $11, so international orders still pay. Claiming plain "free
 // shipping" would be a promise checkout doesn't keep. Drop the word only if
@@ -41,14 +45,14 @@ export const FREE_SHIPPING_THRESHOLD = 12500;
 // Derived from the constant, not retyped, so the number can only ever be
 // changed in one place. `money` is a function declaration, so it is hoisted
 // and usable here.
-export const FREE_SHIPPING_LABEL = `free US shipping over ${money(FREE_SHIPPING_THRESHOLD)}`;
+export const FREE_SHIPPING_LABEL = `free US shipping on orders ${money(FREE_SHIPPING_THRESHOLD)}+`;
 
 /**
  * Long-form version of the same promise, for places with room for a sentence
  * (policy pages, the cart panel, email). Same number, same caveat, one source.
  */
 export const FREE_SHIPPING_SENTENCE =
-  `Earn free shipping if you spend over ${money(FREE_SHIPPING_THRESHOLD)} on US orders.`;
+  `Free US shipping on orders of ${money(FREE_SHIPPING_THRESHOLD)} or more.`;
 
 /**
  * Flat US shipping rate charged below the free threshold, in cents.
@@ -65,6 +69,25 @@ export const FREE_SHIPPING_SENTENCE =
  * highest a single-item order can hit — quoting high and charging less is
  * recoverable; quoting low is the same surprise moved one screen later.
  */
+/**
+ * The Juniper Pant preorder window -- ONE string, imported everywhere.
+ *
+ * This was written out by hand on six surfaces: the product data, the product
+ * page fallback, the product's page metadata, the homepage band, and twice on
+ * the shipping policy page, plus once on the returns page. Six copies of a
+ * date that moves is six chances to move five of them. The homepage band had
+ * already drifted -- it still said "ships mid sept" while every other surface
+ * said the week of the 21st.
+ *
+ * Two forms because two grammars use it: WEEK drops into a sentence ("ships
+ * {WEEK}"), LABEL is the standalone badge. cartStore strips the leading
+ * "Ships " off LABEL for the Shopify order note, so keep that word first.
+ *
+ * When the week passes, change it here and every surface follows.
+ */
+export const PREORDER_SHIP_WEEK = 'the week of September 21';
+export const PREORDER_SHIP_LABEL = `Ships ${PREORDER_SHIP_WEEK}`;
+
 export const FLAT_SHIPPING_CENTS = 799;
 
 export type ShippingProgress = {

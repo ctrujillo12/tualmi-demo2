@@ -5,6 +5,7 @@ import PanelShopLink from '@/components/PanelShopLink';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import QuickAdd from '@/components/QuickAdd';
 import { getProduct } from '@/lib/products';
+import { PREORDER_SHIP_WEEK } from '@/lib/shipping';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
@@ -46,7 +47,7 @@ const productsJsonLd = {
       category: 'Women’s Hiking Apparel',
       material: '100% recycled nylon',
       description:
-        'Mid-rise, relaxed-fit women’s hiking shorts with a flattering, women-engineered cut, deep pockets sized for a full phone, and bold, print-forward colorways. Made from 100% recycled nylon.',
+        'Mid-rise, relaxed-fit women’s hiking shorts with a flattering cut, deep pockets sized for a full phone, and bold, print-forward colorways. Made from 100% recycled nylon.',
       image: `${SITE}${RE}/jam-front-5.jpg`,
       offers: {
         '@type': 'Offer', price: '68.00', priceCurrency: 'USD',
@@ -166,7 +167,10 @@ const DROP_PRODUCTS: DropProduct[] = [
   {
     handle: 'juniper-pant',
     name: 'the juniper pant',
-    availability: 'preorder · ships mid sept',
+    // Was the hand-written 'ships mid sept', which had already drifted past
+    // both the real week and every other surface. Interpolated now, and the
+    // eyebrow is text-transform: lowercase, so the capital S costs nothing.
+    availability: `preorder · ships ${PREORDER_SHIP_WEEK}`,
     shopLabel: 'shop pants',
     price: 10800,
     bg: '#D7DDC3',

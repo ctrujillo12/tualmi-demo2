@@ -2,6 +2,7 @@
 
 import { getAllProducts as shopifyGetAll, getProductByHandle, toProduct } from './shopify';
 import type { Product } from '@/types';
+import { PREORDER_SHIP_LABEL } from './shipping';
 
 // ─── Fallback local data ──────────────────────────────────────────────────────
 
@@ -43,10 +44,10 @@ export const localProducts: Product[] = [
     isPreorder: true,
     // A named week, not a vague "mid September". Stock lands Sat 19 Sept 2026
     // and goes out the following week, so this is the first week orders
-    // actually move. Dated copy — when the week passes, change it here and the
-    // badge, the cart line, the preorder callout and the Shopify order note
-    // all follow.
-    shippingWindow: 'Ships the week of September 21',
+    // actually move. The string itself lives in lib/shipping.ts, because the
+    // policy pages, the homepage band and the page metadata all state the same
+    // week and used to each hold their own copy of it.
+    shippingWindow: PREORDER_SHIP_LABEL,
   },
   {
     id: 'alpine-baby-tee',

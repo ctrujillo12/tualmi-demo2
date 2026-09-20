@@ -1,6 +1,11 @@
 import Link from 'next/link';
 import { PolicyPage, Section, P, Bullets, DataTable, maroon } from '@/components/PolicyPage';
-import { FREE_SHIPPING_SENTENCE, FREE_SHIPPING_THRESHOLD, money } from '@/lib/shipping';
+import {
+  FREE_SHIPPING_SENTENCE,
+  FREE_SHIPPING_THRESHOLD,
+  PREORDER_SHIP_WEEK,
+  money,
+} from '@/lib/shipping';
 
 export default function ShippingPage() {
   return (
@@ -20,7 +25,8 @@ export default function ShippingPage() {
         <P>
           <strong>{FREE_SHIPPING_SENTENCE}</strong> The discount applies automatically at
           checkout once your order subtotal reaches {money(FREE_SHIPPING_THRESHOLD)}, before
-          tax. International orders are quoted live by the carrier and aren&apos;t covered.
+          tax — a subtotal of exactly {money(FREE_SHIPPING_THRESHOLD)} qualifies. International
+          orders are quoted live by the carrier and aren&apos;t covered.
         </P>
       </Section>
 
@@ -66,10 +72,13 @@ export default function ShippingPage() {
         <P>
           Sierra Shorts are in stock and ship within 2–3 business days of your order.
         </P>
+        {/* Both mentions of the week are interpolated. They were typed out
+            separately, one sentence apart, which is the easiest pair in the
+            codebase to update by half. */}
         <P>
-          The Juniper Pant is a preorder and ships the week of September 21. If you order the pant together with
-          shorts, your whole order ships the week of September 21 — place separate orders if you&apos;d like the
-          shorts sooner.
+          The Juniper Pant is a preorder and ships {PREORDER_SHIP_WEEK}. If you order the pant
+          together with shorts, your whole order ships {PREORDER_SHIP_WEEK} — place separate
+          orders if you&apos;d like the shorts sooner.
         </P>
       </Section>
 

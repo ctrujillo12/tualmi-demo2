@@ -9,7 +9,7 @@ export interface SizeChart {
 }
 
 export type HighlightIcon =
-  | 'moisture' | 'water' | 'feather' | 'recycled' | 'uv' | 'pocket' | 'stretch' | 'women' | 'cinch';
+  | 'moisture' | 'water' | 'feather' | 'recycled' | 'uv' | 'pocket' | 'stretch' | 'fit' | 'cinch';
 
 export interface Highlight {
   icon: HighlightIcon;
@@ -107,7 +107,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       // Was 'Recycled materials' — the same false claim as the trust strip,
       // on the same page. Removing one and leaving the other would have been
       // incoherent.
-      { icon: 'women',    label: 'Flattering fit' },
+      { icon: 'fit',      label: 'Flattering fit' },
     ],
     // ── WHO OWNS WHAT ───────────────────────────────────────────
     // Three blocks describe this pant and they kept saying the same things in

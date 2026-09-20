@@ -121,7 +121,7 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
         <>
           {/* Stated, not demanded. She can see what shipping costs and what
               would make it free, and decide for herself. */}
-          shipping <strong>{money(FLAT_SHIPPING_CENTS)}</strong> · free over{' '}
+          shipping <strong>{money(FLAT_SHIPPING_CENTS)}</strong> · free at{' '}
           <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong>
         </>
       )
@@ -131,7 +131,7 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
             framing it as something to earn. The threshold stays interpolated
             so this line can never disagree with lib/shipping.ts. Rendered in
             caps by .ship-strip, not written in caps here. */}
-        free U.S. shipping on orders over <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong>
+        free U.S. shipping on orders of <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong> or more
       </>
     );
 
@@ -201,7 +201,7 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
           ) : (
             // Nothing in the cart closes the gap in one step, so there is no
             // honest nudge to make. State the rule and leave her alone.
-            <>free on US orders over {money(FREE_SHIPPING_THRESHOLD)}</>
+            <>free on US orders of {money(FREE_SHIPPING_THRESHOLD)} or more</>
           )}
         </p>
       )}
