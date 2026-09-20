@@ -22,23 +22,43 @@ import { SHOPIFY_PRODUCTS_TAG } from '@/lib/shopify';
  *   (the same secret the orders webhook uses)
  *
  * Configure in Shopify: Settings → Notifications → Webhooks → create one per
- * topic, all pointing here:
+ * topic, both pointing at this route:
  *   inventory_levels/update   ← the important one: stock moved
  *   products/update           ← catches variant add/remove, policy changes
  * Format: JSON
- * URL: https://hooks.tualmi.com/api/webhooks/shopify/inventory
  *
- * ── WHY NOT tualmi.com ───────────────────────────────────────────────────
- * Shopify refuses to send webhooks to a domain connected to the store, and
- * tualmi.com is the store's primary domain (it's what builds checkout URLs).
- * The form rejects it outright.
+ * ── THIS WAS NEVER ACTUALLY WIRED UP. CHECKED 19 Sept 2026 ───────────────
+ * The note here used to give the URL as https://hooks.tualmi.com/... That
+ * subdomain does not exist. The Vercel project serves exactly three domains —
+ * tualmi.com, www.tualmi.com and tualmi-outdoors.vercel.app — so every
+ * delivery Shopify attempted failed DNS and this route has never run: 24 hours
+ * of runtime logs showed hits on /api/webhooks/shopify/orders and none here.
  *
- * ── WHY NOT THE .vercel.app URL ──────────────────────────────────────────
- * The project runs Vercel SSO protection scoped to `all_except_custom_domains`,
- * so every *.vercel.app URL answers 401 behind an auth wall. Shopify would see
- * failures and eventually delete the webhook. Custom domains are exempt, which
- * is why hooks.tualmi.com is the destination: reachable, and not a domain
- * Shopify considers its own.
+ * The consequence is not an oversell — Shopify re-checks stock at payment —
+ * but staleness. With no cache flush, a sell-out takes up to the product
+ * page's own revalidate window (300s, see products/[id]/page.tsx) to leave the
+ * storefront instead of going the moment Shopify says so.
+ *
+ * ── THE URL TO USE ───────────────────────────────────────────────────────
+ *   https://tualmi-outdoors.vercel.app/api/webhooks/shopify/inventory
+ *
+ * That is the host the orders webhook is ACTUALLY registered at (confirmed
+ * against Shopify admin on 19 Sept 2026), and it is receiving deliveries, so
+ * it is known to work for this store. Topics: inventory_levels/update and
+ * products/update. Format JSON. Any API version — this route never reads the
+ * body, it only flushes the cache.
+ *
+ * ── TWO CLAIMS THE OLD NOTE MADE, BOTH WRONG ─────────────────────────────
+ * It said Shopify refuses webhooks to a domain connected to the store, and
+ * that *.vercel.app sits behind Vercel SSO and would answer 401. The second is
+ * disproved by the orders webhook working on exactly that domain. The first
+ * may well be true of tualmi.com, but it is moot: the .vercel.app URL is the
+ * one in use and the one to match.
+ *
+ * The lesson worth keeping: this file specified a destination that had never
+ * been created, in enough detail to sound verified, and nothing failed loudly
+ * enough for anyone to notice for months. If you change the URL, change it in
+ * Shopify admin first and confirm a delivery lands before writing it here.
  */
 
 export const runtime = 'nodejs'; // needs crypto + the raw request body
