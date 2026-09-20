@@ -133,19 +133,15 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not iron',
     ],
     // Read on a phone, in a few seconds, standing up. Five short lines, no em
-    // dashes, nothing that needs a second pass. The previous version ran to
-    // clauses inside clauses and buried the numbers people actually came for.
+    // dashes, nothing that needs a second pass.
     //
-    // The rise line is the size chart's own figure, deliberately. A hand
-    // measurement of 9½" was taken on 19 Sept 2026 and then withdrawn as a bad
-    // measurement, so the chart stands unchallenged and this line agrees with
-    // it. Don't reintroduce 9½" without re-measuring.
-    //
-    // The 29" inseam IS measured, and is the one dimension that does not move
-    // across sizes, which is why it leads.
+    // No measurements beyond the inseam. Every rise figure this block has
+    // carried has been wrong or disputed at some point, and the size chart
+    // right below already holds the whole column for anyone who wants it. The
+    // rise belongs here as a shape word, not a number.
     fit: [
-      '29" inseam, the same on every size',
-      'Low rise, 8¾" front rise on a small',
+      '29" inseam',
+      'Mid-rise',
       'Relaxed flared leg, roomy through the hip and thigh',
       'True to size. Between sizes, size down.',
       'Waist and hip different sizes? Go by hip. The waist adjusts.',
