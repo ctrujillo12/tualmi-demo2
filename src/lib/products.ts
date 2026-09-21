@@ -2,6 +2,7 @@
 
 import { getAllProducts as shopifyGetAll, getProductByHandle, toProduct } from './shopify';
 import type { Product } from '@/types';
+import { preorderShipLabel } from './preorder';
 
 // ─── Fallback local data ──────────────────────────────────────────────────────
 
@@ -40,12 +41,11 @@ export const localProducts: Product[] = [
     colors: ['Birch', 'Olive'],
     stock: 100,
     variants: [],
-    // Shipping now. This is only the OFFLINE FALLBACK -- when Shopify answers,
-    // isPreorder comes from its `preorder` tag. It mattered anyway: with
-    // Shopify unreachable the page would have gone back to advertising a
-    // preorder for a product sitting in stock.
-    isPreorder: false,
-    shippingWindow: 'In stock, ships in 1–2 business days',
+    // In transit, not in hand. See lib/preorder.ts. The window is a function
+    // call rather than a literal so it stops naming a day once that day has
+    // gone by.
+    isPreorder: true,
+    shippingWindow: preorderShipLabel(),
   },
   {
     id: 'alpine-baby-tee',

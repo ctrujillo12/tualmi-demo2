@@ -12,6 +12,7 @@ import { isColorSoldOut } from '@/lib/inventory';
 // Full product pages: the shorts and pant. Anything else redirects to the preview.
 // Single source of truth — see lib/catalog.ts.
 import { DETAIL_HANDLES, hasDetailPage } from '@/lib/catalog';
+import { preorderAvailabilityDate, preorderShipLabel, isPreorderHandle } from '@/lib/preorder';
 
 // NOTE ON LINK PREVIEWS
 // The `openGraph` block is what Instagram, iMessage, Linktree, WhatsApp etc.
@@ -48,7 +49,7 @@ const PAGE_METADATA: Record<string, Metadata> = {
   'juniper-pant': {
     title: 'juniper pant — flare cargo hiking pants',
     description:
-      'Fashion-forward flare cargo hiking pants with a flattering fit and real cargo pockets. Made ethically in a WRAP-certified facility. In stock, ships in 1–2 business days.',
+      `Fashion-forward flare cargo hiking pants with a flattering fit and real cargo pockets. Made ethically in a WRAP-certified facility. Preorder now — ${preorderShipLabel().toLowerCase()}.`,
     alternates: { canonical: '/products/juniper-pant' },
     openGraph: {
       ...OG_BASE,
@@ -142,13 +143,26 @@ export default async function ProductPage({
   // "pre-order" on products that had been shipping for weeks — and would go on
   // advertising it after they sold out. Derived from the live variants instead.
   const anySellable = (product!.variants ?? []).some((v) => v.availableForSale);
+
+  // Shopify's answer is not the last word. Stock can be loaded in Shopify
+  // while the boxes are still on a truck, and that is exactly the case this
+  // guards: the pant had inventory and no `preorder` tag, so Shopify said in
+  // stock and this page repeated it. PREORDER_HANDLES can override downward —
+  // never upward, so it can only ever make the claim more cautious.
+  const isPreorder = product!.isPreorder || isPreorderHandle(product!.handle ?? id);
+
   const availability =
-    product!.isPreorder ? 'https://schema.org/PreOrder'
+    isPreorder ? 'https://schema.org/PreOrder'
     // No Shopify data (offline fallback) — don't announce a sold-out store to
     // Google on the strength of one failed request.
     : !product!.variants?.length ? 'https://schema.org/InStock'
     : anySellable ? 'https://schema.org/InStock'
     : 'https://schema.org/OutOfStock';
+
+  // Required by Merchant Center for preorder items, and dropped automatically
+  // once the date passes — a preorder whose availabilityDate is in the past is
+  // a feed error, not just stale wording.
+  const availabilityDate = isPreorder ? preorderAvailabilityDate() : null;
 
   // ── STRUCTURED DATA ────────────────────────────────────────────────────────
   // One ProductGroup per page, with a Product per COLOURWAY under hasVariant.
@@ -234,8 +248,8 @@ export default async function ProductPage({
           '@type': 'QuantitativeValue',
           // Preorders are the exception and are already declared by the
           // PreOrder availability above; this is the in-stock path.
-          minValue: product!.isPreorder ? 7 : 1,
-          maxValue: product!.isPreorder ? 21 : 3,
+          minValue: isPreorder ? 7 : 1,
+          maxValue: isPreorder ? 21 : 3,
           unitCode: 'DAY',
         },
         transitTime: {
@@ -272,7 +286,7 @@ export default async function ProductPage({
     // Per-colourway availability, not the product's. A sold-out colourway that
     // advertises itself as in stock is the single most reportable thing a
     // product feed can do.
-    const soldOut = product!.isPreorder ? false : isColorSoldOut(product!, c.name);
+    const soldOut = isPreorder ? false : isColorSoldOut(product!, c.name);
     const variantUrl = `${canonicalUrl}?color=${encodeURIComponent(c.name)}`;
     const img = colourImages[c.name]?.[0] ?? product!.images[0];
     return {
@@ -286,11 +300,12 @@ export default async function ProductPage({
         '@type': 'Offer',
         price: priceStr,
         priceCurrency: 'USD',
-        availability: product!.isPreorder
+        availability: isPreorder
           ? 'https://schema.org/PreOrder'
           : soldOut
             ? 'https://schema.org/OutOfStock'
             : availability,
+        ...(availabilityDate ? { availabilityDate } : {}),
         url: variantUrl,
         ...offerPolicies,
       },

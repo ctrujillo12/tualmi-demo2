@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { PolicyPage, Section, P, Bullets, DataTable, maroon } from '@/components/PolicyPage';
+import { preorderShipLabel } from '@/lib/preorder';
 import {
   FREE_SHIPPING_SENTENCE,
   FREE_SHIPPING_THRESHOLD,
@@ -69,16 +70,17 @@ export default function ShippingPage() {
 
       <Section heading="processing time">
         <P>
-          Everything on the site is in stock and ships within 2–3 business days of your order.
+          Sierra Shorts are in stock and ship within 2–3 business days of your order.
         </P>
-        {/* The pant is no longer a preorder. This paragraph said it shipped
-            "the week of September 21" well after that week had passed, while
-            the product page and the product feed both said in stock -- the
-            exact kind of contradiction the Merchant Center Misrepresentation
-            policy is looking for. No date in the replacement, so it cannot
-            go stale on its own. */}
+        {/* Interpolated from lib/preorder.ts, not typed. The last two versions
+            of this paragraph each named a week that had already passed, which
+            is the contradiction the Merchant Center Misrepresentation policy
+            looks for. This one stops naming a day by itself when the date
+            goes by. */}
         <P>
-          The Juniper Pant is in stock and ships on the same schedule.
+          The Juniper Pant is a preorder — the stock is on its way to us.{' '}
+          {preorderShipLabel()}. If you order the pant together with shorts, the whole order
+          goes out together; place separate orders if you&apos;d like the shorts sooner.
         </P>
       </Section>
 

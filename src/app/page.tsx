@@ -5,6 +5,7 @@ import PanelShopLink from '@/components/PanelShopLink';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import QuickAdd from '@/components/QuickAdd';
 import { getProduct } from '@/lib/products';
+import { preorderShipLabel, preorderAvailabilityDate } from '@/lib/preorder';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
@@ -73,7 +74,8 @@ const productsJsonLd = {
       image: `${SITE}${RE}/birch-front-1.jpg`,
       offers: {
         '@type': 'Offer', price: '108.00', priceCurrency: 'USD',
-        availability: 'https://schema.org/InStock', url: `${SITE}/products/juniper-pant`,
+        availability: 'https://schema.org/PreOrder', url: `${SITE}/products/juniper-pant`,
+        ...(preorderAvailabilityDate() ? { availabilityDate: preorderAvailabilityDate() } : {}),
       },
     },
     // Only the two products actually for sale. The Tioga Tee and Frolic
@@ -172,11 +174,11 @@ const DROP_PRODUCTS: DropProduct[] = [
   {
     handle: 'juniper-pant',
     name: 'the juniper pant',
-    // No longer a preorder -- stock landed. This said 'ships mid sept', then
-    // the preorder week; both were past their own date by the time anyone
-    // read them. A shipping-time claim with a date in it goes stale by
-    // default, so this one has none.
-    availability: 'in stock · ships in 1–2 days',
+    // Still a preorder: stock is in transit. Derived, not typed, so the day
+    // disappears from the band on its own once it has passed rather than
+    // sitting here advertising a date that is already gone — which is what
+    // both previous versions of this line did.
+    availability: `preorder · ${preorderShipLabel().toLowerCase()}`,
     shopLabel: 'shop pants',
     price: 10800,
     bg: '#D7DDC3',

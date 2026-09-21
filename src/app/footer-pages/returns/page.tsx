@@ -63,8 +63,9 @@ export default function ReturnsPage() {
           <Link href="/footer-pages/exchanges" style={formLink}>
             form
           </Link>{' '}
-          and choose cancellation as your request type. Orders usually leave within 2–3 business
-          days, so the sooner you tell us the better.
+          and choose cancellation as your request type. This includes preorders: you can cancel
+          the Juniper Pant any time before it ships. Everything else usually leaves within 2–3
+          business days, so the sooner you tell us the better.
         </P>
       </Section>
 

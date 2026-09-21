@@ -10,6 +10,7 @@ import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, PRODUCT_LIFESTYLE_IMAGES, cartThu
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
 import { FREE_SHIPPING_LABEL } from '@/lib/shipping';
+import { preorderShipLabel } from '@/lib/preorder';
 import { LOW_STOCK_LABEL, SOLD_OUT_LABEL } from '@/lib/lowStock';
 import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/inventory';
 import ImageLightbox from '@/components/ImageLightbox';
@@ -114,11 +115,11 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const lockedForLaunch = isGated && !canShop;     // sellable but shop not open yet
 
   const shippingLabel = isPreorder
-    // No hardcoded date. The real window comes from Shopify's
-    // custom.shipping_window metafield; a literal here is a date that keeps
-    // being displayed long after it has passed, which is how the site ended
-    // up advertising a preorder week that was already history.
-    ? (product.shippingWindow || 'Ships when the next drop lands')
+    // Shopify's custom.shipping_window metafield wins when it is set; this is
+    // the fallback for when it is empty or missing. It is a call, not a
+    // literal, so it stops naming a day once that day has passed — see
+    // lib/preorder.ts.
+    ? (product.shippingWindow || preorderShipLabel())
     : buyable
       ? 'In stock, ships in 1–2 business days'
       : (product.shippingWindow ?? 'Coming soon');

@@ -22,16 +22,12 @@ const STORAGE_KEY = 'tualmi_early_access';
 export const SELLABLE_HANDLES = ['sierra-shorts', 'juniper-pant', 'trailblazing-tote'];
 // The whole shop opens together at launch (early access, then public).
 export const GATED_HANDLES = ['sierra-shorts', 'juniper-pant'];
-// Preorder items (ship later). EMPTY as of 21 Sept 2026: the Juniper stock
-// landed and Shopify reports it in stock with no preorder tag, so the site was
-// the only thing still calling it a preorder. That mismatch is not cosmetic --
-// Merchant Center's Misrepresentation policy names inaccurate availability
-// specifically, and the account was suspended under it.
-//
-// Note this list is the SITE's override; Shopify's own `preorder` tag drives
-// product.isPreorder independently (see lib/shopify.ts). Put a handle back
-// here only if it should read as preorder regardless of what Shopify says.
-export const PREORDER_HANDLES: string[] = [];
+// Preorder items (ship later) — defined in lib/preorder.ts and re-exported
+// here so client code can keep importing it from where it has always been.
+// It CANNOT be defined in this file: this module is 'use client', and a server
+// component importing a value from a client module gets a proxy rather than
+// the array (see the note in lib/preorder.ts).
+export { PREORDER_HANDLES } from './preorder';
 
 /** Whether a product can be bought right now, given shop-open state. */
 export function isBuyable(handle: string, canShop: boolean): boolean {
