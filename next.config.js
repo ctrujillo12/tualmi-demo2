@@ -41,7 +41,11 @@ const nextConfig = {
       // product (SELLABLE_HANDLES) that is merely unlisted, and a permanent
       // redirect told Google the URL was gone for good. Nothing links to it —
       // CartItem and CartUpsell both check hasDetailPage() first.
-      { source: '/collections', destination: '/#collection', permanent: false },
+      // NO /collections redirect any more. It used to send /collections to the
+      // homepage fragment, and a redirect here OUTRANKS the route, so the real
+      // shop page at app/collections/page.tsx would have been unreachable in
+      // production while building and type-checking perfectly. If /collections
+      // ever 307s to /#collection again, this line came back.
     ];
   },
 };

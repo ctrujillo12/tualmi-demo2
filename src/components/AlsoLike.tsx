@@ -105,7 +105,23 @@ type Card = {
   framing: { scale: number; shiftPct: number } | null;
 };
 
-export default function AlsoLike({ products }: { products: Product[] }) {
+/**
+ * Also used, with a different heading, as the grid on /collections. The card
+ * design, the model-size normalisation and the responsive behaviour are the
+ * hard parts and they are already solved here; a second component would be a
+ * second place for them to drift. Only the heading and the one-line pitch
+ * differ, so only those are props.
+ */
+export default function AlsoLike({
+  products,
+  heading = 'you may also like',
+  /** null suppresses the per-product pitch line (the shop grid shows several). */
+  pitch: pitchOverride,
+}: {
+  products: Product[];
+  heading?: string;
+  pitch?: string | null;
+}) {
   const cards: Card[] = products.flatMap((product) => {
     const handle = product.handle ?? product.id;
     return (PRODUCT_COLORS[handle] ?? []).map((c) => ({
@@ -125,7 +141,8 @@ export default function AlsoLike({ products }: { products: Product[] }) {
   if (cards.length === 0) return null;
 
   const only = products.length === 1 ? products[0] : null;
-  const pitch = only ? PITCH[only.handle ?? only.id] : null;
+  const pitch =
+    pitchOverride !== undefined ? pitchOverride : only ? PITCH[only.handle ?? only.id] : null;
 
   return (
     <section className="al-root" aria-labelledby="al-heading">
@@ -346,7 +363,7 @@ export default function AlsoLike({ products }: { products: Product[] }) {
         }
       `}</style>
 
-      <h2 id="al-heading" className="al-h">you may also like</h2>
+      <h2 id="al-heading" className="al-h">{heading}</h2>
       {pitch && <p className="al-pitch">{pitch}</p>}
 
       <ul className="al-row">

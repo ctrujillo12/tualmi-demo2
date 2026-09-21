@@ -5,7 +5,9 @@ import { getProduct } from '@/lib/products';
 import { getSummary } from '@/lib/reviews';
 import ProductReviews from '@/components/ProductReviews';
 import AlsoLike from '@/components/AlsoLike';
-import { PREORDER_SHIP_WEEK } from '@/lib/shipping';
+import { PREORDER_SHIP_WEEK, FREE_SHIPPING_THRESHOLD, FLAT_SHIPPING_CENTS } from '@/lib/shipping';
+import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
+import { isColorSoldOut } from '@/lib/inventory';
 
 // Full product pages: the shorts and pant. Anything else redirects to the preview.
 // Single source of truth — see lib/catalog.ts.
@@ -148,49 +150,177 @@ export default async function ProductPage({
     : anySellable ? 'https://schema.org/InStock'
     : 'https://schema.org/OutOfStock';
 
-  const productJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product!.name,
-    description: product!.description,
-    brand: { '@type': 'Brand', name: 'Tualmi' },
-    image: `https://tualmi.com${product!.images[0]}`,
-    offers: {
-      '@type': 'Offer',
-      price: (product!.price / 100).toFixed(2),
-      priceCurrency: 'USD',
-      availability,
-      url: `https://tualmi.com/products/${product!.handle ?? id}`,
+  // ── STRUCTURED DATA ────────────────────────────────────────────────────────
+  // One ProductGroup per page, with a Product per COLOURWAY under hasVariant.
+  // This follows Google's own ProductGroup example: the offers live on the
+  // variants, not on the group. Emitting both would describe the same thing
+  // twice at two levels and is how you get "duplicate field" warnings.
+  //
+  // Colourways, not every size. The colourways are what have their own images
+  // and their own URL (?color=), which is what a variant entity is FOR. Sizes
+  // share both, so 21 size-variants would be 21 near-identical objects
+  // pointing at one page.
+  //
+  // If a product ever has no colourway entry, the group collapses back to a
+  // plain Product with a single Offer -- see the ternary at the bottom.
+  const SITE_ORIGIN = 'https://tualmi.com';
+  const canonicalUrl = `${SITE_ORIGIN}/products/${product!.handle ?? id}`;
+  const priceStr = (product!.price / 100).toFixed(2);
+
+  // Shared by every Offer on the page. Both blocks are what Merchant Center
+  // asks for, and both are DERIVED: the threshold and the flat rate come from
+  // lib/shipping.ts, so the markup cannot promise a number the cart doesn't.
+  const offerPolicies = {
+    // 14 days from delivery, unworn and unwashed -- /footer-pages/returns.
+    hasMerchantReturnPolicy: {
+      '@type': 'MerchantReturnPolicy',
+      applicableCountry: 'US',
+      returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+      merchantReturnDays: 14,
+      returnMethod: 'https://schema.org/ReturnByMail',
+      // The shopper pays return postage; we cover it only when the item is
+      // faulty or wrong, which is a different policy and not what this field
+      // describes.
+      returnFees: 'https://schema.org/ReturnShippingFees',
     },
-    // Google will show a star rating in the search result for this, which is
-    // the single biggest free click-through win a product page gets. Gated on
-    // the same threshold as the on-page section (lib/reviews.ts): claiming an
-    // aggregate rating built from one review is both useless and, under
-    // Google's structured-data policy, grounds for a manual action.
-    // Emitted only when the same reviews are visibly rendered on the page.
-    // An aggregate rating in the markup that a visitor can't see is exactly
-    // what Google issues manual actions for. Gated on the same threshold as
-    // the on-page summary (MIN_FOR_SUMMARY in lib/reviews.ts).
-    //
-    // Note there is one Product entity on this page, not two: the rating goes
-    // INTO this object. A second <script type="application/ld+json"> block
-    // describing the same product is a structured-data error.
-    ...(reviewSummary.showSummary
-      ? {
-          aggregateRating: {
-            '@type': 'AggregateRating',
-            ratingValue: reviewSummary.average,
-            reviewCount: reviewSummary.count,
-          },
-          review: reviewSummary.reviews.slice(0, 5).map((r) => ({
-            '@type': 'Review',
-            reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5 },
-            author: { '@type': 'Person', name: r.name },
-            datePublished: r.date,
-            reviewBody: r.body,
-          })),
-        }
-      : {}),
+    shippingDetails: {
+      '@type': 'OfferShippingDetails',
+      shippingRate: {
+        '@type': 'MonetaryAmount',
+        value: (FLAT_SHIPPING_CENTS / 100).toFixed(2),
+        currency: 'USD',
+      },
+      shippingDestination: {
+        '@type': 'DefinedRegion',
+        addressCountry: 'US',
+      },
+      // Free over the threshold. Stated as a second, $0 rate that only applies
+      // above it, which is how Google models a spend-based free-shipping rule.
+      freeShippingThreshold: {
+        '@type': 'DeliveryChargeSpecification',
+        appliesToDeliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail',
+        eligibleTransactionVolume: {
+          '@type': 'PriceSpecification',
+          minPrice: (FREE_SHIPPING_THRESHOLD / 100).toFixed(2),
+          priceCurrency: 'USD',
+        },
+      },
+      deliveryTime: {
+        '@type': 'ShippingDeliveryTime',
+        handlingTime: {
+          '@type': 'QuantitativeValue',
+          // Preorders are the exception and are already declared by the
+          // PreOrder availability above; this is the in-stock path.
+          minValue: product!.isPreorder ? 7 : 1,
+          maxValue: product!.isPreorder ? 21 : 3,
+          unitCode: 'DAY',
+        },
+        transitTime: {
+          '@type': 'QuantitativeValue',
+          minValue: 2,
+          maxValue: 7,
+          unitCode: 'DAY',
+        },
+      },
+    },
+  } as const;
+
+  const ratingBlock = reviewSummary.showSummary
+    ? {
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: reviewSummary.average,
+          reviewCount: reviewSummary.count,
+        },
+        review: reviewSummary.reviews.slice(0, 5).map((r) => ({
+          '@type': 'Review',
+          reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5 },
+          author: { '@type': 'Person', name: r.name },
+          datePublished: r.date,
+          reviewBody: r.body,
+        })),
+      }
+    : {};
+
+  const colourways = PRODUCT_COLORS[product!.handle ?? id] ?? [];
+  const colourImages = PRODUCT_COLOR_IMAGES[product!.handle ?? id] ?? {};
+
+  const hasVariant = colourways.map((c) => {
+    // Per-colourway availability, not the product's. A sold-out colourway that
+    // advertises itself as in stock is the single most reportable thing a
+    // product feed can do.
+    const soldOut = product!.isPreorder ? false : isColorSoldOut(product!, c.name);
+    const variantUrl = `${canonicalUrl}?color=${encodeURIComponent(c.name)}`;
+    const img = colourImages[c.name]?.[0] ?? product!.images[0];
+    return {
+      '@type': 'Product',
+      name: `${product!.name} in ${c.name}`,
+      color: c.name,
+      image: `${SITE_ORIGIN}${img}`,
+      url: variantUrl,
+      size: product!.sizes,
+      offers: {
+        '@type': 'Offer',
+        price: priceStr,
+        priceCurrency: 'USD',
+        availability: product!.isPreorder
+          ? 'https://schema.org/PreOrder'
+          : soldOut
+            ? 'https://schema.org/OutOfStock'
+            : availability,
+        url: variantUrl,
+        ...offerPolicies,
+      },
+    };
+  });
+
+  const productJsonLd = hasVariant.length
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'ProductGroup',
+        name: product!.name,
+        description: product!.description,
+        brand: { '@type': 'Brand', name: 'Tualmi' },
+        image: `${SITE_ORIGIN}${product!.images[0]}`,
+        url: canonicalUrl,
+        productGroupID: product!.handle ?? id,
+        variesBy: ['https://schema.org/color', 'https://schema.org/size'],
+        hasVariant,
+        // The rating is the GROUP's: reviews are collected per product, not
+        // per colourway, and splitting one pool across two variants would
+        // report each colourway as having half the reviews it has.
+        ...ratingBlock,
+      }
+    : {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product!.name,
+        description: product!.description,
+        brand: { '@type': 'Brand', name: 'Tualmi' },
+        image: `${SITE_ORIGIN}${product!.images[0]}`,
+        offers: {
+          '@type': 'Offer',
+          price: priceStr,
+          priceCurrency: 'USD',
+          availability,
+          url: canonicalUrl,
+          ...offerPolicies,
+        },
+        ...ratingBlock,
+      };
+
+  // Breadcrumbs. Home > Shop > this product, matching the trail the nav now
+  // actually offers -- /collections is a real page as of this change, so this
+  // is not a breadcrumb to somewhere a visitor cannot go, which Google treats
+  // as a violation.
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_ORIGIN },
+      { '@type': 'ListItem', position: 2, name: 'Shop', item: `${SITE_ORIGIN}/collections` },
+      { '@type': 'ListItem', position: 3, name: product!.name, item: canonicalUrl },
+    ],
   };
 
   return (
@@ -198,6 +328,10 @@ export default async function ProductPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <ProductDetailClient product={product!} initialColor={color} reviews={reviewSummary} />
       <ProductReviews summary={reviewSummary} productHandle={id} />

@@ -29,7 +29,11 @@ const LEFT_LINKS = [
   // Socials gave up the slot: the handle is in the socials band on the
   // landing page and in the footer, so nothing is actually lost.
   { name: 'our story', href: '/story' },
-  { name: 'shop', href: '/#collection' },
+  // Points at the real /collections page, not the homepage fragment it used
+  // to. The fragment worked for a visitor already on the homepage and meant
+  // the site had no crawlable page about the catalogue -- see the note at the
+  // top of app/collections/page.tsx.
+  { name: 'shop', href: '/collections' },
 ];
 
 const RIGHT_LINKS = [

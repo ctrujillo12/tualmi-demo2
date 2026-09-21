@@ -5,6 +5,9 @@ const BASE = 'https://tualmi.com';
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: `${BASE}/`, priority: 1 },
+    // Second only to the home page: it is the entry point to both products
+    // and the target of every breadcrumb trail on the site.
+    { url: `${BASE}/collections`, priority: 0.9 },
     { url: `${BASE}/story`, priority: 0.8 },
     { url: `${BASE}/in-the-wild`, priority: 0.7 },
     { url: `${BASE}/products/sierra-shorts`, priority: 0.8 },
