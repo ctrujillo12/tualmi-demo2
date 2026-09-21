@@ -70,23 +70,20 @@ export const FREE_SHIPPING_SENTENCE =
  * recoverable; quoting low is the same surprise moved one screen later.
  */
 /**
- * The Juniper Pant preorder window -- ONE string, imported everywhere.
+ * NO PREORDER SHIP-WINDOW CONSTANT LIVES HERE ANY MORE.
  *
- * This was written out by hand on six surfaces: the product data, the product
- * page fallback, the product's page metadata, the homepage band, and twice on
- * the shipping policy page, plus once on the returns page. Six copies of a
- * date that moves is six chances to move five of them. The homepage band had
- * already drifted -- it still said "ships mid sept" while every other surface
- * said the week of the 21st.
+ * There was one, holding "the week of September 21", read by six surfaces.
+ * Centralising it was the right fix for the six copies that had drifted apart;
+ * it did nothing about the real problem, which is that a hardcoded date is
+ * wrong the moment it passes and nothing makes anyone notice. It went on
+ * advertising a preorder week that was already history while Shopify reported
+ * the product in stock -- and inaccurate availability is what Merchant Center
+ * suspends accounts for.
  *
- * Two forms because two grammars use it: WEEK drops into a sentence ("ships
- * {WEEK}"), LABEL is the standalone badge. cartStore strips the leading
- * "Ships " off LABEL for the Shopify order note, so keep that word first.
- *
- * When the week passes, change it here and every surface follows.
+ * A ship window now comes from Shopify's custom.shipping_window metafield, so
+ * it is edited where the stock actually is. If you need a preorder again, set
+ * that metafield and add the handle to PREORDER_HANDLES in lib/useShopAccess.
  */
-export const PREORDER_SHIP_WEEK = 'the week of September 21';
-export const PREORDER_SHIP_LABEL = `Ships ${PREORDER_SHIP_WEEK}`;
 
 export const FLAT_SHIPPING_CENTS = 799;
 

@@ -2,7 +2,6 @@
 
 import { getAllProducts as shopifyGetAll, getProductByHandle, toProduct } from './shopify';
 import type { Product } from '@/types';
-import { PREORDER_SHIP_LABEL } from './shipping';
 
 // ─── Fallback local data ──────────────────────────────────────────────────────
 
@@ -41,13 +40,12 @@ export const localProducts: Product[] = [
     colors: ['Birch', 'Olive'],
     stock: 100,
     variants: [],
-    isPreorder: true,
-    // A named week, not a vague "mid September". Stock lands Sat 19 Sept 2026
-    // and goes out the following week, so this is the first week orders
-    // actually move. The string itself lives in lib/shipping.ts, because the
-    // policy pages, the homepage band and the page metadata all state the same
-    // week and used to each hold their own copy of it.
-    shippingWindow: PREORDER_SHIP_LABEL,
+    // Shipping now. This is only the OFFLINE FALLBACK -- when Shopify answers,
+    // isPreorder comes from its `preorder` tag. It mattered anyway: with
+    // Shopify unreachable the page would have gone back to advertising a
+    // preorder for a product sitting in stock.
+    isPreorder: false,
+    shippingWindow: 'In stock, ships in 1–2 business days',
   },
   {
     id: 'alpine-baby-tee',
@@ -84,8 +82,12 @@ export const localProducts: Product[] = [
     colors: ['Jam', 'Picnic', 'Confetti'],
     stock: 100,
     variants: [],
-    isPreorder: true,
-    shippingWindow: '',
+    // Shipping, like the pant. Same note as above: this is the OFFLINE
+    // FALLBACK only, but it is what renders when Shopify is unreachable, and
+    // it was still emitting schema.org/PreOrder for a product that has been
+    // shipping for weeks.
+    isPreorder: false,
+    shippingWindow: 'In stock, ships in 2–3 business days',
   },
 ];
 

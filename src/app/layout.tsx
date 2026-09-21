@@ -3,6 +3,7 @@ import Script from 'next/script';
 import { Inter, Playfair_Display, Montserrat, Great_Vibes, Ballet, Codystar, Cedarville_Cursive } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
+import { BUSINESS } from '@/lib/business';
 import Footer from '@/components/Footer';
 import AccessBanner from '@/components/AccessBanner';
 import AttributionTracker from '@/components/AttributionTracker';
@@ -61,6 +62,9 @@ export const metadata: Metadata = {
 // wraps every route — do not add a second gtag snippet anywhere else.
 const GA_MEASUREMENT_ID = 'G-PTRJN12KTL';
 
+// Address and phone come from lib/business.ts, the same source the contact
+// page and the footer read, so the three can never state different details --
+// which is itself something the Misrepresentation policy looks for.
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
@@ -71,6 +75,27 @@ const organizationJsonLd = {
   foundingLocation: {
     '@type': 'Place',
     address: { '@type': 'PostalAddress', addressRegion: 'CA', addressCountry: 'US' },
+  },
+  // The real, checkable identity. Previously the Organization block named a
+  // region and a country and nothing else, so there was no address or phone
+  // number in the markup for anyone -- shopper or crawler -- to verify.
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: BUSINESS.address.street,
+    addressLocality: BUSINESS.address.city,
+    addressRegion: BUSINESS.address.region,
+    postalCode: BUSINESS.address.postalCode,
+    addressCountry: BUSINESS.address.country,
+  },
+  telephone: BUSINESS.phone,
+  email: BUSINESS.email,
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer service',
+    telephone: BUSINESS.phone,
+    email: BUSINESS.email,
+    areaServed: 'US',
+    availableLanguage: 'English',
   },
   description:
     'Tualmi is a women-owned outdoor apparel brand making fashion-forward, trail-ready hiking gear for women. Every piece features women-specific, flattering fits — not adapted from men’s patterns — and is made ethically in a WRAP-certified facility. Based in California.',

@@ -24,7 +24,10 @@ const LINK_COL_2 = [
   // this entry /story is unreachable on most screens.
   { name: 'our story',            href: '/story' },
   { name: 'in the wild',          href: '/in-the-wild' },
-  { name: 'contact us',           href: 'mailto:hello@tualmi.com' },
+  // A page, not a mailto:. Google's automated checks crawl pages, so a
+  // mailto: href left the site with no discoverable contact information at
+  // all -- which is how a new store ends up suspended for Misrepresentation.
+  { name: 'contact us',           href: '/footer-pages/contact' },
   { name: 'privacy policy',       href: '/footer-pages/privacy' },
   { name: 'terms and conditions', href: '/footer-pages/legal' },
 ];

@@ -5,7 +5,6 @@ import PanelShopLink from '@/components/PanelShopLink';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import QuickAdd from '@/components/QuickAdd';
 import { getProduct } from '@/lib/products';
-import { PREORDER_SHIP_WEEK } from '@/lib/shipping';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
@@ -29,8 +28,14 @@ const ink      = '#5F5C46';  // body copy; blush-pink text on cream is unreadabl
 const rose     = '#C97C93';  // pink   — eyebrows and accents
 const brick    = '#A9503A';  // red    — links and the shorts band accent
 
-// Product structured data — all items are shown on this page. Availability +
-// verified fabric per item; PreOrder for the drop, InStock for the tote.
+// Product structured data — all items are shown on this page.
+//
+// ⚠ THIS BLOCK IS STATIC. products/[id]/page.tsx derives availability from the
+// live Shopify variants; these values are typed by hand, so they can disagree
+// with the product pages and with the feed. They did: both bottoms sat at
+// PreOrder here long after they were shipping, while the product pages said
+// InStock. Merchant Center suspends accounts for exactly that mismatch.
+// If a product's availability changes, change it HERE too.
 const SITE = 'https://tualmi.com';
 
 // Declared here, not next to LANDING_COVERS below: productsJsonLd uses them a
@@ -51,7 +56,7 @@ const productsJsonLd = {
       image: `${SITE}${RE}/jam-front-5.jpg`,
       offers: {
         '@type': 'Offer', price: '68.00', priceCurrency: 'USD',
-        availability: 'https://schema.org/PreOrder', url: `${SITE}/products/sierra-shorts`,
+        availability: 'https://schema.org/InStock', url: `${SITE}/products/sierra-shorts`,
       },
     },
     {
@@ -68,7 +73,7 @@ const productsJsonLd = {
       image: `${SITE}${RE}/birch-front-1.jpg`,
       offers: {
         '@type': 'Offer', price: '108.00', priceCurrency: 'USD',
-        availability: 'https://schema.org/PreOrder', url: `${SITE}/products/juniper-pant`,
+        availability: 'https://schema.org/InStock', url: `${SITE}/products/juniper-pant`,
       },
     },
     // Only the two products actually for sale. The Tioga Tee and Frolic
@@ -167,10 +172,11 @@ const DROP_PRODUCTS: DropProduct[] = [
   {
     handle: 'juniper-pant',
     name: 'the juniper pant',
-    // Was the hand-written 'ships mid sept', which had already drifted past
-    // both the real week and every other surface. Interpolated now, and the
-    // eyebrow is text-transform: lowercase, so the capital S costs nothing.
-    availability: `preorder · ships ${PREORDER_SHIP_WEEK}`,
+    // No longer a preorder -- stock landed. This said 'ships mid sept', then
+    // the preorder week; both were past their own date by the time anyone
+    // read them. A shipping-time claim with a date in it goes stale by
+    // default, so this one has none.
+    availability: 'in stock · ships in 1–2 days',
     shopLabel: 'shop pants',
     price: 10800,
     bg: '#D7DDC3',

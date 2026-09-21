@@ -5,7 +5,7 @@ import { getProduct } from '@/lib/products';
 import { getSummary } from '@/lib/reviews';
 import ProductReviews from '@/components/ProductReviews';
 import AlsoLike from '@/components/AlsoLike';
-import { PREORDER_SHIP_WEEK, FREE_SHIPPING_THRESHOLD, FLAT_SHIPPING_CENTS } from '@/lib/shipping';
+import { FREE_SHIPPING_THRESHOLD, FLAT_SHIPPING_CENTS } from '@/lib/shipping';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import { isColorSoldOut } from '@/lib/inventory';
 
@@ -48,7 +48,7 @@ const PAGE_METADATA: Record<string, Metadata> = {
   'juniper-pant': {
     title: 'juniper pant — flare cargo hiking pants',
     description:
-      `Fashion-forward flare cargo hiking pants with a flattering fit and real cargo pockets. Made ethically in a WRAP-certified facility. Preorder now — ships ${PREORDER_SHIP_WEEK}.`,
+      'Fashion-forward flare cargo hiking pants with a flattering fit and real cargo pockets. Made ethically in a WRAP-certified facility. In stock, ships in 1–2 business days.',
     alternates: { canonical: '/products/juniper-pant' },
     openGraph: {
       ...OG_BASE,
@@ -164,6 +164,29 @@ export default async function ProductPage({
   // If a product ever has no colourway entry, the group collapses back to a
   // plain Product with a single Offer -- see the ternary at the bottom.
   const SITE_ORIGIN = 'https://tualmi.com';
+
+  /**
+   * Absolute URL for an image, WITHOUT double-prefixing one that is already
+   * absolute.
+   *
+   * This is not hypothetical tidiness. product.images comes from Shopify and
+   * holds absolute cdn.shopify.com URLs; PRODUCT_COLOR_IMAGES holds paths
+   * relative to our own /public. Blindly prefixing produced
+   *
+   *   https://tualmi.comhttps://cdn.shopify.com/s/files/.../birch-front-1.jpg
+   *
+   * which Search Console reported as `Invalid URL in field "image"` -- a
+   * CRITICAL merchant-listing error, so the page was ineligible for product
+   * rich results entirely. It survived local testing because the offline
+   * fallback in lib/products.ts uses relative paths, so the bug only appears
+   * when Shopify actually answers.
+   */
+  const abs = (u: string) =>
+    /^https?:\/\//i.test(u) ? u
+    // Protocol-relative ("//cdn.shopify.com/..."). Fine in an <img>, not fine
+    // in structured data, which wants a fully-qualified URL.
+    : u.startsWith('//') ? `https:${u}`
+    : `${SITE_ORIGIN}${u}`;
   const canonicalUrl = `${SITE_ORIGIN}/products/${product!.handle ?? id}`;
   const priceStr = (product!.price / 100).toFixed(2);
 
@@ -256,7 +279,7 @@ export default async function ProductPage({
       '@type': 'Product',
       name: `${product!.name} in ${c.name}`,
       color: c.name,
-      image: `${SITE_ORIGIN}${img}`,
+      image: abs(img),
       url: variantUrl,
       size: product!.sizes,
       offers: {
@@ -281,7 +304,7 @@ export default async function ProductPage({
         name: product!.name,
         description: product!.description,
         brand: { '@type': 'Brand', name: 'Tualmi' },
-        image: `${SITE_ORIGIN}${product!.images[0]}`,
+        image: abs(product!.images[0]),
         url: canonicalUrl,
         productGroupID: product!.handle ?? id,
         variesBy: ['https://schema.org/color', 'https://schema.org/size'],
@@ -297,7 +320,7 @@ export default async function ProductPage({
         name: product!.name,
         description: product!.description,
         brand: { '@type': 'Brand', name: 'Tualmi' },
-        image: `${SITE_ORIGIN}${product!.images[0]}`,
+        image: abs(product!.images[0]),
         offers: {
           '@type': 'Offer',
           price: priceStr,

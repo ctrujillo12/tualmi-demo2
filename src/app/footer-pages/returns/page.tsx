@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { PolicyPage, Section, P, Bullets, maroon } from '@/components/PolicyPage';
-import { PREORDER_SHIP_WEEK } from '@/lib/shipping';
 
 /** Shared link style so every pointer to the form looks the same. */
 const formLink = { color: maroon, fontWeight: 600 };
@@ -64,8 +63,8 @@ export default function ReturnsPage() {
           <Link href="/footer-pages/exchanges" style={formLink}>
             form
           </Link>{' '}
-          and choose cancellation as your request type. This includes preorders: you can cancel the
-          Juniper Pant any time before it ships {PREORDER_SHIP_WEEK}.
+          and choose cancellation as your request type. Orders usually leave within 2–3 business
+          days, so the sooner you tell us the better.
         </P>
       </Section>
 
