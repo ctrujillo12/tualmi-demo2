@@ -15,7 +15,8 @@
  * the failure mode is vague copy rather than a lie.
  *
  * ── THE STATE THIS DESCRIBES ─────────────────────────────────────────────
- * Stock is in transit, expected in hand by Fri 25 Sept 2026. Shopify has
+ * Stock is in transit, expected in hand by Fri 25 Sept 2026, with the ship-by
+ * promise set a day later for buffer. Shopify has
  * inventory loaded and no `preorder` tag, so Shopify BELIEVES the pant is in
  * stock and the product page derived availability from that -- which is why
  * the live site advertised 1-2 day shipping for a product on a truck.
@@ -25,11 +26,19 @@
  * what keeps the page honest.
  */
 
-/** ISO date the order actually goes out by. Merchant Center wants this as availabilityDate. */
-export const PREORDER_SHIP_BY = '2026-09-25';
+/**
+ * ISO date the order actually goes out by. Merchant Center wants this as
+ * availabilityDate.
+ *
+ * Moved from the 25th to the 26th on 21 Sept 2026 for buffer: stock is only
+ * expected in hand BY Friday the 25th, so promising to ship the same day it
+ * arrives left no room for the truck to be late. One extra day is the
+ * difference between a tight promise and a broken one.
+ */
+export const PREORDER_SHIP_BY = '2026-09-26';
 
 /** Shown while the date is still ahead of us. */
-const SHIP_BY_COPY = 'Ships by Friday, September 25';
+const SHIP_BY_COPY = 'Ships by Saturday, September 26';
 
 /**
  * Deliberately undated. Reached only when the ship-by date has passed without
