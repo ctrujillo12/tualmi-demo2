@@ -156,7 +156,7 @@ export default function StoryPage() {
                 margin: '12px 0 0',
               }}
             >
-              rachel &amp; cheyenne
+              
             </figcaption>
           </figure>
         </div>

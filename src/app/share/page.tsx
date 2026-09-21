@@ -38,8 +38,8 @@ const olive   = '#ADAE6C';
 const CODE_RE = /^[A-Z0-9]{4,12}$/;
 
 const SHARE_TEXT =
-  "I've been wearing Tualmi — women's outdoor gear from a two-person company. " +
-  'Join their list with my link and you get 10% off:';
+  "I've been wearing Tualmi, women's hiking gear built for the trail and cute " +
+  'everywhere else. Join their list with my link and you get 10% off:';
 
 export default function SharePage() {
   const [link, setLink]         = useState('https://tualmi.com/invite');

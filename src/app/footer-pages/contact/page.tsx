@@ -33,9 +33,8 @@ export default function ContactPage() {
     <PolicyPage title="contact">
       <Section>
         <P>
-          We&apos;re a two-person company and we answer our own email. Anything at all — sizing,
-          an order, a return, a question about the fabric — reach us and you&apos;ll hear back
-          from one of us within {BUSINESS.responseTime}.
+          We&apos;re happy to help with anything: sizing, an order, a return, a question about
+          the fabric. Reach out and you&apos;ll hear back within {BUSINESS.responseTime}.
         </P>
       </Section>
 
