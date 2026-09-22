@@ -10,7 +10,8 @@ import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, PRODUCT_LIFESTYLE_IMAGES, cartThu
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
 import { FREE_SHIPPING_LABEL } from '@/lib/shipping';
-import { preorderShipLabel } from '@/lib/preorder';
+import { shipByLabel, HANDLING_COPY } from '@/lib/shipWindow';
+import { RETURN_WINDOW_DAYS } from '@/lib/business';
 import { LOW_STOCK_LABEL, SOLD_OUT_LABEL } from '@/lib/lowStock';
 import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/inventory';
 import ImageLightbox from '@/components/ImageLightbox';
@@ -114,14 +115,18 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const buyable    = isBuyable(handle, canShop);   // sellable AND shop open (if gated)
   const lockedForLaunch = isGated && !canShop;     // sellable but shop not open yet
 
+  // Shopify's custom.shipping_window metafield wins wherever it is set; the
+  // fallbacks below cover it being empty or missing.
+  //
+  // The in-stock branch used to be the literal 'In stock, ships in 1–2
+  // business days'. Three places stated the handling time and they said 1–2
+  // here, 1–3 in the structured data and 2–3 on the shipping page — the same
+  // drift that put a dead preorder date on four pages. 1–3 is now the standing
+  // claim and it matches what the feed tells Google.
   const shippingLabel = isPreorder
-    // Shopify's custom.shipping_window metafield wins when it is set; this is
-    // the fallback for when it is empty or missing. It is a call, not a
-    // literal, so it stops naming a day once that day has passed — see
-    // lib/preorder.ts.
-    ? (product.shippingWindow || preorderShipLabel())
+    ? (product.shippingWindow || shipByLabel())
     : buyable
-      ? 'In stock, ships in 1–2 business days'
+      ? (product.shippingWindow || `In stock, ships in ${HANDLING_COPY}`)
       : (product.shippingWindow ?? 'Coming soon');
 
   const addItem = useCartStore((state) => state.addItem);
@@ -472,7 +477,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
     label: 'shipping & returns',
     content: (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <p style={{ margin: 0 }}>7-day returns and exchanges</p>
+        <p style={{ margin: 0 }}>{RETURN_WINDOW_DAYS}-day returns and exchanges</p>
         {shippingLabel && <p style={{ margin: 0 }}>{shippingLabel}.</p>}
       </div>
     ),
@@ -662,11 +667,13 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
 
             {ready && (
               <p style={{ ...eyebrowStyle, marginBottom: '8px' }}>
+                {/* Was 'available now' for anything in stock, which is the
+                    one thing a shopper already assumes and tells them nothing
+                    about WHEN it arrives. The ship window is the useful fact,
+                    and it self-expires into a standing handling-time line. */}
                 {lockedForLaunch
                   ? 'opens friday · 11am pt'
-                  : buyable && !isPreorder
-                    ? 'available now'
-                    : shippingLabel.toLowerCase()}
+                  : shippingLabel.toLowerCase()}
               </p>
             )}
 
@@ -1153,7 +1160,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                       of collapsed inside the accordion further down the page. */}
                   <div className="pdp-strip pdp-strip--assure">
                     {[
-                      // Preorders don't ship in 2–3 days — the banner above
+                      // Preorders don't ship in the standing window — the banner above
                       // states their real window instead.
                       {
                         label: FREE_SHIPPING_LABEL,

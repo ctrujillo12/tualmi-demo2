@@ -5,7 +5,7 @@ import PanelShopLink from '@/components/PanelShopLink';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import QuickAdd from '@/components/QuickAdd';
 import { getProduct } from '@/lib/products';
-import { preorderShipLabel, preorderAvailabilityDate } from '@/lib/preorder';
+import { shipByLabel } from '@/lib/shipWindow';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
@@ -74,8 +74,10 @@ const productsJsonLd = {
       image: `${SITE}${RE}/birch-front-1.jpg`,
       offers: {
         '@type': 'Offer', price: '108.00', priceCurrency: 'USD',
-        availability: 'https://schema.org/PreOrder', url: `${SITE}/products/juniper-pant`,
-        ...(preorderAvailabilityDate() ? { availabilityDate: preorderAvailabilityDate() } : {}),
+        // InStock as of 22 Sept 2026 — the stock landed. No availabilityDate:
+        // that field is for preorder and backorder, and Google treats it as
+        // contradictory alongside InStock.
+        availability: 'https://schema.org/InStock', url: `${SITE}/products/juniper-pant`,
       },
     },
     // Only the two products actually for sale. The Tioga Tee and Frolic
@@ -174,11 +176,11 @@ const DROP_PRODUCTS: DropProduct[] = [
   {
     handle: 'juniper-pant',
     name: 'the juniper pant',
-    // Still a preorder: stock is in transit. Derived, not typed, so the day
-    // disappears from the band on its own once it has passed rather than
-    // sitting here advertising a date that is already gone — which is what
-    // both previous versions of this line did.
-    availability: `preorder · ${preorderShipLabel().toLowerCase()}`,
+    // In stock. Derived, not typed, so the day disappears from the band on
+    // its own once it has passed rather than sitting here advertising a date
+    // that is already gone — which is what all three previous versions of
+    // this line did.
+    availability: `in stock · ${shipByLabel().toLowerCase()}`,
     shopLabel: 'shop pants',
     price: 10800,
     bg: '#D7DDC3',

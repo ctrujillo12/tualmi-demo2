@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { RETURN_WINDOW_DAYS, BUSINESS } from '@/lib/business';
 import { useState } from 'react';
 import type { CSSProperties, ChangeEvent } from 'react';
 
@@ -120,7 +121,7 @@ export default function ExchangesPage() {
             </h1>
             <p style={{ fontFamily: sans, fontSize: '16px', fontWeight: 500, lineHeight: 1.85, color: soft, margin: '0 0 14px' }}>
               stuff happens, and we want you in a pair you love. tell us a little about what&apos;s
-              up and we&apos;ll take care of the rest, usually within 1–2 business days.
+              up and we&apos;ll take care of the rest, usually within {BUSINESS.responseTime}.
             </p>
 
             {/* Exchange nudge */}
@@ -220,7 +221,7 @@ export default function ExchangesPage() {
               )}
 
               <p style={{ fontFamily: sans, fontSize: '12px', color: soft, margin: '4px 0 0', lineHeight: 1.6 }}>
-                Returns accepted within 14 days of delivery, unworn with tags attached. We&apos;ll email
+                Returns accepted within {RETURN_WINDOW_DAYS} days of delivery, unworn with tags attached. We&apos;ll email
                 you the return address once we&apos;ve reviewed your request — please don&apos;t ship
                 anything back before then. Full details in our{' '}
                 <Link href="/footer-pages/returns" style={{ color: maroon, fontWeight: 600 }}>return &amp; exchange policy</Link>.

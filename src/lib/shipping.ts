@@ -82,7 +82,7 @@ export const FREE_SHIPPING_SENTENCE =
  *
  * A ship window now comes from Shopify's custom.shipping_window metafield, so
  * it is edited where the stock actually is. If you need a preorder again, set
- * that metafield and add the handle to PREORDER_HANDLES in lib/preorder.
+ * that metafield and add the handle to PREORDER_HANDLES in lib/shipWindow.
  */
 
 export const FLAT_SHIPPING_CENTS = 799;

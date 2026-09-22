@@ -51,3 +51,13 @@ export function formatAddress(): string {
   const a = BUSINESS.address;
   return `${a.street}, ${a.city}, ${a.region}${a.postalCode ? ` ${a.postalCode}` : ''}`;
 }
+
+/**
+ * Return window, in days.
+ *
+ * The product page's shipping accordion said "7-day returns and exchanges"
+ * while /footer-pages/returns said 14 days and the Offer structured data said
+ * merchantReturnDays: 14. Three numbers, one policy, and the one the shopper
+ * sees at the moment of buying was the wrong one. All three read from here.
+ */
+export const RETURN_WINDOW_DAYS = 14;

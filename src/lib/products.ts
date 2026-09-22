@@ -2,7 +2,7 @@
 
 import { getAllProducts as shopifyGetAll, getProductByHandle, toProduct } from './shopify';
 import type { Product } from '@/types';
-import { preorderShipLabel } from './preorder';
+import { shipByLabel, HANDLING_COPY } from './shipWindow';
 
 // ─── Fallback local data ──────────────────────────────────────────────────────
 
@@ -41,11 +41,11 @@ export const localProducts: Product[] = [
     colors: ['Birch', 'Olive'],
     stock: 100,
     variants: [],
-    // In transit, not in hand. See lib/preorder.ts. The window is a function
-    // call rather than a literal so it stops naming a day once that day has
-    // gone by.
-    isPreorder: true,
-    shippingWindow: preorderShipLabel(),
+    // Stock landed 22 Sept 2026, so this is no longer a preorder. The window
+    // is a function call rather than a literal so it stops naming a day once
+    // that day has gone by -- see lib/shipWindow.ts.
+    isPreorder: false,
+    shippingWindow: shipByLabel(),
   },
   {
     id: 'alpine-baby-tee',
@@ -87,7 +87,7 @@ export const localProducts: Product[] = [
     // it was still emitting schema.org/PreOrder for a product that has been
     // shipping for weeks.
     isPreorder: false,
-    shippingWindow: 'In stock, ships in 2–3 business days',
+    shippingWindow: `In stock, ships in ${HANDLING_COPY}`,
   },
 ];
 

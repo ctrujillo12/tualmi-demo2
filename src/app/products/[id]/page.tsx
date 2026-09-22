@@ -12,7 +12,8 @@ import { isColorSoldOut } from '@/lib/inventory';
 // Full product pages: the shorts and pant. Anything else redirects to the preview.
 // Single source of truth — see lib/catalog.ts.
 import { DETAIL_HANDLES, hasDetailPage } from '@/lib/catalog';
-import { preorderAvailabilityDate, preorderShipLabel, isPreorderHandle } from '@/lib/preorder';
+import { shipByLabel, isPreorderHandle, HANDLING_DAYS } from '@/lib/shipWindow';
+import { RETURN_WINDOW_DAYS } from '@/lib/business';
 
 // NOTE ON LINK PREVIEWS
 // The `openGraph` block is what Instagram, iMessage, Linktree, WhatsApp etc.
@@ -49,7 +50,7 @@ const PAGE_METADATA: Record<string, Metadata> = {
   'juniper-pant': {
     title: 'juniper pant — flare cargo hiking pants',
     description:
-      `Fashion-forward flare cargo hiking pants with a flattering fit and real cargo pockets. Made ethically in a WRAP-certified facility. Preorder now — ${preorderShipLabel().toLowerCase()}.`,
+      `Fashion-forward flare cargo hiking pants with a flattering fit and real cargo pockets. Made ethically in a WRAP-certified facility. In stock — ${shipByLabel().toLowerCase()}.`,
     alternates: { canonical: '/products/juniper-pant' },
     openGraph: {
       ...OG_BASE,
@@ -159,10 +160,10 @@ export default async function ProductPage({
     : anySellable ? 'https://schema.org/InStock'
     : 'https://schema.org/OutOfStock';
 
-  // Required by Merchant Center for preorder items, and dropped automatically
-  // once the date passes — a preorder whose availabilityDate is in the past is
-  // a feed error, not just stale wording.
-  const availabilityDate = isPreorder ? preorderAvailabilityDate() : null;
+  // availabilityDate is ONLY meaningful for preorder and backorder. Nothing is
+  // a preorder today, so it is omitted rather than emitted beside InStock,
+  // which Google reads as contradictory. isPreorderHandle() is still consulted
+  // above, so this comes back on its own if a handle is ever re-listed.
 
   // ── STRUCTURED DATA ────────────────────────────────────────────────────────
   // One ProductGroup per page, with a Product per COLOURWAY under hasVariant.
@@ -208,12 +209,12 @@ export default async function ProductPage({
   // asks for, and both are DERIVED: the threshold and the flat rate come from
   // lib/shipping.ts, so the markup cannot promise a number the cart doesn't.
   const offerPolicies = {
-    // 14 days from delivery, unworn and unwashed -- /footer-pages/returns.
+    // From lib/business.ts, same as the on-page accordion and the policy page.
     hasMerchantReturnPolicy: {
       '@type': 'MerchantReturnPolicy',
       applicableCountry: 'US',
       returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-      merchantReturnDays: 14,
+      merchantReturnDays: RETURN_WINDOW_DAYS,
       returnMethod: 'https://schema.org/ReturnByMail',
       // The shopper pays return postage; we cover it only when the item is
       // faulty or wrong, which is a different policy and not what this field
@@ -248,8 +249,8 @@ export default async function ProductPage({
           '@type': 'QuantitativeValue',
           // Preorders are the exception and are already declared by the
           // PreOrder availability above; this is the in-stock path.
-          minValue: isPreorder ? 7 : 1,
-          maxValue: isPreorder ? 21 : 3,
+          minValue: isPreorder ? 7 : HANDLING_DAYS.min,
+          maxValue: isPreorder ? 21 : HANDLING_DAYS.max,
           unitCode: 'DAY',
         },
         transitTime: {
@@ -305,7 +306,6 @@ export default async function ProductPage({
           : soldOut
             ? 'https://schema.org/OutOfStock'
             : availability,
-        ...(availabilityDate ? { availabilityDate } : {}),
         url: variantUrl,
         ...offerPolicies,
       },

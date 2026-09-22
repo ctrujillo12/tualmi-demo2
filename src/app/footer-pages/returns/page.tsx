@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { PolicyPage, Section, P, Bullets, maroon } from '@/components/PolicyPage';
+import { RETURN_WINDOW_DAYS, BUSINESS } from '@/lib/business';
+import { HANDLING_COPY } from '@/lib/shipWindow';
 
 /** Shared link style so every pointer to the form looks the same. */
 const formLink = { color: maroon, fontWeight: 600 };
@@ -28,7 +30,7 @@ export default function ReturnsPage() {
               </Link>{' '}
               with your order number, the item, and what you&apos;d like to happen
             </>,
-            'We’ll email you back within 1–2 business days with return details and the address',
+            `We’ll email you back within ${BUSINESS.responseTime} with return details and the address`,
             'Ship the item back once we’ve confirmed',
             'Once we receive and inspect it, we’ll refund your original payment method',
           ]}
@@ -41,7 +43,7 @@ export default function ReturnsPage() {
 
       <Section heading="returns">
         <P>
-          We accept returns within 14 days of delivery, as long as the item is unworn, unwashed, and has
+          We accept returns within {RETURN_WINDOW_DAYS} days of delivery, as long as the item is unworn, unwashed, and has
           its tags still attached. Return shipping is covered by the customer.
         </P>
       </Section>
@@ -63,9 +65,8 @@ export default function ReturnsPage() {
           <Link href="/footer-pages/exchanges" style={formLink}>
             form
           </Link>{' '}
-          and choose cancellation as your request type. This includes preorders: you can cancel
-          the Juniper Pant any time before it ships. Everything else usually leaves within 2–3
-          business days, so the sooner you tell us the better.
+          and choose cancellation as your request type. Orders usually leave within {HANDLING_COPY},
+          so the sooner you tell us the better.
         </P>
       </Section>
 
@@ -75,7 +76,7 @@ export default function ReturnsPage() {
           <Link href="/footer-pages/exchanges" style={formLink}>
             form
           </Link>{' '}
-          within 14 days and describe the problem. We&apos;ll follow up by email to ask for a photo,
+          within {RETURN_WINDOW_DAYS} days and describe the problem. We&apos;ll follow up by email to ask for a photo,
           make it right, and cover the return shipping.
         </P>
       </Section>
