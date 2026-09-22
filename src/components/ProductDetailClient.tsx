@@ -100,6 +100,8 @@ function HighlightGlyph({ icon }: { icon: HighlightIcon }) {
       return <svg {...common}><path d="M3.5 12h17" /><path d="M7 8.5 3.5 12 7 15.5" /><path d="M17 8.5 20.5 12 17 15.5" /></svg>;
     case 'fit': // flared-leg pant silhouette -- the cut itself, not a gender symbol
       return <svg {...common}><path d="M7.4 4.5h9.2l.4 5H7Z" /><path d="M7 9.5c-.6 4-1.3 7.2-2.2 10h3.6c.9-3.5 1.9-6.4 3.6-8.2 1.7 1.8 2.7 4.7 3.6 8.2h3.6c-.9-2.8-1.6-6-2.2-10" /></svg>;
+    case 'waist': // foldover waistband — band with the fold curving over its top
+      return <svg {...common}><path d="M4.5 6h15v6h-15Z" /><path d="M4.5 12c.5 3 .7 5.4.6 7.5M19.5 12c-.5 3-.7 5.4-.6 7.5" /><path d="M4.5 6c2.5 1.6 12.5 1.6 15 0" /></svg>;
     case 'cinch': // cinched hem / drawstring
       return <svg {...common}><path d="M8 4v6M16 4v6" /><path d="M8 10c1.3 1.3 2.5 1.3 4 1.3s2.7 0 4-1.3" /><path d="M9.5 11.2 8 20M14.5 11.2 16 20" /></svg>;
     default:
@@ -710,6 +712,25 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
               ${(product.price / 100).toFixed(2)}
             </p>
 
+            {/* The promise, directly under the price — the one place a shopper
+                is actually asking "is this worth it?". Everything else in this
+                column is a spec; this is the reason. See `tagline` in
+                lib/productDetails.ts for why it moved up here. */}
+            {fabricDetail?.tagline && (
+              <p
+                style={{
+                  fontFamily: sans,
+                  fontWeight: 600,
+                  fontSize: '15px',
+                  lineHeight: 1.45,
+                  color: maroon,
+                  margin: '-8px 0 18px',
+                }}
+              >
+                {fabricDetail.tagline}
+              </p>
+            )}
+
             {/* Insertion A — the highest-leverage piece of the review feature.
                 Everyone who lands sees this; only people who scroll reach the
                 reviews themselves. Anchors to #reviews further down. Renders
@@ -987,22 +1008,12 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
               {/* Only renders when a creator code is stored — see lib/discount.ts */}
               <DiscountBadge />
 
-              {/* Preorder timing, stated next to the price rather than buried
-                  in an accordion. Unexpected wait times are a top reason people
-                  abandon at this exact point. */}
-              {isPreorder && shippingLabel && (
-                <p
-                  style={{
-                    fontFamily: sans, fontSize: '12.5px', fontWeight: 600,
-                    color: maroon, backgroundColor: blushBg,
-                    border: `1px solid ${rule}`, borderRadius: '10px',
-                    padding: '10px 14px', margin: '0 0 12px', lineHeight: 1.5,
-                  }}
-                >
-                  ✦ preorder — {shippingLabel.toLowerCase()}. you&apos;re charged today and
-                  we ship the moment it lands.
-                </p>
-              )}
+              {/* The preorder callout that sat here is gone. It read
+                  "✦ preorder — {window}. you're charged today and we ship the
+                  moment it lands." Nothing is sold as a preorder now, and the
+                  ship window it carried is already stated in the eyebrow above
+                  the title and in the shipping accordion, so removing it costs
+                  no information. */}
               {buyable ? (
                 /* ── Buyable: add to cart ── */
                 <>

@@ -26,7 +26,6 @@ interface CartStore {
   clearCart: () => void;
   getTotal: () => number;
   getItemCount: () => number;
-  hasPreorderItems: () => boolean;
   /** Re-sync each item's price + image from Shopify (kills stale snapshots). */
   refreshFromShopify: () => Promise<void>;
   /**
@@ -178,9 +177,6 @@ export const useCartStore = create<CartStore>()(
       getItemCount: () =>
         get().items.reduce((sum, i) => sum + i.quantity, 0),
 
-      hasPreorderItems: () =>
-        get().items.some((i) => i.isPreorder),
-
       refreshFromShopify: async () => {
         const { items } = get();
         if (items.length === 0) return;
@@ -281,13 +277,19 @@ export const useCartStore = create<CartStore>()(
             console.warn(`[cart] Trimming "${describeLine(item)}" from ${item.quantity} to ${allowed} — that's all Shopify has.`);
           }
 
-          // Preorder items carry their ship window onto the Shopify order.
-          // Strip a leading "Ships " so the note reads e.g.
-          // "Ships: the week of September 21".
-          const attributes =
-            item.isPreorder && item.shippingWindow
-              ? [{ key: 'Ships', value: item.shippingWindow.replace(/^ships\s+/i, '') }]
-              : undefined;
+          // Any line with a ship window carries it onto the Shopify order, so
+          // fulfilment sees the same promise the shopper was shown. The lead
+          // "Ships " / "In stock, ships " is stripped so the note reads e.g.
+          // "Ships: by Thursday, September 24".
+          //
+          // Was gated on item.isPreorder. Nothing is a preorder now, so that
+          // gate meant the note never attached at all — the ship window was
+          // shown to the customer and then dropped on the way to the order.
+          const window = (item.shippingWindow ?? '')
+            .replace(/^in stock,\s*/i, '')
+            .replace(/^ships\s+/i, '')
+            .trim();
+          const attributes = window ? [{ key: 'Ships', value: window }] : undefined;
           lines.push({ variantId: resolved.variant.id, quantity: Math.max(1, allowed), attributes });
         }
 

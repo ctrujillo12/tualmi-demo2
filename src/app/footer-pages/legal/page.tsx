@@ -18,14 +18,12 @@ export default function LegalPage() {
         </P>
       </Section>
 
-      <Section heading="preorders">
-        <P>
-          Some items are sold as preorders and ship on the timeline noted on the product page. Payment is
-          collected at the time you order, and you can cancel a preorder for a full refund any time before
-          it ships.
-        </P>
-      </Section>
-
+      {/* The "preorders" section was removed 22 Sept 2026. Nothing on the site
+          is sold as a preorder any more, and a policy section describing one
+          is a customer reading about a thing we do not do — on the page they
+          open to find out what we DO do. The cancellation right it described
+          is not lost: /footer-pages/returns already grants a full refund on
+          any order cancelled before it ships, preorder or not. */}
       <Section heading="shipping, returns &amp; refunds">
         <P>Your order is covered by our Shipping and Returns &amp; Refunds policies, linked in the footer.</P>
       </Section>

@@ -9,7 +9,8 @@ export interface SizeChart {
 }
 
 export type HighlightIcon =
-  | 'moisture' | 'water' | 'feather' | 'recycled' | 'uv' | 'pocket' | 'stretch' | 'fit' | 'cinch';
+  | 'moisture' | 'water' | 'feather' | 'recycled' | 'uv' | 'pocket' | 'stretch' | 'fit' | 'cinch'
+  | 'waist';
 
 export interface Highlight {
   icon: HighlightIcon;
@@ -56,6 +57,22 @@ export interface FabricDetail {
    * go in. An unanswered question costs a sale; a wrong answer costs a return
    * and the customer.
    */
+  /**
+   * One line, directly under the price, before anything else.
+   *
+   * The page had no answer to "why is this $108?" above the fold. The
+   * strongest sentence on the page -- "they feel like your favorite pair of
+   * everyday pants, just built for the trail" -- was in the Shopify
+   * description, which renders BELOW the buy box, i.e. after the shopper has
+   * already decided. This is that promise, moved to where the decision
+   * happens.
+   *
+   * It is a promise, not a spec list. The specs are the chips right beneath
+   * it; repeating them here would be the third time the page says
+   * "4-way stretch" before you have scrolled.
+   */
+  tagline?: string;
+
   faq?: { q: string; a: string }[];
   /**
    * The three claims in the strip above the product name.
@@ -99,15 +116,26 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     shell: '90% Nylon, 10% Spandex',
     lining: '84% Nylon, 16% Spandex',
     weight: '200 GSM',
+    tagline: 'Fits like your favorite pants. Built for the trail.',
+    // ── THE $108 QUESTION ───────────────────────────────────────
+    // These six are the answer to "why not $60?", so they lead with what a
+    // cheaper pant does NOT have. Two changes worth naming:
+    //
+    //   'Flattering fit' → 'Flared leg'. The old label was a claim every
+    //   brand makes and nobody can check; the flare is the actual silhouette
+    //   and the reason someone wants this pant over a straight nylon hiker.
+    //
+    //   'Snap-close pockets' → 'Deep cargo pockets'. The snap is the detail;
+    //   the depth is the selling point (a phone goes in and stays in, which
+    //   the FAQ confirms). 'Foldover waist' is new and is the single most
+    //   distinctive thing about the garment -- it had no chip at all.
     highlights: [
-      { icon: 'moisture', label: 'Moisture-wicking' },
+      { icon: 'waist',    label: 'Foldover waist' },
+      { icon: 'fit',      label: 'Flared leg' },
+      { icon: 'pocket',   label: 'Deep cargo pockets' },
       { icon: 'stretch',  label: '4-way stretch' },
-      { icon: 'pocket',   label: 'Snap-close pockets' },
-      { icon: 'cinch',    label: 'Cinchable hem' },
-      // Was 'Recycled materials' — the same false claim as the trust strip,
-      // on the same page. Removing one and leaving the other would have been
-      // incoherent.
-      { icon: 'fit',      label: 'Flattering fit' },
+      { icon: 'cinch',    label: 'Cinchable hems' },
+      { icon: 'moisture', label: 'Moisture-wicking' },
     ],
     // ── WHO OWNS WHAT ───────────────────────────────────────────
     // Three blocks describe this pant and they kept saying the same things in

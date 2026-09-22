@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { PolicyPage, Section, P, Bullets, DataTable, maroon } from '@/components/PolicyPage';
-import { shipByLabel, HANDLING_COPY } from '@/lib/shipWindow';
+import { shipByPhrase, HANDLING_COPY } from '@/lib/shipWindow';
 import {
   FREE_SHIPPING_SENTENCE,
   FREE_SHIPPING_THRESHOLD,
@@ -78,7 +78,7 @@ export default function ShippingPage() {
             Misrepresentation policy looks for. This one stops naming a day by
             itself once the date goes by, and what it falls back to is true. */}
         <P>
-          The Juniper Pant is in stock. {shipByLabel()}.
+          The Juniper Pant is in stock and {shipByPhrase()}.
         </P>
       </Section>
 

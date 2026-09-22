@@ -121,9 +121,14 @@ export default function CartItem({ item }: CartItemProps) {
             <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, margin: 0 }}>
               Color: {item.selectedColor}
             </p>
-            {item.isPreorder && (
+            {/* Was "pre-order · {window}", gated on item.isPreorder. The word
+                is gone from the site; the date is the part a shopper needed
+                anyway, and it now shows for any line that carries one. The
+                old fallback ("ships when collection drops") is gone too — a
+                line with no window shows nothing rather than a vague phrase. */}
+            {item.shippingWindow && (
               <p style={{ fontFamily: sans, fontSize: '11px', fontWeight: 700, color: soft, marginTop: '8px', textTransform: 'lowercase', letterSpacing: '0.08em' }}>
-                pre-order · {item.shippingWindow ?? 'ships when collection drops'}
+                {item.shippingWindow}
               </p>
             )}
             {/* Flagged on the line itself, right next to the remove button that

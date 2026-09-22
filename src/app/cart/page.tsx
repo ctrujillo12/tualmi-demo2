@@ -20,7 +20,7 @@ const soft    = '#C9849A';
 const rule    = '#F0D9E1';
 
 export default function CartPage() {
-  const { items, getTotal, hasPreorderItems, redirectToShopifyCheckout, refreshFromShopify } = useCartStore();
+  const { items, getTotal, redirectToShopifyCheckout, refreshFromShopify } = useCartStore();
   const { canShop, ready } = useShopAccess();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError]         = useState<string | null>(null);
@@ -46,7 +46,6 @@ export default function CartPage() {
   const estimatedCents   = totalCents + shippingCents;
   // No local tax/total estimate — Shopify calculates both at checkout, and
   // showing a guess here only sets up a mismatch on the next screen.
-  const containsPreorder = hasPreorderItems();
   /**
    * The ship windows actually sitting in this cart, deduped and with the
    * leading "Ships " stripped so they read inside a sentence.
@@ -57,11 +56,14 @@ export default function CartPage() {
    * so it can't drift again. Prefer the live product record over the snapshot
    * taken when the line was added: a cart persists in localStorage for weeks,
    * and the snapshot can predate a date change.
+   *
+   * No longer filtered to preorder lines: the date is worth showing whenever
+   * there is one, and gating it on a preorder flag meant the only cart note
+   * we had was one that could not appear.
    */
-  const preorderWindows = Array.from(
+  const shipWindows = Array.from(
     new Set(
       items
-        .filter((i) => i.isPreorder)
         .map((i) =>
           (i.product.shippingWindow ?? i.shippingWindow ?? '')
             .replace(/^ships\s+/i, '')
@@ -262,10 +264,17 @@ export default function CartPage() {
                 discount on its own checkout page. */}
             <DiscountBadge />
 
-            {containsPreorder && (
+            {/* Ship windows for anything in the cart that has one. This used to
+                open with "Your order contains pre-order items"; nothing is sold
+                as a preorder now, and the useful half of the sentence was
+                always the date, not the label. Still rendered whenever a
+                window exists, so a future delayed item is still announced —
+                just without a word that would then be the only place on the
+                site saying it. */}
+            {shipWindows.length > 0 && (
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, marginBottom: '16px', lineHeight: 1.7 }}>
-                Your order contains pre-order items. Payment is collected at checkout
-                {preorderWindows.length > 0 && ` — ${preorderWindows.length > 1 ? 'shipping ' : 'and ships '}${preorderWindows.join(' and ')}`}.
+                {shipWindows.length > 1 ? 'Items in your order ship ' : 'Your order ships '}
+                {shipWindows.join(' and ')}.
               </p>
             )}
 

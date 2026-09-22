@@ -27,7 +27,7 @@
 export const SHIP_BY = '2026-09-24';
 
 /** Shown while the date is still ahead of us. */
-const SHIP_BY_COPY = 'Ships by Thursday, September 24';
+const SHIP_BY_PHRASE = 'ships by Thursday, September 24';
 
 /**
  * How long an order takes to leave us, once. Days for the structured data,
@@ -49,7 +49,7 @@ export const HANDLING_COPY = `${HANDLING_DAYS.min}–${HANDLING_DAYS.max} busine
  * Shown once SHIP_BY has passed. True on its own terms: stock is on hand, so
  * this needs no one to update it to stay accurate.
  */
-const LAPSED_COPY = `In stock, ships in ${HANDLING_COPY}`;
+const LAPSED_PHRASE = `ships in ${HANDLING_COPY}`;
 
 /** True once SHIP_BY is in the past, in US Pacific (where we ship from). */
 export function shipWindowPassed(now: Date = new Date()): boolean {
@@ -60,9 +60,29 @@ export function shipWindowPassed(now: Date = new Date()): boolean {
   return now.getTime() > endOfDayPacific;
 }
 
-/** The ship-window sentence, or the standing one once the date has gone by. */
+/**
+ * TWO SHAPES, ONE FACT.
+ *
+ * shipByPhrase() is the verb clause on its own -- "ships by Thursday,
+ * September 24" -- for dropping into a sentence that has already said the
+ * item is in stock.
+ *
+ * shipByLabel() is the standalone version with the stock state on the front,
+ * which is what a product page or a cart line needs, and what makes the pant
+ * read the same way as the shorts ("In stock, ships in 1-3 business days")
+ * instead of starting mid-thought.
+ *
+ * They exist as a pair because the one-string version produced "The Juniper
+ * Pant is in stock. In stock, ships by Thursday" on the shipping page and
+ * "in stock · in stock, ships by Thursday" on the homepage band. Same fact,
+ * two grammars; deriving one from the other keeps them from disagreeing.
+ */
+export function shipByPhrase(now?: Date): string {
+  return shipWindowPassed(now) ? LAPSED_PHRASE : SHIP_BY_PHRASE;
+}
+
 export function shipByLabel(now?: Date): string {
-  return shipWindowPassed(now) ? LAPSED_COPY : SHIP_BY_COPY;
+  return `In stock, ${shipByPhrase(now)}`;
 }
 
 /**
