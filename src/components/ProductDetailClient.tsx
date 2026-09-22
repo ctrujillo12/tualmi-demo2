@@ -10,7 +10,7 @@ import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, PRODUCT_LIFESTYLE_IMAGES, cartThu
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import DiscountBadge from '@/components/DiscountBadge';
 import { FREE_SHIPPING_LABEL } from '@/lib/shipping';
-import { shipByLabel, HANDLING_COPY } from '@/lib/shipWindow';
+import { shipLabel } from '@/lib/shipWindow';
 import { RETURN_WINDOW_DAYS } from '@/lib/business';
 import { LOW_STOCK_LABEL, SOLD_OUT_LABEL } from '@/lib/lowStock';
 import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/inventory';
@@ -126,9 +126,9 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   // drift that put a dead preorder date on four pages. 1–3 is now the standing
   // claim and it matches what the feed tells Google.
   const shippingLabel = isPreorder
-    ? (product.shippingWindow || shipByLabel())
+    ? (product.shippingWindow || shipLabel())
     : buyable
-      ? (product.shippingWindow || `In stock, ships in ${HANDLING_COPY}`)
+      ? (product.shippingWindow || shipLabel())
       : (product.shippingWindow ?? 'Coming soon');
 
   const addItem = useCartStore((state) => state.addItem);
@@ -745,21 +745,28 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
             {fabricDetail?.highlights && fabricDetail.highlights.length > 0 && (
               <div
                 className="pdp-highlights"
+                /* ONE ROW, ALWAYS. This was flexWrap:'wrap' over fixed 56px
+                   chips at width:fit-content, which held five chips on a line
+                   and broke the moment a sixth was added — the strip wrapped
+                   into a ragged 5+1. The phone rules below already forced a
+                   single row; desktop now does the same thing, so the count of
+                   chips can change without the layout deciding to have an
+                   opinion about it. */
                 style={{
                   display: 'flex',
-                  flexWrap: 'wrap',
-                  justifyContent: 'center',
-                  gap: '12px 16px',
-                  padding: '14px 16px',
+                  flexWrap: 'nowrap',
+                  justifyContent: 'space-between',
+                  gap: '8px',
+                  padding: '14px 12px',
                   marginBottom: '24px',
                   backgroundColor: 'white',
                   borderRadius: '12px',
-                  width: 'fit-content',
+                  width: '100%',
                   maxWidth: '100%',
                 }}
               >
                 {fabricDetail.highlights.map((h) => (
-                  <div key={h.label} className="pdp-hl" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', width: '56px', textAlign: 'center' }}>
+                  <div key={h.label} className="pdp-hl" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', flex: '1 1 0', minWidth: 0, textAlign: 'center' }}>
                     <HighlightGlyph icon={h.icon} />
                     <span style={{ fontFamily: sans, fontSize: '9.5px', fontWeight: 600, color: maroon, lineHeight: 1.2, textTransform: 'lowercase' }}>
                       {h.label}

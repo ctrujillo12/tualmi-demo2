@@ -5,7 +5,7 @@ import PanelShopLink from '@/components/PanelShopLink';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
 import QuickAdd from '@/components/QuickAdd';
 import { getProduct } from '@/lib/products';
-import { shipByPhrase } from '@/lib/shipWindow';
+import { shipPhrase } from '@/lib/shipWindow';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
@@ -180,7 +180,7 @@ const DROP_PRODUCTS: DropProduct[] = [
     // its own once it has passed rather than sitting here advertising a date
     // that is already gone — which is what all three previous versions of
     // this line did.
-    availability: `in stock · ${shipByPhrase()}`,
+    availability: `in stock · ${shipPhrase()}`,
     shopLabel: 'shop pants',
     price: 10800,
     bg: '#D7DDC3',

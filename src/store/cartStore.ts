@@ -280,7 +280,7 @@ export const useCartStore = create<CartStore>()(
           // Any line with a ship window carries it onto the Shopify order, so
           // fulfilment sees the same promise the shopper was shown. The lead
           // "Ships " / "In stock, ships " is stripped so the note reads e.g.
-          // "Ships: by Thursday, September 24".
+          // "Ships: in 1–3 business days".
           //
           // Was gated on item.isPreorder. Nothing is a preorder now, so that
           // gate meant the note never attached at all — the ship window was

@@ -12,7 +12,7 @@ import { isColorSoldOut } from '@/lib/inventory';
 // Full product pages: the shorts and pant. Anything else redirects to the preview.
 // Single source of truth — see lib/catalog.ts.
 import { DETAIL_HANDLES, hasDetailPage } from '@/lib/catalog';
-import { shipByLabel, isPreorderHandle, HANDLING_DAYS } from '@/lib/shipWindow';
+import { shipPhrase, isPreorderHandle, HANDLING_DAYS } from '@/lib/shipWindow';
 import { RETURN_WINDOW_DAYS } from '@/lib/business';
 
 // NOTE ON LINK PREVIEWS
@@ -50,7 +50,7 @@ const PAGE_METADATA: Record<string, Metadata> = {
   'juniper-pant': {
     title: 'juniper pant — flare cargo hiking pants',
     description:
-      `Fashion-forward flare cargo hiking pants with a flattering fit and real cargo pockets. Made ethically in a WRAP-certified facility. In stock — ${shipByLabel().toLowerCase()}.`,
+      `Fashion-forward flare cargo hiking pants with a flattering fit and real cargo pockets. Made ethically in a WRAP-certified facility. In stock, ${shipPhrase()}.`,
     alternates: { canonical: '/products/juniper-pant' },
     openGraph: {
       ...OG_BASE,

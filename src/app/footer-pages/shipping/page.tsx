@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { PolicyPage, Section, P, Bullets, DataTable, maroon } from '@/components/PolicyPage';
-import { shipByPhrase, HANDLING_COPY } from '@/lib/shipWindow';
+import { HANDLING_COPY } from '@/lib/shipWindow';
 import {
   FREE_SHIPPING_SENTENCE,
   FREE_SHIPPING_THRESHOLD,
@@ -70,16 +70,11 @@ export default function ShippingPage() {
 
       <Section heading="processing time">
         <P>
-          Sierra Shorts are in stock and ship within {HANDLING_COPY} of your order.
+          Everything on the site is in stock and ships within {HANDLING_COPY} of your order.
         </P>
-        {/* Interpolated from lib/shipWindow.ts, not typed. Three earlier
-            versions of this paragraph each named a date that had already
-            passed, which is the contradiction the Merchant Center
-            Misrepresentation policy looks for. This one stops naming a day by
-            itself once the date goes by, and what it falls back to is true. */}
-        <P>
-          The Juniper Pant is in stock and {shipByPhrase()}.
-        </P>
+        {/* One sentence for the whole catalogue. Four earlier versions of
+            this named a date that had already passed. Nothing here names a
+            day, so nothing here can go stale. */}
       </Section>
 
       <Section heading="tracking">

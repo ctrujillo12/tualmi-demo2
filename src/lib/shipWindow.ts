@@ -1,43 +1,20 @@
 /**
- * The current ship-by promise, in one place.
+ * How long an order takes to leave us, and the copy that says so.
  *
- * ── WHY THIS IS A DATE AND NOT A STRING ──────────────────────────────────
- * It was a string, twice, and both times the date passed and the site went on
- * announcing it: "ships the week of September 21" sat on the shipping page,
- * the returns page, the product metadata and the homepage band long after that
- * week ended. A string has no opinion about what day it is.
+ * ── THERE IS NO DATE HERE ANY MORE ───────────────────────────────────────
+ * There was, three times over: "the week of September 21", then "by Friday
+ * the 25th", then "by Saturday the 26th", then "by Thursday the 24th". Every
+ * one of them was correct when written and wrong shortly after, and the first
+ * of them sat on four pages for two months announcing a week that had already
+ * passed. The last version expired itself automatically, which was better,
+ * but it still meant the pant and the shorts said different things for no
+ * reason a shopper could infer.
  *
- * So the date is a DATE, and the copy is derived from it. Once SHIP_BY passes,
- * shipWindowPassed() goes true and every surface falls back to LAPSED_COPY
- * instead of naming a day that is already history.
- *
- * The lapse copy is now also TRUE rather than merely vague, which it could not
- * be while the stock was in transit: the goods are on hand, so "ships in 1-3
- * business days" is a correct statement on any day after the 24th. That is the
- * ideal shape for this kind of promise -- a specific date while it is useful,
- * an accurate general statement afterwards, and no window where it lies.
- *
- * ── THIS WAS lib/preorder.ts ─────────────────────────────────────────────
- * Renamed 22 Sept 2026 when the Juniper stock landed. Nothing here is about
- * preorders any more; it is about when an order goes out, which is a question
- * every product has whether or not it is a preorder.
- */
-
-/** ISO date orders placed now actually go out by. */
-export const SHIP_BY = '2026-09-24';
-
-/** Shown while the date is still ahead of us. */
-const SHIP_BY_PHRASE = 'ships by Thursday, September 24';
-
-/**
- * How long an order takes to leave us, once. Days for the structured data,
- * copy for humans, derived from the same pair.
- *
- * This existed as four independent literals: the product page said 1-2, the
- * feed said 1-3, and the shipping page and the shorts' own product data said
- * 2-3. Nobody chose those numbers to differ; they were typed at different
- * times. A shopper comparing the product page to the shipping page found two
- * answers, which is the same failure as the preorder date, just quieter.
+ * So: no date. Both products make the same standing promise, it is true every
+ * day, and nothing has to be edited when a week goes by. If a genuine preorder
+ * ever comes back, the ship window belongs on that product in Shopify's
+ * custom.shipping_window metafield -- next to the stock it describes -- not in
+ * a constant here that outlives the situation that produced it.
  *
  * Transit time is separate and lives in the Offer's deliveryTime.transitTime.
  * This is only the part before the carrier has it.
@@ -46,43 +23,24 @@ export const HANDLING_DAYS = { min: 1, max: 3 } as const;
 export const HANDLING_COPY = `${HANDLING_DAYS.min}–${HANDLING_DAYS.max} business days`;
 
 /**
- * Shown once SHIP_BY has passed. True on its own terms: stock is on hand, so
- * this needs no one to update it to stay accurate.
- */
-const LAPSED_PHRASE = `ships in ${HANDLING_COPY}`;
-
-/** True once SHIP_BY is in the past, in US Pacific (where we ship from). */
-export function shipWindowPassed(now: Date = new Date()): boolean {
-  // End of the ship-by day, Pacific, compared as a UTC instant so the answer
-  // does not depend on the server's timezone -- Vercel runs UTC, a laptop does
-  // not, and "is it still Thursday?" should not have two answers.
-  const endOfDayPacific = Date.parse(`${SHIP_BY}T23:59:59-07:00`);
-  return now.getTime() > endOfDayPacific;
-}
-
-/**
  * TWO SHAPES, ONE FACT.
  *
- * shipByPhrase() is the verb clause on its own -- "ships by Thursday,
- * September 24" -- for dropping into a sentence that has already said the
- * item is in stock.
+ * shipPhrase() is the verb clause alone -- "ships in 1-3 business days" --
+ * for a sentence that has already said the item is in stock.
  *
- * shipByLabel() is the standalone version with the stock state on the front,
- * which is what a product page or a cart line needs, and what makes the pant
- * read the same way as the shorts ("In stock, ships in 1-3 business days")
- * instead of starting mid-thought.
+ * shipLabel() is the standalone version with the stock state on the front,
+ * which is what a product page or a cart line needs.
  *
- * They exist as a pair because the one-string version produced "The Juniper
- * Pant is in stock. In stock, ships by Thursday" on the shipping page and
- * "in stock · in stock, ships by Thursday" on the homepage band. Same fact,
- * two grammars; deriving one from the other keeps them from disagreeing.
+ * They exist as a pair because the single-string version produced "The Juniper
+ * Pant is in stock. In stock, ships in 1-3 business days" on the shipping page
+ * and "in stock · in stock, ships..." on the homepage band.
  */
-export function shipByPhrase(now?: Date): string {
-  return shipWindowPassed(now) ? LAPSED_PHRASE : SHIP_BY_PHRASE;
+export function shipPhrase(): string {
+  return `ships in ${HANDLING_COPY}`;
 }
 
-export function shipByLabel(now?: Date): string {
-  return `In stock, ${shipByPhrase(now)}`;
+export function shipLabel(): string {
+  return `In stock, ${shipPhrase()}`;
 }
 
 /**

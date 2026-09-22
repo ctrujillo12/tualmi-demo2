@@ -125,14 +125,17 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     //   brand makes and nobody can check; the flare is the actual silhouette
     //   and the reason someone wants this pant over a straight nylon hiker.
     //
-    //   'Snap-close pockets' → 'Deep cargo pockets'. The snap is the detail;
-    //   the depth is the selling point (a phone goes in and stays in, which
-    //   the FAQ confirms). 'Foldover waist' is new and is the single most
-    //   distinctive thing about the garment -- it had no chip at all.
+    //   'Snap-close pockets' → 'Cargo pockets'. The snap is the detail, not
+    //   the selling point. Kept to two words like the rest: these sit in a
+    //   single row of six, so a three-word label is the one that wraps to a
+    //   third line and makes the strip look broken.
+    //
+    //   'Foldover waist' is new and is the single most distinctive thing
+    //   about the garment -- it had no chip at all.
     highlights: [
       { icon: 'waist',    label: 'Foldover waist' },
       { icon: 'fit',      label: 'Flared leg' },
-      { icon: 'pocket',   label: 'Deep cargo pockets' },
+      { icon: 'pocket',   label: 'Cargo pockets' },
       { icon: 'stretch',  label: '4-way stretch' },
       { icon: 'cinch',    label: 'Cinchable hems' },
       { icon: 'moisture', label: 'Moisture-wicking' },
