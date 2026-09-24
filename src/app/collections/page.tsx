@@ -89,7 +89,7 @@ export default async function CollectionsPage() {
   };
 
   return (
-    <main className="pdp-main">
+    <main className="pdp-main header-clear">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}

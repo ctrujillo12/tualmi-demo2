@@ -13,6 +13,9 @@ import { shipPhrase } from '@/lib/shipWindow';
 export interface DropProduct {
   handle: string;
   name: string;
+  /** One line under the name and price — what the thing actually is, for
+   *  someone scanning the panel who hasn't clicked in yet. */
+  description: string;
   availability: string; // small eyebrow above the name ('' = hide it)
   shopLabel: string;    // CTA text, e.g. 'shop shorts'
   /** Fallback price in cents, used only if Shopify is unreachable at build. */
@@ -113,6 +116,7 @@ export const DROP_PRODUCTS: DropProduct[] = [
   {
     handle: 'juniper-pant',
     name: 'the juniper pant',
+    description: 'flare cargo fold-over waist hiking pants',
     // In stock. Derived, not typed, so the day disappears from the panel on
     // its own once it has passed rather than sitting here advertising a date
     // that is already gone.
@@ -126,6 +130,7 @@ export const DROP_PRODUCTS: DropProduct[] = [
   {
     handle: 'sierra-shorts',
     name: 'the sierra shorts',
+    description: 'quick-dry 100% recycled nylon shorts',
     availability: '',
     shopLabel: 'shop shorts',
     price: 6800,

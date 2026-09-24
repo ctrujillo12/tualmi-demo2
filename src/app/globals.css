@@ -419,6 +419,25 @@ body {
   padding: clamp(88px, 12vw, 130px) clamp(20px, 4vw, 48px) clamp(64px, 9vw, 110px);
 }
 
+/* Top clearance for a page whose first element sits directly under the fixed
+   header (.site-nav-wrap), with nothing above it — no hero, no about section —
+   already carrying that space. Same amount as .pdp-shell's top padding; its
+   own class because .pdp-shell also sets side and bottom padding a page like
+   /collections doesn't want, since its panels are full-bleed colored bands
+   that need to run edge to edge. Without this, the header sits directly on
+   top of the first panel's own internal padding, which reads as "no space
+   between the nav and the heading" rather than as two separate paddings. */
+.header-clear {
+  padding-top: clamp(88px, 12vw, 130px);
+}
+@media (max-width: 768px) {
+  .header-clear {
+    /* Matches .pdp-shell's mobile override below — the fixed header is
+       ~66px on a phone, not the ~88-130px desktop clears for. */
+    padding-top: 76px;
+  }
+}
+
 .pdp-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr); /* minmax(0,..) lets wide children shrink instead of overflowing */
