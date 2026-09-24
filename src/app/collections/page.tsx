@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import AlsoLike from '@/components/AlsoLike';
+import ProductDropPanel from '@/components/ProductDropPanel';
 import { getProduct } from '@/lib/products';
-import { DETAIL_HANDLES } from '@/lib/catalog';
+import { DROP_PRODUCTS } from '@/lib/dropProducts';
 
 /**
  * /collections — the shop page.
@@ -16,32 +16,25 @@ import { DETAIL_HANDLES } from '@/lib/catalog';
  * it, so the two pages we most want ranked were the two with the fewest ways
  * in. Breadcrumbs had nowhere to point either.
  *
- * The sticky scroll section on the landing page stays exactly as it is. This
- * is not a replacement for it; it is the destination that section, the nav and
- * the breadcrumbs can all name.
+ * ── WHY IT'S THE SAME PANELS AS THE LANDING PAGE ─────────────────────────
+ * This used to reuse the "you may also like" cross-sell strip's small cards —
+ * a different, deliberately-smaller design meant for a recommendation row at
+ * the bottom of a page someone is already reading. On a phone that strip is
+ * also a swipeable sideways carousel, which is right for a cross-sell nudge
+ * and wrong for the one page whose entire job is "let me see everything for
+ * sale" — that mismatch is why this page used to scroll sideways on a phone.
  *
- * ── WHY IT REUSES <AlsoLike> ─────────────────────────────────────────────
- * Because the cross-sell row already IS a product grid: one card per
- * colourway, photo, name, colourway, price, link, and the per-image scale
- * normalisation that makes the models the same size across cards. Rebuilding
- * that here would duplicate the fiddliest CSS in the repo and guarantee the
- * two grids drift apart.
- *
- * It's called with layout="grid" (see AlsoLike.tsx), not the default
- * "row" — "row" is a centred strip that turns into a swipeable, edge-bled
- * carousel on a phone, which is right for a cross-sell nudge at the bottom of
- * a page someone is already reading and wrong for a page whose entire job is
- * "let me see everything for sale." That mismatch is why this page used to
- * scroll sideways on a phone. "grid" just wraps, so the page only ever
- * scrolls the ordinary way, down.
- *
- * It's also called once per garment type — pants, then shorts — rather than
- * once with every colourway of both products interleaved into one row. Two
- * short, clearly-labelled galleries read as "browse the shop"; one long row
- * mixing two different garments' colourways reads as a pile.
+ * So this now renders the *exact* same big panels as the landing page's
+ * "THE DROP" section instead: same cover photos, same quick add-to-cart,
+ * same colored bands, pants first. The data (DROP_PRODUCTS) and the panel
+ * markup (<ProductDropPanel>) are shared with app/page.tsx via
+ * lib/dropProducts.ts and components/ProductDropPanel.tsx, so the two can't
+ * quietly drift into two different shop experiences. DROP_PRODUCTS is
+ * already ordered pants-then-shorts (see that file), which is also the order
+ * this page displays and lists in its structured data below.
  *
  * ── SERVER-RENDERED, DELIBERATELY ────────────────────────────────────────
- * Same reasoning as the cross-sell row: the cards are in the HTML. A shop page
+ * Same reasoning as the landing page: the cards are in the HTML. A shop page
  * whose products arrive by client fetch is a shop page a crawler may see empty,
  * which would defeat the point of adding it.
  */
@@ -57,47 +50,32 @@ export const metadata: Metadata = {
 
 const SITE = 'https://tualmi.com';
 
-/**
- * Which detail-page product is which garment, for the two stacked galleries
- * below (pants above shorts, per how the page is meant to read). Hand-kept
- * rather than guessed from the handle string ("-pant" / "-short" would
- * silently miscategorize the day something like "trail-jacket" ships) —
- * there are two products today, so two short lists cost nothing. A product
- * that isn't in either list yet still shows up, in its own "more" section
- * below both, rather than silently vanishing from the shop page.
- */
-const PANT_HANDLES: readonly string[] = ['juniper-pant'];
-const SHORTS_HANDLES: readonly string[] = ['sierra-shorts'];
-
 export default async function CollectionsPage() {
-  // Individually caught, like the cross-sell row: one product failing to
-  // resolve costs its own cards, not the whole shop page.
-  const products = (
-    await Promise.all(DETAIL_HANDLES.map((h) => getProduct(h).catch(() => null)))
-  ).filter((p): p is NonNullable<typeof p> => p !== null);
-
-  const pants = products.filter((p) => PANT_HANDLES.includes(p.handle ?? p.id));
-  const shorts = products.filter((p) => SHORTS_HANDLES.includes(p.handle ?? p.id));
-  const other = products.filter((p) => !pants.includes(p) && !shorts.includes(p));
-
-  // Display order (pants, then shorts, then anything uncategorized) — the
-  // ItemList below follows the same order so the structured data matches
-  // what's actually on the page.
-  const orderedProducts = [...pants, ...shorts, ...other];
+  // Individually caught, like the landing page: one product failing to
+  // resolve costs its own panel's live price and quick-add, not the whole
+  // shop page — ProductDropPanel falls back to the static price and
+  // QuickAdd's "view" link when resolvedProduct is null.
+  const resolved = await Promise.all(
+    DROP_PRODUCTS.map((d) => getProduct(d.handle).catch(() => null)),
+  );
+  const productFor = (handle: string) =>
+    resolved.find((p) => p && (p.handle ?? p.id) === handle) ?? null;
 
   // An ItemList of the products, so the page reads as a catalogue rather than
   // as a page that happens to mention two products. Links only -- the prices
   // and availability live on the product pages' own ProductGroup markup, and
-  // repeating them here would be two sources for one number.
+  // repeating them here would be two sources for one number. Order matches
+  // DROP_PRODUCTS (pants, then shorts) so the structured data matches what's
+  // actually on the page.
   const itemListJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'Tualmi shop',
-    itemListElement: orderedProducts.map((p, i) => ({
+    itemListElement: DROP_PRODUCTS.map((d, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      url: `${SITE}/products/${p.handle ?? p.id}`,
-      name: p.name,
+      url: `${SITE}/products/${d.handle}`,
+      name: productFor(d.handle)?.name ?? d.name,
     })),
   };
 
@@ -120,9 +98,9 @@ export default async function CollectionsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      {pants.length > 0 && <AlsoLike products={pants} heading="pants" layout="grid" />}
-      {shorts.length > 0 && <AlsoLike products={shorts} heading="shorts" layout="grid" />}
-      {other.length > 0 && <AlsoLike products={other} heading="more" layout="grid" />}
+      {DROP_PRODUCTS.map((d) => (
+        <ProductDropPanel key={d.handle} drop={d} resolvedProduct={productFor(d.handle)} />
+      ))}
     </main>
   );
 }

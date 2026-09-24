@@ -1,11 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import HeroCarousel from '@/components/HeroCarousel';
-import PanelShopLink from '@/components/PanelShopLink';
-import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES } from '@/lib/productColors';
-import QuickAdd from '@/components/QuickAdd';
+import ProductDropPanel from '@/components/ProductDropPanel';
 import { getProduct } from '@/lib/products';
-import { shipPhrase } from '@/lib/shipWindow';
+import { DROP_PRODUCTS } from '@/lib/dropProducts';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
@@ -39,9 +36,9 @@ const brick    = '#A9503A';  // red    — links and the shorts band accent
 // If a product's availability changes, change it HERE too.
 const SITE = 'https://tualmi.com';
 
-// Declared here, not next to LANDING_COVERS below: productsJsonLd uses them a
-// few lines down, and a const referenced above its own declaration is a
-// module-load ReferenceError, not just a lint complaint.
+// Its own copy — lib/dropProducts.ts declares the same constant for its own
+// cover-photo paths, kept separate so this file's structured-data image paths
+// don't depend on that module.
 const RE = '/images-2/reedited-photos/Highlights';
 const productsJsonLd = {
   '@context': 'https://schema.org',
@@ -87,117 +84,11 @@ const productsJsonLd = {
 };
 
 // ─── Collection: one sticky panel per product, showing all its colorways ───────
-interface DropProduct {
-  handle: string;
-  name: string;
-  availability: string; // small eyebrow above the name ('' = hide it)
-  shopLabel: string;    // CTA text, e.g. 'shop shorts'
-  /** Fallback price in cents, used only if Shopify is unreachable at build. */
-  price: number;
-  bg: string;      // panel background (drives the scroll color-change)
-  accent: string;  // heading / text color
-  colorways: { color: string; swatch: string; image: string }[];
-}
-
-/** $68 / $68.50 — whole dollars read cleaner on a card. */
-const priceLabel = (cents: number) => {
-  const d = cents / 100;
-  return d % 1 === 0 ? `$${d.toFixed(0)}` : `$${d.toFixed(2)}`;
-};
-
-// Landing-page cover shot per colorway. Kept separate from the product-page
-// gallery order (PRODUCT_COLOR_IMAGES) so the landing can lead with a different
-// photo than the PDP. Falls back to the gallery lead if unset.
-/**
- * Moved onto the September 2026 studio shoot alongside the product galleries —
- * leaving these on the old set would have put two different shoots of the same
- * shorts on one scroll.
- *
- * These are the same frames the galleries lead with. The block above still
- * exists so the landing CAN lead with something different; delete a colourway
- * here and coverFor() falls back to that colourway's gallery lead anyway.
- */
-const LANDING_COVERS: Record<string, Record<string, string>> = {
-  'sierra-shorts': {
-    // Smiling, straight-on — the only open-smile front frame in the Jam set.
-    // Not the Jam gallery lead (that's jam-front-5), so the tile and the PDP
-    // open on different photographs.
-    Jam:      `${RE}/jam-front-3.jpg`,
-    Picnic:   `${RE}/picnic-front-1.jpg`,
-    // Leaning three-quarter — not in the Confetti gallery, so the landing tile
-    // and the product page do not open on the same photograph.
-    Confetti: `${RE}/confetti-34-2.jpg`,
-  },
-  'juniper-pant': {
-    Birch: `${RE}/birch-34-1.jpg`,
-    // Not the gallery lead for Olive: a second full-length standing shot beside
-    // Birch's made the pants band repetitive. This one is a waist-to-hem crop —
-    // fold-over waist, cargo pocket, label and flare in one frame — which fills
-    // the 2:3 tile and gives the row something to look at.
-    Olive: `${RE}/olive-detail-1.jpg`,
-  },
-};
-
-const coverFor = (handle: string, color: string) =>
-  LANDING_COVERS[handle]?.[color] ?? PRODUCT_COLOR_IMAGES[handle]?.[color]?.[0] ?? '';
-
-/**
- * Colourway tiles for one band, in the order they should appear HERE.
- *
- * PRODUCT_COLORS is deliberately not reordered to achieve this. It also drives
- * the swatch order on the product page and — because the gallery is indexed off
- * it — which colourway a PDP opens on. Sorting it to fix this row would have
- * silently changed the shorts page's default colour as a side effect.
- *
- * Anything missing from `order` keeps its original position at the end, so a
- * new colourway appears rather than vanishing.
- */
-const colorwaysFor = (handle: string, order?: string[]) => {
-  const all = PRODUCT_COLORS[handle] ?? [];
-  const rank = (name: string) => {
-    const i = order ? order.indexOf(name) : -1;
-    return i === -1 ? Number.MAX_SAFE_INTEGER : i;
-  };
-  return [...all]
-    .sort((a, b) => rank(a.name) - rank(b.name))
-    .map((c) => ({ color: c.name, swatch: c.value, image: coverFor(handle, c.name) }));
-};
-
-/**
- * Order matters: this array is the order of the coloured bands down the page,
- * and the pant leads because the pant is what we are promoting. The hero sends
- * people to the same product (DESKTOP_SLIDE in HeroCarousel) — change one and
- * change the other, or the first screen and the first band disagree.
- *
- * The bands also alternate green then pink, which is why the pant's band is
- * the sage one: it carries the hero's colour straight down into the page.
- */
-const DROP_PRODUCTS: DropProduct[] = [
-  {
-    handle: 'juniper-pant',
-    name: 'the juniper pant',
-    // In stock. Derived, not typed, so the day disappears from the band on
-    // its own once it has passed rather than sitting here advertising a date
-    // that is already gone — which is what all three previous versions of
-    // this line did.
-    availability: `in stock · ${shipPhrase()}`,
-    shopLabel: 'shop pants',
-    price: 10800,
-    bg: '#D7DDC3',
-    accent: sageDeep,
-    colorways: colorwaysFor('juniper-pant'),
-  },
-  {
-    handle: 'sierra-shorts',
-    name: 'the sierra shorts',
-    availability: '',
-    shopLabel: 'shop shorts',
-    price: 6800,
-    bg: '#EFDBE0',
-    accent: brick,
-    colorways: colorwaysFor('sierra-shorts', ['Picnic', 'Confetti', 'Jam']),
-  },
-];
+// DropProduct, priceLabel, colorwaysFor, DROP_PRODUCTS etc. moved to
+// lib/dropProducts.ts, alongside components/ProductDropPanel.tsx (the panel
+// markup itself) — the shop page (app/collections/page.tsx) renders the exact
+// same panels now, so the data and the JSX both live in one place rather than
+// as two copies that could drift.
 
 // ─── Social TikToks ───────────────────────────────────────────────────────────
 const TIKTOKS = [
@@ -331,82 +222,13 @@ export default async function Home() {
 
       {/* ══ 3 · THE DROP — one panel per product, all colorways shown ═════ */}
       {/* Two stacked colored bands; the background changes from the shorts
-          panel to the pants panel as you scroll between them. */}
+          panel to the pants panel as you scroll between them. Panel markup
+          lives in components/ProductDropPanel.tsx, shared with the shop page
+          (/collections) — see lib/dropProducts.ts for why. */}
       <div id="collection">
-        {DROP_PRODUCTS.map((p) => {
-        // Live Shopify price when we have it, static fallback otherwise.
-        const panelPrice = priceLabel(productFor(p.handle)?.price ?? p.price);
-        return (
-          <section
-            key={p.handle}
-            className="panel-viewport"
-            style={{
-              // Normal stacked sections (no sticky overlap), so nothing ever
-              // slides up over the preview button. Each colored band is shorter
-              // than a screen; the color just changes as you scroll between them.
-              position: 'relative',
-              minHeight: '72svh',
-              backgroundColor: p.bg,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 'clamp(56px, 7vh, 84px) clamp(16px, 4vw, 48px) clamp(48px, 6vh, 72px)',
-            }}
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 'clamp(16px, 2.4vh, 26px)', maxWidth: '1240px', width: '100%' }}>
-              <div>
-                {p.availability && (
-                  <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '12px', letterSpacing: '0.18em', color: p.accent, margin: '0 0 8px', textTransform: 'lowercase' }}>
-                    {p.availability}
-                  </p>
-                )}
-                <h3 style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(26px, 3.4vw, 40px)', letterSpacing: '-0.02em', color: p.accent, margin: 0, textTransform: 'lowercase' }}>
-                  {p.name}
-                </h3>
-                {/* Price. There was no dollar figure anywhere on this page —
-                    the only one above the fold was "$62 away from free
-                    shipping", which frames shipping as a problem before
-                    anyone has seen what anything costs. */}
-                <p style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(15px, 1.8vw, 19px)', color: p.accent, margin: '6px 0 0', opacity: 0.9 }}>
-                  {panelPrice}
-                </p>
-              </div>
-
-              {/* All colorways, side by side */}
-              <div className="colorway-row">
-                {p.colorways.map((cw) => (
-                  <div key={cw.color} className="colorway-tile">
-                    <Link
-                      href={`/products/${p.handle}?color=${encodeURIComponent(cw.color)}`}
-                      style={{ textDecoration: 'none', display: 'block' }}
-                    >
-                      <div className="colorway-photo">
-                        <Image
-                          src={cw.image}
-                          alt={`${p.name} in ${cw.color}`}
-                          fill
-                          quality={90}
-                          sizes="(max-width: 768px) 33vw, 420px"
-                          style={{ objectFit: 'cover' }}
-                        />
-                      </div>
-                      <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontFamily: sans, fontWeight: 600, fontSize: '13px', color: p.accent, margin: '9px 0 0', textTransform: 'lowercase' }}>
-                        <span style={{ width: '11px', height: '11px', borderRadius: '50%', background: cw.swatch, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.12)', flexShrink: 0 }} />
-                        {cw.color.toLowerCase()}
-                        <span aria-hidden style={{ opacity: 0.5 }}>·</span>
-                        <span style={{ fontWeight: 700 }}>{panelPrice}</span>
-                      </p>
-                    </Link>
-                    <QuickAdd product={productFor(p.handle)} color={cw.color} accent={p.accent} />
-                  </div>
-                ))}
-              </div>
-
-              <PanelShopLink handle={p.handle} accent={p.accent} label={p.shopLabel} />
-            </div>
-          </section>
-        );
-        })}
+        {DROP_PRODUCTS.map((p) => (
+          <ProductDropPanel key={p.handle} drop={p} resolvedProduct={productFor(p.handle)} />
+        ))}
       </div>
 
       {/* ══ 5 · SOCIALS ═══════════════════════════════════════════════════ */}
