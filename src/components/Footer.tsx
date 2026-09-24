@@ -11,6 +11,7 @@ const sans   = 'var(--font-montserrat), system-ui, sans-serif';
 const serif  = "'Cormorant Garamond', Georgia, serif";
 
 const LINK_COL_1 = [
+  { name: 'leave a review', href: '/review' },
   { name: 'start a return/exchange', href: '/footer-pages/exchanges' },
   { name: 'shipping',     href: '/footer-pages/shipping' },
   { name: 'returns',      href: '/footer-pages/returns' },
