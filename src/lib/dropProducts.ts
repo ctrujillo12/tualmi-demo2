@@ -116,7 +116,12 @@ export const DROP_PRODUCTS: DropProduct[] = [
   {
     handle: 'juniper-pant',
     name: 'the juniper pant',
-    description: 'flare cargo fold-over waist hiking pants',
+    // Condensed from the fuller product description (see productsJsonLd in
+    // app/page.tsx and PRODUCT_DETAILS['juniper-pant'] in productDetails.ts:
+    // "flare cargo pants... genuinely trail-ready... flattering fold-over
+    // waist") down to one line, keeping the two phrases that actually
+    // differentiate this pant rather than restating the spec chips below it.
+    description: 'flare cargo hiking pants with a flattering fold-over waist',
     // In stock. Derived, not typed, so the day disappears from the panel on
     // its own once it has passed rather than sitting here advertising a date
     // that is already gone.
@@ -130,7 +135,12 @@ export const DROP_PRODUCTS: DropProduct[] = [
   {
     handle: 'sierra-shorts',
     name: 'the sierra shorts',
-    description: 'quick-dry 100% recycled nylon shorts',
+    // Same approach as the pant above: condensed from the fuller description
+    // ("women's hiking shorts... deep pockets sized for a full phone... Made
+    // from 100% recycled nylon") and PRODUCT_DETAILS['sierra-shorts']'s
+    // "Fast-dry" highlight, keeping the material claim exact — it's the one
+    // that's checked against Shopify/Merchant Center elsewhere in this repo.
+    description: 'quick-dry hiking shorts made from 100% recycled nylon',
     availability: '',
     shopLabel: 'shop shorts',
     price: 6800,
