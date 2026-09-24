@@ -109,18 +109,34 @@ type Card = {
  * Also used, with a different heading, as the grid on /collections. The card
  * design, the model-size normalisation and the responsive behaviour are the
  * hard parts and they are already solved here; a second component would be a
- * second place for them to drift. Only the heading and the one-line pitch
- * differ, so only those are props.
+ * second place for them to drift. Only the heading, the one-line pitch and
+ * the layout differ, so only those are props.
+ *
+ * ── layout="grid" ─────────────────────────────────────────────────────────
+ * The cross-sell row's whole point is that it never has more than a few
+ * cards and never needs to scroll vertically — it is a strip at the bottom of
+ * a page someone is already scrolling. /collections is a page in its own
+ * right and can hold as many colourways as the catalogue grows to, so it gets
+ * a real wrapping grid instead: every card the same size, wrapping onto as
+ * many rows as it needs, page scroll doing the work. Critically, this also
+ * turns off the row's mobile carousel (layout="row"'s swipeable, edge-bled
+ * strip) — right for a "you may also like" nudge, wrong for the one page
+ * whose entire job is "let me see everything for sale," which is why the shop
+ * page used to scroll sideways on a phone.
  */
 export default function AlsoLike({
   products,
   heading = 'you may also like',
   /** null suppresses the per-product pitch line (the shop grid shows several). */
   pitch: pitchOverride,
+  /** 'row': the cross-sell strip (centred row, swipeable carousel on phone).
+   *  'grid': a wrapping gallery that only ever scrolls vertically. */
+  layout = 'row',
 }: {
   products: Product[];
   heading?: string;
   pitch?: string | null;
+  layout?: 'row' | 'grid';
 }) {
   const cards: Card[] = products.flatMap((product) => {
     const handle = product.handle ?? product.id;
@@ -207,7 +223,23 @@ export default function AlsoLike({
           max-width: 360px;
         }
 
-        /* ── Phone: a swipeable carousel ──
+        /* ── layout="grid" ──
+           Wraps instead of scrolling, at every width. auto-fill with a fixed
+           card range (rather than 1fr, which would let two cards blow up to
+           fill an empty row) plus justify-content: center keeps a short row —
+           two pant colourways, say — centred as a pair instead of stuck to
+           the left edge with a card-shaped hole beside it. */
+        .al-row.al-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(220px, 280px));
+          justify-content: center;
+          gap: clamp(18px, 2.5vw, 28px) clamp(14px, 2vw, 26px);
+        }
+        .al-row.al-grid .al-card {
+          max-width: none;
+        }
+
+        /* ── Phone: a swipeable carousel (layout="row" only) ──
            The same shape every shopper has used on every other store. Cards
            at 62% so one sits square in the middle of the screen with the next
            one cut by the edge — that slice is what says the row scrolls, and
@@ -217,7 +249,7 @@ export default function AlsoLike({
            matching padding puts the first card back in line with the heading.
            Both repeat .al-root's own side padding, so they cannot drift. */
         @media (max-width: 700px) {
-          .al-row {
+          .al-row:not(.al-grid) {
             justify-content: flex-start;
             gap: 12px;
             overflow-x: auto;
@@ -230,11 +262,18 @@ export default function AlsoLike({
             padding-block: 2px;
             scrollbar-width: none;
           }
-          .al-row::-webkit-scrollbar { display: none; }
-          .al-card {
+          .al-row:not(.al-grid)::-webkit-scrollbar { display: none; }
+          .al-row:not(.al-grid) .al-card {
             flex: 0 0 62%;
             max-width: none;
             scroll-snap-align: start;
+          }
+
+          /* Two columns, not one — a gallery of single-file cards on a phone
+             reads as a list, not a shop. */
+          .al-row.al-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
           }
         }
 
@@ -366,7 +405,7 @@ export default function AlsoLike({
       <h2 id="al-heading" className="al-h">{heading}</h2>
       {pitch && <p className="al-pitch">{pitch}</p>}
 
-      <ul className="al-row">
+      <ul className={`al-row${layout === 'grid' ? ' al-grid' : ''}`}>
         {cards.map((c) => (
           <li key={c.key} className="al-card">
             <Link

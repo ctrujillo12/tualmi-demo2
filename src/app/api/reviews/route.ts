@@ -27,7 +27,12 @@ import { klaviyoPrivateKey } from '@/lib/klaviyoKey';
 
 export const runtime = 'nodejs';
 
-const MAX = { name: 80, body: 2000, title: 90, short: 40, email: 160 };
+// `activity` gets its own, longer limit: it's a comma-joined list of chips
+// now (see components/ReviewForm.tsx), and all five picked at once — "hiking,
+// backpacking, kayaking / paddleboarding, the gym, climbing" — runs past 60
+// characters on its own, well past the 40-char limit every other short field
+// uses.
+const MAX = { name: 80, body: 2000, title: 90, short: 40, email: 160, activity: 120 };
 
 /** Per IP, per window. Generous — a real person might review two products. */
 const RATE_LIMIT = 5;
@@ -310,7 +315,7 @@ export async function POST(req: NextRequest) {
     size_purchased: str(body.sizePurchased, MAX.short),
     fit:            fitRaw && VALID_FIT.includes(fitRaw) ? fitRaw : null,
     colorway:       str(body.colorway, MAX.short),
-    activity:       str(body.activity, MAX.short),
+    activity:       str(body.activity, MAX.activity),
     consent:        true,
     source:         'form',
     // Never trusted from the client. Set it by hand when you can see the
