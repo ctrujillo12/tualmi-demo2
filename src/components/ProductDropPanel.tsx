@@ -101,6 +101,21 @@ export default function ProductDropPanel({
           >
             {panelPrice}
           </p>
+          {/* One line of what the thing actually is, for a shopper scanning
+              the panel who hasn't clicked into a colorway yet. */}
+          <p
+            style={{
+              fontFamily: sans,
+              fontWeight: 500,
+              fontSize: 'clamp(13px, 1.4vw, 15px)',
+              color: drop.accent,
+              margin: '8px 0 0',
+              opacity: 0.8,
+              textTransform: 'lowercase',
+            }}
+          >
+            {drop.description}
+          </p>
         </div>
 
         {/* All colorways, side by side (stacked on mobile — see globals.css) */}

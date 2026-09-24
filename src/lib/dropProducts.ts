@@ -140,7 +140,7 @@ export const DROP_PRODUCTS: DropProduct[] = [
     // from 100% recycled nylon") and PRODUCT_DETAILS['sierra-shorts']'s
     // "Fast-dry" highlight, keeping the material claim exact — it's the one
     // that's checked against Shopify/Merchant Center elsewhere in this repo.
-    description: 'quick-dry hiking shorts made from 100% recycled nylon',
+    description: 'water-resistant hiking shorts made from 100% recycled nylon',
     availability: '',
     shopLabel: 'shop shorts',
     price: 6800,
