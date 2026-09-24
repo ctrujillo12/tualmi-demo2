@@ -26,6 +26,13 @@ import Link from 'next/link';
  * One question, not four. The old Tally form asked fit / performance / fun /
  * style and never asked for an overall, which left nothing honest to put in a
  * star row — see the note at the bottom of lib/reviews.ts.
+ *
+ * ── ON PHOTO UPLOADS ──────────────────────────────────────────────────────
+ * See the big comment on shrinkImage() below for why photos used to get
+ * rejected on nearly every attempt: iPhones default to saving camera photos
+ * as HEIC, which neither Chrome/Firefox/Edge nor the Supabase storage bucket
+ * can handle, so shrinkImage() now converts HEIC to JPEG before anything else
+ * touches the file.
  */
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
@@ -33,6 +40,20 @@ const maroon = '#A9445C';
 const soft   = '#C9849A';
 const rule   = '#F0D9E1';
 const ink    = '#3B2F1E';
+
+/**
+ * Is this the HEIC/HEIF format iPhones (and a growing number of Android
+ * phones) save camera photos in by default?
+ *
+ * Windows and some Android browsers hand the file input a blank MIME type for
+ * these, so the extension is checked too — relying on `file.type` alone lets
+ * a real HEIC slip through undetected.
+ */
+function isHeic(file: File): boolean {
+  const type = file.type.toLowerCase();
+  if (type === 'image/heic' || type === 'image/heif') return true;
+  return /\.hei[cf]$/i.test(file.name);
+}
 
 /**
  * Shrink a photo in the browser before it is uploaded.
@@ -50,15 +71,48 @@ const ink    = '#3B2F1E';
  * rotation in EXIF, and drawing to a canvas throws EXIF away. Without this
  * flag, half the photos people send would appear on their side.
  *
- * Returns the original file if anything here fails — an odd format the canvas
- * can't decode should mean "upload it as-is and let the server judge", not
- * "you can't add a photo".
+ * ── HEIC ──────────────────────────────────────────────────────────────────
+ * This used to be the actual bug behind "it rejects every photo I try": an
+ * iPhone's default camera format is HEIC, Chrome/Firefox/Edge can't decode it
+ * (createImageBitmap just throws), and the Supabase bucket only accepts
+ * JPEG/PNG/WEBP (see supabase/storage.sql) — so a HEIC photo sailed past this
+ * function untouched and then bounced off the server every single time, no
+ * matter what the customer did. It's converted to JPEG first, before anything
+ * else touches the file, so the rest of this function and the server just see
+ * an ordinary JPEG. (Safari can often read HEIC directly, but converting it
+ * unconditionally is simpler than special-casing browsers and costs nothing —
+ * the library only loads when a HEIC file actually shows up.)
+ *
+ * Returns the original file if the resize step fails for a non-HEIC file — an
+ * odd format the canvas can't decode should mean "upload it as-is and let the
+ * server judge", not "you can't add a photo". A HEIC file has no usable
+ * "original" to fall back to that way, since the server rejects that format
+ * outright, so a failed HEIC conversion returns the untouched HEIC (so the
+ * person at least sees the server's real error) and a failed resize *after* a
+ * successful HEIC conversion returns the converted JPEG rather than throwing
+ * the conversion away.
  */
 async function shrinkImage(file: File): Promise<File> {
   const MAX_EDGE = 1600;
+  const converted = isHeic(file);
+  let working: File | Blob = file;
+
+  if (converted) {
+    try {
+      const heic2any = (await import('heic2any')).default;
+      const out = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+      working = Array.isArray(out) ? out[0] : out;
+    } catch (err) {
+      console.warn('[review-photo] HEIC conversion failed, uploading original:', err);
+      return file;
+    }
+  }
+
+  const asJpegFile = () => new File([working], 'review-photo.jpg', { type: 'image/jpeg' });
+
   try {
-    if (typeof createImageBitmap !== 'function') return file;
-    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    if (typeof createImageBitmap !== 'function') return converted ? asJpegFile() : file;
+    const bitmap = await createImageBitmap(working, { imageOrientation: 'from-image' });
 
     const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
     const width = Math.round(bitmap.width * scale);
@@ -68,19 +122,20 @@ async function shrinkImage(file: File): Promise<File> {
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return file;
+    if (!ctx) return converted ? asJpegFile() : file;
     ctx.drawImage(bitmap, 0, 0, width, height);
     bitmap.close?.();
 
     const blob = await new Promise<Blob | null>((resolve) =>
       canvas.toBlob(resolve, 'image/jpeg', 0.82),
     );
-    if (!blob) return file;
-    // If "shrinking" made it bigger (already-tiny PNGs can), keep the original.
-    if (blob.size >= file.size) return file;
+    if (!blob) return converted ? asJpegFile() : file;
+    // If "shrinking" made it bigger (already-tiny PNGs can), keep the
+    // original — but only when there was an uploadable original to keep.
+    if (!converted && blob.size >= file.size) return file;
     return new File([blob], 'review-photo.jpg', { type: 'image/jpeg' });
   } catch {
-    return file;
+    return converted ? asJpegFile() : file;
   }
 }
 
@@ -300,7 +355,7 @@ export default function ReviewForm() {
                 id="photo"
                 name="photo"
                 type="file"
-                accept="image/jpeg,image/png,image/webp"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
                 onChange={onPickPhoto}
                 className="rf-file"
               />
