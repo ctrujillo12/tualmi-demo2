@@ -5,8 +5,8 @@ import ReviewForm from '@/components/ReviewForm';
  * /review — the one link you send people.
  *
  * Works from anywhere: the Klaviyo post-delivery email, an Instagram story, a
- * packaging insert, or the "write a review" link on the product page. Sierra
- * Shorts only, so there is nothing to choose and no product question to ask.
+ * packaging insert, or the "write a review" link on the product page. Covers
+ * both the Juniper Pant and the Sierra Shorts — ReviewForm asks which one.
  *
  * Not indexed — it's a form for customers, not a page for search results, and
  * an indexed review form attracts exactly the submissions you don't want.

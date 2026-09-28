@@ -6,9 +6,10 @@ import Link from 'next/link';
 /**
  * The review form. Posts to /api/reviews, which stores it as pending.
  *
- * Sierra Shorts only — the pant is a preorder that hasn't shipped, so there is
- * nobody who could honestly review it yet. When it ships, add it back here and
- * to VALID_HANDLES in app/api/reviews/route.ts.
+ * Covers both products now that the Juniper Pant has shipped: a required
+ * chip picker at the top asks which one the review is for. Keep PRODUCTS
+ * below in sync with VALID_HANDLES in app/api/reviews/route.ts — that's the
+ * server-side half of the same list.
  *
  * ── WHAT IT ASKS, AND WHAT IT DELIBERATELY DOESN'T ───────────────────────
  * Three required things: a rating, the review, and a name to show. Plus the
@@ -139,8 +140,10 @@ async function shrinkImage(file: File): Promise<File> {
   }
 }
 
-const PRODUCT_HANDLE = 'sierra-shorts';
-const PRODUCT_NAME   = 'Sierra Shorts';
+const PRODUCTS = [
+  { handle: 'juniper-pant', name: 'Juniper Pant' },
+  { handle: 'sierra-shorts', name: 'Sierra Shorts' },
+];
 
 const SIZES = ['2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL'];
 
@@ -151,6 +154,7 @@ const FIT_OPTIONS = [
 ];
 
 export default function ReviewForm() {
+  const [product, setProduct] = useState('');
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [fit, setFit] = useState('');
@@ -194,13 +198,19 @@ export default function ReviewForm() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+    if (!product) {
+      setError('Please choose which pair you’re reviewing.');
+      return;
+    }
+
     setStatus('sending');
 
     // FormData rather than JSON, so the photo travels with the review in one
     // request. Note there is no Content-Type header below: fetch sets it,
     // including the multipart boundary, and setting it by hand breaks parsing.
     const form = new FormData(e.currentTarget);
-    form.set('productHandle', PRODUCT_HANDLE);
+    form.set('productHandle', product);
     form.set('rating', String(rating));
     form.set('fit', fit);
     form.set('consent', String(consent));
@@ -262,7 +272,23 @@ export default function ReviewForm() {
           <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
         </div>
 
-        <p className="rf-product">{PRODUCT_NAME}</p>
+        {/* ── Which product ── */}
+        <fieldset className="rf-field">
+          <legend className="rf-label">which pair are you reviewing?</legend>
+          <div className="rf-chips">
+            {PRODUCTS.map((p) => (
+              <button
+                key={p.handle}
+                type="button"
+                className={`rf-chip ${product === p.handle ? 'is-on' : ''}`}
+                onClick={() => setProduct(p.handle)}
+                aria-pressed={product === p.handle}
+              >
+                {p.name}
+              </button>
+            ))}
+          </div>
+        </fieldset>
 
         {/* ── Rating ── */}
         <fieldset className="rf-field">
