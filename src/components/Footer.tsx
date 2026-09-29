@@ -24,7 +24,6 @@ const LINK_COL_2 = [
   // only other link is in the about section and is hidden below xl, so without
   // this entry /story is unreachable on most screens.
   { name: 'our story',            href: '/story' },
-  { name: 'in the wild',          href: '/in-the-wild' },
   // A page, not a mailto:. Google's automated checks crawl pages, so a
   // mailto: href left the site with no discoverable contact information at
   // all -- which is how a new store ends up suspended for Misrepresentation.

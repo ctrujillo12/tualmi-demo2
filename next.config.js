@@ -37,6 +37,15 @@ const nextConfig = {
       // /#collection — wrong page, and a 307 that passes no ranking.
       { source: '/products/juniper-pants', destination: '/products/juniper-pant', permanent: true },
       { source: '/products/carabiner', destination: '/', permanent: true },
+      // TEMPORARY: /in-the-wild is being reworked and is hidden from the live
+      // site (also removed from the footer and sitemap.ts). permanent:false so
+      // it is a 307 and search engines do not treat the URL as gone. Production
+      // only, so local dev and Vercel preview deploys still serve the page.
+      // To relaunch: delete this block, re-add the footer link in
+      // components/Footer.tsx and the entry in app/sitemap.ts.
+      ...(process.env.VERCEL_ENV === 'production'
+        ? [{ source: '/in-the-wild', destination: '/', permanent: false }]
+        : []),
       // NO entry for /products/trailblazing-tote. It is a real, buyable
       // product (SELLABLE_HANDLES) that is merely unlisted, and a permanent
       // redirect told Google the URL was gone for good. Nothing links to it —
