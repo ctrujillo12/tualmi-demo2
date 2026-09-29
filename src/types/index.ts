@@ -23,4 +23,13 @@ export interface CartItem {
   quantity: number;
   isPreorder?: boolean;       // ← NEW: snapshot at time of add
   shippingWindow?: string;    // ← NEW: snapshot at time of add
+  /**
+   * The Shopify CartLine id for this item, once it's been synced to a real
+   * Shopify cart (store/cartStore.ts). Undefined until the first successful
+   * sync — e.g. right after addItem() but before the async cartCreate/
+   * cartLinesAdd call resolves — and needed to target this exact line with
+   * cartLinesUpdate/cartLinesRemove afterward (Shopify's line ids, not our
+   * own product/size/color key, are what those mutations take).
+   */
+  shopifyLineId?: string;
 }
