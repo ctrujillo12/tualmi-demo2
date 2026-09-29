@@ -168,7 +168,7 @@ export const useCartStore = create<CartStore>()(
        */
       async function recreateCart(): Promise<ShopifyCart | null> {
         const items = get().items;
-        const lines: { variantId: string; quantity: number }[] = [];
+        const lines: { variantId: string; quantity: number; attributes?: { key: string; value: string }[] }[] = [];
         // key -> variantId, so the returned cart's lines (order not assumed to
         // match what was sent) can be matched back to the right Zustand row.
         const keyToVariant = new Map<string, string>();
