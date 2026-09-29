@@ -247,7 +247,6 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       { icon: 'pocket',   label: 'Deep phone pockets' },
     ],
     features: [
-      '1.5" inseam',
       'Deep side pockets, big enough for your whole phone',
       'Water-repellent shell',
       'Fast-dry performance',
@@ -260,7 +259,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Mid-rise, relaxed fit with a 1.5" inseam. True to size.',
+    fit: 'Mid-rise, relaxed fit. True to size.',
     // modelNote removed: it said "rachel is 5'6"" on every colourway, which
     // the September 2026 shoot made false — it was shot with a different model
     // per colourway, and Picnic with two. This is now derived per photograph
