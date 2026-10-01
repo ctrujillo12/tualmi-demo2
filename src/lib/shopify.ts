@@ -221,6 +221,7 @@ export interface ShopifyVariant {
   id: string;
   title: string;
   price: { amount: string; currencyCode: string };
+  compareAtPrice?: { amount: string; currencyCode: string } | null;
   /**
    * Shopify's own verdict on whether this variant can be sold right now. It
    * accounts for inventory policy, so it stays true for a variant the merchant
@@ -285,6 +286,7 @@ const productFields = (withInventory: boolean) => `
           id
           title
           price { amount currencyCode }
+          compareAtPrice { amount currencyCode }
           availableForSale${withInventory ? INVENTORY_FIELDS : ''}
           selectedOptions { name value }
           image { url altText }
@@ -629,6 +631,9 @@ export function toProduct(sp: ShopifyProduct): Product {
   const images = sp.images.edges.map((e) => e.node.url);
 
   const priceInCents = Math.round(parseFloat(firstVariant?.price.amount ?? '0') * 100);
+  const compareAtPriceInCents = firstVariant?.compareAtPrice
+    ? Math.round(parseFloat(firstVariant.compareAtPrice.amount) * 100)
+    : undefined;
 
   const isPreorder = sp.tags?.includes('preorder') ?? false;                     // ← NEW
   const shippingWindow = sp.shippingWindow?.value ?? undefined;                  // ← NEW
@@ -647,6 +652,7 @@ export function toProduct(sp: ShopifyProduct): Product {
     name: sp.title,
     description: sp.description,
     price: priceInCents,
+    compareAtPrice: compareAtPriceInCents,
     // /images-2/placeholder.png never existed — if a Shopify product ever came
     // back with no images this rendered a 404'd <Image> on the live PDP. The OG
     // card is a real file that ships with the site.

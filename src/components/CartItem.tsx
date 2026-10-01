@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CartItem as CartItemType } from '@/types';
 import { useCartStore } from '@/store/cartStore';
+import { getVariantPricing } from '@/lib/productPricing';
 import { galleryImageFor } from '@/lib/productColors';
 import { availability } from '@/lib/inventory';
 import { SOLD_OUT_LABEL } from '@/lib/lowStock';
@@ -21,6 +22,7 @@ const rule   = '#F0D9E1';
 
 export default function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeItem } = useCartStore();
+  const pricing = getVariantPricing(item.product, item.selectedSize, item.selectedColor);
 
   const handleQuantityChange = (newQuantity: number) => {
     updateQuantity(item.product.id, item.selectedSize, item.selectedColor, newQuantity);
@@ -146,8 +148,13 @@ export default function CartItem({ item }: CartItemProps) {
               </p>
             )}
           </div>
-          <p className="cart-line-price" style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: maroon, whiteSpace: 'nowrap', margin: 0 }}>
-            ${((item.product.price * item.quantity) / 100).toFixed(2)}
+          <p className="cart-line-price" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px', fontFamily: sans, fontSize: '14px', fontWeight: 600, color: maroon, whiteSpace: 'nowrap', margin: 0 }}>
+            {pricing.compareAtPrice && pricing.compareAtPrice > pricing.price && (
+              <s style={{ color: soft, fontSize: '12px', fontWeight: 500 }}>
+                ${((pricing.compareAtPrice * item.quantity) / 100).toFixed(2)}
+              </s>
+            )}
+            <span>${((pricing.price * item.quantity) / 100).toFixed(2)}</span>
           </p>
         </div>
 

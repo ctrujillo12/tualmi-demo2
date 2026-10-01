@@ -15,6 +15,7 @@ import {
   type ShopifyCart,
 } from '@/lib/shopify';
 import type { ShopifyVariant } from '@/lib/shopify';
+import { getVariantPricing } from '@/lib/productPricing';
 import { findVariant, maxPurchasable } from '@/lib/inventory';
 import { attributionCartAttributes } from '@/lib/attribution';
 import { getDiscountCode } from '@/lib/discount';
@@ -389,7 +390,10 @@ export const useCartStore = create<CartStore>()(
         clearCart: () => set({ items: [] }),
 
         getTotal: () =>
-          get().items.reduce((sum, i) => sum + i.product.price * i.quantity, 0),
+          get().items.reduce((sum, i) => {
+            const pricing = getVariantPricing(i.product, i.selectedSize, i.selectedColor);
+            return sum + pricing.price * i.quantity;
+          }, 0),
 
         getItemCount: () =>
           get().items.reduce((sum, i) => sum + i.quantity, 0),
@@ -433,6 +437,7 @@ export const useCartStore = create<CartStore>()(
                 product: {
                   ...item.product,
                   price: typeof d.price === 'number' ? d.price : item.product.price,
+                  compareAtPrice: typeof d.compareAtPrice === 'number' ? d.compareAtPrice : undefined,
                   images: colorImg ? [colorImg] : item.product.images,
                   // Re-attach live variants. Items added while Shopify was down
                   // have none, and without this they can never check out.
