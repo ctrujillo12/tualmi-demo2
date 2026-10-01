@@ -1088,7 +1088,13 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                       {/* Always a real, live CTA with the price in it. Tapping
                           without a size opens the picker instead of doing
                           nothing — a dead button reads as a broken page. */}
-                          {isPreorder ? 'preorder' : 'add to cart'} — ${(pricing.price / 100).toFixed(2)}
+                      {isPreorder ? 'preorder' : 'add to cart'} —{' '}
+                      {pricing.compareAtPrice && pricing.compareAtPrice > pricing.price && (
+                        <s style={{ opacity: 0.7, fontWeight: 500, marginRight: '6px' }}>
+                          ${(pricing.compareAtPrice / 100).toFixed(2)}
+                        </s>
+                      )}
+                      <span>${(pricing.price / 100).toFixed(2)}</span>
                     </button>
                   ) : (
                     /* ── In the cart: quantity stepper ── */
@@ -1469,7 +1475,13 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
             </button>
           ) : (
             <button onClick={handleBuy} className="pdp-buybar-cta">
-              {isPreorder ? 'preorder' : 'add'} — ${(pricing.price / 100).toFixed(2)}
+              {isPreorder ? 'preorder' : 'add'} —{' '}
+              {pricing.compareAtPrice && pricing.compareAtPrice > pricing.price && (
+                <s style={{ opacity: 0.7, fontWeight: 500, marginRight: '6px' }}>
+                  ${(pricing.compareAtPrice / 100).toFixed(2)}
+                </s>
+              )}
+              <span>${(pricing.price / 100).toFixed(2)}</span>
             </button>
           )}
         </div>

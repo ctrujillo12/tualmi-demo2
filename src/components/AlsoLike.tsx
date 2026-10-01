@@ -98,6 +98,7 @@ type Card = {
   handle: string;
   name: string;
   price: number;
+  compareAtPrice?: number;
   color: string;
   swatch: string;
   image?: string;
@@ -145,6 +146,7 @@ export default function AlsoLike({
       handle,
       name: product.name,
       price: product.price,
+      compareAtPrice: product.compareAtPrice,
       color: c.name,
       swatch: c.value,
       image: PRODUCT_COLOR_IMAGES[handle]?.[c.name]?.[0] ?? product.images?.[0],
@@ -364,6 +366,7 @@ export default function AlsoLike({
           box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
         }
         .al-price { color: ${maroon}; font-weight: 700; }
+  .al-compare-price { color: ${soft}; font-weight: 500; }
 
         /* A real button, because "SHOP NOW" is the thing these rows have in
            common everywhere and the thing that tells a shopper the card is a
@@ -454,6 +457,9 @@ export default function AlsoLike({
                   <span className="al-swatch" style={{ background: c.swatch }} aria-hidden />
                   {c.color.toLowerCase()}
                   <span aria-hidden style={{ opacity: 0.45 }}>·</span>
+                  {c.compareAtPrice && c.compareAtPrice > c.price && (
+                    <s className="al-compare-price">{priceLabel(c.compareAtPrice)}</s>
+                  )}
                   <span className="al-price">{priceLabel(c.price)}</span>
                 </span>
                 <span className="al-cta">shop now</span>
