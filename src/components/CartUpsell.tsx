@@ -1,4 +1,3 @@
-  .cu-compare-price { color: ${soft}; font-weight: 500; }
 'use client';
 
 import { useEffect, useState } from 'react';
