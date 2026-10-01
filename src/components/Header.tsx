@@ -143,7 +143,7 @@ export default function Header() {
     {showSierraSale && (
       <Link
         href="/products/sierra-shorts"
-        aria-label="Shop the Sierra Shorts end-of-summer sale. Ends Sunday, October 4."
+        aria-label="shop the sierra shorts end-of-summer sale. ends sunday, october 4."
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -158,13 +158,14 @@ export default function Header() {
           fontWeight: 700,
           lineHeight: 1.3,
           textAlign: 'center',
+          textTransform: 'lowercase',
           textDecoration: 'none',
         }}
       >
         <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
-          <span>Sierra Shorts end-of-summer sale · ends Sunday, Oct 4</span>
+          <span>sierra shorts end-of-summer sale · ends sunday, oct 4</span>
           <span style={{ fontSize: '9px', fontWeight: 500, opacity: 0.92 }}>
-            Not combinable with other discounts · Free U.S. shipping on orders over $125
+            not combinable with other discounts · free u.s. shipping on orders over $125
           </span>
         </span>
       </Link>
