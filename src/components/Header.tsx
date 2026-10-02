@@ -38,7 +38,7 @@ const LEFT_LINKS = [
 ];
 
 const RIGHT_LINKS = [
-  { name: 'trail club', href: '/invite' },
+  { name: 'trail club', href: '/trail-club' },
 ];
 
 /**

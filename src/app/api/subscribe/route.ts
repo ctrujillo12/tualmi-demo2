@@ -337,7 +337,7 @@ export async function POST(req: NextRequest) {
       const ownCode = await getOrCreateReferralCode(email);
       if (ownCode) {
         properties.referral_code = ownCode;
-        properties.referral_link = `https://www.tualmi.com/invite?ref=${ownCode}`;
+        properties.referral_link = `https://www.tualmi.com/trail-club?ref=${ownCode}`;
       }
 
       // 3. Fire the reward events, if step 1 said this one counts.

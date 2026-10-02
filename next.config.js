@@ -29,6 +29,9 @@ const nextConfig = {
   // landing page on the site in the last 30 days.
   async redirects() {
     return [
+      // Page was renamed /invite -> /trail-club. Next carries the query string
+      // across, so already-sent referral links (?ref=) and UTM links still work.
+      { source: '/invite', destination: '/trail-club', permanent: true },
       { source: '/products/horizon-shorts', destination: '/products/sierra-shorts', permanent: true },
       { source: '/products/summit-pant', destination: '/products/juniper-pant', permanent: true },
       { source: '/products/pinnacles-pant', destination: '/products/juniper-pant', permanent: true },

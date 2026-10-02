@@ -1231,7 +1231,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                   </div>
                   <p style={{ ...bodyStyle, fontSize: '12px', textAlign: 'center', marginTop: '10px', lineHeight: 1.7 }}>
                     Club members shop 24 hours early.{' '}
-                    <Link href="/invite" style={{ color: maroon, fontWeight: 600, textUnderlineOffset: '3px' }}>
+                    <Link href="/trail-club" style={{ color: maroon, fontWeight: 600, textUnderlineOffset: '3px' }}>
                       join the club →
                     </Link>
                   </p>
@@ -1240,7 +1240,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 /* ── Not sellable yet (coming soon) ── */
                 <>
                   <Link
-                    href="/invite"
+                    href="/trail-club"
                     style={{
                       display: 'block',
                       boxSizing: 'border-box',

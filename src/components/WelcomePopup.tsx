@@ -36,7 +36,7 @@ export default function WelcomePopup() {
   const pathname                = usePathname();
 
   /** /invite is already a signup page; interrupting checkout costs more than an email. */
-  const SUPPRESSED = ['/invite', '/cart', '/discount'];
+  const SUPPRESSED = ['/trail-club', '/invite', '/cart', '/discount'];
 
   useEffect(() => {
     if (SUPPRESSED.some((p) => pathname?.startsWith(p))) return;

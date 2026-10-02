@@ -218,7 +218,7 @@ export default async function Home() {
               landing page that tells the brand story, and on a phone it ended
               with no way to hear the rest of it. */}
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '18px', textAlign: 'left' }}>
-            <Link href="/invite" style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: brick, textTransform: 'lowercase', textDecorationThickness: '1px', textUnderlineOffset: '4px' }}>
+            <Link href="/trail-club" style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: brick, textTransform: 'lowercase', textDecorationThickness: '1px', textUnderlineOffset: '4px' }}>
               join the club
             </Link>
             <Link href="/story" style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: sageDeep, textTransform: 'lowercase', textDecorationThickness: '1px', textUnderlineOffset: '4px' }}>

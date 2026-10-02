@@ -62,7 +62,7 @@ Note: product **prices and titles** come from Shopify, not from these files.
 | Footer links + "join the club" | `src/components/Footer.tsx` |
 | Welcome popup | `src/components/WelcomePopup.tsx` |
 | Phone/SMS opt-in wording | `src/components/PhoneOptIn.tsx` |
-| Trailblazing club page | `src/app/invite/page.tsx` |
+| Trailblazing club page | `src/app/trail-club/page.tsx` |
 | Site title + description (search results) | `src/app/layout.tsx` |
 
 ### Policy pages
