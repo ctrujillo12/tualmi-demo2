@@ -84,7 +84,7 @@ export function clearDiscountCode(): void {
  * The same string also has to appear in the Klaviyo welcome email, which is
  * the copy that survives after this browser session ends.
  */
-export const WELCOME_CODE = 'TRAILBLAZER10';
+export const WELCOME_CODE = 'TRAILBLAZE10';
 
 /**
  * Pre-apply the welcome code after a successful signup.
