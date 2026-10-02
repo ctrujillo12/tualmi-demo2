@@ -7,7 +7,6 @@ import { BUSINESS } from '@/lib/business';
 import Footer from '@/components/Footer';
 import AccessBanner from '@/components/AccessBanner';
 import AttributionTracker from '@/components/AttributionTracker';
-import WelcomePopup from '@/components/WelcomePopup';
 import { KLAVIYO_COMPANY_ID } from '@/lib/klaviyo';
 import { Analytics } from '@vercel/analytics/next';
 
@@ -175,9 +174,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <Footer />
-        {/* Fires 3s after load on mobile (or on first scroll), 1.2s on desktop.
-            Shows once ever per browser; skipped on /invite, /cart, /discount. */}
-        <WelcomePopup />
         <AccessBanner />
         {/* Vercel Web Analytics.
 

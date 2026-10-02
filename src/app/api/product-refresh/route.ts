@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
       {
         ok: true,
         price: p.price,
+        compareAtPrice: p.compareAtPrice,
         name: p.name,
         featured: p.images?.[0] ?? null,
         imageByColor,

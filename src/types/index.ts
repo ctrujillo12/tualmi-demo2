@@ -6,6 +6,7 @@ export interface Product {
   name: string;
   description: string;
   price: number;            // in cents, same as before
+  compareAtPrice?: number;   // original price in cents, when on sale
   images: string[];
   category: string;
   sizes: string[];

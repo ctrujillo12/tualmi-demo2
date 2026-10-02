@@ -35,6 +35,8 @@ export default function ProductDropPanel({
   resolvedProduct: Product | null;
 }) {
   const panelPrice = priceLabel(resolvedProduct?.price ?? drop.price);
+  const panelCompareAtPrice = resolvedProduct?.compareAtPrice;
+  const onSale = panelCompareAtPrice !== undefined && panelCompareAtPrice > (resolvedProduct?.price ?? drop.price);
 
   return (
     <section
@@ -78,6 +80,10 @@ export default function ProductDropPanel({
           )}
           <h3
             style={{
+              display: 'flex',
+              alignItems: 'baseline',
+              justifyContent: 'center',
+              gap: '8px',
               fontFamily: sans,
               fontWeight: 700,
               fontSize: 'clamp(26px, 3.4vw, 40px)',
@@ -99,6 +105,11 @@ export default function ProductDropPanel({
               opacity: 0.9,
             }}
           >
+            {onSale && (
+              <s style={{ opacity: 0.65, fontWeight: 500 }}>
+                {priceLabel(panelCompareAtPrice)}
+              </s>
+            )}
             {panelPrice}
           </p>
           {/* One line of what the thing actually is, for a shopper scanning
@@ -162,6 +173,11 @@ export default function ProductDropPanel({
                   />
                   {cw.color.toLowerCase()}
                   <span aria-hidden style={{ opacity: 0.5 }}>·</span>
+                  {onSale && (
+                    <s style={{ opacity: 0.65, fontWeight: 500 }}>
+                      {priceLabel(panelCompareAtPrice)}
+                    </s>
+                  )}
                   <span style={{ fontWeight: 700 }}>{panelPrice}</span>
                 </p>
               </Link>

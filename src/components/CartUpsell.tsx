@@ -478,6 +478,9 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
               />
               {(t.color ?? ONE_SIZE_LABEL).toLowerCase()}
               <span className="cu-sep" aria-hidden style={{ opacity: 0.45 }}>·</span>
+              {t.product.compareAtPrice && t.product.compareAtPrice > t.product.price && (
+                <s className="cu-compare-price">{priceLabel(t.product.compareAtPrice)}</s>
+              )}
               <span className="cu-price" style={{ fontWeight: 700 }}>{priceLabel(t.product.price)}</span>
             </p>
             <p className="cu-name">{t.product.name.toLowerCase()}</p>

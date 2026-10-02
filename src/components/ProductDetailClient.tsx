@@ -8,6 +8,7 @@ import { useCartStore } from '@/store/cartStore';
 import { PRODUCT_DETAILS, type HighlightIcon } from '@/lib/productDetails';
 import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, PRODUCT_LIFESTYLE_IMAGES, cartThumbFor } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
+import { getVariantPricing } from '@/lib/productPricing';
 import DiscountBadge from '@/components/DiscountBadge';
 import { FREE_SHIPPING_LABEL } from '@/lib/shipping';
 import { shipLabel } from '@/lib/shipWindow';
@@ -176,6 +177,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const [buyStatus, setBuyStatus] = useState<'idle' | 'added' | 'error'>('idle');
 
   const fabricDetail = PRODUCT_DETAILS[handle] ?? null;
+  const pricing = getVariantPricing(product, selectedSize, selectedColor);
 
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
@@ -701,6 +703,9 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
             <p
               className="pdp-price"
               style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: '10px',
                 fontFamily: sans,
                 fontWeight: 700,
                 fontSize: '20px',
@@ -709,7 +714,10 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 margin: '0 0 18px',
               }}
             >
-              ${(product.price / 100).toFixed(2)}
+              {pricing.compareAtPrice && pricing.compareAtPrice > pricing.price && (
+                <s style={{ color: soft, fontWeight: 500 }}>${(pricing.compareAtPrice / 100).toFixed(2)}</s>
+              )}
+              <span>${(pricing.price / 100).toFixed(2)}</span>
             </p>
 
             {/* The promise, directly under the price — the one place a shopper
@@ -1080,7 +1088,13 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                       {/* Always a real, live CTA with the price in it. Tapping
                           without a size opens the picker instead of doing
                           nothing — a dead button reads as a broken page. */}
-                      {isPreorder ? 'preorder' : 'add to cart'} — ${(product.price / 100).toFixed(2)}
+                      {isPreorder ? 'preorder' : 'add to cart'} —{' '}
+                      {pricing.compareAtPrice && pricing.compareAtPrice > pricing.price && (
+                        <s style={{ opacity: 0.7, fontWeight: 500, marginRight: '6px' }}>
+                          ${(pricing.compareAtPrice / 100).toFixed(2)}
+                        </s>
+                      )}
+                      <span>${(pricing.price / 100).toFixed(2)}</span>
                     </button>
                   ) : (
                     /* ── In the cart: quantity stepper ── */
@@ -1461,7 +1475,13 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
             </button>
           ) : (
             <button onClick={handleBuy} className="pdp-buybar-cta">
-              {isPreorder ? 'preorder' : 'add'} — ${(product.price / 100).toFixed(2)}
+              {isPreorder ? 'preorder' : 'add'} —{' '}
+              {pricing.compareAtPrice && pricing.compareAtPrice > pricing.price && (
+                <s style={{ opacity: 0.7, fontWeight: 500, marginRight: '6px' }}>
+                  ${(pricing.compareAtPrice / 100).toFixed(2)}
+                </s>
+              )}
+              <span>${(pricing.price / 100).toFixed(2)}</span>
             </button>
           )}
         </div>
