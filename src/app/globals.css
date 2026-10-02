@@ -1388,3 +1388,29 @@ body {
   }
 }
 
+/* /invite layout. Media queries can't live in inline styles, so the
+   responsive bits are classes. Phones first, then wider. */
+
+/* Upcoming event: photo on top (phones) or beside the content (desktop). */
+.event-feature { display: grid; grid-template-columns: minmax(0, 1fr); }
+.event-feature-photo { position: relative; aspect-ratio: 4 / 5; }
+.event-details { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 16px; }
+@media (min-width: 900px) {
+  .event-feature { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .event-feature-photo { aspect-ratio: 4 / 5; }
+}
+
+/* Past events: cards fill the row, 1 column on phones, up to 3 on desktop. */
+.event-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(18px, 2.6vw, 32px);
+}
+@media (min-width: 640px)  { .event-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .event-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Form fields sit two-up on wider screens, one column on phones. */
+.event-form-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@media (min-width: 600px) {
+  .event-form-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 12px; }
+}

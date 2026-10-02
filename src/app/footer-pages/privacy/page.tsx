@@ -1,4 +1,12 @@
+import type { Metadata } from 'next';
 import { PolicyPage, Section, P, Bullets } from '@/components/PolicyPage';
+
+export const metadata: Metadata = {
+  title: 'privacy policy',
+  description:
+    "How Tualmi collects, uses and protects your personal information.",
+  alternates: { canonical: '/footer-pages/privacy' },
+};
 
 export default function PrivacyPage() {
   return (

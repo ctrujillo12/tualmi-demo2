@@ -1,7 +1,15 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PolicyPage, Section, P, Bullets, maroon } from '@/components/PolicyPage';
 import { RETURN_WINDOW_DAYS, BUSINESS } from '@/lib/business';
 import { HANDLING_COPY } from '@/lib/shipWindow';
+
+export const metadata: Metadata = {
+  title: 'returns & refunds',
+  description:
+    "Tualmi's 14-day return and refund policy: how to start a return, what's eligible, and when refunds arrive.",
+  alternates: { canonical: '/footer-pages/returns' },
+};
 
 /** Shared link style so every pointer to the form looks the same. */
 const formLink = { color: maroon, fontWeight: 600 };

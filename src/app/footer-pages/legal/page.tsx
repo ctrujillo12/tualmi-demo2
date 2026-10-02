@@ -1,4 +1,12 @@
+import type { Metadata } from 'next';
 import { PolicyPage, Section, P } from '@/components/PolicyPage';
+
+export const metadata: Metadata = {
+  title: 'terms & conditions',
+  description:
+    "The terms that govern use of tualmi.com and purchases from Tualmi.",
+  alternates: { canonical: '/footer-pages/legal' },
+};
 
 export default function LegalPage() {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PolicyPage, Section, P, Bullets, DataTable, maroon } from '@/components/PolicyPage';
 import { HANDLING_COPY } from '@/lib/shipWindow';
@@ -6,6 +7,13 @@ import {
   FREE_SHIPPING_THRESHOLD,
   money,
 } from '@/lib/shipping';
+
+export const metadata: Metadata = {
+  title: 'shipping',
+  description:
+    "Shipping rates, free-shipping threshold, handling and delivery times for Tualmi hiking shorts and pants.",
+  alternates: { canonical: '/footer-pages/shipping' },
+};
 
 export default function ShippingPage() {
   return (

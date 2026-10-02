@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { klaviyoPrivateKey } from '@/lib/klaviyoKey';
 import { getOrCreateReferralCode, recordReferral } from '@/lib/referrals';
+import { backupSignup, markSignup } from '@/lib/signupBackup';
 
 /**
  * Normalize a US-entered phone number to E.164 (+1XXXXXXXXXX).
@@ -19,6 +20,28 @@ function toE164(raw: unknown): string | null {
   return null;
 }
 
+// Interest-form answers from the /invite event card. These ids mirror
+// RIDE_OPTIONS / CAMERA_OPTIONS in components/ClubEventsPage.tsx; anything else
+// is dropped so a hand-built request cannot write arbitrary text to a profile.
+const RSVP_RIDE_IDS = ['need_ride', 'own_ride'];
+const RSVP_CAMERA_IDS = ['has_camera', 'need_disposable'];
+
+type RsvpAnswers = { ride?: string; camera?: string; instagram?: string };
+
+function cleanRsvp(raw: unknown): RsvpAnswers {
+  const out: RsvpAnswers = {};
+  if (!raw || typeof raw !== 'object') return out;
+  const r = raw as Record<string, unknown>;
+  if (typeof r.ride === 'string' && RSVP_RIDE_IDS.includes(r.ride)) out.ride = r.ride;
+  if (typeof r.camera === 'string' && RSVP_CAMERA_IDS.includes(r.camera)) out.camera = r.camera;
+  if (typeof r.instagram === 'string') {
+    // "@handle", "handle" or a pasted profile link all become "handle".
+    const handle = r.instagram.trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/^@/, '').replace(/[/?#].*$/, '');
+    if (/^[A-Za-z0-9._]{1,30}$/.test(handle)) out.instagram = handle;
+  }
+  return out;
+}
+
 /**
  * Attach custom properties (signup_source, utm_*) to a profile.
  *
@@ -30,9 +53,10 @@ function toE164(raw: unknown): string | null {
 async function attachProperties(
   apiKey: string,
   email: string,
-  properties: Record<string, string>
+  properties: Record<string, string>,
+  firstName?: string,
 ): Promise<void> {
-  if (Object.keys(properties).length === 0) return;
+  if (Object.keys(properties).length === 0 && !firstName) return;
 
   try {
     const res = await fetch('https://a.klaviyo.com/api/profile-import/', {
@@ -43,7 +67,12 @@ async function attachProperties(
         'revision': '2024-02-15',
       },
       body: JSON.stringify({
-        data: { type: 'profile', attributes: { email, properties } },
+        data: {
+          type: 'profile',
+          // first_name is a real Klaviyo profile field, so {{ first_name }} works
+          // in emails and texts. Only sent when we actually have one.
+          attributes: { email, ...(firstName ? { first_name: firstName } : {}), properties },
+        },
       }),
     });
     if (!res.ok) {
@@ -108,8 +137,13 @@ async function fireKlaviyoEvent(
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
-  const { email, phone, smsConsent, source, attribution, ref } = body as {
+  const { email, phone, smsConsent, source, attribution, ref, event, name, rsvp } = body as {
     email?: string;
+    /** Event RSVP (from /invite): the event's id in lib/events.ts, and the RSVPer's first name. */
+    event?: string;
+    name?: string;
+    /** Event RSVP interest answers: ride, camera, instagram. See cleanRsvp(). */
+    rsvp?: unknown;
     phone?: string;
     smsConsent?: boolean;
     source?: string;
@@ -137,6 +171,34 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // ── Backup copy, written BEFORE Klaviyo is touched ──────────────────────
+  // Klaviyo is the system of record for sending, but it used to be the only
+  // copy: if it rejected a signup or the env vars were missing, the address
+  // survived only as a line in the Vercel logs. Every submission now lands in
+  // Supabase first (see lib/signupBackup.ts + supabase/signups.sql) and is
+  // marked ok / failed once Klaviyo answers. Best-effort: never throws, and a
+  // Supabase outage cannot block a signup on its own.
+  const firstName = typeof name === 'string' ? name.trim().slice(0, 80) : '';
+  const eventId = typeof event === 'string' ? event.trim().slice(0, 80) : '';
+  const rsvpAnswers = eventId ? cleanRsvp(rsvp) : {};
+  const hasRsvpAnswers = Object.keys(rsvpAnswers).length > 0;
+  const backupId = await backupSignup({
+    email,
+    first_name: firstName || null,
+    // A number is only kept when they ticked the SMS consent box.
+    phone: phoneNumber,
+    sms_consent: Boolean(phoneNumber),
+    source: source || null,
+    event_id: eventId || null,
+    ref: typeof ref === 'string' && ref.trim() ? ref.trim().slice(0, 80) : null,
+    // No column for the RSVP answers (adding one would break every insert until
+    // the migration is run), so they ride along in this jsonb under 'rsvp'.
+    attribution:
+      (attribution && typeof attribution === 'object') || hasRsvpAnswers
+        ? { ...(attribution && typeof attribution === 'object' ? attribution : {}), ...(hasRsvpAnswers ? { rsvp: rsvpAnswers } : {}) }
+        : null,
+  });
+
   const apiKey = klaviyoPrivateKey();
   const listId = process.env.KLAVIYO_LIST_ID;
 
@@ -148,8 +210,18 @@ export async function POST(req: NextRequest) {
       email,
       phoneNumber ? `(phone ${phoneNumber})` : ''
     );
+    await markSignup(backupId, 'not_configured', 'KLAVIYO_API_KEY or KLAVIYO_LIST_ID missing');
+    // With no backup either, the signup would vanish. Say so instead of
+    // showing a success screen for an address nobody has.
+    if (!backupId) {
+      return NextResponse.json({ error: 'Signups are having a moment. Please try again shortly.' }, { status: 503 });
+    }
     return NextResponse.json({ success: true });
   }
+
+  // Set once Klaviyo has accepted the subscription, so a later hiccup in the
+  // best-effort referral steps cannot be recorded as a failed signup.
+  let subscribed = false;
 
   const consentedAt = new Date().toISOString();
 
@@ -230,7 +302,13 @@ export async function POST(req: NextRequest) {
         '— body:', errBody,
         '— LOST signup:', email, phoneNumber ? `(phone ${phoneNumber})` : ''
       );
+      await markSignup(backupId, 'failed', `${res.status}: ${errBody.slice(0, 400)}`);
+      if (!backupId) {
+        return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 502 });
+      }
     } else {
+      subscribed = true;
+      await markSignup(backupId, 'ok');
       console.log('[subscribe] Klaviyo success:', email, phoneNumber ? '(+sms)' : '');
 
       // ── Refer a friend ────────────────────────────────────────────────
@@ -259,7 +337,7 @@ export async function POST(req: NextRequest) {
       const ownCode = await getOrCreateReferralCode(email);
       if (ownCode) {
         properties.referral_code = ownCode;
-        properties.referral_link = `https://tualmi.com/invite?ref=${ownCode}`;
+        properties.referral_link = `https://www.tualmi.com/invite?ref=${ownCode}`;
       }
 
       // 3. Fire the reward events, if step 1 said this one counts.
@@ -291,13 +369,38 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // Event RSVP from the /invite page. Stored on the profile so a Klaviyo
+      // flow / segment can email the right people about the right event, and
+      // fired as an event so a flow can send the confirmation. Best-effort:
+      // the signup above has already succeeded.
+      if (eventId) {
+        properties.rsvp_event = eventId;
+        if (firstName) properties.rsvp_name = firstName;
+        if (rsvpAnswers.ride) properties.rsvp_ride = rsvpAnswers.ride;
+        if (rsvpAnswers.camera) properties.rsvp_camera = rsvpAnswers.camera;
+        if (rsvpAnswers.instagram) properties.rsvp_instagram = rsvpAnswers.instagram;
+        await fireKlaviyoEvent(apiKey, 'Event RSVP', email, {
+          event_id: eventId,
+          ...(firstName ? { first_name: firstName } : {}),
+          ...(rsvpAnswers.ride ? { ride: rsvpAnswers.ride } : {}),
+          ...(rsvpAnswers.camera ? { camera: rsvpAnswers.camera } : {}),
+          ...(rsvpAnswers.instagram ? { instagram: rsvpAnswers.instagram } : {}),
+        });
+      }
+
       // Attribution, referral code and referred_by all go on in one call.
-      await attachProperties(apiKey, email, properties);
+      await attachProperties(apiKey, email, properties, firstName || undefined);
     }
 
     return NextResponse.json({ success: true, sms: Boolean(phoneNumber) });
   } catch (err) {
     console.error('[subscribe] Klaviyo fetch threw:', err);
+    if (!subscribed) {
+      await markSignup(backupId, 'failed', String(err).slice(0, 400));
+      if (!backupId) {
+        return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 502 });
+      }
+    }
     return NextResponse.json({ success: true });
   }
 }

@@ -178,7 +178,7 @@ export default async function ProductPage({
   //
   // If a product ever has no colourway entry, the group collapses back to a
   // plain Product with a single Offer -- see the ternary at the bottom.
-  const SITE_ORIGIN = 'https://tualmi.com';
+  const SITE_ORIGIN = 'https://www.tualmi.com';
 
   /**
    * Absolute URL for an image, WITHOUT double-prefixing one that is already

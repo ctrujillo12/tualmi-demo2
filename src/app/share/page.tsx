@@ -42,7 +42,7 @@ const SHARE_TEXT =
   'everywhere else. Join their list with my link and you get 10% off:';
 
 export default function SharePage() {
-  const [link, setLink]         = useState('https://tualmi.com/invite');
+  const [link, setLink]         = useState('https://www.tualmi.com/invite');
   const [personal, setPersonal] = useState(false);
   const [copied, setCopied]     = useState(false);
   const [canShare, setCanShare] = useState(false);
@@ -54,7 +54,7 @@ export default function SharePage() {
       const raw = new URLSearchParams(window.location.search).get('ref');
       const code = raw?.trim().toUpperCase();
       if (code && CODE_RE.test(code)) {
-        setLink(`https://tualmi.com/invite?ref=${code}`);
+        setLink(`https://www.tualmi.com/invite?ref=${code}`);
         setPersonal(true);
       }
     } catch {

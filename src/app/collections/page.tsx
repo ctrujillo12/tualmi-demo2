@@ -42,13 +42,13 @@ import { DROP_PRODUCTS } from '@/lib/dropProducts';
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: 'shop — tualmi',
+  title: 'shop women’s hiking shorts & pants',
   description:
     'Shop Tualmi: women’s hiking shorts and flare cargo hiking pants, designed in LA and made ethically in a WRAP-certified facility.',
   alternates: { canonical: '/collections' },
 };
 
-const SITE = 'https://tualmi.com';
+const SITE = 'https://www.tualmi.com';
 
 export default async function CollectionsPage() {
   // Individually caught, like the landing page: one product failing to

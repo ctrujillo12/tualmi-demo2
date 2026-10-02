@@ -1,8 +1,17 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import HeroCarousel from '@/components/HeroCarousel';
 import ProductDropPanel from '@/components/ProductDropPanel';
 import { getProduct } from '@/lib/products';
 import { DROP_PRODUCTS } from '@/lib/dropProducts';
+
+// Per-page, NOT in layout.tsx: a canonical set in the root layout is inherited
+// by every page that doesn't override it (cart, share...) and would point them
+// all at the homepage.
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: { url: '/' },
+};
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
@@ -34,7 +43,7 @@ const brick    = '#A9503A';  // red    — links and the shorts band accent
 // PreOrder here long after they were shipping, while the product pages said
 // InStock. Merchant Center suspends accounts for exactly that mismatch.
 // If a product's availability changes, change it HERE too.
-const SITE = 'https://tualmi.com';
+const SITE = 'https://www.tualmi.com';
 
 // Its own copy — lib/dropProducts.ts declares the same constant for its own
 // cover-photo paths, kept separate so this file's structured-data image paths

@@ -20,7 +20,7 @@ const codystar = Codystar({ subsets: ['latin'], weight: '400', variable: '--font
 const cedarvilleCursive = Cedarville_Cursive({ subsets: ['latin'], weight: '400', variable: '--font-cedarville', display: 'swap' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://tualmi.com'),
+  metadataBase: new URL('https://www.tualmi.com'),
   title: {
     default: 'Tualmi — actually cute hiking apparel',
     template: '%s | Tualmi',
@@ -69,8 +69,8 @@ const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Tualmi',
-  url: 'https://tualmi.com',
-  logo: 'https://tualmi.com/images-2/logo2-maroon.png',
+  url: 'https://www.tualmi.com',
+  logo: 'https://www.tualmi.com/images-2/logo2-maroon.png',
   foundingDate: '2026',
   foundingLocation: {
     '@type': 'Place',
@@ -109,6 +109,14 @@ const organizationJsonLd = {
     'https://www.tiktok.com/@tualmi.outdoors',
     'https://www.instagram.com/tualmioutdoors',
   ],
+};
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Tualmi',
+  url: 'https://www.tualmi.com',
+  publisher: { '@type': 'Organization', name: 'Tualmi' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -156,6 +164,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         <AttributionTracker />
         <Header />

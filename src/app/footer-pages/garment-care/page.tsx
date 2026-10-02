@@ -1,4 +1,12 @@
+import type { Metadata } from 'next';
 import { PolicyPage, Section, P } from '@/components/PolicyPage';
+
+export const metadata: Metadata = {
+  title: 'garment care',
+  description:
+    "How to wash and care for Tualmi hiking shorts and pants so they keep their fit, color and performance.",
+  alternates: { canonical: '/footer-pages/garment-care' },
+};
 
 export default function GarmentCarePage() {
   return (

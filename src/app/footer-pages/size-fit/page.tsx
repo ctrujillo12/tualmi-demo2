@@ -1,5 +1,13 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PolicyPage, Section, P, maroon } from '@/components/PolicyPage';
+
+export const metadata: Metadata = {
+  title: 'size + fit',
+  description:
+    "Tualmi size charts, inseam and rise measurements, and fit notes for the Sierra Shorts and Juniper Pant.",
+  alternates: { canonical: '/footer-pages/size-fit' },
+};
 
 export default function SizeFitPage() {
   return (

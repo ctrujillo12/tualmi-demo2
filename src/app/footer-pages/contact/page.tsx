@@ -20,7 +20,7 @@ import { BUSINESS, ADDRESS_READY, formatAddress } from '@/lib/business';
  */
 
 export const metadata: Metadata = {
-  title: 'contact — tualmi',
+  title: 'contact',
   description:
     'Get in touch with Tualmi. Email, phone and mailing address, plus how long we take to reply.',
   alternates: { canonical: '/footer-pages/contact' },
