@@ -216,10 +216,10 @@ export default async function ProductPage({
       returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
       merchantReturnDays: RETURN_WINDOW_DAYS,
       returnMethod: 'https://schema.org/ReturnByMail',
-      // The shopper pays return postage; we cover it only when the item is
-      // faulty or wrong, which is a different policy and not what this field
-      // describes.
-      returnFees: 'https://schema.org/ReturnShippingFees',
+      // Returns are free (we cover return postage), so Google's FreeReturn.
+      // If that ever changes, use ReturnShippingFees plus a
+      // returnShippingFeesAmount.
+      returnFees: 'https://schema.org/FreeReturn',
     },
     shippingDetails: {
       '@type': 'OfferShippingDetails',
@@ -294,6 +294,8 @@ export default async function ProductPage({
       '@type': 'Product',
       name: `${product!.name} in ${c.name}`,
       color: c.name,
+      // Google lists a variant with no description as a (non-critical) gap.
+      description: product!.description,
       image: abs(img),
       url: variantUrl,
       size: product!.sizes,

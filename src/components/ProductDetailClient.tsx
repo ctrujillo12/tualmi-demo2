@@ -483,7 +483,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
     label: 'shipping & returns',
     content: (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <p style={{ margin: 0 }}>{RETURN_WINDOW_DAYS}-day returns and exchanges</p>
+        <p style={{ margin: 0 }}>{RETURN_WINDOW_DAYS}-day returns and exchanges, free</p>
         {shippingLabel && <p style={{ margin: 0 }}>{shippingLabel}.</p>}
       </div>
     ),
@@ -1209,7 +1209,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                         label: FREE_SHIPPING_LABEL,
                         href: '/footer-pages/shipping',
                       },
-                      { label: 'easy returns', href: '/footer-pages/returns' },
+                      { label: 'free returns', href: '/footer-pages/returns' },
                       { label: 'free exchanges', href: '/footer-pages/exchanges' },
                     ].map((x, i) => (
                       <Link key={x.label} href={x.href} className="pdp-strip-item">

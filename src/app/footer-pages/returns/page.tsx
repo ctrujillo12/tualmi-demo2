@@ -52,7 +52,7 @@ export default function ReturnsPage() {
       <Section heading="returns">
         <P>
           We accept returns within {RETURN_WINDOW_DAYS} days of delivery, as long as the item is unworn, unwashed, and has
-          its tags still attached. Return shipping is covered by the customer.
+          its tags still attached. Returns are free: we cover the return shipping.
         </P>
       </Section>
 
@@ -63,7 +63,8 @@ export default function ReturnsPage() {
             form
           </Link>{' '}
           and tell us the size you have and the size you want — we&apos;ll check availability and hold it
-          for you where we can.
+          for you where we can. Exchanges are free too: we cover return shipping and send your new size at
+          no charge.
         </P>
       </Section>
 
@@ -85,7 +86,7 @@ export default function ReturnsPage() {
             form
           </Link>{' '}
           within {RETURN_WINDOW_DAYS} days and describe the problem. We&apos;ll follow up by email to ask for a photo,
-          make it right, and cover the return shipping.
+          and make it right.
         </P>
       </Section>
 
