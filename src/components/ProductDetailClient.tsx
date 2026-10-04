@@ -15,6 +15,7 @@ import { shipLabel } from '@/lib/shipWindow';
 import { RETURN_WINDOW_DAYS } from '@/lib/business';
 import { LOW_STOCK_LABEL, SOLD_OUT_LABEL } from '@/lib/lowStock';
 import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/inventory';
+import RestockNotify from '@/components/RestockNotify';
 import ImageLightbox from '@/components/ImageLightbox';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 import { ReviewStars, FitConsensus } from '@/components/ProductReviews';
@@ -912,6 +913,15 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                       : `${LOW_STOCK_LABEL} in ${selectedSize}`}
                   </p>
                 )}
+
+                {/* Sold-out sizes can't be picked, so this is the way to say you want one back. */}
+                <RestockNotify
+                  key={selectedColor}
+                  productId={product.id}
+                  productName={product.name}
+                  color={selectedColor}
+                  soldOutSizes={product.sizes.filter((sz) => availability(product, selectedColor, sz).status === 'sold-out')}
+                />
               </div>
             )}
 
