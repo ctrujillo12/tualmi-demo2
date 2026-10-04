@@ -74,7 +74,7 @@ const productsJsonLd = {
       // The pant's shell is virgin nylon/spandex — see productDetails.ts.
       // A false material claim in schema.org markup is submitted straight to
       // Google, so this states the fit, not a fabric we don't have.
-      material: '90% Nylon, 10% Spandex',
+      material: '88% Nylon, 12% Spandex',
       description:
         'Fashion-forward flare cargo pants that are genuinely trail-ready, with a flattering fold-over waist, functional cargo pockets, and a flared leg crafted for women’s proportions, not scaled down from a men’s pattern. Made ethically in a WRAP Gold Standard certified facility.',
       image: `${SITE}${RE}/birch-front-1.jpg`,

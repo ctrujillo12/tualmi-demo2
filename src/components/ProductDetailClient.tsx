@@ -401,6 +401,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
             <span style={{ color: soft, opacity: 0.8 }}>Fabric</span>
             <span>{fabricDetail.shell}</span>
             {fabricDetail.lining && (<><span style={{ color: soft, opacity: 0.8 }}>Lining</span><span>{fabricDetail.lining}</span></>)}
+            {fabricDetail.waistband && (<><span style={{ color: soft, opacity: 0.8 }}>Waistband</span><span>{fabricDetail.waistband}</span></>)}
             {fabricDetail.pocketLining && (<><span style={{ color: soft, opacity: 0.8 }}>Pocket lining</span><span>{fabricDetail.pocketLining}</span></>)}
             {fabricDetail.weight && (<><span style={{ color: soft, opacity: 0.8 }}>Weight</span><span>{fabricDetail.weight}</span></>)}
           </div>

@@ -20,6 +20,8 @@ export interface Highlight {
 export interface FabricDetail {
   shell: string;
   lining?: string;
+  /** Waistband fabric when it differs from the shell (the pant's is a knit). */
+  waistband?: string;
   pocketLining?: string;
   weight?: string;
   features?: string[];
@@ -113,8 +115,8 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     // NOT 'recycled fabric': the pant's shell is virgin nylon/spandex. The
     // default claim list says recycled and would have been false here.
     trustClaims: ['women-owned', 'WRAP-certified', 'designed in LA'],
-    shell: '90% Nylon, 10% Spandex',
-    lining: '84% Nylon, 16% Spandex',
+    shell: '88% Nylon, 12% Spandex (woven)',
+    waistband: '85% Nylon, 15% Spandex (knit)',
     weight: '200 GSM',
     tagline: 'Fits like your favorite pants. Built for the trail.',
     // ── THE $108 QUESTION ───────────────────────────────────────
@@ -138,7 +140,6 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       { icon: 'pocket',   label: 'Cargo pockets' },
       { icon: 'stretch',  label: '4-way stretch' },
       { icon: 'cinch',    label: 'Cinchable hems' },
-      { icon: 'moisture', label: 'Moisture-wicking' },
     ],
     // ── WHO OWNS WHAT ───────────────────────────────────────────
     // Three blocks describe this pant and they kept saying the same things in
@@ -152,7 +153,6 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     // the faq). If you add a line here, check it is not already answered.
     features: [
       '4-way stretch',
-      'Moisture-wicking, quick-dry',
       'Elastic-tape waistband with an internal drawstring',
       'Two cargo side pockets, snap closures',
       '10" drawcord at each hem',
@@ -202,8 +202,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       },
       {
         q: 'Are they water resistant?',
-        a: 'No. The fabric is moisture-wicking and quick-dry, so it handles sweat and dries fast, but it is not a '
-         + 'rain pant.',
+        a: 'No. The fabric has no water-repellent finish, so these are not a rain pant. Save them for dry days.',
       },
       {
         q: 'Do they make that hiking-pant noise?',
