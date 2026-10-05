@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { useCartStore } from '@/store/cartStore';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const SIERRA_SALE_END = new Date('2026-10-05T00:00:00-07:00').getTime();
 /* Brick rather than the old #A9445C maroon: it sits in the palette beside
    the sage without clashing, and stays in the same red family as
    logo2-maroon.png, which is a fixed image asset. */
@@ -61,22 +60,11 @@ export default function Header() {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const [pastHero, setPastHero] = useState(false);
-  const [showSierraSale, setShowSierraSale] = useState(true);
 
   // Cart count — mounted guard avoids hydration mismatch (cart is persisted)
   const [mounted, setMounted] = useState(false);
   const itemCount = useCartStore((s) => s.getItemCount());
   useEffect(() => { setMounted(true); }, []);
-
-  useEffect(() => {
-    const remaining = SIERRA_SALE_END - Date.now();
-    if (remaining <= 0) {
-      setShowSierraSale(false);
-      return;
-    }
-    const timer = window.setTimeout(() => setShowSierraSale(false), remaining);
-    return () => window.clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     if (!isHome) return;
@@ -140,31 +128,6 @@ export default function Header() {
         // Bar surface and link ink: globals.css, under .site-nav-wrap.
       }}
     >
-    {showSierraSale && (
-      <Link
-        href="/products/sierra-shorts"
-        aria-label="shop the sierra shorts sale. ends sunday, october 4."
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '30px',
-          boxSizing: 'border-box',
-          padding: '5px 10px 6px',
-          backgroundColor: maroon,
-          color: '#FEFFF9',
-          fontFamily: sans,
-          fontSize: '10px',
-          fontWeight: 700,
-          lineHeight: 1.3,
-          textAlign: 'center',
-          textTransform: 'lowercase',
-          textDecoration: 'none',
-        }}
-      >
-        sierra shorts sale · ends sun, oct 4
-      </Link>
-    )}
     {/* Free-shipping promo — live progress once the cart has something in it.
         Above the nav, per the comp: it is the first thing on the page. */}
     <FreeShippingBar variant="strip" />
