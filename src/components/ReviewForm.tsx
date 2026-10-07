@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { PRODUCT_COLORS } from '@/lib/productColors';
 
 /**
  * The review form. Posts to /api/reviews, which stores it as pending.
@@ -17,11 +18,15 @@ import Link from 'next/link';
  * ones.
  *
  * Everything else was cut. An earlier version also asked for a headline, the
- * size you usually wear, the colourway, where you wore them, and an order
- * number — all defensible on their own, and collectively a wall that makes
- * people close the tab. The three optional fields left (height, size ordered,
- * how it ran) are the ones that answer "will these fit me", which is the
- * objection the whole review section exists to solve.
+ * size you usually wear, where you wore them, and an order number — all
+ * defensible on their own, and collectively a wall that makes people close
+ * the tab. The optional fields left (height, size ordered, how it ran) are the
+ * ones that answer "will these fit me", which is the objection the whole
+ * review section exists to solve.
+ *
+ * Colourway came back as a single row of chips under the product picker:
+ * one tap, and it's drawn from PRODUCT_COLORS, so a new colour added there
+ * shows up here and is accepted by the API without touching either file.
  *
  * ── ON THE ONE OVERALL RATING ────────────────────────────────────────────
  * One question, not four. The old Tally form asked fit / performance / fun /
@@ -155,6 +160,7 @@ const FIT_OPTIONS = [
 
 export default function ReviewForm() {
   const [product, setProduct] = useState('');
+  const [colorway, setColorway] = useState('');
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [fit, setFit] = useState('');
@@ -213,6 +219,7 @@ export default function ReviewForm() {
     form.set('productHandle', product);
     form.set('rating', String(rating));
     form.set('fit', fit);
+    form.set('colorway', colorway);
     form.set('consent', String(consent));
     form.set('renderedAt', String(renderedAt.current));
     // The file input is uncontrolled and holds the ORIGINAL; replace it with
@@ -281,7 +288,12 @@ export default function ReviewForm() {
                 key={p.handle}
                 type="button"
                 className={`rf-chip ${product === p.handle ? 'is-on' : ''}`}
-                onClick={() => setProduct(p.handle)}
+                onClick={() => {
+                  // Each product has its own colours; a pick from the other one
+                  // would be meaningless.
+                  if (product !== p.handle) setColorway('');
+                  setProduct(p.handle);
+                }}
                 aria-pressed={product === p.handle}
               >
                 {p.name}
@@ -289,6 +301,26 @@ export default function ReviewForm() {
             ))}
           </div>
         </fieldset>
+
+        {/* ── Which colourway. Only once we know which product. ── */}
+        {product && PRODUCT_COLORS[product] && (
+          <fieldset className="rf-field">
+            <legend className="rf-label">which colour did you get?</legend>
+            <div className="rf-chips">
+              {PRODUCT_COLORS[product].map((c) => (
+                <button
+                  key={c.name}
+                  type="button"
+                  className={`rf-chip ${colorway === c.name ? 'is-on' : ''}`}
+                  onClick={() => setColorway(colorway === c.name ? '' : c.name)}
+                  aria-pressed={colorway === c.name}
+                >
+                  {c.name.toLowerCase()}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+        )}
 
         {/* ── Rating ── */}
         <fieldset className="rf-field">

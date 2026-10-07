@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Redis } from '@upstash/redis';
 import { klaviyoPrivateKey } from '@/lib/klaviyoKey';
+import { PRODUCT_COLORS } from '@/lib/productColors';
 
 /**
  * Review submissions from the form at /review.
@@ -301,6 +302,12 @@ export async function POST(req: NextRequest) {
 
   const fitRaw = str(body.fit, 10)?.toLowerCase();
 
+  // Only a colourway this product actually comes in — the same list the form
+  // draws its chips from — so the column holds 'Jam', never 'jam ' or 'pink'.
+  const colorwayRaw = str(body.colorway, MAX.short)?.toLowerCase();
+  const colorway = PRODUCT_COLORS[productHandle]
+    ?.find((c) => c.name.toLowerCase() === colorwayRaw)?.name ?? null;
+
   const record = {
     product_handle: productHandle,
     rating,
@@ -313,7 +320,7 @@ export async function POST(req: NextRequest) {
     usual_size:     str(body.usualSize, MAX.short),
     size_purchased: str(body.sizePurchased, MAX.short),
     fit:            fitRaw && VALID_FIT.includes(fitRaw) ? fitRaw : null,
-    colorway:       str(body.colorway, MAX.short),
+    colorway,
     activity:       str(body.activity, MAX.activity),
     consent:        true,
     source:         'form',
