@@ -177,9 +177,9 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'True to size. Between sizes, size down.',
       'Waist and hip different sizes? Go by hip. The waist adjusts.',
     ],
-    // modelNote removed: it said "rachel is 5'6"" on every colourway, which
+    // modelNote removed: it said "rachel is 5'6"" on every colorway, which
     // the September 2026 shoot made false — it was shot with a different model
-    // per colourway, and Picnic with two. This is now derived per photograph
+    // per colorway, and Picnic with two. This is now derived per photograph
     // from lib/models.ts. Edit it there, not here.
     // No shipNote — the preorder callout above the add-to-cart button (in
     // ProductDetailClient) already states the ship window, and having both
@@ -194,7 +194,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       },
       {
         q: 'Are they see-through? Especially Birch?',
-        a: 'No. Fully opaque in every colourway, Birch included.',
+        a: 'No. Fully opaque in every colorway, Birch included.',
       },
       {
         q: 'What fits in the pockets?',
@@ -259,9 +259,9 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not iron',
     ],
     fit: 'Mid-rise, relaxed fit. True to size.',
-    // modelNote removed: it said "rachel is 5'6"" on every colourway, which
+    // modelNote removed: it said "rachel is 5'6"" on every colorway, which
     // the September 2026 shoot made false — it was shot with a different model
-    // per colourway, and Picnic with two. This is now derived per photograph
+    // per colorway, and Picnic with two. This is now derived per photograph
     // from lib/models.ts. Edit it there, not here.
     sizeChart: {
       note: 'Garment measurements in inches, taken flat. Inseam is 1.5" on every size.',

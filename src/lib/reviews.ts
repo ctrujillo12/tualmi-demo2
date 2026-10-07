@@ -380,7 +380,7 @@ export function fitFacts(review: Review): FitFact[] {
       value: { small: 'runs small', true: 'true to size', large: 'runs large' }[review.fit],
     });
   }
-  if (review.colorway) facts.push({ label: 'colour', value: review.colorway.toLowerCase() });
+  if (review.colorway) facts.push({ label: 'color', value: review.colorway.toLowerCase() });
   return facts;
 }
 

@@ -5,7 +5,7 @@
  * It used to be one line on the product: PRODUCT_DETAILS.modelNote, reading
  * "rachel is 5'6" and wearing a size small" for both the shorts and the pant.
  * That stopped being true the moment the September 2026 studio shoot used a
- * different model per colourway — and it was never going to survive Picnic,
+ * different model per colorway — and it was never going to survive Picnic,
  * which was shot with two models in the same gallery.
  *
  * A height on a product page is not decoration: it is the number a shopper
@@ -15,7 +15,7 @@
  * caption per photo. Picnic still needs the per-image mapping: it is what
  * makes that line name both models instead of only the first.
  *
- * A colourway with no entry here renders no line at all, rather than falling
+ * A colorway with no entry here renders no line at all, rather than falling
  * back to something generic. Silence is the correct default: no claim beats a
  * claim that might be wrong.
  */
@@ -41,7 +41,7 @@ export const MODELS = {
 
 type ModelKey = keyof typeof MODELS;
 
-/** The model for a colourway, when the whole colourway is one model. */
+/** The model for a colorway, when the whole colorway is one model. */
 const BY_COLORWAY: Record<string, Record<string, ModelKey>> = {
   'sierra-shorts': {
     Jam:      'fia',
@@ -55,7 +55,7 @@ const BY_COLORWAY: Record<string, Record<string, ModelKey>> = {
 };
 
 /**
- * Per-image overrides, for a colourway shot with more than one model.
+ * Per-image overrides, for a colorway shot with more than one model.
  *
  * Picnic: Stephanie's frames are now named for her — picnic-steph-*.jpg. This
  * used to key off zero-padded numbers in the old filenames, which worked but
@@ -73,7 +73,7 @@ export function modelForImage(handle: string, colorName: string, src: string): M
 }
 
 /**
- * The fit-and-sizing line for a colourway, built from the models actually
+ * The fit-and-sizing line for a colorway, built from the models actually
  * present in the gallery being shown — so it can never drift out of step with
  * the photographs the way a hand-written sentence did.
  */

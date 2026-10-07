@@ -41,7 +41,7 @@ export default function CartItem({ item }: CartItemProps) {
 
   /**
    * First usable image: what was saved with the cart line, else the live
-   * gallery for that colourway, else nothing (and we render a text tile).
+   * gallery for that colorway, else nothing (and we render a text tile).
    * Empty strings are filtered out — next/image renders a blank box for those
    * rather than failing loudly.
    */
@@ -53,12 +53,12 @@ export default function CartItem({ item }: CartItemProps) {
   const productUrl = hasDetailPage(handle) ? `/products/${handle}` : null;
 
   // The snapshot first — it is written by the add paths and rewritten by
-  // refreshFromShopify(), both of which are now colour-scoped. The fallback is
-  // the gallery for THIS colourway, never `images[1]`, which was just "the
-  // product's second photo" and had no relationship to the chosen colour.
+  // refreshFromShopify(), both of which are now color-scoped. The fallback is
+  // the gallery for THIS colorway, never `images[1]`, which was just "the
+  // product's second photo" and had no relationship to the chosen color.
   //
   // Carts persist in localStorage, so lines added before this fix can still
-  // hold a wrong-colourway URL. refreshFromShopify() runs on every cart load
+  // hold a wrong-colorway URL. refreshFromShopify() runs on every cart load
   // and overwrites it, so those repair themselves on the next visit.
   const thumb = [
     item.product.images?.[0],

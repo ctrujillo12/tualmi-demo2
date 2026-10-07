@@ -258,7 +258,7 @@ export default function InTheWildPage() {
         /* Same fill as a shipped state, because it means the same thing.
            A country is drawn because we shipped there, pin or no pin. */
         .wild-country { fill: #EFCBDA; stroke: #EACBD8; stroke-width: 1; }
-        /* Colour only. Pin SIZE lives on the elements themselves as real SVG
+        /* Color only. Pin SIZE lives on the elements themselves as real SVG
            r / stroke-width attributes — see the note above the two <g> groups
            in the markup for why it can't live here. */
         .wild-pin { fill: ${maroon}; stroke: #fff; }
@@ -427,7 +427,7 @@ export default function InTheWildPage() {
           {/* ── The countries ──
               One square stamp each, in the same row as the US map so the whole
               thing reads as one drawing rather than as a map plus a gallery of
-              other maps. Same fill, stroke and pin colours throughout.
+              other maps. Same fill, stroke and pin colors throughout.
 
               Drawn whether or not the country has a pin, unlike the single
               Australia inset this replaces. That one hid itself when it had no

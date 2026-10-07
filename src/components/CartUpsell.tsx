@@ -10,7 +10,7 @@ import type { Product } from '@/types';
 
 /**
  * "You might also like" — the standard DTC cart recommendation row: every
- * colourway of the drop that isn't already in the cart, plus the one-size
+ * colorway of the drop that isn't already in the cart, plus the one-size
  * add-ons, all addable without leaving the page.
  *
  * The tote sits in here as an ordinary tile rather than in the order summary.
@@ -37,19 +37,19 @@ import type { Product } from '@/types';
  *      screen before it ever reaches this component
  *   2. /api/products didn't answer (a new route folder sometimes needs the
  *      dev server restarted)
- *   3. every colourway is already in the cart, so there is nothing to offer
+ *   3. every colorway is already in the cart, so there is nothing to offer
  */
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
 const maroon = '#A9445C';
 const soft   = '#C9849A';
 
-/** Which products to offer, in order. Colourways come from PRODUCT_COLORS. */
+/** Which products to offer, in order. Colorways come from PRODUCT_COLORS. */
 const UPSELL_HANDLES = ['sierra-shorts', 'juniper-pant'];
 
 /**
  * One-size add-ons, shown first — they're the low-commitment tile, which is
- * where the eye goes and what most carts actually add. No colourway, no size
+ * where the eye goes and what most carts actually add. No colorway, no size
  * step, no product-page link (the tote is unlisted; see UNLISTED_HANDLES in
  * lib/products.ts, and there's no merchandised page to send anyone to).
  */
@@ -91,7 +91,7 @@ const ADDON_NOTES: Record<string, string> = {
 const ALL_HANDLES = [...ADDON_HANDLES, ...UPSELL_HANDLES];
 
 /**
- * What stands in for a colourway on a one-size tile.
+ * What stands in for a colorway on a one-size tile.
  *
  * "One Size" rather than something invented: it is the same words Shopify
  * puts on the variant and the same words QuickAdd and the cart line already
@@ -110,7 +110,7 @@ type Tile = {
   key: string;
   product: Product;
   handle: string;
-  /** null for a one-size add-on — no colourway, no swatch, no page link. */
+  /** null for a one-size add-on — no colorway, no swatch, no page link. */
   color: string | null;
   swatch: string | null;
   image?: string;
@@ -201,7 +201,7 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
   if (tiles.length === 0) {
     if (process.env.NODE_ENV !== 'production') {
       console.warn(
-        '[CartUpsell] hidden — every colourway is already in the cart.',
+        '[CartUpsell] hidden — every colorway is already in the cart.',
         { loaded: products.map((p) => p.handle ?? p.id) },
       );
     }
@@ -241,7 +241,7 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
            (see .cart-upsell-slot in globals.css), so every pixel of its height
            is spent before the shopper reaches her total. A grid cost two rows
            of tiles no matter how small they got; a scroller costs one, and
-           it holds any number of colourways without ever getting taller.
+           it holds any number of colorways without ever getting taller.
 
            Tiles are 40% wide so two and a half are visible — the cut-off
            third is what tells you the row scrolls. Bleeding out to the screen
@@ -259,7 +259,7 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
            photo drawn with object-fit: contain letterboxes into a background
            the eye cannot separate from the photo — which is what makes it safe
            to stop cropping these (see .cu-shot). The tote still fills its tile
-           edge to edge, so on that one tile this colour is never visible. */
+           edge to edge, so on that one tile this color is never visible. */
         .cu-photo {
           position: relative;
           display: block;
@@ -301,7 +301,7 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
         }
         /* A one-size tile keeps the swatch's SPACE so its label starts on the
            same line as every other label, but not its fill — an invented
-           colour would be a claim about a product that doesn't come in one.
+           color would be a claim about a product that doesn't come in one.
            The ring above is inherited, so what's left is an empty circle,
            which reads as "nothing to pick here" rather than as a dot that
            failed to load. */
@@ -467,7 +467,7 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
                 on its own, at a different height from every price beside it.
                 One tile built differently from its neighbours is the thing the
                 eye catches first, and what it catches is "broken", not
-                "cheaper". A one-size product has no colourway to name, so it
+                "cheaper". A one-size product has no colorway to name, so it
                 says so. */}
             <p className="cu-meta">
               <span

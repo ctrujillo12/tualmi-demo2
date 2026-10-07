@@ -32,7 +32,7 @@ export default function PanelShopLink({
       style={{
         // Was an underlined text link. It is the main call to action on each
         // band, so it now looks like one — same soft box and same weight as
-        // the hero button, filled in the band's own accent colour.
+        // the hero button, filled in the band's own accent color.
         display: 'inline-block',
         padding: '14px 34px',
         borderRadius: '14px',

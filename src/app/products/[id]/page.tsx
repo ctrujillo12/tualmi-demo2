@@ -166,17 +166,17 @@ export default async function ProductPage({
   // above, so this comes back on its own if a handle is ever re-listed.
 
   // ── STRUCTURED DATA ────────────────────────────────────────────────────────
-  // One ProductGroup per page, with a Product per COLOURWAY under hasVariant.
+  // One ProductGroup per page, with a Product per COLORWAY under hasVariant.
   // This follows Google's own ProductGroup example: the offers live on the
   // variants, not on the group. Emitting both would describe the same thing
   // twice at two levels and is how you get "duplicate field" warnings.
   //
-  // Colourways, not every size. The colourways are what have their own images
+  // Colorways, not every size. The colorways are what have their own images
   // and their own URL (?color=), which is what a variant entity is FOR. Sizes
   // share both, so 21 size-variants would be 21 near-identical objects
   // pointing at one page.
   //
-  // If a product ever has no colourway entry, the group collapses back to a
+  // If a product ever has no colorway entry, the group collapses back to a
   // plain Product with a single Offer -- see the ternary at the bottom.
   const SITE_ORIGIN = 'https://www.tualmi.com';
 
@@ -280,16 +280,16 @@ export default async function ProductPage({
       }
     : {};
 
-  const colourways = PRODUCT_COLORS[product!.handle ?? id] ?? [];
-  const colourImages = PRODUCT_COLOR_IMAGES[product!.handle ?? id] ?? {};
+  const colorways = PRODUCT_COLORS[product!.handle ?? id] ?? [];
+  const colorImages = PRODUCT_COLOR_IMAGES[product!.handle ?? id] ?? {};
 
-  const hasVariant = colourways.map((c) => {
-    // Per-colourway availability, not the product's. A sold-out colourway that
+  const hasVariant = colorways.map((c) => {
+    // Per-colorway availability, not the product's. A sold-out colorway that
     // advertises itself as in stock is the single most reportable thing a
     // product feed can do.
     const soldOut = isPreorder ? false : isColorSoldOut(product!, c.name);
     const variantUrl = `${canonicalUrl}?color=${encodeURIComponent(c.name)}`;
-    const img = colourImages[c.name]?.[0] ?? product!.images[0];
+    const img = colorImages[c.name]?.[0] ?? product!.images[0];
     return {
       '@type': 'Product',
       name: `${product!.name} in ${c.name}`,
@@ -327,8 +327,8 @@ export default async function ProductPage({
         variesBy: ['https://schema.org/color', 'https://schema.org/size'],
         hasVariant,
         // The rating is the GROUP's: reviews are collected per product, not
-        // per colourway, and splitting one pool across two variants would
-        // report each colourway as having half the reviews it has.
+        // per colorway, and splitting one pool across two variants would
+        // report each colorway as having half the reviews it has.
         ...ratingBlock,
       }
     : {

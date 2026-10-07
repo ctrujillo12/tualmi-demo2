@@ -12,7 +12,7 @@ import { availability, isColorSoldOut } from '@/lib/inventory';
 import { SOLD_OUT_LABEL } from '@/lib/lowStock';
 
 /**
- * Quick add from a landing-page colourway tile.
+ * Quick add from a landing-page colorway tile.
  *
  * Two steps, deliberately: tap "+ add", tap a size — then straight to the
  * cart, where quantity can be changed. Apparel can't be added without a size,
@@ -55,7 +55,7 @@ export default function QuickAdd({
   const [justAdded, setJustAdded] = useState(false);
 
   // Confirmation is a state, not a toast — it reverts so the tile can be used
-  // again (someone adding two colourways in a row).
+  // again (someone adding two colorways in a row).
   useEffect(() => {
     if (!justAdded) return;
     const t = setTimeout(() => setJustAdded(false), 1900);
@@ -63,7 +63,7 @@ export default function QuickAdd({
   }, [justAdded]);
 
   const handle = product?.handle ?? '';
-  // Nothing left in this colourway — the tile becomes a link rather than an
+  // Nothing left in this colorway — the tile becomes a link rather than an
   // "+ add" that opens a size row with every size struck through.
   const colorGone = isColorSoldOut(product, color);
   const shoppable = ready && isBuyable(handle, canShop) && !!product && !colorGone;
@@ -98,8 +98,8 @@ export default function QuickAdd({
 
   const add = (size: string) => {
     // Same order as the PDP, so a landing tile and a product page bank the
-    // same photo. Both steps are colour-scoped — the old chain took the
-    // product's FIRST Shopify image regardless of colourway.
+    // same photo. Both steps are color-scoped — the old chain took the
+    // product's FIRST Shopify image regardless of colorway.
     const image = cartThumbFor(handle, color, product.variants) ?? product.images[0];
 
     const shipWindow = product.shippingWindow ?? '';

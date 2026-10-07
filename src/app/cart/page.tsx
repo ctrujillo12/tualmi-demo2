@@ -340,7 +340,7 @@ export default function CartPage() {
           </div>
           </div>
 
-          {/* The colourways of the drop that aren't in this cart yet.
+          {/* The colorways of the drop that aren't in this cart yet.
               Inside the grid rather than after it so the two layouts can put
               it in different places (see .cart-upsell-slot in globals.css):
               full width under both columns on desktop, where the total is

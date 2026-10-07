@@ -43,7 +43,7 @@ const RE = '/images-2/reedited-photos/Highlights';
  *
  * These are the same frames the galleries lead with. The block above still
  * exists so these panels CAN lead with something different; delete a
- * colourway here and coverFor() falls back to that colourway's gallery lead
+ * colorway here and coverFor() falls back to that colorway's gallery lead
  * anyway.
  */
 const LANDING_COVERS: Record<string, Record<string, string>> = {
@@ -71,15 +71,15 @@ const coverFor = (handle: string, color: string) =>
   LANDING_COVERS[handle]?.[color] ?? PRODUCT_COLOR_IMAGES[handle]?.[color]?.[0] ?? '';
 
 /**
- * Colourway tiles for one panel, in the order they should appear.
+ * Colorway tiles for one panel, in the order they should appear.
  *
  * PRODUCT_COLORS is deliberately not reordered to achieve this. It also drives
  * the swatch order on the product page and — because the gallery is indexed off
- * it — which colourway a PDP opens on. Sorting it to fix this row would have
- * silently changed the product page's default colour as a side effect.
+ * it — which colorway a PDP opens on. Sorting it to fix this row would have
+ * silently changed the product page's default color as a side effect.
  *
  * Anything missing from `order` keeps its original position at the end, so a
- * new colourway appears rather than vanishing.
+ * new colorway appears rather than vanishing.
  */
 const colorwaysFor = (handle: string, order?: string[]) => {
   const all = PRODUCT_COLORS[handle] ?? [];
@@ -109,7 +109,7 @@ const brick    = '#A9503A';
  * own.
  *
  * The panels also alternate green then pink on the landing page, which is why
- * the pant's panel is the sage one: it carries the hero's colour straight
+ * the pant's panel is the sage one: it carries the hero's color straight
  * down into the page.
  */
 export const DROP_PRODUCTS: DropProduct[] = [

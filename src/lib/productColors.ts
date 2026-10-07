@@ -45,16 +45,16 @@ export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> =
  * comes from this one folder now; the per-shoot folders it replaced are gone
  * from disk, so any path still pointing at them is a 404.
  *
- * Filenames are colourway-angle-n, assigned by going through all 99 frames:
+ * Filenames are colorway-angle-n, assigned by going through all 99 frames:
  * front / 34 / side / back / detail / fun, plus picnic-steph-* for the second
  * Picnic model and group-all-* for the multi-model frames. The number is just
- * a counter within that colourway and angle — it carries no ranking.
+ * a counter within that colorway and angle — it carries no ranking.
  */
 const RE = '/images-2/reedited-photos/Highlights';
 
 export const PRODUCT_COLOR_IMAGES: Record<string, Record<string, string[]>> = {
   /**
-   * Same running order for every colourway, so flipping between them does not
+   * Same running order for every colorway, so flipping between them does not
    * rearrange the gallery:
    *
    *   1 front  2 three-quarter  3 side  4 back  5-7 details  8 a fun frame
@@ -105,7 +105,7 @@ export const PRODUCT_COLOR_IMAGES: Record<string, Record<string, string[]>> = {
       `${RE}/birch-fun-8.jpg`,
     ],
     // Olive runs full-length first, then close, then two poses. It is the one
-    // colourway with no side profile in the gallery: olive-side-1 is the only
+    // colorway with no side profile in the gallery: olive-side-1 is the only
     // side frame in the set and it was cut, so there is nothing to put back.
     Olive: [
       `${RE}/olive-front-1.jpg`,
@@ -150,7 +150,7 @@ export const PRODUCT_LIFESTYLE_IMAGES: Record<string, Record<string, string[]>> 
  * height, the model fills 87% of birch-front-1 and 73% of olive-front-1, so
  * the two Juniper cards in "you may also like" showed the same garment at two
  * noticeably different sizes — which reads as a mistake rather than as two
- * colourways. The shorts have the same spread: jam 87%, picnic 75%,
+ * colorways. The shorts have the same spread: jam 87%, picnic 75%,
  * confetti 76%.
  *
  * Cropping cannot fix that. The difference is how far away the model stood,
@@ -166,7 +166,7 @@ export const PRODUCT_LIFESTYLE_IMAGES: Record<string, Record<string, string[]>> 
  *
  * ── REGENERATING ────────────────────────────────────────
  * `python3 scripts/measure-card-framing.py` prints this block. Re-run it when
- * a lead photo changes. A colourway with no entry renders un-normalised, so a
+ * a lead photo changes. A colorway with no entry renders un-normalised, so a
  * missing row degrades to a slightly-off card rather than a broken one.
  */
 export type SubjectBox = { top: number; bottom: number };
@@ -184,7 +184,7 @@ export const PRODUCT_CARD_SUBJECT: Record<string, Record<string, SubjectBox>> = 
 };
 
 /**
- * The scale and vertical shift that put this colourway's model at the same
+ * The scale and vertical shift that put this colorway's model at the same
  * height, in the same place, as every other card's.
  *
  * Returns null for a photo that has not been measured — the caller then draws
@@ -214,7 +214,7 @@ export function cardFraming(
   const byColor = PRODUCT_CARD_SUBJECT[handle];
   if (!byColor) return null;
 
-  // Case-insensitive for the same reason cartThumbFor() is: colourway strings
+  // Case-insensitive for the same reason cartThumbFor() is: colorway strings
   // arrive from Shopify, from a URL query and from localStorage, and those
   // three do not agree on casing.
   const key = Object.keys(byColor).find((k) => k.toLowerCase() === color.toLowerCase());
@@ -238,7 +238,7 @@ export function cardFraming(
 }
 
 /**
- * The photo the cart should show for a given colourway.
+ * The photo the cart should show for a given colorway.
  *
  * PRODUCT_COLOR_IMAGES above is the exact source the product-page gallery
  * renders from, so this returns, by construction, the first photo the shopper
@@ -249,7 +249,7 @@ export function cardFraming(
  * path used to prefer the Shopify CDN URL and fall back to this, which is why
  * cart thumbnails were the old photos. Worse, two of those paths fell back to
  * the product's FIRST Shopify image rather than the selected variant's, so a
- * Picnic line could show a Jam photo — wrong shoot and wrong colourway.
+ * Picnic line could show a Jam photo — wrong shoot and wrong colorway.
  *
  * Matching is case-insensitive: cart lines persist in localStorage, so an old
  * entry can carry whatever casing was in use the day it was added.
@@ -266,20 +266,20 @@ export function galleryImageFor(
   const key = Object.keys(gallery).find((k) => k.toLowerCase() === want);
   const hit = key ? gallery[key]?.[0] : undefined;
 
-  // No colourway match (a renamed colour, or a product with one gallery) —
+  // No colorway match (a renamed color, or a product with one gallery) —
   // the product's own first photo still beats a stale Shopify URL.
   return hit ?? Object.values(gallery)[0]?.[0];
 }
 
 /**
- * The Shopify image for a specific colourway.
+ * The Shopify image for a specific colorway.
  *
- * THIS IS THE COLOURWAY FIX. Every add-to-cart path used to fall back to
+ * THIS IS THE COLORWAY FIX. Every add-to-cart path used to fall back to
  * `product.images.find(u => u.startsWith('http'))` — the product's FIRST
- * Shopify image, which belongs to whichever colourway Shopify happens to list
+ * Shopify image, which belongs to whichever colorway Shopify happens to list
  * first. Adding Picnic could bank a Jam photo. A variant-scoped lookup can
- * only ever return the colour the shopper actually chose, so the fallback
- * below is the local gallery for that same colour, never a colour-agnostic
+ * only ever return the color the shopper actually chose, so the fallback
+ * below is the local gallery for that same color, never a color-agnostic
  * product image.
  */
 export function shopifyImageForColor(
@@ -295,16 +295,16 @@ export function shopifyImageForColor(
 }
 
 /**
- * The cart thumbnail for a colourway: the local gallery first, Shopify second.
+ * The cart thumbnail for a colorway: the local gallery first, Shopify second.
  *
  * WHY THE GALLERY WINS, checked against live Shopify data on 14 Sept 2026:
  * the photos are uploaded to the PRODUCT but not assigned to the VARIANTS, so
  * every variant inherits the product's featured image. All 21 Sierra Shorts
  * variants — Jam, Picnic and Confetti alike — report `picnic-front-2.jpg`,
- * and both Juniper colourways report `birch-front-1.jpg`. Shopify is
- * currently incapable of saying which photo is which colourway, so trusting it
+ * and both Juniper colorways report `birch-front-1.jpg`. Shopify is
+ * currently incapable of saying which photo is which colorway, so trusting it
  * would put a Picnic photo on a Jam line. PRODUCT_COLOR_IMAGES is keyed BY
- * colourway, so it cannot make that mistake.
+ * colorway, so it cannot make that mistake.
  *
  * If the images are later assigned per variant in Shopify (Products → the
  * product → Variants → select a variant → its image), this order still holds

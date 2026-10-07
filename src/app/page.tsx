@@ -248,7 +248,7 @@ export default async function Home() {
           zIndex: 1, // sits above the last sticky panel
           // Sage, not the old #F79EC6 hot pink. This band and the shipping
           // strip at the very top are now the same green, so the page opens
-          // and closes on the same colour.
+          // and closes on the same color.
           backgroundColor: sage,
           padding: 'clamp(56px, 8vw, 96px) clamp(24px, 6vw, 72px) clamp(64px, 9vw, 110px)',
         }}

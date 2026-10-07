@@ -8,7 +8,7 @@
  * maintain here.
  *
  * ── WHAT USED TO LIVE HERE ───────────────────────────────────────────────
- * A hand-kept LOW_STOCK_OVERRIDES map (product handle + colourway → sizes to
+ * A hand-kept LOW_STOCK_OVERRIDES map (product handle + colorway → sizes to
  * flag) and a manualLowStockSizes() lookup, used as a fallback for when the
  * Storefront token couldn't read inventory. Removed 27 Aug 2026.
  *

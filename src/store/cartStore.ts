@@ -58,10 +58,10 @@ interface CartStore {
 
 // ─── Variant resolver ─────────────────────────────────────────────────────────
 /**
- * The Shopify variant for a cart line — exact size + colour, or nothing.
+ * The Shopify variant for a cart line — exact size + color, or nothing.
  *
  * This used to fall back twice: first to any variant in the same SIZE
- * regardless of colour, then to "whatever variant happens to be available".
+ * regardless of color, then to "whatever variant happens to be available".
  * Both are silent substitutions. Someone who picked Picnic / S could be
  * charged for, and shipped, Jam / S, with no error raised anywhere — from
  * Shopify's side it's a perfectly valid order. That's worse than a failed
@@ -423,11 +423,11 @@ export const useCartStore = create<CartStore>()(
               if (!d || !d.ok) return item;
               // The gallery first, for the reason documented on cartThumbFor():
               // Shopify's per-variant images are all the same product-level photo
-              // today, so imageByColor returns one colourway's picture for every
-              // colour. This runs on EVERY cart load, so getting it wrong here
+              // today, so imageByColor returns one colorway's picture for every
+              // color. This runs on EVERY cart load, so getting it wrong here
               // silently re-broke any thumbnail the add path got right. The old
               // `?? d.featured` tail was worse still — featured is by definition
-              // a single colourway's photo.
+              // a single colorway's photo.
               const colorImg =
                 galleryImageFor(item.product.handle ?? item.product.id, item.selectedColor) ??
                 d.imageByColor?.[(item.selectedColor || '').toLowerCase()] ??
@@ -603,7 +603,7 @@ export const useCartStore = create<CartStore>()(
 
           // Deliberately NOT clearing the cart here. Shopify's checkout — and
           // Shop Pay especially — is a place people back out of: to check a size,
-          // compare a colour, or grab a discount code. Emptying the cart on the
+          // compare a color, or grab a discount code. Emptying the cart on the
           // way out meant hitting Back landed them on "nothing here yet." and the
           // sale was gone. The cart is cheap to keep; an abandoned checkout is not.
           window.location.href = checkoutUrl;

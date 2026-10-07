@@ -32,7 +32,7 @@ import { trackShippingNudge } from '@/lib/analytics';
  *   second_pair  — names the reachable outcome WITH its total: "add a second
  *                  pair — $136 total, and shipping's free". A total a shopper
  *                  can check beats a deficit she has to do arithmetic on, and
- *                  it points at something real (the colourways sitting in
+ *                  it points at something real (the colorways sitting in
  *                  <CartUpsell> directly below).
  *
  * Both fire trackShippingNudge so checkout completion can be compared between

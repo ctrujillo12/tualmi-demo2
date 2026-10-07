@@ -55,7 +55,7 @@ import type { Product } from '@/types';
  *
  * ── NOT THE UPSELL ROW ───────────────────────────────────────────────────
  * <CartUpsell> at the bottom of the page still offers the tote among the
- * colourways, and still should — that row is browsing, this is a decision
+ * colorways, and still should — that row is browsing, this is a decision
  * about the order in hand. The two do not fight: once the tote is in the cart
  * the upsell row drops it from its tiles on its own.
  */

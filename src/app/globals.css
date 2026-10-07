@@ -306,7 +306,7 @@ body {
     position: relative !important;
     top: auto !important;
     height: auto !important;
-    /* auto, not 100svh: the colourways stack on a phone, so the panel is
+    /* auto, not 100svh: the colorways stack on a phone, so the panel is
        already taller than a screen — forcing a full viewport on top of that
        just added dead space above the first product. */
     min-height: auto !important;
@@ -469,7 +469,7 @@ body {
    children become siblings of the flex container and can be ordered:
 
      1. lead photo + thumbnails
-     2. name / price / size / colour / add-to-cart
+     2. name / price / size / color / add-to-cart
      3. the remaining photos
      4. description, fit, accordion
 
@@ -522,7 +522,7 @@ body {
 }
 
 /* The product page and its review section are one surface, not two. Without
-   this the reviews sat on the body background and the colour change read as an
+   this the reviews sat on the body background and the color change read as an
    unfinished edge. */
 .pdp-main { background-color: #FBF1F5; }
 
@@ -941,7 +941,7 @@ body {
 
 
 /* ── Landing-page quick add ────────────────────────────────────────────────
-   Sits under each colourway tile: "+ add" opens a size row, tapping a size
+   Sits under each colorway tile: "+ add" opens a size row, tapping a size
    adds it and goes to the cart, where quantity is adjustable.            */
 
 .qa-btn {
@@ -1255,7 +1255,7 @@ body {
 }
 
 /* Qualified reads as a reward, not a nag. */
-/* Qualified switches colour rather than shade, so the change is legible. */
+/* Qualified switches color rather than shade, so the change is legible. */
 .ship-strip[data-qualified='true'] { background-color: #A9503A; }
 .ship-strip[data-qualified='true'] .ship-strip-fill { background-color: rgba(255, 255, 255, 0.95); }
 

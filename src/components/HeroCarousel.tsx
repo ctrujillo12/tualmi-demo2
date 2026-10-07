@@ -44,7 +44,7 @@ import LaunchCountdown from '@/components/LaunchCountdown';
  *
  * Current sources: pants = the two-model road shot, cropped from a 3081x2431
  * original to 2560x1600 (wide) and 1440x2160 (tall), both composed so the two
- * figures and both colourways stay whole. Shorts = confetti2.png (centre band,
+ * figures and both colorways stay whole. Shorts = confetti2.png (centre band,
  * whole crouch in frame).
  * ─────────────────────────────────────────────────────────────────────────
  */
@@ -92,7 +92,7 @@ type Slide = {
   fallbackPrice: number;
   cta: string;
   /**
-   * Colourway the CTA should open on. Without it the PDP falls back to the
+   * Colorway the CTA should open on. Without it the PDP falls back to the
    * first entry in PRODUCT_COLORS, which is Jam for the shorts — not the one
    * the hero is selling.
    */

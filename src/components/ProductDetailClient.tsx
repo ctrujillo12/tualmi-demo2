@@ -41,15 +41,15 @@ const soft    = '#C9849A';
 const rule    = '#F0D9E1';
 
 /**
- * Space between the size row and the colour row, on every product page.
+ * Space between the size row and the color row, on every product page.
  *
  * One constant because it has to be identical on the shorts and the pant, and
  * because it is the number to nudge if the "color · picnic" line sits too close
  * to the size pills (raise it) or too far from them (lower it). It lives on the
- * colour block rather than the size block so it cannot be changed by whatever
+ * color block rather than the size block so it cannot be changed by whatever
  * does or does not render inside the size block on a given product.
  */
-const COLOUR_BLOCK_GAP = '24px';
+const COLOR_BLOCK_GAP = '24px';
 
 /**
  * Trust strip claims for a product that doesn't name its own.
@@ -183,7 +183,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
     setFocusIdx(0);
-    // The outdoor set differs per colourway and isn't the same length, so a
+    // The outdoor set differs per colorway and isn't the same length, so a
     // stale index here would open the viewer on the wrong photo or on nothing.
     setLifestyleIdx(null);
     // Persist the choice in the URL so a refresh keeps the same colorway
@@ -201,11 +201,11 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
         : product.colors.indexOf(selectedColor);
       const colorImages = getColorImages(Math.max(0, colorIdx));
 
-      // Cart image, colour-scoped at every step. Shopify's image for THIS
-      // colourway wins (so re-uploading the shoot to Shopify updates the cart),
-      // then the local gallery for the same colourway. The old chain ended in
+      // Cart image, color-scoped at every step. Shopify's image for THIS
+      // colorway wins (so re-uploading the shoot to Shopify updates the cart),
+      // then the local gallery for the same colorway. The old chain ended in
       // `product.images.find(u => u.startsWith('http'))` — the product's first
-      // Shopify image regardless of colour — which is how a Picnic line could
+      // Shopify image regardless of color — which is how a Picnic line could
       // end up showing a Jam photo.
       const cartImg = cartThumbFor(handle, selectedColor, product.variants) ?? colorImages[0];
 
@@ -238,9 +238,9 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
     setExpandedSection(expandedSection === section ? null : section);
 
   /**
-   * How many of THIS exact size+colour are already in the cart. Drives the
+   * How many of THIS exact size+color are already in the cart. Drives the
    * +/- stepper below, so the control always reflects real cart state — if the
-   * shopper switches size or colour, the stepper resets to "add to cart"
+   * shopper switches size or color, the stepper resets to "add to cart"
    * because that's a different line item.
    */
   const cartQty = useCartStore(
@@ -268,7 +268,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const selectedSoldOut = selected.status === 'sold-out';
 
   /**
-   * A size that's fine in Jam may be gone in Picnic. Switching colourway can
+   * A size that's fine in Jam may be gone in Picnic. Switching colorway can
    * therefore strand the shopper on a selection that no longer exists — so
    * clear it and make them pick again, rather than letting them tap buy on
    * something we already know can't be sold.
@@ -285,7 +285,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
   /**
-   * Outdoor shots for the selected colourway, shown as a small row under the
+   * Outdoor shots for the selected colorway, shown as a small row under the
    * description rather than inside the gallery — see the note on
    * PRODUCT_LIFESTYLE_IMAGES. Empty for products that don't have any, in which
    * case the whole section doesn't render.
@@ -354,7 +354,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   };
 
   // GA4 view_item + Klaviyo Viewed Product — once per product, not on every
-  // colour/size change. The image and URL are Klaviyo's: they're what a
+  // color/size change. The image and URL are Klaviyo's: they're what a
   // browse-abandon email shows, and an email with no photo doesn't convert.
   useEffect(() => {
     trackViewItem({
@@ -528,7 +528,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
     el.scrollTo({ left: i * step, behavior: 'smooth' });
   };
 
-  // A colourway change swaps the whole gallery. Without this the track stays
+  // A colorway change swaps the whole gallery. Without this the track stays
   // where it was and the dots claim "photo 7" over a set that now has six.
   useEffect(() => {
     setFocusIdx(0);
@@ -653,7 +653,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
 
             {/* ── Buy box ──
                 Everything needed to make the decision, in one block: name,
-                price, size, colour, CTA. */}
+                price, size, color, CTA. */}
             <div className="pdp-buybox" ref={inlineCtaRef}>
 
             {/* Trust strip. Most cold traffic lands straight on a product page
@@ -791,8 +791,8 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
               <div
                 ref={sizeRef}
                 style={{
-                  // No bottom margin on purpose — the gap to the colour block
-                  // is owned by the colour block itself (COLOUR_BLOCK_GAP
+                  // No bottom margin on purpose — the gap to the color block
+                  // is owned by the color block itself (COLOR_BLOCK_GAP
                   // below). It used to live here, which made it depend on
                   // whether the low-stock warning inside this div happened to
                   // render: present on one product, absent on another, so the
@@ -811,7 +811,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '10px' }}>size</p>
                 <div className="pdp-sizes">
                   {product.sizes.map((size) => {
-                    // Real Shopify availability for this exact size + colourway.
+                    // Real Shopify availability for this exact size + colorway.
                     // An unknown answer (Shopify down, size not a variant) reads
                     // as available — see lib/inventory.ts.
                     const state = availability(product, selectedColor, size);
@@ -931,7 +931,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 CTA further down. It now lives with fit & sizing, where someone
                 actually looking for it will go. */}
             {swatchColors.length > 0 && (
-              <div style={{ marginTop: COLOUR_BLOCK_GAP, marginBottom: '16px' }}>
+              <div style={{ marginTop: COLOR_BLOCK_GAP, marginBottom: '16px' }}>
                 {/* 12px under the label, not 8: it needs to read as the heading
                     for the dots below it rather than as a caption hanging off
                     the size row above. */}
@@ -945,7 +945,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                   {swatchColors.map((swatch) => {
                     const isSelected = selectedColor === swatch.name;
                     const isGradient = swatch.value.startsWith('linear-gradient');
-                    // Only when EVERY size in the colourway is confirmed gone.
+                    // Only when EVERY size in the colorway is confirmed gone.
                     // Still selectable — the shopper should be able to look at
                     // it, and the size row then explains itself.
                     const colorGone = isColorSoldOut(product, swatch.name);
@@ -986,7 +986,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                             backgroundColor: isGradient ? undefined : swatch.value,
                             transition: 'border-color 0.15s, transform 0.15s',
                             transform: isSelected ? 'scale(1.15)' : 'scale(1)',
-                            // Faded and struck through, so a sold-out colourway
+                            // Faded and struck through, so a sold-out colorway
                             // reads as gone at a glance rather than only after
                             // tapping it and finding no sizes left.
                             opacity: colorGone ? 0.35 : 1,

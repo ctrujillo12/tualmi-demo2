@@ -9,13 +9,13 @@ import type { Product } from '@/types';
  * The problem it solves: the shorts and the pant were two islands. Someone who
  * landed on the pant from an ad had no way to discover the shorts short of
  * going back to the homepage and finding the collection, and nobody does that.
- * One card per colourway of the OTHER product, each a direct link into that
- * product page with the colourway already chosen.
+ * One card per colorway of the OTHER product, each a direct link into that
+ * product page with the colorway already chosen.
  *
  * ── THE SHAPE ────────────────────────────────────────────────────────────
  * Built to the pattern every shopper already knows from every other DTC site
  * (Halfdays, Vuori, Outdoor Voices): a centred heading over a row of full
- * product cards — photo, product name, colourway, price, and a button — at
+ * product cards — photo, product name, colorway, price, and a button — at
  * the page's own width, not a narrow strip.
  *
  * The first version of this was none of those things. It inherited the review
@@ -67,7 +67,7 @@ const rule   = '#F0D9E1';
  *
  * 0.84 leaves 8% of clear card above her head and below her feet. It is
  * generous on purpose: the measured boxes are the model INCLUDING hair and
- * boots, and a tighter target starts shaving both on the colourways that have
+ * boots, and a tighter target starts shaving both on the colorways that have
  * to scale up. 0.50 puts her dead centre, which is where she reads as
  * deliberately placed rather than as slightly slipped.
  */
@@ -117,7 +117,7 @@ type Card = {
  * The cross-sell row's whole point is that it never has more than a few
  * cards and never needs to scroll vertically — it is a strip at the bottom of
  * a page someone is already scrolling. /collections is a page in its own
- * right and can hold as many colourways as the catalogue grows to, so it gets
+ * right and can hold as many colorways as the catalogue grows to, so it gets
  * a real wrapping grid instead: every card the same size, wrapping onto as
  * many rows as it needs, page scroll doing the work. Critically, this also
  * turns off the row's mobile carousel (layout="row"'s swipeable, edge-bled
@@ -155,7 +155,7 @@ export default function AlsoLike({
   });
 
   // Shopify down and the local fallback somehow empty, or a product with no
-  // colourways defined. A heading over nothing is worse than no heading.
+  // colorways defined. A heading over nothing is worse than no heading.
   if (cards.length === 0) return null;
 
   const only = products.length === 1 ? products[0] : null;
@@ -229,7 +229,7 @@ export default function AlsoLike({
            Wraps instead of scrolling, at every width. auto-fill with a fixed
            card range (rather than 1fr, which would let two cards blow up to
            fill an empty row) plus justify-content: center keeps a short row —
-           two pant colourways, say — centred as a pair instead of stuck to
+           two pant colorways, say — centred as a pair instead of stuck to
            the left edge with a card-shaped hole beside it. */
         .al-row.al-grid {
           display: grid;

@@ -302,7 +302,7 @@ export async function POST(req: NextRequest) {
 
   const fitRaw = str(body.fit, 10)?.toLowerCase();
 
-  // Only a colourway this product actually comes in — the same list the form
+  // Only a colorway this product actually comes in — the same list the form
   // draws its chips from — so the column holds 'Jam', never 'jam ' or 'pink'.
   const colorwayRaw = str(body.colorway, MAX.short)?.toLowerCase();
   const colorway = PRODUCT_COLORS[productHandle]

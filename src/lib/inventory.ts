@@ -7,7 +7,7 @@
  *
  * That matters more than it sounds. Shopify can be unreachable (getProduct
  * falls back to local data with `variants: []`), the token may not be allowed
- * to read quantities, or a size/colour combination may simply not exist as a
+ * to read quantities, or a size/color combination may simply not exist as a
  * variant. If any of those got treated as "sold out", the store would go
  * unbuyable the moment Shopify hiccuped — the same failure this codebase has
  * already lived through once. Better to let one oversell through to Shopify's
@@ -45,16 +45,16 @@ import type { ShopifyVariant } from '@/lib/shopify';
  *
  * ── WHY 4, NOT 10 ────────────────────────────────────────────────────────
  * 10 was set for an inventory model deeper than the one we have. Sierra Shorts
- * shipped ~300 units across 3 colourways × 7 sizes — roughly 14 per variant.
+ * shipped ~300 units across 3 colorways × 7 sizes — roughly 14 per variant.
  * At 10, a variant got the dot after selling FOUR UNITS EVER, so the dot didn't
  * mark scarcity, it tracked normal sell-through and spread across the size run:
  * on 27 Aug 2026, 12 of the 21 Sierra Shorts variants were at or below 10, and
- * every colourway showed "only a few left" on 4 of its 7 sizes. One dot reads
+ * every colorway showed "only a few left" on 4 of its 7 sizes. One dot reads
  * as scarce; four of seven reads as picked over, and the shopper leaves.
  *
  * Against those same live quantities (`node scripts/dump-variants.mjs`), 4
- * flags 6 of 21 Sierra variants — 2 sizes per colourway, both end sizes, all
- * genuinely down to their last two or three — and 1 size per Juniper colourway.
+ * flags 6 of 21 Sierra variants — 2 sizes per colorway, both end sizes, all
+ * genuinely down to their last two or three — and 1 size per Juniper colorway.
  *
  * If a future drop is stocked much deeper per size, revisit this — the right
  * number is "few enough that a shopper who waits actually loses the size", not
@@ -110,10 +110,10 @@ function declaredOptions(variants: ShopifyVariant[]): Set<string> {
 const warnedAmbiguous = new Set<string>();
 
 /**
- * The one variant matching this exact size + colour, or null.
+ * The one variant matching this exact size + color, or null.
  *
  * ── EXACT OR NOTHING ─────────────────────────────────────────────────────
- * A near-miss here is how a shopper ends up sold a different colourway than
+ * A near-miss here is how a shopper ends up sold a different colorway than
  * the one they picked, and how a size ends up displaying another size's stock
  * count. Both are silent, and both are worse than showing nothing.
  *
@@ -121,7 +121,7 @@ const warnedAmbiguous = new Set<string>();
  * The lookup keys off Shopify option names — "Size" and "Color". An earlier
  * version compared per-variant: a dimension a variant didn't declare was
  * ignored. That reads fine until the product's options are named something
- * else ("Waist", "Colour", "Shade"). Then NO variant declares "size", every
+ * else ("Waist", "Color", "Shade"). Then NO variant declares "size", every
  * comparison is skipped, every size matches the first variant, and every size
  * on the page shows variant #1's quantity — confidently, and wrong.
  *
@@ -181,7 +181,7 @@ export function findVariant(
   return null;
 }
 
-/** Availability of one exact size + colour. */
+/** Availability of one exact size + color. */
 export function availability(
   product: Pick<Product, 'variants' | 'handle'> | null | undefined,
   color: string | undefined,
@@ -240,13 +240,13 @@ export function isLowStock(
 
 /**
  * Every size this product offers. Shopify's option list is per-product, not
- * per-colourway, so this is the set to check each colourway against.
+ * per-colorway, so this is the set to check each colorway against.
  */
 function sizesFor(product: Pick<Product, 'sizes'>): string[] {
   return (product.sizes ?? []).filter((s) => s && s !== 'One Size');
 }
 
-/** True only when every size in the colourway is confirmed sold out. */
+/** True only when every size in the colorway is confirmed sold out. */
 export function isColorSoldOut(
   product: Pick<Product, 'variants' | 'handle' | 'sizes'> | null | undefined,
   color: string | undefined,
@@ -255,12 +255,12 @@ export function isColorSoldOut(
   const sizes = sizesFor(product);
   if (!sizes.length) return isSoldOut(product, color, undefined);
   // "Every size sold out" — and at least one of them had to be a real variant,
-  // otherwise an unknown colourway would read as sold out.
+  // otherwise an unknown colorway would read as sold out.
   const statuses = sizes.map((s) => availability(product, color, s).status);
   return statuses.some((s) => s === 'sold-out') && statuses.every((s) => s === 'sold-out');
 }
 
-/** Any size in this colourway running low — for a dot on the swatch. */
+/** Any size in this colorway running low — for a dot on the swatch. */
 export function colorHasLowStock(
   product: Pick<Product, 'variants' | 'handle' | 'sizes'> | null | undefined,
   color: string | undefined,
@@ -270,7 +270,7 @@ export function colorHasLowStock(
 }
 
 /**
- * How many of this size+colour a shopper may put in the cart, capped by `cap`.
+ * How many of this size+color a shopper may put in the cart, capped by `cap`.
  * Unknown quantity means the cap applies unchanged — we can't count, so we
  * don't pretend to.
  */

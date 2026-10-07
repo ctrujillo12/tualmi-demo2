@@ -89,7 +89,7 @@ export default function Header() {
    * So this only raises a flag; globals.css decides what to do with it, and
    * honours it only above the carousel breakpoint where the photo genuinely
    * is behind the nav. Keeping the viewport half in CSS rather than JS also
-   * means the right colours are painted on the first frame, with no flash of
+   * means the right colors are painted on the first frame, with no flash of
    * the wrong state while a matchMedia effect catches up.
    */
   const overHero = isHome && !pastHero;
@@ -103,8 +103,8 @@ export default function Header() {
     letterSpacing: '0.01em',
     lineHeight: 1,
     transition: 'color 0.3s ease',
-    // No colour here on purpose: inline styles beat every stylesheet rule, so
-    // a colour set here could not be overridden by the media query that has
+    // No color here on purpose: inline styles beat every stylesheet rule, so
+    // a color set here could not be overridden by the media query that has
     // to own this decision. Ink lives in globals.css.
   };
 

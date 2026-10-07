@@ -24,8 +24,8 @@ import { PRODUCT_COLORS } from '@/lib/productColors';
  * ones that answer "will these fit me", which is the objection the whole
  * review section exists to solve.
  *
- * Colourway came back as a single row of chips under the product picker:
- * one tap, and it's drawn from PRODUCT_COLORS, so a new colour added there
+ * Colorway came back as a single row of chips under the product picker:
+ * one tap, and it's drawn from PRODUCT_COLORS, so a new color added there
  * shows up here and is accepted by the API without touching either file.
  *
  * ── ON THE ONE OVERALL RATING ────────────────────────────────────────────
@@ -289,7 +289,7 @@ export default function ReviewForm() {
                 type="button"
                 className={`rf-chip ${product === p.handle ? 'is-on' : ''}`}
                 onClick={() => {
-                  // Each product has its own colours; a pick from the other one
+                  // Each product has its own colors; a pick from the other one
                   // would be meaningless.
                   if (product !== p.handle) setColorway('');
                   setProduct(p.handle);
@@ -302,10 +302,10 @@ export default function ReviewForm() {
           </div>
         </fieldset>
 
-        {/* ── Which colourway. Only once we know which product. ── */}
+        {/* ── Which colorway. Only once we know which product. ── */}
         {product && PRODUCT_COLORS[product] && (
           <fieldset className="rf-field">
-            <legend className="rf-label">which colour did you get?</legend>
+            <legend className="rf-label">which color did you get?</legend>
             <div className="rf-chips">
               {PRODUCT_COLORS[product].map((c) => (
                 <button
