@@ -10,7 +10,7 @@ import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, PRODUCT_LIFESTYLE_IMAGES, cartThu
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import { getVariantPricing } from '@/lib/productPricing';
 import DiscountBadge from '@/components/DiscountBadge';
-import { FREE_SHIPPING_LABEL } from '@/lib/shipping';
+import { FREE_SHIPPING_LABEL, WORLDWIDE_LABEL, WORLDWIDE_SENTENCE } from '@/lib/shipping';
 import { shipLabel } from '@/lib/shipWindow';
 import { RETURN_WINDOW_DAYS } from '@/lib/business';
 import { LOW_STOCK_LABEL, SOLD_OUT_LABEL } from '@/lib/lowStock';
@@ -485,6 +485,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <p style={{ margin: 0 }}>{RETURN_WINDOW_DAYS}-day returns and exchanges, free</p>
         {shippingLabel && <p style={{ margin: 0 }}>{shippingLabel}.</p>}
+        <p style={{ margin: 0 }}>{WORLDWIDE_SENTENCE}</p>
       </div>
     ),
   });
@@ -1218,6 +1219,14 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                         {x.label}
                       </Link>
                     ))}
+                  </div>
+                  {/* Its own row: the strip above is already full on a phone,
+                      and a fourth item would shrink all of them. */}
+                  <div className="pdp-strip pdp-strip--assure" style={{ marginTop: '8px' }}>
+                    <Link href="/footer-pages/shipping" className="pdp-strip-item">
+                      <span className="pdp-strip-mark">✦</span>
+                      {WORLDWIDE_LABEL}
+                    </Link>
                   </div>
                 </>
               ) : lockedForLaunch ? (

@@ -8,6 +8,7 @@ import {
   money,
   FREE_SHIPPING_THRESHOLD,
   FLAT_SHIPPING_CENTS,
+  WORLDWIDE_LABEL,
 } from '@/lib/shipping';
 import { trackShippingNudge } from '@/lib/analytics';
 
@@ -111,18 +112,23 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
   // Always the plain version. There is no room here for a sentence, and the
   // header is not where a shopper is deciding what else to buy.
   if (variant === 'strip') {
+    // Tacked onto every state so "free US shipping" never reads as "US only"
+    // to the international half of the audience.
+    const world = <span className="ship-strip-world"> · {WORLDWIDE_LABEL}</span>;
     const body = started ? (
       qualified ? (
         <>
           <span className="ship-spark" aria-hidden>✦</span>
           free US shipping <strong>unlocked</strong>
+          {world}
         </>
       ) : (
         <>
           {/* Stated, not demanded. She can see what shipping costs and what
               would make it free, and decide for herself. */}
-          shipping <strong>{money(FLAT_SHIPPING_CENTS)}</strong> · free at{' '}
+          US shipping <strong>{money(FLAT_SHIPPING_CENTS)}</strong> · free at{' '}
           <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong>
+          {world}
         </>
       )
     ) : (
@@ -131,7 +137,15 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
             framing it as something to earn. The threshold stays interpolated
             so this line can never disagree with lib/shipping.ts. Rendered in
             caps by .ship-strip, not written in caps here. */}
-        free U.S. shipping on orders of <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong> or more
+        {/* Long and short forms so the worldwide half still fits on one
+            line on a phone. Swapped by CSS at the 640px breakpoint. */}
+        <span className="ship-strip-wide">
+          free U.S. shipping on orders of <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong> or more
+        </span>
+        <span className="ship-strip-narrow">
+          free U.S. shipping on <strong>{money(FREE_SHIPPING_THRESHOLD)}+</strong>
+        </span>
+        {world}
       </>
     );
 

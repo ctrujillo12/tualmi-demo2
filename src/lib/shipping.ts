@@ -55,6 +55,17 @@ export const FREE_SHIPPING_SENTENCE =
   `Free US shipping on orders of ${money(FREE_SHIPPING_THRESHOLD)} or more.`;
 
 /**
+ * The worldwide promise, stated next to the US free-shipping offer so an
+ * international shopper doesn't read "free US shipping" as "US only". True as
+ * long as Shopify has international rates (DHL / FedEx / USPS) — see the
+ * shipping policy page. Rates are carrier-quoted at checkout, so the copy
+ * never names a price.
+ */
+export const WORLDWIDE_LABEL = 'we ship worldwide';
+export const WORLDWIDE_SENTENCE =
+  'We ship worldwide — international rates are calculated at checkout.';
+
+/**
  * Flat US shipping rate charged below the free threshold, in cents.
  *
  * The cart used to say "Shipping — from $7.99" while the total underneath

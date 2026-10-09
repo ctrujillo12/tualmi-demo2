@@ -1234,6 +1234,7 @@ body {
 }
 
 .ship-strip strong { font-weight: 800; }
+.ship-strip-narrow { display: none; }
 
 .ship-strip-text {
   display: block;
@@ -1336,6 +1337,8 @@ body {
 }
 
 @media (max-width: 640px) {
+  .ship-strip-wide { display: none; }
+  .ship-strip-narrow { display: inline; }
   .ship-strip {
     min-height: 24px;
     padding: 5px 12px 6px;

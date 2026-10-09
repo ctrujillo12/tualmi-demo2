@@ -7,7 +7,7 @@ import DiscountBadge from '@/components/DiscountBadge';
 import FreeShippingBar from '@/components/FreeShippingBar';
 import CartUpsell from '@/components/CartUpsell';
 import ToteNudge from '@/components/ToteNudge';
-import { freeShippingProgress, FLAT_SHIPPING_CENTS, money } from '@/lib/shipping';
+import { freeShippingProgress, FLAT_SHIPPING_CENTS, money, WORLDWIDE_SENTENCE } from '@/lib/shipping';
 import { useCartStore, unsellableLines } from '@/store/cartStore';
 import { useShopAccess } from '@/lib/useShopAccess';
 import { SOLD_OUT_LABEL } from '@/lib/lowStock';
@@ -254,8 +254,13 @@ export default function CartPage() {
               </div>
               <p style={{ fontFamily: sans, fontSize: '11px', fontWeight: 500, color: soft, margin: 0, lineHeight: 1.5 }}>
                 {shipping.qualified
-                  ? 'Shipping included. Tax added at checkout.'
-                  : `Includes ${money(FLAT_SHIPPING_CENTS)} US shipping. Tax added at checkout. International shipping is quoted at checkout.`}
+                  ? 'Free US shipping included. Tax added at checkout.'
+                  : `Includes ${money(FLAT_SHIPPING_CENTS)} US shipping. Tax added at checkout.`}
+              </p>
+              {/* Its own line rather than the tail of the sentence above, so an
+                  international shopper finds it without reading the US maths. */}
+              <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 600, color: maroon, margin: 0, lineHeight: 1.5 }}>
+                ✦ {WORLDWIDE_SENTENCE}
               </p>
             </div>
 
