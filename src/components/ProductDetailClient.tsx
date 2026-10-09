@@ -125,7 +125,8 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   // The in-stock branch used to be the literal 'In stock, ships in 1–2
   // business days'. Three places stated the handling time and they said 1–2
   // here, 1–3 in the structured data and 2–3 on the shipping page — the same
-  // drift that put a dead preorder date on four pages. 1–3 is now the standing
+  // drift that put a dead preorder date on four pages. HANDLING_DAYS (3–4 as of
+  // 9 Oct 2026) is now the standing
   // claim and it matches what the feed tells Google.
   const shippingLabel = isPreorder
     ? (product.shippingWindow || shipLabel())

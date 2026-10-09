@@ -14,7 +14,7 @@ export interface Product {
   stock: number;
   variants: ShopifyVariant[]; // raw Shopify variants, used at checkout
   isPreorder?: boolean;       // true if Shopify product has 'preorder' tag
-  shippingWindow?: string;    // e.g. "In stock, ships in 1–3 business days"
+  shippingWindow?: string;    // e.g. "In stock, ships in 3–4 business days"
 }
 
 export interface CartItem {

@@ -19,20 +19,20 @@
  * Transit time is separate and lives in the Offer's deliveryTime.transitTime.
  * This is only the part before the carrier has it.
  */
-export const HANDLING_DAYS = { min: 1, max: 3 } as const;
+export const HANDLING_DAYS = { min: 3, max: 4 } as const;
 export const HANDLING_COPY = `${HANDLING_DAYS.min}–${HANDLING_DAYS.max} business days`;
 
 /**
  * TWO SHAPES, ONE FACT.
  *
- * shipPhrase() is the verb clause alone -- "ships in 1-3 business days" --
+ * shipPhrase() is the verb clause alone -- "ships in 3-4 business days" --
  * for a sentence that has already said the item is in stock.
  *
  * shipLabel() is the standalone version with the stock state on the front,
  * which is what a product page or a cart line needs.
  *
  * They exist as a pair because the single-string version produced "The Juniper
- * Pant is in stock. In stock, ships in 1-3 business days" on the shipping page
+ * Pant is in stock. In stock, ships in 3-4 business days" on the shipping page
  * and "in stock · in stock, ships..." on the homepage band.
  */
 export function shipPhrase(): string {
