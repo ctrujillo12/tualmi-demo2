@@ -20,13 +20,16 @@ export default function SizeFitPage() {
       </Section>
 
       <Section heading="how our pieces fit">
-        <P>Our clothes generally run true to size.</P>
         <P>
-          Sierra Shorts — true to size, with a forgiving fit. If you&apos;re between sizes or like a snugger
-          short, you can comfortably size down.
+          Most people order their usual size. If you&apos;re between sizes, it depends on the piece:
         </P>
         <P>
-          Juniper Pant — true to size. If you&apos;re between sizes, size down.
+          Sierra Shorts — relaxed fit. Between sizes, it comes down to how you like your shorts to fit:
+          size down for a snugger fit, or size up for more room.
+        </P>
+        <P>
+          Juniper Pant — relaxed flared leg, roomy through the hip and thigh. If you&apos;re between sizes
+          or want a looser fit, size up. Waist and hip in different sizes? Go by your hip; the waist adjusts.
         </P>
       </Section>
 

@@ -170,11 +170,18 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     // carried has been wrong or disputed at some point, and the size chart
     // right below already holds the whole column for anyone who wants it. The
     // rise belongs here as a shape word, not a number.
+    //
+    // Sizing advice flipped from "size down" to "size up" on 9 Oct 2026. The
+    // returns log (Aug 5 to Oct 8) had 8 of 9 size exchanges going UP a size.
+    // "Roomy through the hip and thigh" stays: the cut is deliberately roomy,
+    // and the tight-fit complaints look like body types the pattern wasn't
+    // drafted around rather than a wrong description. Small sample, so revisit
+    // once reviews carry fit answers.
     fit: [
       '29" inseam',
       'Mid-rise',
       'Relaxed flared leg, roomy through the hip and thigh',
-      'True to size. Between sizes, size down.',
+      'Between sizes, or want it looser? Size up. Exchanges are free.',
       'Waist and hip different sizes? Go by hip. The waist adjusts.',
     ],
     // modelNote removed: it said "rachel is 5'6"" on every colorway, which
@@ -258,7 +265,9 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       'Do not bleach',
       'Do not iron',
     ],
-    fit: 'Mid-rise, relaxed fit. True to size.',
+    // No single direction: it depends how the shopper wants the shorts to
+    // sit, and exchanges have gone both ways.
+    fit: 'Mid-rise, relaxed fit. Between sizes? Size down for a snugger fit, up for more room.',
     // modelNote removed: it said "rachel is 5'6"" on every colorway, which
     // the September 2026 shoot made false — it was shot with a different model
     // per colorway, and Picnic with two. This is now derived per photograph
