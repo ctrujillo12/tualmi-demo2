@@ -1417,3 +1417,68 @@ body {
 @media (min-width: 600px) {
   .event-form-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 12px; }
 }
+
+/* == Shop grid (/collections) ============================================
+   One card per colorway. Two across on a phone so a shopper sees more than
+   one product per screen; four across on desktop. */
+.shop-wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 28px 16px 64px;
+}
+.shop-title {
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(24px, 3vw, 32px);
+  letter-spacing: -0.02em;
+  color: #A9445C;
+  text-transform: lowercase;
+  margin: 0 0 18px;
+}
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 12px;
+}
+@media (min-width: 900px) {
+  .shop-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px 20px; }
+}
+/* Five across on wide screens, so every current colorway fits in one row. */
+@media (min-width: 1200px) {
+  .shop-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+.shop-card-link { display: block; text-decoration: none; }
+.shop-card-photo {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #F5F2EC;
+}
+.shop-card-name,
+.shop-card-meta,
+.shop-card-price {
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  color: #A9445C;
+  text-transform: lowercase;
+  margin: 0;
+}
+.shop-card-name { font-size: 14px; font-weight: 700; margin-top: 10px; }
+.shop-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  opacity: 0.8;
+  margin-top: 3px;
+}
+.shop-card-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+.shop-card-price { display: flex; gap: 6px; font-size: 13.5px; font-weight: 700; margin-top: 3px; }
+.shop-card-price s { opacity: 0.6; font-weight: 500; }

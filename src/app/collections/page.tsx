@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
-import ProductDropPanel from '@/components/ProductDropPanel';
+import Image from 'next/image';
+import Link from 'next/link';
+import QuickAdd from '@/components/QuickAdd';
 import { getProduct } from '@/lib/products';
-import { DROP_PRODUCTS } from '@/lib/dropProducts';
+import { DROP_PRODUCTS, priceLabel } from '@/lib/dropProducts';
 
 /**
  * /collections — the shop page.
@@ -16,7 +18,15 @@ import { DROP_PRODUCTS } from '@/lib/dropProducts';
  * it, so the two pages we most want ranked were the two with the fewest ways
  * in. Breadcrumbs had nowhere to point either.
  *
- * ── WHY IT'S THE SAME PANELS AS THE LANDING PAGE ─────────────────────────
+ * ── WHY IT'S A GRID NOW (Oct 2026) ──────────────────────────────────────
+ * It rendered the landing page's big "THE DROP" panels, described below. On
+ * a phone those stack every colorway full-width, so a shopper saw the Juniper
+ * Pant and nothing else until she scrolled a long way. This is now a plain
+ * shop grid instead: one small card per colorway, two across on a phone and
+ * four on desktop, no descriptions. Data still comes from DROP_PRODUCTS so
+ * the cover photos and colorway order match the landing page.
+ *
+ * ── (HISTORY) WHY IT WAS THE SAME PANELS AS THE LANDING PAGE ─────────────
  * This used to reuse the "you may also like" cross-sell strip's small cards —
  * a different, deliberately-smaller design meant for a recommendation row at
  * the bottom of a page someone is already reading. On a phone that strip is
@@ -98,9 +108,47 @@ export default async function CollectionsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      {DROP_PRODUCTS.map((d) => (
-        <ProductDropPanel key={d.handle} drop={d} resolvedProduct={productFor(d.handle)} />
-      ))}
+      <section className="shop-wrap">
+        <h1 className="shop-title">shop</h1>
+        <div className="shop-grid">
+          {DROP_PRODUCTS.flatMap((d) => {
+            const product = productFor(d.handle);
+            const price = product?.price ?? d.price;
+            const compareAt = product?.compareAtPrice;
+            const onSale = compareAt !== undefined && compareAt > price;
+            // "the juniper pant" -> "juniper pant": a card title, not a heading.
+            const name = d.name.replace(/^the /, '');
+            return d.colorways.map((cw) => (
+              <div key={`${d.handle}-${cw.color}`} className="shop-card">
+                <Link
+                  href={`/products/${d.handle}?color=${encodeURIComponent(cw.color)}`}
+                  className="shop-card-link"
+                >
+                  <div className="shop-card-photo">
+                    <Image
+                      src={cw.image}
+                      alt={`${name} in ${cw.color}`}
+                      fill
+                      sizes="(max-width: 768px) 50vw, 300px"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                  <p className="shop-card-name">{name}</p>
+                  <p className="shop-card-meta">
+                    <span className="shop-card-swatch" style={{ background: cw.swatch }} />
+                    {cw.color.toLowerCase()}
+                  </p>
+                  <p className="shop-card-price">
+                    {onSale && <s>{priceLabel(compareAt)}</s>}
+                    {priceLabel(price)}
+                  </p>
+                </Link>
+                <QuickAdd product={product} color={cw.color} accent="#A9445C" sizeVariant="link" />
+              </div>
+            ));
+          })}
+        </div>
+      </section>
     </main>
   );
 }
