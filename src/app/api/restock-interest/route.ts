@@ -16,10 +16,18 @@ import { backupSignup, markSignup } from '@/lib/signupBackup';
  * details are in attribution -> 'restock'), or look at the "Restock Interest"
  * metric in Klaviyo. To email people when stock lands, build a Klaviyo flow or
  * segment on that event.
+ *
+ * PLEDGES (Sierra Shorts, from Oct 2026). Same route with `pledge: true`: the
+ * shopper ticked "I'll buy this size at $X if it's restocked". Recorded as
+ * source = 'pledge' and a separate "Restock Pledge" Klaviyo metric, so firm
+ * commitments are never mixed into the softer interest count. No payment is
+ * taken; when a size comes back, email pledgers a checkout link first.
+ * Count pledges per size with the query in supabase/pledges.sql.
  */
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
-  const { email, productId, productName, size, color } = body as Record<string, unknown>;
+  const { email, productId, productName, size, color, pledge, price } = body as Record<string, unknown>;
+  const isPledge = pledge === true;
 
   const str = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
   const cleanEmail = str(email, 200);
@@ -35,14 +43,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Pick a size' }, { status: 400 });
   }
 
-  const restock = { product, product_name: name, sizes, color: cleanColor };
+  const restock = {
+    product, product_name: name, sizes, color: cleanColor,
+    ...(isPledge ? { pledge: true, price: str(price, 20) } : {}),
+  };
 
   const backupId = await backupSignup({
     email: cleanEmail,
     first_name: null,
     phone: null,
     sms_consent: false,
-    source: 'restock',
+    source: isPledge ? 'pledge' : 'restock',
     event_id: null,
     ref: null,
     attribution: { restock },
@@ -68,8 +79,8 @@ export async function POST(req: NextRequest) {
         data: {
           type: 'event',
           attributes: {
-            properties: { product, product_name: name, sizes, size: sizes.join(', '), color: cleanColor },
-            metric: { data: { type: 'metric', attributes: { name: 'Restock Interest' } } },
+            properties: { product, product_name: name, sizes, size: sizes.join(', '), color: cleanColor, ...(isPledge ? { price: restock.price } : {}) },
+            metric: { data: { type: 'metric', attributes: { name: isPledge ? 'Restock Pledge' : 'Restock Interest' } } },
             profile: { data: { type: 'profile', attributes: { email: cleanEmail } } },
           },
         },

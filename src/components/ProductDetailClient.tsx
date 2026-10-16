@@ -917,12 +917,16 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                   </p>
                 )}
 
-                {/* Sold-out sizes can't be picked, so this is the way to say you want one back. */}
+                {/* Sold-out sizes can't be picked, so this is the way to say you want one back.
+                    The shorts take pledges (a commitment to buy if restocked) rather than
+                    plain interest, because pledge counts decide which sizes come back. */}
                 <RestockNotify
                   key={selectedColor}
                   productId={product.id}
                   productName={product.name}
                   color={selectedColor}
+                  mode={(product.handle ?? product.id) === 'sierra-shorts' ? 'pledge' : 'notify'}
+                  priceLabel={`$${(product.price / 100).toFixed(product.price % 100 ? 2 : 0)}`}
                   soldOutSizes={product.sizes.filter((sz) => availability(product, selectedColor, sz).status === 'sold-out')}
                 />
               </div>
