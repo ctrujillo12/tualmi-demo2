@@ -59,15 +59,21 @@ export const metadata: Metadata = {
 };
 
 const SITE = 'https://www.tualmi.com';
+const TOTE_HANDLE = 'trailblazing-tote';
 
 export default async function CollectionsPage() {
   // Individually caught, like the landing page: one product failing to
   // resolve costs its own panel's live price and quick-add, not the whole
   // shop page — ProductDropPanel falls back to the static price and
   // QuickAdd's "view" link when resolvedProduct is null.
-  const resolved = await Promise.all(
-    DROP_PRODUCTS.map((d) => getProduct(d.handle).catch(() => null)),
-  );
+  const [resolved, tote] = await Promise.all([
+    Promise.all(DROP_PRODUCTS.map((d) => getProduct(d.handle).catch(() => null))),
+    // The tote is unlisted (UNLISTED_HANDLES in lib/products.ts): it has no
+    // product page and stays out of every product list except two places --
+    // the cart's "you might also like" row and this grid. Fetched by handle so
+    // the listing filter doesn't hide it here.
+    getProduct(TOTE_HANDLE).catch(() => null),
+  ]);
   const productFor = (handle: string) =>
     resolved.find((p) => p && (p.handle ?? p.id) === handle) ?? null;
 
@@ -147,6 +153,32 @@ export default async function CollectionsPage() {
               </div>
             ));
           })}
+          {/* Last, after the garments. No link: there is no tote page to
+              send anyone to, and a dead link is worse than none. One size, so
+              QuickAdd adds it straight away with no size step. Left out of
+              the ItemList above for the same reason -- it has no URL. */}
+          {tote && tote.images?.[0] && (
+            <div className="shop-card">
+              <div className="shop-card-photo">
+                <Image
+                  src={tote.images[0]}
+                  alt={tote.name}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 300px"
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+              <p className="shop-card-name">{tote.name.toLowerCase()}</p>
+              <p className="shop-card-meta">one size</p>
+              <p className="shop-card-price">
+                {tote.compareAtPrice !== undefined && tote.compareAtPrice > tote.price && (
+                  <s>{priceLabel(tote.compareAtPrice)}</s>
+                )}
+                {priceLabel(tote.price)}
+              </p>
+              <QuickAdd product={tote} color="" accent="#A9445C" sizeVariant="link" />
+            </div>
+          )}
         </div>
       </section>
     </main>

@@ -141,7 +141,9 @@ export const DROP_PRODUCTS: DropProduct[] = [
     // "Fast-dry" highlight, keeping the material claim exact — it's the one
     // that's checked against Shopify/Merchant Center elsewhere in this repo.
     description: 'water-resistant hiking shorts made from 100% recycled nylon',
-    availability: '',
+    // Same derived line as the pant, so both panels state the same handling
+    // time and follow HANDLING_DAYS in lib/shipWindow if it changes.
+    availability: `in stock · ${shipPhrase()}`,
     shopLabel: 'shop shorts',
     price: 6800,
     bg: '#EFDBE0',
