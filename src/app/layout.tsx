@@ -7,6 +7,7 @@ import { BUSINESS } from '@/lib/business';
 import Footer from '@/components/Footer';
 import AccessBanner from '@/components/AccessBanner';
 import AttributionTracker from '@/components/AttributionTracker';
+import WelcomePopup from '@/components/WelcomePopup';
 import { KLAVIYO_COMPANY_ID } from '@/lib/klaviyo';
 import { Analytics } from '@vercel/analytics/next';
 
@@ -174,6 +175,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <Footer />
+        {/* Fires 3s after load on mobile (or on first scroll), 1.2s on desktop.
+            Shows once per browser; skipped on /trail-club, /invite, /cart,
+            /discount. Was unmounted for the Oct 1-4 Sierra sale, which was
+            not combinable with other discounts; restored 16 Oct 2026. */}
+        <WelcomePopup />
         <AccessBanner />
         {/* Vercel Web Analytics.
 
