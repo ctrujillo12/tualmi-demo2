@@ -1184,7 +1184,10 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                         textAlign: 'center',
                         border: `1.5px solid ${maroon}`,
                         borderRadius: '100px',
-                        color: maroon,
+                        // Filled, matching the add-to-cart button it replaces as
+                        // the next step. Outlined, it blended into the page.
+                        backgroundColor: maroon,
+                        color: 'white',
                         fontFamily: sans,
                         fontSize: '15px',
                         fontWeight: 700,
