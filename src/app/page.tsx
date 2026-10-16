@@ -161,6 +161,10 @@ export default async function Home() {
         }}
       />
 
+      {/* About and the drop share a flex wrapper so a phone can show the
+          products first (.home-stack in globals.css). Desktop keeps the DOM
+          order: about, then products. */}
+      <div className="home-stack">
       {/* ══ 2 · ABOUT ═════════════════════════════════════════════════════ */}
       {/* Kept short on mobile (see .home-about in globals.css): every pixel of
           brand copy here is a pixel between an ad click and a product. */}
@@ -199,7 +203,7 @@ export default async function Home() {
 
               No em dashes anywhere in this section. */}
           
-          <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: ink, margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
+          <p className="home-about-extra" style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: ink, margin: '0 0 clamp(20px, 3vw, 28px)', textAlign: 'left' }}>
             Why is so much women&apos;s outdoor gear still boxy, muted, and designed around the same
             very specific idea of what an &ldquo;outdoorsy person&rdquo; should look like?
           </p>
@@ -207,7 +211,7 @@ export default async function Home() {
             Tualmi makes technical outdoor gear designed for women from the start. Flattering fits,
             playful prints, and the performance to keep up with wherever you&apos;re headed; because you don&apos;t have to look, dress, or act a certain way to belong outside.
           </p>
-          <p style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: ink, margin: '0 0 clamp(28px, 4vw, 44px)', textAlign: 'left' }}>
+          <p className="home-about-extra" style={{ fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 17px)', fontWeight: 500, lineHeight: 2, color: ink, margin: '0 0 clamp(28px, 4vw, 44px)', textAlign: 'left' }}>
             We make everything with a WRAP Gold Standard certified manufacturer, sustainably,
             ethically, and designed to last because we&apos;re not interested in adding to the pile.
           </p>
@@ -238,6 +242,7 @@ export default async function Home() {
         {DROP_PRODUCTS.map((p) => (
           <ProductDropPanel key={p.handle} drop={p} resolvedProduct={productFor(p.handle)} />
         ))}
+      </div>
       </div>
 
       {/* ══ 5 · SOCIALS ═══════════════════════════════════════════════════ */}
