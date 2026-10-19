@@ -69,6 +69,7 @@ const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Tualmi',
+  legalName: BUSINESS.legalName,
   url: 'https://www.tualmi.com',
   logo: 'https://www.tualmi.com/images-2/logo2-maroon.png',
   foundingDate: '2026',

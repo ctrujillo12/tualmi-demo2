@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PolicyPage, Section, P, Bullets, DataTable, maroon } from '@/components/PolicyPage';
-import { HANDLING_COPY } from '@/lib/shipWindow';
+import { HANDLING_COPY, TRANSIT_COPY } from '@/lib/shipWindow';
 import {
   FREE_SHIPPING_SENTENCE,
   FREE_SHIPPING_THRESHOLD,
@@ -39,6 +39,10 @@ export default function ShippingPage() {
       </Section>
 
       <Section heading="united states">
+        <P>
+          US orders leave us within {HANDLING_COPY} and usually arrive {TRANSIT_COPY} after
+          they ship.
+        </P>
         <P>Flat rate standard shipping under {money(FREE_SHIPPING_THRESHOLD)}:</P>
         <DataTable
           headers={['service', 'order weight', 'rate']}
@@ -104,7 +108,8 @@ export default function ShippingPage() {
           <Link href="/footer-pages/exchanges" style={{ color: maroon, fontWeight: 600 }}>
             return &amp; exchange form
           </Link>
-          {' '}— it collects your order number so we can get straight to it. Full terms are in our{' '}
+          {' '}— it collects your order number so we can get straight to it. Returns and exchanges are
+          free within the US; international customers cover return shipping. Full terms are in our{' '}
           <Link href="/footer-pages/returns" style={{ color: maroon, fontWeight: 600 }}>
             returns &amp; refunds policy
           </Link>.

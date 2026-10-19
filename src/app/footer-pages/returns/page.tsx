@@ -16,7 +16,7 @@ const formLink = { color: maroon, fontWeight: 600 };
 
 export default function ReturnsPage() {
   return (
-    <PolicyPage title="returns & refunds">
+    <PolicyPage title="returns & refunds" updated="October 19, 2026">
       <Section>
         <P>
           We want you to love what you ordered. If something isn&apos;t right, start with our{' '}
@@ -44,15 +44,15 @@ export default function ReturnsPage() {
           ]}
         />
         <P>
-          Refunds go to your original payment method and typically take a few business days to appear
-          after we process the return.
+          Refunds go to your original payment method and typically take 5–10 business days to appear
+          after we process the return, depending on your bank.
         </P>
       </Section>
 
       <Section heading="returns">
         <P>
           We accept returns within {RETURN_WINDOW_DAYS} days of delivery, as long as the item is unworn, unwashed, and has
-          its tags still attached. Returns are free: we cover the return shipping.
+          its tags still attached. Returns are free within the US: we cover the return shipping.
         </P>
       </Section>
 
@@ -63,8 +63,19 @@ export default function ReturnsPage() {
             form
           </Link>{' '}
           and tell us the size you have and the size you want — we&apos;ll check availability and hold it
-          for you where we can. Exchanges are free too: we cover return shipping and send your new size at
-          no charge.
+          for you where we can. Exchanges are free within the US too: we cover return shipping and send
+          your new size at no charge.
+        </P>
+      </Section>
+
+      {/* Free returns and exchanges are US-only from 19 Oct 2026. The product
+          page structured data already scopes its FreeReturn policy to
+          applicableCountry: 'US', so it matches this. */}
+      <Section heading="international orders">
+        <P>
+          Orders shipped outside the US can be returned or exchanged on the same terms, but return
+          shipping is at your cost, and so is shipping the new size on an exchange. Import duties and
+          taxes paid on the original order aren&apos;t refundable by us.
         </P>
       </Section>
 

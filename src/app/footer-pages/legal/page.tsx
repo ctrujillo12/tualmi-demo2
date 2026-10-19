@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { PolicyPage, Section, P } from '@/components/PolicyPage';
+import { BUSINESS, formatAddress } from '@/lib/business';
 
 export const metadata: Metadata = {
   title: 'terms & conditions',
@@ -10,11 +11,12 @@ export const metadata: Metadata = {
 
 export default function LegalPage() {
   return (
-    <PolicyPage title="terms & conditions">
+    <PolicyPage title="terms & conditions" updated="October 19, 2026">
       <Section>
         <P>
           These terms govern your use of tualmi.com and any purchase you make from us. By using the site
-          or placing an order, you agree to them.
+          or placing an order, you agree to them. &ldquo;Tualmi&rdquo;, &ldquo;we&rdquo; and &ldquo;us&rdquo;
+          mean {BUSINESS.legalName}, {formatAddress()}.
         </P>
       </Section>
 
@@ -54,11 +56,22 @@ export default function LegalPage() {
         </P>
       </Section>
 
+      <Section heading="governing law">
+        <P>
+          These terms are governed by the laws of the State of California, without regard to its
+          conflict of law rules.
+        </P>
+      </Section>
+
       <Section heading="contact">
         <P>
-          Tualmi
+          {BUSINESS.legalName}
           <br />
-          Email: hello@tualmi.com
+          {formatAddress()}
+          <br />
+          Phone: {BUSINESS.phoneDisplay}
+          <br />
+          Email: {BUSINESS.email}
         </P>
       </Section>
     </PolicyPage>

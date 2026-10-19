@@ -23,6 +23,14 @@ export const HANDLING_DAYS = { min: 1, max: 2 } as const;
 export const HANDLING_COPY = `${HANDLING_DAYS.min}–${HANDLING_DAYS.max} business days`;
 
 /**
+ * US carrier transit time once an order has shipped. Shown on the shipping
+ * page and sent to Google as the Offer's deliveryTime.transitTime, from this
+ * one constant, so the page and the feed can't state different numbers.
+ */
+export const TRANSIT_DAYS = { min: 2, max: 7 } as const;
+export const TRANSIT_COPY = `${TRANSIT_DAYS.min}–${TRANSIT_DAYS.max} business days`;
+
+/**
  * TWO SHAPES, ONE FACT.
  *
  * shipPhrase() is the verb clause alone -- "ships in 1-2 business days" --

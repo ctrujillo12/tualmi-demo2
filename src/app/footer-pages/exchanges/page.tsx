@@ -221,7 +221,8 @@ export default function ExchangesPage() {
               )}
 
               <p style={{ fontFamily: sans, fontSize: '12px', color: soft, margin: '4px 0 0', lineHeight: 1.6 }}>
-                Returns accepted within {RETURN_WINDOW_DAYS} days of delivery, unworn with tags attached. We&apos;ll email
+                Returns accepted within {RETURN_WINDOW_DAYS} days of delivery, unworn with tags attached. Return
+                shipping is free in the US; international customers cover it. We&apos;ll email
                 you the return address once we&apos;ve reviewed your request — please don&apos;t ship
                 anything back before then. Full details in our{' '}
                 <Link href="/footer-pages/returns" style={{ color: maroon, fontWeight: 600 }}>return &amp; exchange policy</Link>.

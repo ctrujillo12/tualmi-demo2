@@ -6,6 +6,7 @@ import PhoneOptIn, { PHONE_THEMES } from './PhoneOptIn';
 import { getAttribution } from '@/lib/attribution';
 import { getReferralCode } from '@/lib/referralClient';
 import { WELCOME_CODE, saveWelcomeCode } from '@/lib/discount';
+import { BUSINESS, formatAddress } from '@/lib/business';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
 const serif  = "'Cormorant Garamond', Georgia, serif";
@@ -235,9 +236,21 @@ export default function Footer() {
           </span>
         </div>
 
-        {/* ── Bottom line ── */}
-        <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textAlign: 'center', margin: 0, textTransform: 'lowercase' }}>
-          @ 2026, tualmi
+        {/* ── Bottom line ──
+            Business identity on every page, not only /contact: Merchant
+            Center's misrepresentation check reads pages, and the homepage,
+            story and policy pages had no name, address or phone at all. All
+            three come from lib/business so they can't disagree with the
+            contact page or the Organization structured data. */}
+        <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textAlign: 'center', margin: '0 0 6px', lineHeight: 1.7 }}>
+          {formatAddress()}
+          {' · '}
+          <a href={`tel:${BUSINESS.phone}`} style={{ color: 'inherit' }}>{BUSINESS.phoneDisplay}</a>
+          {' · '}
+          <a href={`mailto:${BUSINESS.email}`} style={{ color: 'inherit' }}>{BUSINESS.email}</a>
+        </p>
+        <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textAlign: 'center', margin: 0 }}>
+          © {new Date().getFullYear()} {BUSINESS.legalName}
         </p>
       </div>
     </footer>

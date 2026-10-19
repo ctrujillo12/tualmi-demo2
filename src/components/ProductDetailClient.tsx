@@ -484,7 +484,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
     label: 'shipping & returns',
     content: (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <p style={{ margin: 0 }}>{RETURN_WINDOW_DAYS}-day returns and exchanges, free</p>
+        <p style={{ margin: 0 }}>{RETURN_WINDOW_DAYS}-day returns and exchanges, free in the US</p>
         {shippingLabel && <p style={{ margin: 0 }}>{shippingLabel}.</p>}
         <p style={{ margin: 0 }}>{WORLDWIDE_SENTENCE}</p>
       </div>
@@ -1218,8 +1218,9 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                         label: FREE_SHIPPING_LABEL,
                         href: '/footer-pages/shipping',
                       },
-                      { label: 'free returns', href: '/footer-pages/returns' },
-                      { label: 'free exchanges', href: '/footer-pages/exchanges' },
+                      // One item, not two: "US" had to go on both, and three
+                      // items already fill this row on a phone.
+                      { label: 'free US returns & exchanges', href: '/footer-pages/returns' },
                     ].map((x, i) => (
                       <Link key={x.label} href={x.href} className="pdp-strip-item">
                         {i > 0 && <span className="pdp-strip-sep">·</span>}

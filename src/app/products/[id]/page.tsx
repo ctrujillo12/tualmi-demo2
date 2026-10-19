@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
 import ProductDetailClient from '@/components/ProductDetailClient';
 import { getProduct } from '@/lib/products';
+import type { Product } from '@/types';
 import { getSummary } from '@/lib/reviews';
 import ProductReviews from '@/components/ProductReviews';
 import AlsoLike from '@/components/AlsoLike';
@@ -12,7 +13,7 @@ import { isColorSoldOut } from '@/lib/inventory';
 // Full product pages: the shorts and pant. Anything else redirects to the preview.
 // Single source of truth — see lib/catalog.ts.
 import { DETAIL_HANDLES, hasDetailPage } from '@/lib/catalog';
-import { shipPhrase, isPreorderHandle, HANDLING_DAYS } from '@/lib/shipWindow';
+import { shipPhrase, isPreorderHandle, HANDLING_DAYS, TRANSIT_DAYS } from '@/lib/shipWindow';
 import { RETURN_WINDOW_DAYS } from '@/lib/business';
 
 // NOTE ON LINK PREVIEWS
@@ -100,15 +101,32 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return PAGE_METADATA[id] ?? {};
 }
 
+/**
+ * The colorway a Shopify variant id belongs to.
+ *
+ * Google Shopping links each product as /products/<handle>?variant=<id>, the
+ * Shopify convention. This site selects colorways by ?color=, so without this
+ * every variant link opened on the default colorway: an Olive ad landed on
+ * Birch. Variant titles read "Olive / M"; whichever part names a known
+ * colorway wins, so the option order in Shopify doesn't matter.
+ */
+function colorForVariant(product: Product, variantId: string | undefined): string | undefined {
+  if (!variantId || !/^\d+$/.test(variantId)) return undefined;
+  const v = product.variants?.find((x) => x.id.endsWith(`/${variantId}`));
+  if (!v) return undefined;
+  const names = (PRODUCT_COLORS[product.handle ?? product.id] ?? []).map((c) => c.name.toLowerCase());
+  return v.title.split(' / ').find((part) => names.includes(part.trim().toLowerCase()))?.trim();
+}
+
 export default async function ProductPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ color?: string }>;
+  searchParams: Promise<{ color?: string; variant?: string }>;
 }) {
   const { id } = await params;
-  const { color } = await searchParams;
+  const { color, variant } = await searchParams;
 
   // ── Anything without a full detail page redirects to the landing preview ──
   if (!hasDetailPage(id)) {
@@ -255,8 +273,8 @@ export default async function ProductPage({
         },
         transitTime: {
           '@type': 'QuantitativeValue',
-          minValue: 2,
-          maxValue: 7,
+          minValue: TRANSIT_DAYS.min,
+          maxValue: TRANSIT_DAYS.max,
           unitCode: 'DAY',
         },
       },
@@ -373,7 +391,11 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <ProductDetailClient product={product!} initialColor={color} reviews={reviewSummary} />
+      <ProductDetailClient
+        product={product!}
+        initialColor={color ?? colorForVariant(product!, variant)}
+        reviews={reviewSummary}
+      />
       <ProductReviews summary={reviewSummary} productHandle={id} />
       {/* Last, on purpose. Somebody still reading the reviews has not decided
           yet; somebody past them has, one way or the other, and that is the

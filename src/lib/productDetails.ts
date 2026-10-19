@@ -181,7 +181,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
       '29" inseam',
       'Mid-rise',
       'Relaxed flared leg, roomy through the hip and thigh',
-      'Between sizes, or want it looser? Size up. Exchanges are free.',
+      'Between sizes, or want it looser? Size up. Exchanges are free in the US.',
       'Waist and hip different sizes? Go by hip. The waist adjusts.',
     ],
     // modelNote removed: it said "rachel is 5'6"" on every colorway, which

@@ -18,7 +18,7 @@
  */
 
 export const BUSINESS = {
-  legalName: 'Tualmi',
+  legalName: 'Tualmi LLC',
   email: 'hello@tualmi.com',
 
   /** E.164 for machines. */

@@ -137,14 +137,11 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
             framing it as something to earn. The threshold stays interpolated
             so this line can never disagree with lib/shipping.ts. Rendered in
             caps by .ship-strip, not written in caps here. */}
-        {/* Long and short forms so the worldwide half still fits on one
-            line on a phone. Swapped by CSS at the 640px breakpoint. */}
-        <span className="ship-strip-wide">
-          free U.S. shipping on orders of <strong>{money(FREE_SHIPPING_THRESHOLD)}</strong> or more
-        </span>
-        <span className="ship-strip-narrow">
-          free U.S. shipping on <strong>{money(FREE_SHIPPING_THRESHOLD)}+</strong>
-        </span>
+        {/* One short form at every width. There were two (long on desktop,
+            short on a phone, swapped by CSS), which put the sentence in the
+            page twice for anything reading the HTML -- Google included. The
+            short one fits on one line on a phone with the worldwide half. */}
+        free U.S. shipping on <strong>{money(FREE_SHIPPING_THRESHOLD)}+</strong>
         {world}
       </>
     );

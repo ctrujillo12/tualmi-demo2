@@ -22,7 +22,16 @@ export const bodyStyle: CSSProperties = {
 };
 
 /** Page shell — blush background, centered lowercase title, content column. */
-export function PolicyPage({ title, children }: { title: string; children: ReactNode }) {
+export function PolicyPage({
+  title,
+  updated,
+  children,
+}: {
+  title: string;
+  /** "Last updated" date, shown under the title. Change it when the policy's content changes. */
+  updated?: string;
+  children: ReactNode;
+}) {
   return (
     <div style={{ backgroundColor: blushBg, minHeight: '100vh' }}>
       <main
@@ -39,13 +48,28 @@ export function PolicyPage({ title, children }: { title: string; children: React
             fontSize: 'clamp(28px, 4.5vw, 44px)',
             letterSpacing: '-0.03em',
             color: maroon,
-            margin: '0 0 clamp(40px, 6vw, 60px)',
+            margin: updated ? '0 0 10px' : '0 0 clamp(40px, 6vw, 60px)',
             textTransform: 'lowercase',
             textAlign: 'center',
           }}
         >
           {title}
         </h1>
+        {updated && (
+          <p
+            style={{
+              fontFamily: sans,
+              fontSize: '13px',
+              fontWeight: 500,
+              color: maroon,
+              opacity: 0.75,
+              textAlign: 'center',
+              margin: '0 0 clamp(40px, 6vw, 60px)',
+            }}
+          >
+            Last updated {updated}
+          </p>
+        )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(36px, 5vw, 52px)' }}>
           {children}
         </div>

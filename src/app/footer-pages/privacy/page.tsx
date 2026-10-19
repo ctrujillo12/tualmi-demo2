@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <PolicyPage title="privacy policy">
+    <PolicyPage title="privacy policy" updated="October 2, 2026">
       <Section>
         <P>
           This policy explains what information we collect, how we use it, and your choices. Questions?
