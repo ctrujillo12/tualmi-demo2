@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <PolicyPage title="privacy policy" updated="October 2, 2026">
+    <PolicyPage title="privacy policy" updated="October 21, 2026">
       <Section>
         <P>
           This policy explains what information we collect, how we use it, and your choices. Questions?
@@ -25,6 +25,7 @@ export default function PrivacyPage() {
             'Contact and order details you provide — name, email, shipping address',
             'Payment information, which is processed securely by Shopify (we never see or store full card numbers)',
             'Basic technical data like your device and browsing activity on our site',
+            'Your answers to the optional survey after checkout, such as how you heard about us',
           ]}
         />
       </Section>
@@ -35,6 +36,7 @@ export default function PrivacyPage() {
             'To process and ship your orders and provide customer support',
             'To send order updates, and — if you opt in — marketing emails you can unsubscribe from any time',
             'To improve our site and understand how it’s used',
+            'To understand how customers find us, using survey answers linked to your order',
           ]}
         />
       </Section>
@@ -42,8 +44,8 @@ export default function PrivacyPage() {
       <Section heading="who we share it with">
         <P>
           We don&apos;t sell your personal information. We share it only with the services that help us
-          run the store — for example Shopify (hosting and payments), our email platform, and shipping
-          carriers — and only as needed to do their job. We may also disclose information if required by
+          run the store — for example Shopify (hosting and payments), our email platform, Fairing (our
+          post-checkout survey), and shipping carriers — and only as needed to do their job. We may also disclose information if required by
           law.
         </P>
       </Section>
