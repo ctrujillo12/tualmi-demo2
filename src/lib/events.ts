@@ -74,43 +74,30 @@ export type ClubEvent = {
   photos: string[];
 };
 
+// Past events are listed newest first; that is the order the page shows them.
+// With nothing upcoming, the page shows a "next one is coming" card instead
+// (NextEventSoon in components/ClubEventsPage.tsx), so add the next event here
+// with status 'upcoming' as soon as it's announced.
 export const CLUB_EVENTS: ClubEvent[] = [
   {
     id: 'logging-off-idyllwild',
-    status: 'upcoming',
+    status: 'past',
     title: 'tualmi logging off: idyllwild',
-    // TODO: confirm the date (carried over from the old Ojai placeholder).
     dateLabel: 'oct 17 2026',
     location: 'idyllwild, ca',
     blurb:
-      'BRB, playing outside. We’re logging off for the day and getting nostalgic. Think digicams, colorful hiking fits, making camera charms, picnic snacks, and a day outside without staring at your phone. Transportation available from LA.',
-    details: [
-      { label: 'when', text: 'about 9:30am to 3pm' },
-      { label: 'the hike', text: '4 to 5 miles' },
-    ],
-    trail: {
-      label: 'see the trail on alltrails',
-      url: 'https://www.alltrails.com/trail/us/california/ernie-maxwell-trail/photos',
-    },
-    rsvpOpen: true,
-    rsvpQuestions: { ride: true, camera: true, instagram: true },
+      'A day logged off in Idyllwild on the Ernie Maxwell Trail: digicams, colorful hiking fits, camera charms and picnic snacks.',
+    rsvpOpen: false,
     photos: ['/images-2/events/web/logging-off-idyllwild.jpg'],
-    // TODO: paste the Google Form link here for the follow-up questions (age,
-    // emergency contact, food, accessibility) once interest is in. See above.
-    // detailsForm: {
-    //   url: 'https://docs.google.com/forms/d/e/XXXXXXXX/viewform',
-    //   nameEntry: '123456789',
-    //   emailEntry: '987654321',
-    // },
   },
   {
-    id: 'trail-club-1',
+    id: 'city-girl-hollywood-hike',
     status: 'past',
-    title: 'trail club 1',
-    dateLabel: 'aug 16 2026',
-    location: 'bridge to nowhere trail',
-    blurb: 'A watering hole and hike day on the East Fork Trail toward the Bridge to Nowhere.',
-    photos: ['/images-2/events/web/trail-club-1.jpg'],
+    title: 'city girl hollywood hike',
+    dateLabel: 'sep 20 2026',
+    location: 'griffith park, los angeles',
+    blurb: 'A Griffith Park hike, in collab with Camelia Collective, an AAPI and BIPOC community.',
+    photos: ['/images-2/events/web/trail-club-3.jpg'],
   },
   {
     id: 'trail-club-2',
@@ -122,13 +109,13 @@ export const CLUB_EVENTS: ClubEvent[] = [
     photos: ['/images-2/events/web/trail-club-2.jpg'],
   },
   {
-    id: 'city-girl-hollywood-hike',
+    id: 'trail-club-1',
     status: 'past',
-    title: 'city girl hollywood hike',
-    dateLabel: 'sep 20 2026',
-    location: 'griffith park, los angeles',
-    blurb: 'A Griffith Park hike, in collab with Camelia Collective, an AAPI and BIPOC community.',
-    photos: ['/images-2/events/web/trail-club-3.jpg'],
+    title: 'trail club 1',
+    dateLabel: 'aug 16 2026',
+    location: 'bridge to nowhere trail',
+    blurb: 'A watering hole and hike day on the East Fork Trail toward the Bridge to Nowhere.',
+    photos: ['/images-2/events/web/trail-club-1.jpg'],
   },
 ];
 

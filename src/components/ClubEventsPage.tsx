@@ -498,6 +498,85 @@ function UpcomingCard({ event }: { event: ClubEvent }) {
   );
 }
 
+/**
+ * Shown in place of the upcoming card when nothing is announced, so the top of
+ * the page is never an "upcoming events." heading with nothing under it. Same
+ * layout as UpcomingCard; the ask becomes "join to hear first" (#join).
+ */
+const NEXT_EVENT_PHOTO = '/images-2/events/web/trail-club-4.jpg';
+const INSTAGRAM_URL = 'https://www.instagram.com/tualmioutdoors';
+
+function NextEventSoon() {
+  return (
+    <article className="event-feature" style={{ background: card, border: `1px solid ${line}`, boxShadow: '0 18px 50px rgba(95,103,66,0.10)' }}>
+      <div className="event-feature-photo" style={{ background: cream }}>
+        <Image src={NEXT_EVENT_PHOTO} alt="a waterfall at the end of a shady trail" fill priority sizes="(max-width: 900px) 100vw, 45vw" style={{ objectFit: 'cover' }} />
+        <span
+          style={{
+            position: 'absolute', top: '16px', left: '16px', padding: '7px 14px', borderRadius: '100px',
+            background: card, color: sageDeep, fontFamily: sans, fontWeight: 700, fontSize: '12px',
+            letterSpacing: '0.08em', textTransform: 'lowercase',
+          }}
+        >
+          ✦ scouting trails
+        </span>
+      </div>
+
+      <div style={{ padding: 'clamp(24px, 4.5vw, 52px)', display: 'flex', flexDirection: 'column', gap: 'clamp(18px, 2.4vw, 26px)', justifyContent: 'center' }}>
+        <div>
+          <p style={{ ...eyebrow, margin: '0 0 10px', fontSize: '13px' }}>
+            <span style={{ color: brick }}>next up</span> <span aria-hidden="true">|</span> date tba
+          </p>
+          <h2
+            style={{
+              fontFamily: sans, fontWeight: 700, fontSize: 'clamp(28px, 4vw, 44px)',
+              letterSpacing: '-0.025em', lineHeight: 1.1, color: sageDeep, margin: 0, textTransform: 'lowercase',
+            }}
+          >
+            the next adventure is loading…
+          </h2>
+        </div>
+
+        <p style={{ fontFamily: sans, fontWeight: 500, fontSize: 'clamp(15px, 1.5vw, 17px)', lineHeight: 1.85, color: ink, margin: 0 }}>
+          We&apos;re mapping out the next hike right now. Join the club and you&apos;ll be the first to
+          know when RSVPs open, before we post it anywhere else.
+        </p>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          {['trail days', 'picnic snacks', 'digicam photos', 'new trail besties'].map((tag) => (
+            <span
+              key={tag}
+              style={{
+                padding: '8px 14px', borderRadius: '100px', background: 'rgba(124, 130, 82, 0.12)',
+                color: sageDeep, fontFamily: sans, fontWeight: 600, fontSize: '13px', textTransform: 'lowercase',
+              }}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <a
+            href="#join"
+            style={{ ...primaryBtn(true), display: 'block', boxSizing: 'border-box', textAlign: 'center', textDecoration: 'none', padding: '16px 28px', fontSize: '16px' }}
+          >
+            get first dibs on the next one →
+          </a>
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ alignSelf: 'center', fontFamily: sans, fontWeight: 700, fontSize: '14px', color: brick, textTransform: 'lowercase', textUnderlineOffset: '3px' }}
+          >
+            or follow along @tualmioutdoors
+          </a>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 // ─── Past events ──────────────────────────────────────────────────────────────
 
 function PastCard({ event, onOpen }: { event: ClubEvent; onOpen: (index: number) => void }) {
@@ -689,21 +768,21 @@ export default function ClubEventsPage() {
               margin: '0 0 clamp(14px, 2vw, 20px)', textTransform: 'lowercase',
             }}
           >
-            upcoming events.
+            {UPCOMING_EVENTS.length > 0 ? 'upcoming events.' : 'see you outside.'}
           </h1>
           <p style={{ fontFamily: sans, fontWeight: 500, fontSize: 'clamp(14px, 1.7vw, 17px)', lineHeight: 1.95, color: ink, margin: 0 }}>
             In-person hikes + events for girls who love being outside. Come solo or bring a friend, everyone&apos;s welcome!
           </p>
         </header>
 
-        {/* Upcoming */}
-        {UPCOMING_EVENTS.length > 0 && (
-          <section aria-label="upcoming events">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(24px, 4vw, 40px)' }}>
-              {UPCOMING_EVENTS.map((e) => <UpcomingCard key={e.id} event={e} />)}
-            </div>
-          </section>
-        )}
+        {/* Upcoming, or a "next one is coming" card when nothing is announced */}
+        <section aria-label="upcoming events">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(24px, 4vw, 40px)' }}>
+            {UPCOMING_EVENTS.length > 0
+              ? UPCOMING_EVENTS.map((e) => <UpcomingCard key={e.id} event={e} />)
+              : <NextEventSoon />}
+          </div>
+        </section>
 
         {/* Past events */}
         {PAST_EVENTS.length > 0 && (
@@ -722,14 +801,14 @@ export default function ClubEventsPage() {
           id="join"
           style={{ marginTop: sectionGap, maxWidth: '680px', marginLeft: 'auto', marginRight: 'auto', textAlign: 'center', scrollMarginTop: '96px' }}
         >
-          <p style={eyebrow}>can&apos;t make it?</p>
+          <p style={eyebrow}>{UPCOMING_EVENTS.length > 0 ? 'can’t make it?' : 'don’t miss the next one'}</p>
           <h2
             style={{
               fontFamily: sans, fontWeight: 700, fontSize: 'clamp(24px, 3.6vw, 38px)',
               letterSpacing: '-0.02em', lineHeight: 1.15, color: sageDeep, margin: '0 0 22px', textTransform: 'lowercase',
             }}
           >
-            join the club anyway.
+            {UPCOMING_EVENTS.length > 0 ? 'join the club anyway.' : 'join the club.'}
           </h2>
           <ul style={{ listStyle: 'none', padding: 0, margin: '0 auto clamp(26px, 4vw, 36px)', display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left', maxWidth: '520px' }}>
             {[
