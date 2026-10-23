@@ -117,7 +117,7 @@ export default function CartItem({ item }: CartItemProps) {
                 <span style={nameStyle}>{item.product.name}</span>
               );
             })()}
-            {item.preorderDiscountPct ? (
+            {item.isPreorder ? (
               <span
                 style={{
                   display: 'inline-block', margin: '0 0 6px', padding: '3px 10px', borderRadius: '100px',
@@ -125,7 +125,7 @@ export default function CartItem({ item }: CartItemProps) {
                   fontWeight: 700, letterSpacing: '0.08em', textTransform: 'lowercase',
                 }}
               >
-                preorder · {item.preorderDiscountPct}% off
+                preorder{item.preorderDiscountPct ? ` · ${item.preorderDiscountPct}% off` : ''}
               </span>
             ) : null}
             <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, margin: '0 0 2px' }}>
@@ -141,7 +141,7 @@ export default function CartItem({ item }: CartItemProps) {
                 line with no window shows nothing rather than a vague phrase. */}
             {item.shippingWindow && (
               <p style={{ fontFamily: sans, fontSize: '11px', fontWeight: 700, color: soft, marginTop: '8px', textTransform: 'lowercase', letterSpacing: '0.08em' }}>
-                {item.preorderDiscountPct ? `preorder · ${item.shippingWindow}` : item.shippingWindow}
+                {item.shippingWindow}
               </p>
             )}
             {/* Flagged on the line itself, right next to the remove button that

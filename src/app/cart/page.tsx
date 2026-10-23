@@ -62,8 +62,8 @@ export default function CartPage() {
    * there is one, and gating it on a preorder flag meant the only cart note
    * we had was one that could not appear.
    */
-  const hasPreorder = items.some((i) => i.preorderDiscountPct);
-  const hasInStock = items.some((i) => !i.preorderDiscountPct);
+  const hasPreorder = items.some((i) => i.isPreorder);
+  const hasInStock = items.some((i) => !i.isPreorder);
   const shipWindows = Array.from(
     new Set(
       items

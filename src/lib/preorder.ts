@@ -15,10 +15,9 @@ import { PREORDERS, preorderIncoming } from '@/lib/preorderConfig';
  *
  * ── THE DISCOUNT LIVES IN SHOPIFY ────────────────────────────────────────
  * This file only DISPLAYS the discount and counts it in the cart estimate.
- * The charge comes from the Shopify discount code in the config, which the
- * cart applies at checkout when it holds a preorder line (store/cartStore.ts).
- * If that code is missing in Shopify or scoped differently, the site promises
- * a price checkout won't honour.
+ * The charge comes from an automatic discount in Shopify on exactly the sizes
+ * in the config's `discountSizes`. If the two disagree, the site promises a
+ * price checkout won't honour.
  */
 export interface PreorderOffer {
   discountPct: number;
@@ -43,16 +42,8 @@ export function preorderOffer(
   const a = availability(product, color, size);
   if (a.status !== 'available' || a.quantity === null || a.quantity > incoming) return null;
   const cfg = PREORDERS[handle];
-  return { discountPct: cfg.discountPct, shipWindow: cfg.shipWindow };
-}
-
-/** Shopify discount codes for the preorder lines in a cart, deduped. */
-export function preorderCodesFor(items: CartItem[]): string[] {
-  const codes = items
-    .filter((i) => i.preorderDiscountPct)
-    .map((i) => PREORDERS[handleOf(i.product)]?.code)
-    .filter((c): c is string => !!c);
-  return Array.from(new Set(codes));
+  const discountedSize = cfg.discountSizes.some((s) => s.toLowerCase() === size!.toLowerCase());
+  return { discountPct: discountedSize ? cfg.discountPct : 0, shipWindow: cfg.shipWindow };
 }
 
 /** Sizes of this colorway currently on preorder, in the product's size order. */

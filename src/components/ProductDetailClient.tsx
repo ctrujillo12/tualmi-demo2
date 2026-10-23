@@ -186,7 +186,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const preorder = preorderOffer(product, selectedColor, selectedSize);
   const preorderSizeList = preorderSizes(product, selectedColor);
   const basePricing = getVariantPricing(product, selectedSize, selectedColor);
-  const pricing = preorder
+  const pricing = preorder?.discountPct
     ? { price: discounted(basePricing.price, preorder.discountPct), compareAtPrice: basePricing.price }
     : basePricing;
   const preordering = isPreorder || !!preorder;
@@ -910,6 +910,16 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 {preorderSizeList.length > 0 && (() => {
                   const terms = preorder ?? preorderOffer(product, selectedColor, preorderSizeList[0]);
                   if (!terms) return null;
+                  // Only some preorder sizes carry the discount (the ones the
+                  // Shopify automatic discount covers), so name them.
+                  const offSizes = preorderSizeList.filter(
+                    (sz) => (preorderOffer(product, selectedColor, sz)?.discountPct ?? 0) > 0,
+                  );
+                  const pct = offSizes.length
+                    ? preorderOffer(product, selectedColor, offSizes[0])!.discountPct
+                    : 0;
+                  const allOff = offSizes.length === preorderSizeList.length;
+                  const verb = (list: string[]) => (list.length > 1 ? 'are' : 'is');
                   return (
                     <p
                       style={{
@@ -918,9 +928,11 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                         backgroundColor: 'rgba(169, 68, 92, 0.08)',
                       }}
                     >
-                      ✦ <strong>{preorderSizeList.join(', ')} {preorderSizeList.length > 1 ? 'are' : 'is'} preorder
-                      only</strong>: {terms.discountPct}% off, ships {terms.shipWindow}. You&apos;re charged
-                      today, and anything else in your order ships right away.
+                      ✦ <strong>{preorderSizeList.join(', ')} {verb(preorderSizeList)} preorder only</strong>
+                      {allOff
+                        ? <>: {pct}% off, ships {terms.shipWindow}.</>
+                        : <>, shipping {terms.shipWindow}.{offSizes.length > 0 && <> {offSizes.join(', ')} {verb(offSizes)} {pct}% off.</>}</>}
+                      {' '}You&apos;re charged today, and anything else in your order ships right away.
                     </p>
                   );
                 })()}

@@ -24,15 +24,19 @@ export interface PreorderConfig {
   /** Units on the purchase order, per size. Only these sizes go on preorder. */
   incoming: Record<string, number>;
   discountPct: number;
+  /**
+   * Sizes that get `discountPct`. Must match the AUTOMATIC discount in Shopify
+   * exactly (Discounts → Amount off products → those variants), because that
+   * discount is what actually changes the price at checkout. Sizes on
+   * preorder but not listed here sell as preorders at full price.
+   *
+   * Only sizes with NOTHING on hand belong here: an automatic discount can't
+   * tell an on-hand unit from an incoming one, so a size still selling stock
+   * would give the discount on in-stock units too.
+   */
+  discountSizes: string[];
   /** e.g. "late December – early January" */
   shipWindow: string;
-  /**
-   * The Shopify discount code that gives the preorder discount, applied by the
-   * site at checkout only when the cart holds a preorder line. A code rather
-   * than an automatic discount because the same variants also sell in stock at
-   * full price, and an automatic discount can't tell the two apart.
-   */
-  code: string;
 }
 
 /**
@@ -45,8 +49,9 @@ export const PREORDERS: Record<string, PreorderConfig> = {
     colors: ['Picnic'],
     incoming: { '2XS': 3, XS: 22, S: 34, M: 30, L: 8, XL: 3 },
     discountPct: 15,
+    // Shopify automatic discount on Picnic S and M, set 23 Oct 2026.
+    discountSizes: ['S', 'M'],
     shipWindow: 'late December – early January',
-    code: 'PREORDER15',
   },
 };
 
