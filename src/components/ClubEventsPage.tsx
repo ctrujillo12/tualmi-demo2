@@ -498,85 +498,6 @@ function UpcomingCard({ event }: { event: ClubEvent }) {
   );
 }
 
-/**
- * Shown in place of the upcoming card when nothing is announced, so the top of
- * the page is never an "upcoming events." heading with nothing under it. Same
- * layout as UpcomingCard; the ask becomes "join to hear first" (#join).
- */
-const NEXT_EVENT_PHOTO = '/images-2/events/web/trail-club-4.jpg';
-const INSTAGRAM_URL = 'https://www.instagram.com/tualmioutdoors';
-
-function NextEventSoon() {
-  return (
-    <article className="event-feature" style={{ background: card, border: `1px solid ${line}`, boxShadow: '0 18px 50px rgba(95,103,66,0.10)' }}>
-      <div className="event-feature-photo" style={{ background: cream }}>
-        <Image src={NEXT_EVENT_PHOTO} alt="a waterfall at the end of a shady trail" fill priority sizes="(max-width: 900px) 100vw, 45vw" style={{ objectFit: 'cover' }} />
-        <span
-          style={{
-            position: 'absolute', top: '16px', left: '16px', padding: '7px 14px', borderRadius: '100px',
-            background: card, color: sageDeep, fontFamily: sans, fontWeight: 700, fontSize: '12px',
-            letterSpacing: '0.08em', textTransform: 'lowercase',
-          }}
-        >
-          ✦ scouting trails
-        </span>
-      </div>
-
-      <div style={{ padding: 'clamp(24px, 4.5vw, 52px)', display: 'flex', flexDirection: 'column', gap: 'clamp(18px, 2.4vw, 26px)', justifyContent: 'center' }}>
-        <div>
-          <p style={{ ...eyebrow, margin: '0 0 10px', fontSize: '13px' }}>
-            <span style={{ color: brick }}>next up</span> <span aria-hidden="true">|</span> date tba
-          </p>
-          <h2
-            style={{
-              fontFamily: sans, fontWeight: 700, fontSize: 'clamp(28px, 4vw, 44px)',
-              letterSpacing: '-0.025em', lineHeight: 1.1, color: sageDeep, margin: 0, textTransform: 'lowercase',
-            }}
-          >
-            the next adventure is loading…
-          </h2>
-        </div>
-
-        <p style={{ fontFamily: sans, fontWeight: 500, fontSize: 'clamp(15px, 1.5vw, 17px)', lineHeight: 1.85, color: ink, margin: 0 }}>
-          We&apos;re mapping out the next hike right now. Join the club and you&apos;ll be the first to
-          know when RSVPs open, before we post it anywhere else.
-        </p>
-
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          {['trail days', 'picnic snacks', 'digicam photos', 'new trail besties'].map((tag) => (
-            <span
-              key={tag}
-              style={{
-                padding: '8px 14px', borderRadius: '100px', background: 'rgba(124, 130, 82, 0.12)',
-                color: sageDeep, fontFamily: sans, fontWeight: 600, fontSize: '13px', textTransform: 'lowercase',
-              }}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <a
-            href="#join"
-            style={{ ...primaryBtn(true), display: 'block', boxSizing: 'border-box', textAlign: 'center', textDecoration: 'none', padding: '16px 28px', fontSize: '16px' }}
-          >
-            get first dibs on the next one →
-          </a>
-          <a
-            href={INSTAGRAM_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ alignSelf: 'center', fontFamily: sans, fontWeight: 700, fontSize: '14px', color: brick, textTransform: 'lowercase', textUnderlineOffset: '3px' }}
-          >
-            or follow along @tualmioutdoors
-          </a>
-        </div>
-      </div>
-    </article>
-  );
-}
-
 // ─── Past events ──────────────────────────────────────────────────────────────
 
 function PastCard({ event, onOpen }: { event: ClubEvent; onOpen: (index: number) => void }) {
@@ -736,6 +657,39 @@ export default function ClubEventsPage() {
   const [lightbox, setLightbox] = useState<{ event: ClubEvent; index: number } | null>(null);
 
   const sectionGap = 'clamp(56px, 8vw, 96px)';
+  const hasUpcoming = UPCOMING_EVENTS.length > 0;
+
+  // The email signup. At the bottom when there's an event to RSVP to (it's
+  // the "can't make it?" fallback); straight under the intro when there isn't,
+  // since then it IS the ask.
+  const joinSection = (
+        <section
+          id="join"
+          style={{ marginTop: hasUpcoming ? sectionGap : 0, maxWidth: '680px', marginLeft: 'auto', marginRight: 'auto', textAlign: 'center', scrollMarginTop: '96px' }}
+        >
+          <p style={eyebrow}>{hasUpcoming ? 'can’t make it?' : 'first dibs'}</p>
+          <h2
+            style={{
+              fontFamily: sans, fontWeight: 700, fontSize: 'clamp(24px, 3.6vw, 38px)',
+              letterSpacing: '-0.02em', lineHeight: 1.15, color: sageDeep, margin: '0 0 22px', textTransform: 'lowercase',
+            }}
+          >
+            {hasUpcoming ? 'join the club anyway.' : 'join the club.'}
+          </h2>
+          <ul style={{ listStyle: 'none', padding: 0, margin: '0 auto clamp(26px, 4vw, 36px)', display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left', maxWidth: '520px' }}>
+            {[
+              '10% off your first order, the second you join',
+              'special perks, discounts + early access to new drops',
+              'insider info and behind-the-scenes sneak peeks',
+            ].map((item) => (
+              <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 16px)', fontWeight: 500, color: ink, lineHeight: 1.8 }}>
+                <span style={{ color: sageDeep, flexShrink: 0 }}>✦</span>{item}
+              </li>
+            ))}
+          </ul>
+          <JoinForm />
+        </section>
+  );
   const sectionHeading = (eyebrowText: string, title: string, id: string) => (
     <div style={{ textAlign: 'center', marginBottom: 'clamp(24px, 4vw, 40px)' }}>
       <h2 id={id} style={{ ...eyebrow, margin: '0 0 10px' }}>{eyebrowText}</h2>
@@ -768,21 +722,36 @@ export default function ClubEventsPage() {
               margin: '0 0 clamp(14px, 2vw, 20px)', textTransform: 'lowercase',
             }}
           >
-            {UPCOMING_EVENTS.length > 0 ? 'upcoming events.' : 'see you outside.'}
+            {hasUpcoming ? 'upcoming events.' : 'see you outside.'}
           </h1>
           <p style={{ fontFamily: sans, fontWeight: 500, fontSize: 'clamp(14px, 1.7vw, 17px)', lineHeight: 1.95, color: ink, margin: 0 }}>
             In-person hikes + events for girls who love being outside. Come solo or bring a friend, everyone&apos;s welcome!
           </p>
+          {/* Nothing announced: one quiet line instead of an empty section or
+              a placeholder card. The signup sits right under it. */}
+          {!hasUpcoming && (
+            <p
+              style={{
+                display: 'inline-block', margin: 'clamp(18px, 2.6vw, 24px) 0 0', padding: '9px 18px',
+                borderRadius: '100px', background: 'rgba(124, 130, 82, 0.12)', color: sageDeep,
+                fontFamily: sans, fontWeight: 600, fontSize: '14px', lineHeight: 1.5, textTransform: 'lowercase',
+              }}
+            >
+              ✦ the next hike is in the works. join below to hear first.
+            </p>
+          )}
         </header>
 
-        {/* Upcoming, or a "next one is coming" card when nothing is announced */}
-        <section aria-label="upcoming events">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(24px, 4vw, 40px)' }}>
-            {UPCOMING_EVENTS.length > 0
-              ? UPCOMING_EVENTS.map((e) => <UpcomingCard key={e.id} event={e} />)
-              : <NextEventSoon />}
-          </div>
-        </section>
+        {!hasUpcoming && joinSection}
+
+        {/* Upcoming */}
+        {hasUpcoming && (
+          <section aria-label="upcoming events">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(24px, 4vw, 40px)' }}>
+              {UPCOMING_EVENTS.map((e) => <UpcomingCard key={e.id} event={e} />)}
+            </div>
+          </section>
+        )}
 
         {/* Past events */}
         {PAST_EVENTS.length > 0 && (
@@ -796,33 +765,7 @@ export default function ClubEventsPage() {
           </section>
         )}
 
-        {/* Just here for the perk */}
-        <section
-          id="join"
-          style={{ marginTop: sectionGap, maxWidth: '680px', marginLeft: 'auto', marginRight: 'auto', textAlign: 'center', scrollMarginTop: '96px' }}
-        >
-          <p style={eyebrow}>{UPCOMING_EVENTS.length > 0 ? 'can’t make it?' : 'don’t miss the next one'}</p>
-          <h2
-            style={{
-              fontFamily: sans, fontWeight: 700, fontSize: 'clamp(24px, 3.6vw, 38px)',
-              letterSpacing: '-0.02em', lineHeight: 1.15, color: sageDeep, margin: '0 0 22px', textTransform: 'lowercase',
-            }}
-          >
-            {UPCOMING_EVENTS.length > 0 ? 'join the club anyway.' : 'join the club.'}
-          </h2>
-          <ul style={{ listStyle: 'none', padding: 0, margin: '0 auto clamp(26px, 4vw, 36px)', display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left', maxWidth: '520px' }}>
-            {[
-              '10% off your first order, the second you join',
-              'special perks, discounts + early access to new drops',
-              'insider info and behind-the-scenes sneak peeks',
-            ].map((item) => (
-              <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 16px)', fontWeight: 500, color: ink, lineHeight: 1.8 }}>
-                <span style={{ color: sageDeep, flexShrink: 0 }}>✦</span>{item}
-              </li>
-            ))}
-          </ul>
-          <JoinForm />
-        </section>
+        {hasUpcoming && joinSection}
       </main>
 
       {lightbox && (
