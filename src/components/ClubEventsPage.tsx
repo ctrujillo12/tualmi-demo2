@@ -659,13 +659,12 @@ export default function ClubEventsPage() {
   const sectionGap = 'clamp(56px, 8vw, 96px)';
   const hasUpcoming = UPCOMING_EVENTS.length > 0;
 
-  // The email signup. At the bottom when there's an event to RSVP to (it's
-  // the "can't make it?" fallback); straight under the intro when there isn't,
-  // since then it IS the ask.
+  // The email signup, always last: after the upcoming event (as the "can't
+  // make it?" fallback) or, with nothing announced, after the past events.
   const joinSection = (
         <section
           id="join"
-          style={{ marginTop: hasUpcoming ? sectionGap : 0, maxWidth: '680px', marginLeft: 'auto', marginRight: 'auto', textAlign: 'center', scrollMarginTop: '96px' }}
+          style={{ marginTop: sectionGap, maxWidth: '680px', marginLeft: 'auto', marginRight: 'auto', textAlign: 'center', scrollMarginTop: '96px' }}
         >
           <p style={eyebrow}>{hasUpcoming ? 'can’t make it?' : 'first dibs'}</p>
           <h2
@@ -728,7 +727,7 @@ export default function ClubEventsPage() {
             In-person hikes + events for girls who love being outside. Come solo or bring a friend, everyone&apos;s welcome!
           </p>
           {/* Nothing announced: one quiet line instead of an empty section or
-              a placeholder card. The signup sits right under it. */}
+              a placeholder card. The signup is at the bottom of the page. */}
           {!hasUpcoming && (
             <p
               style={{
@@ -742,7 +741,6 @@ export default function ClubEventsPage() {
           )}
         </header>
 
-        {!hasUpcoming && joinSection}
 
         {/* Upcoming */}
         {hasUpcoming && (
@@ -765,7 +763,7 @@ export default function ClubEventsPage() {
           </section>
         )}
 
-        {hasUpcoming && joinSection}
+        {joinSection}
       </main>
 
       {lightbox && (
