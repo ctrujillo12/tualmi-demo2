@@ -16,6 +16,7 @@ import { RETURN_WINDOW_DAYS } from '@/lib/business';
 import { LOW_STOCK_LABEL, SOLD_OUT_LABEL } from '@/lib/lowStock';
 import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/inventory';
 import RestockNotify from '@/components/RestockNotify';
+import { preorderOffer, preorderSizes, preorderCartOptions, discounted } from '@/lib/preorder';
 import ImageLightbox from '@/components/ImageLightbox';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 import { ReviewStars, FitConsensus } from '@/components/ProductReviews';
@@ -179,7 +180,17 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const [buyStatus, setBuyStatus] = useState<'idle' | 'added' | 'error'>('idle');
 
   const fabricDetail = PRODUCT_DETAILS[handle] ?? null;
-  const pricing = getVariantPricing(product, selectedSize, selectedColor);
+  // Preorder sizes (lib/preorder.ts) show the preorder price, struck through
+  // against the regular one, everywhere `pricing` is used: under the title, in
+  // the buy button and in the sticky bar.
+  const preorder = preorderOffer(product, selectedColor, selectedSize);
+  const preorderSizeList = preorderSizes(product, selectedColor);
+  const basePricing = getVariantPricing(product, selectedSize, selectedColor);
+  const pricing = preorder
+    ? { price: discounted(basePricing.price, preorder.discountPct), compareAtPrice: basePricing.price }
+    : basePricing;
+  const preordering = isPreorder || !!preorder;
+  const shipLine = preorder ? `Preorder, ships ${preorder.shipWindow}` : shippingLabel;
 
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
@@ -217,12 +228,14 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
       addItem(
         { ...product, images: cartImg ? [cartImg] : colorImages },
         selectedSize, selectedColor, 1,
-        { isPreorder: shipsLater, shippingWindow: shipsLater ? shipWindow : undefined },
+        preorder
+          ? preorderCartOptions(preorder)
+          : { isPreorder: shipsLater, shippingWindow: shipsLater ? shipWindow : undefined },
       );
       trackAddToCart({
         item_id: handle,
         item_name: product.name,
-        price: product.price / 100,
+        price: pricing.price / 100,
         item_variant: `${selectedColor} / ${selectedSize}`,
         quantity: 1,
         image_url: cartImg,
@@ -485,7 +498,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
     content: (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <p style={{ margin: 0 }}>{RETURN_WINDOW_DAYS}-day returns and exchanges, free in the US</p>
-        {shippingLabel && <p style={{ margin: 0 }}>{shippingLabel}.</p>}
+        {shipLine && <p style={{ margin: 0 }}>{shipLine}.</p>}
         <p style={{ margin: 0 }}>{WORLDWIDE_SENTENCE}</p>
       </div>
     ),
@@ -681,7 +694,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                     and it self-expires into a standing handling-time line. */}
                 {lockedForLaunch
                   ? 'opens friday · 11am pt'
-                  : shippingLabel.toLowerCase()}
+                  : shipLine.toLowerCase()}
               </p>
             )}
 
@@ -880,6 +893,27 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                     );
                   })}
                 </div>
+
+                {/* Which sizes of this colorway are on preorder, and the terms,
+                    before anyone has to tap one to find out. Says "charged
+                    today" because Shopify charges at checkout, not at ship. */}
+                {preorderSizeList.length > 0 && (() => {
+                  const terms = preorder ?? preorderOffer(product, selectedColor, preorderSizeList[0]);
+                  if (!terms) return null;
+                  return (
+                    <p
+                      style={{
+                        fontFamily: sans, fontSize: '12.5px', fontWeight: 600, lineHeight: 1.6,
+                        color: maroon, margin: '11px 0 0', padding: '10px 14px', borderRadius: '12px',
+                        backgroundColor: 'rgba(169, 68, 92, 0.08)',
+                      }}
+                    >
+                      ✦ {preorderSizeList.join(', ')} {preorderSizeList.length > 1 ? 'are' : 'is'} back
+                      on preorder: <strong>{terms.discountPct}% off</strong>, ships {terms.shipWindow}.
+                      You&apos;re charged today, and anything else in your order ships right away.
+                    </p>
+                  );
+                })()}
 
                 {/* Only once they've actually picked the low size — a warning
                     about a size nobody chose is just noise on the page. */}
@@ -1105,7 +1139,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                       {/* Always a real, live CTA with the price in it. Tapping
                           without a size opens the picker instead of doing
                           nothing — a dead button reads as a broken page. */}
-                      {isPreorder ? 'preorder' : 'add to cart'} —{' '}
+                      {preordering ? 'preorder' : 'add to cart'} —{' '}
                       {pricing.compareAtPrice && pricing.compareAtPrice > pricing.price && (
                         <s style={{ opacity: 0.7, fontWeight: 500, marginRight: '6px' }}>
                           ${(pricing.compareAtPrice / 100).toFixed(2)}
@@ -1504,7 +1538,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
             </button>
           ) : (
             <button onClick={handleBuy} className="pdp-buybar-cta">
-              {isPreorder ? 'preorder' : 'add'} —{' '}
+              {preordering ? 'preorder' : 'add'} —{' '}
               {pricing.compareAtPrice && pricing.compareAtPrice > pricing.price && (
                 <s style={{ opacity: 0.7, fontWeight: 500, marginRight: '6px' }}>
                   ${(pricing.compareAtPrice / 100).toFixed(2)}

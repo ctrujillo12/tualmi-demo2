@@ -11,6 +11,7 @@ import { freeShippingProgress, FLAT_SHIPPING_CENTS, money, WORLDWIDE_SENTENCE } 
 import { useCartStore, unsellableLines } from '@/store/cartStore';
 import { useShopAccess } from '@/lib/useShopAccess';
 import { SOLD_OUT_LABEL } from '@/lib/lowStock';
+import { HANDLING_COPY } from '@/lib/shipWindow';
 
 // Landing-page design tokens
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
@@ -61,6 +62,8 @@ export default function CartPage() {
    * there is one, and gating it on a preorder flag meant the only cart note
    * we had was one that could not appear.
    */
+  const hasPreorder = items.some((i) => i.preorderDiscountPct);
+  const hasInStock = items.some((i) => !i.preorderDiscountPct);
   const shipWindows = Array.from(
     new Set(
       items
@@ -276,10 +279,23 @@ export default function CartPage() {
                 window exists, so a future delayed item is still announced —
                 just without a word that would then be the only place on the
                 site saying it. */}
+            {/* Preorders ship on their own, later; everything else in the
+                same order ships normally, in a separate package. So a mixed
+                cart says both halves rather than putting the whole order on
+                the preorder date. */}
             {shipWindows.length > 0 && (
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, marginBottom: '16px', lineHeight: 1.7 }}>
-                {shipWindows.length > 1 ? 'Items in your order ship ' : 'Your order ships '}
-                {shipWindows.join(' and ')}.
+                {hasPreorder && hasInStock ? (
+                  <>
+                    Preorder items ship {shipWindows.join(' and ')}, in their own package.
+                    Everything else ships in {HANDLING_COPY}.
+                  </>
+                ) : (
+                  <>
+                    {shipWindows.length > 1 ? 'Items in your order ship ' : 'Your order ships '}
+                    {shipWindows.join(' and ')}.
+                  </>
+                )}
               </p>
             )}
 

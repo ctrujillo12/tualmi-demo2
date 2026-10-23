@@ -10,6 +10,7 @@ import { cartThumbFor } from '@/lib/productColors';
 import { trackAddToCart } from '@/lib/analytics';
 import { availability, isColorSoldOut } from '@/lib/inventory';
 import { SOLD_OUT_LABEL } from '@/lib/lowStock';
+import { preorderOffer, preorderCartOptions } from '@/lib/preorder';
 
 /**
  * Quick add from a landing-page colorway tile.
@@ -104,13 +105,18 @@ export default function QuickAdd({
 
     const shipWindow = product.shippingWindow ?? '';
     const shipsLater = !!shipWindow && !shipWindow.toLowerCase().startsWith('in stock');
+    // Same preorder flags as the product page, so a preorder size added from a
+    // tile carries its discount and ship window into the cart and the order.
+    const preorder = preorderOffer(product, color, size);
 
     addItem(
       { ...product, images: image ? [image] : product.images },
       size,
       color,
       1,
-      { isPreorder: shipsLater, shippingWindow: shipsLater ? shipWindow : undefined },
+      preorder
+        ? preorderCartOptions(preorder)
+        : { isPreorder: shipsLater, shippingWindow: shipsLater ? shipWindow : undefined },
     );
 
     trackAddToCart({

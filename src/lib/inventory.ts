@@ -33,6 +33,7 @@
 
 import type { Product } from '@/types';
 import type { ShopifyVariant } from '@/lib/shopify';
+import { preorderIncoming } from '@/lib/preorderConfig';
 
 /**
  * A size reads as "only a few left" at this quantity OR FEWER — so at 4,
@@ -202,6 +203,13 @@ export function availability(
     return { status: 'sold-out', quantity: qty ?? 0, low: false, backorder: false };
   }
 
+  // Preorder sizes (lib/preorderConfig.ts) sell below zero, but only as many
+  // units as are actually coming. Past that, sold out.
+  const incoming = backorder ? preorderIncoming(product.handle, color, size) : null;
+  if (incoming !== null && qty !== null && qty <= -incoming) {
+    return { status: 'sold-out', quantity: 0, low: false, backorder: false };
+  }
+
   // qty === null means the token couldn't read quantities for this variant.
   // Say nothing rather than guess — a missing dot costs a nudge, a wrong dot is
   // a false claim about the real world. lib/shopify.ts logs a loud warning
@@ -282,7 +290,16 @@ export function maxPurchasable(
 ): number {
   const a = availability(product, color, size);
   if (a.status === 'sold-out') return 0;
-  if (a.backorder || a.quantity === null) return cap;
+  if (a.backorder) {
+    // A preorder size can take up to what's still coming; any other
+    // backorder is uncapped, as before.
+    const incoming = preorderIncoming(product?.handle, color, size);
+    if (incoming !== null && a.quantity !== null) {
+      return Math.max(0, Math.min(cap, incoming + Math.min(0, a.quantity)));
+    }
+    return cap;
+  }
+  if (a.quantity === null) return cap;
   return Math.max(0, Math.min(cap, a.quantity));
 }
 

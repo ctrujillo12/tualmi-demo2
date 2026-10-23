@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CartItem as CartItemType } from '@/types';
 import { useCartStore } from '@/store/cartStore';
-import { getVariantPricing } from '@/lib/productPricing';
+import { cartLinePricing } from '@/lib/preorder';
 import { galleryImageFor } from '@/lib/productColors';
 import { availability } from '@/lib/inventory';
 import { SOLD_OUT_LABEL } from '@/lib/lowStock';
@@ -22,7 +22,7 @@ const rule   = '#F0D9E1';
 
 export default function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeItem } = useCartStore();
-  const pricing = getVariantPricing(item.product, item.selectedSize, item.selectedColor);
+  const pricing = cartLinePricing(item);
 
   const handleQuantityChange = (newQuantity: number) => {
     updateQuantity(item.product.id, item.selectedSize, item.selectedColor, newQuantity);
@@ -130,7 +130,7 @@ export default function CartItem({ item }: CartItemProps) {
                 line with no window shows nothing rather than a vague phrase. */}
             {item.shippingWindow && (
               <p style={{ fontFamily: sans, fontSize: '11px', fontWeight: 700, color: soft, marginTop: '8px', textTransform: 'lowercase', letterSpacing: '0.08em' }}>
-                {item.shippingWindow}
+                {item.preorderDiscountPct ? `preorder · ${item.shippingWindow}` : item.shippingWindow}
               </p>
             )}
             {/* Flagged on the line itself, right next to the remove button that

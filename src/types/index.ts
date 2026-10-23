@@ -24,6 +24,8 @@ export interface CartItem {
   quantity: number;
   isPreorder?: boolean;       // ← NEW: snapshot at time of add
   shippingWindow?: string;    // ← NEW: snapshot at time of add
+  /** Preorder discount, in percent, snapshotted when the line was added as a preorder (lib/preorder.ts). */
+  preorderDiscountPct?: number;
   /**
    * The Shopify CartLine id for this item, once it's been synced to a real
    * Shopify cart (store/cartStore.ts). Undefined until the first successful
