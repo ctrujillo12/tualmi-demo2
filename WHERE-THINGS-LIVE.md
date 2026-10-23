@@ -12,21 +12,16 @@ This is what shows in Linktree, iMessage, Instagram DMs, WhatsApp.
 | What | Where |
 |---|---|
 | The images themselves | `public/og/` — `home-og.jpg`, `sierra-shorts-og.jpg`, `juniper-pant-og.jpg` |
-| Script that builds them | `scripts/make-og-images.py` |
+| Templates they're made from | `scripts/og-templates/` (see its README) |
 | Homepage preview text | `src/app/layout.tsx` → `openGraph` block |
 | Product preview text | `src/app/products/[id]/page.tsx` → `PAGE_METADATA` |
 
-**To change a preview photo:** open `scripts/make-og-images.py`, scroll to the
-bottom, and swap the filename (e.g. `model/jam-4.jpg` → whichever photo you
-prefer from `public/images-2/`). Then run:
-
-```
-python3 scripts/make-og-images.py
-```
+**To change a preview photo:** edit the matching template in
+`scripts/og-templates/` and re-render it; the README there has the steps.
 
 **To change preview wording:** edit the `title` / `description` inside the
 `openGraph` blocks in the two files above. The text baked into the *image* is
-set in the script instead.
+set in the templates instead.
 
 All three images are 1200x630 and well under 1MB.
 

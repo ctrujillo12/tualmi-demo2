@@ -35,16 +35,16 @@ const PAGE_METADATA: Record<string, Metadata> = {
     alternates: { canonical: '/products/sierra-shorts' },
     openGraph: {
       ...OG_BASE,
-      title: 'Sierra Shorts — Tualmi',
+      title: 'The Sierra Shorts | Tualmi',
       description:
-        'Mid-rise, relaxed fit. 100% recycled, fast-dry and ultra-light. Built for the trail, cute everywhere else.',
+        'Hiking shorts in 100% recycled nylon: fast-dry, water-repellent, with pockets that fit your whole phone. In Picnic, Jam and Confetti.',
       url: '/products/sierra-shorts',
-      images: [{ url: '/og/sierra-shorts-og.jpg', width: 1200, height: 630, alt: 'Tualmi Sierra Shorts' }],
+      images: [{ url: '/og/sierra-shorts-og.jpg', width: 1200, height: 630, alt: 'Four women in Tualmi Sierra Shorts in Confetti, Jam and Picnic' }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'Sierra Shorts — Tualmi',
-      description: 'Mid-rise, relaxed fit. 100% recycled, fast-dry and ultra-light.',
+      title: 'The Sierra Shorts | Tualmi',
+      description: 'Hiking shorts in 100% recycled nylon, with pockets that fit your whole phone.',
       images: ['/og/sierra-shorts-og.jpg'],
     },
   },
@@ -55,16 +55,16 @@ const PAGE_METADATA: Record<string, Metadata> = {
     alternates: { canonical: '/products/juniper-pant' },
     openGraph: {
       ...OG_BASE,
-      title: 'Juniper Pant — Tualmi',
+      title: 'The Juniper Pant | Tualmi',
       description:
-        'Flare cargo hiking pants, engineered for women. Real pockets, fold-over waist, flared leg.',
+        'Flare cargo hiking pants with real pockets and a fold-over waist. Roomy through the hip and thigh, in Birch and Olive.',
       url: '/products/juniper-pant',
-      images: [{ url: '/og/juniper-pant-og.jpg', width: 1200, height: 630, alt: 'Tualmi Juniper Pant' }],
+      images: [{ url: '/og/juniper-pant-og.jpg', width: 1200, height: 630, alt: 'Tualmi Juniper Pants in Birch and Olive' }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'Juniper Pant — Tualmi',
-      description: 'Flare cargo hiking pants, engineered for women. Designed in LA, made ethically.',
+      title: 'The Juniper Pant | Tualmi',
+      description: 'Flare cargo hiking pants with real pockets and a fold-over waist.',
       images: ['/og/juniper-pant-og.jpg'],
     },
   },

@@ -4,13 +4,16 @@ import HeroCarousel from '@/components/HeroCarousel';
 import ProductDropPanel from '@/components/ProductDropPanel';
 import { getProduct } from '@/lib/products';
 import { DROP_PRODUCTS } from '@/lib/dropProducts';
+import { DEFAULT_OG } from '@/lib/og';
 
 // Per-page, NOT in layout.tsx: a canonical set in the root layout is inherited
 // by every page that doesn't override it (cart, share...) and would point them
 // all at the homepage.
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
-  openGraph: { url: '/' },
+  // Spread, not just { url }: a page's openGraph REPLACES the layout's, so
+  // setting only the url dropped the image and the link previewed bare.
+  openGraph: { ...DEFAULT_OG, url: '/' },
 };
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
