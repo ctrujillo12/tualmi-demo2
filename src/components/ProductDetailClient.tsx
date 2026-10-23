@@ -854,15 +854,19 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                           // 42px min height: an 8px-padded 12px pill is a ~30px
                           // tap target, well under the 44px thumb minimum, and
                           // this is a phone-first store.
-                          padding: pre ? '6px 14px' : '11px 18px',
+                          padding: '11px 18px',
                           minHeight: '42px',
-                          lineHeight: pre ? 1.15 : undefined,
                           fontFamily: sans,
                           fontSize: '12px',
                           fontWeight: 600,
                           borderRadius: '100px',
-                          border: `1.5px solid ${soldOut ? rule : maroon}`,
-                          backgroundColor: selectedSize === size && !soldOut ? maroon : 'transparent',
+                          // Preorder sizes: dashed outline on a soft tint, so
+                          // they read as different at a glance without any
+                          // extra text in the pill. The note below says why.
+                          border: `1.5px ${pre ? 'dashed' : 'solid'} ${soldOut ? rule : maroon}`,
+                          backgroundColor: selectedSize === size && !soldOut
+                            ? maroon
+                            : pre ? 'rgba(169, 68, 92, 0.10)' : 'transparent',
                           // Sold-out sizes stay on the page rather than
                           // disappearing: a shopper who can't find their size
                           // assumes the site is broken, where a struck-through
@@ -875,11 +879,6 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                         }}
                       >
                         {size}
-                        {pre && (
-                          <span style={{ display: 'block', fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.06em', opacity: 0.85 }}>
-                            preorder
-                          </span>
-                        )}
                         {low && !soldOut && !pre && (
                           <span
                             aria-hidden
@@ -928,7 +927,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                         backgroundColor: 'rgba(169, 68, 92, 0.08)',
                       }}
                     >
-                      ✦ <strong>{preorderSizeList.join(', ')} {verb(preorderSizeList)} preorder only</strong>
+                      ✦ <strong>{preorderSizeList.join(', ')} (dashed) {verb(preorderSizeList)} preorder only</strong>
                       {allOff
                         ? <>: {pct}% off, ships {terms.shipWindow}.</>
                         : <>, shipping {terms.shipWindow}.{offSizes.length > 0 && <> {offSizes.join(', ')} {verb(offSizes)} {pct}% off.</>}</>}

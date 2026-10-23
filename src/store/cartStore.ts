@@ -18,6 +18,8 @@ import type { ShopifyVariant } from '@/lib/shopify';
 import { findVariant, maxPurchasable } from '@/lib/inventory';
 import { attributionCartAttributes } from '@/lib/attribution';
 import { cartLinePricing } from '@/lib/preorder';
+import { PREORDERS } from '@/lib/preorderConfig';
+import { isPreorderHandle } from '@/lib/shipWindow';
 import { getDiscountCode } from '@/lib/discount';
 import { galleryImageFor } from '@/lib/productColors';
 import { trackBeginCheckout } from '@/lib/analytics';
@@ -246,8 +248,11 @@ export const useCartStore = create<CartStore>()(
         }
 
         if (current.shopifyLineId) {
+          // Attributes re-sent on every update, so a line whose ship window
+          // changed (or was cleared, see refreshFromShopify) doesn't carry the
+          // old one onto the order.
           const updated = await cartLinesUpdate(shopifyCartId, [
-            { id: current.shopifyLineId, quantity: current.quantity },
+            { id: current.shopifyLineId, quantity: current.quantity, attributes: lineAttributesFor(current) ?? [] },
           ]);
           if (updated === null) {
             devLog('cart gone on update — recreating from current cart contents');
@@ -424,8 +429,35 @@ export const useCartStore = create<CartStore>()(
           );
           const byHandle = Object.fromEntries(results);
 
+          /**
+           * Ship windows and preorder flags are snapshotted when a line is
+           * added, and a cart lives in localStorage for weeks. A Juniper Pant
+           * added during its September preorder still said "ships mid-September"
+           * in October. So: anything that isn't a current preorder product
+           * (lib/preorderConfig.ts, PREORDER_HANDLES) loses its snapshot here and
+           * goes back to an ordinary in-stock line. Lines on a current preorder
+           * keep theirs: whether that line is a preorder was decided by stock at
+           * the moment it was added, and re-deciding it now could flip it.
+           */
+          const stale = (item: CartItem) => {
+            const h = item.product.handle ?? item.product.id;
+            if (PREORDERS[h] || isPreorderHandle(h)) return false;
+            return !!(item.isPreorder || item.shippingWindow || item.preorderDiscountPct ||
+              (item.product.shippingWindow && !/^in stock/i.test(item.product.shippingWindow)));
+          };
+          const cleared = get().items.filter(stale).map((i) => lineKey(i));
+
           set({
             items: get().items.map((item) => {
+              if (stale(item)) {
+                item = {
+                  ...item,
+                  isPreorder: false,
+                  shippingWindow: undefined,
+                  preorderDiscountPct: undefined,
+                  product: { ...item.product, shippingWindow: undefined, isPreorder: false },
+                };
+              }
               const key = item.product.handle ?? item.product.id;
               const d = byHandle[key];
               if (!d || !d.ok) return item;
@@ -456,6 +488,9 @@ export const useCartStore = create<CartStore>()(
               };
             }),
           });
+
+          // Push the cleared attributes to Shopify's copy of the cart too.
+          for (const k of cleared) queueSync(() => syncLine(k));
         },
 
         redirectToShopifyCheckout: async () => {

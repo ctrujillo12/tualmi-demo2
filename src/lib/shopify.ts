@@ -496,7 +496,8 @@ export async function cartLinesAdd(cartId: string, lines: CartLineInput[]): Prom
 /** Same null-means-gone contract as cartLinesAdd. */
 export async function cartLinesUpdate(
   cartId: string,
-  lines: { id: string; quantity: number }[],
+  // `attributes`, when given, REPLACES the line's attributes; [] clears them.
+  lines: { id: string; quantity: number; attributes?: CartAttribute[] }[],
 ): Promise<ShopifyCart | null> {
   const data = await shopifyFetch<{ cartLinesUpdate: CartMutationResult }>(`
     ${CART_FIELDS}
