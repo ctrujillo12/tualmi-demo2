@@ -1403,13 +1403,21 @@ body {
   .event-feature-photo { aspect-ratio: 4 / 5; }
 }
 
-/* Past events: cards fill the row, 1 column on phones, up to 3 on desktop. */
+/* Past events: 2 across on phones (one column made the signup below them a
+   very long scroll), up to 3 on desktop. */
 .event-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(18px, 2.6vw, 32px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 2.6vw, 32px);
 }
-@media (min-width: 640px)  { .event-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Phone cards: date, title and photo only. The blurb and the "past event"
+   tag don't fit two-up, and the section heading already says "past events". */
+@media (max-width: 639px) {
+  .past-card-tag, .past-card-blurb { display: none; }
+  .past-card-body { padding: 12px 12px 14px !important; }
+  .past-card-title { font-size: 15px !important; margin: 0 !important; }
+  .past-card-body .event-meta { font-size: 10.5px !important; letter-spacing: 0.06em !important; margin-bottom: 5px !important; }
+}
 @media (min-width: 1000px) { .event-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
 /* Form fields sit two-up on wider screens, one column on phones. */

@@ -81,7 +81,7 @@ function PhotoPlaceholder({ label }: { label: string }) {
 
 function EventMeta({ event }: { event: ClubEvent }) {
   return (
-    <p style={{ ...eyebrow, margin: '0 0 8px', fontSize: '12px' }}>
+    <p className="event-meta" style={{ ...eyebrow, margin: '0 0 8px', fontSize: '12px' }}>
       {event.dateLabel} <span aria-hidden="true">|</span> {event.location}
     </p>
   );
@@ -518,11 +518,12 @@ function PastCard({ event, onOpen }: { event: ClubEvent; onOpen: (index: number)
         }}
       >
         {cover ? (
-          <Image src={cover} alt={event.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1000px) 50vw, 33vw" style={{ objectFit: 'cover' }} />
+          <Image src={cover} alt={event.title} fill sizes="(max-width: 1000px) 50vw, 33vw" style={{ objectFit: 'cover' }} />
         ) : (
           <PhotoPlaceholder label="photos coming soon" />
         )}
         <span
+          className="past-card-tag"
           style={{
             position: 'absolute', top: '14px', left: '14px', fontFamily: sans, fontWeight: 700,
             fontSize: '11px', letterSpacing: '0.08em', textTransform: 'lowercase',
@@ -543,9 +544,10 @@ function PastCard({ event, onOpen }: { event: ClubEvent; onOpen: (index: number)
         )}
       </button>
 
-      <div style={{ padding: '20px 22px 24px' }}>
+      <div className="past-card-body" style={{ padding: '20px 22px 24px' }}>
         <EventMeta event={event} />
         <h3
+          className="past-card-title"
           style={{
             fontFamily: sans, fontWeight: 700, fontSize: '20px', letterSpacing: '-0.01em',
             lineHeight: 1.25, color: sageDeep, margin: '0 0 8px', textTransform: 'lowercase',
@@ -553,7 +555,7 @@ function PastCard({ event, onOpen }: { event: ClubEvent; onOpen: (index: number)
         >
           {event.title}
         </h3>
-        <p style={{ fontFamily: sans, fontWeight: 500, fontSize: '14px', lineHeight: 1.8, color: ink, margin: 0 }}>
+        <p className="past-card-blurb" style={{ fontFamily: sans, fontWeight: 500, fontSize: '14px', lineHeight: 1.8, color: ink, margin: 0 }}>
           {event.recap || event.blurb}
         </p>
       </div>
@@ -728,16 +730,20 @@ export default function ClubEventsPage() {
           </p>
           {/* Nothing announced: one quiet line instead of an empty section or
               a placeholder card. The signup is at the bottom of the page. */}
+          {/* A link, not just a line: on a phone the signup is a long scroll
+              past the event photos, so this jumps straight to it. */}
           {!hasUpcoming && (
-            <p
+            <a
+              href="#join"
               style={{
                 display: 'inline-block', margin: 'clamp(18px, 2.6vw, 24px) 0 0', padding: '9px 18px',
                 borderRadius: '100px', background: 'rgba(124, 130, 82, 0.12)', color: sageDeep,
                 fontFamily: sans, fontWeight: 600, fontSize: '14px', lineHeight: 1.5, textTransform: 'lowercase',
+                textDecoration: 'none',
               }}
             >
-              ✦ the next hike is in the works. join below to hear first.
-            </p>
+              ✦ the next hike is in the works. <span style={{ color: brick, fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px' }}>join to hear first →</span>
+            </a>
           )}
         </header>
 
