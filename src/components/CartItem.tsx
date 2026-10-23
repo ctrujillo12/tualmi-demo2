@@ -117,6 +117,17 @@ export default function CartItem({ item }: CartItemProps) {
                 <span style={nameStyle}>{item.product.name}</span>
               );
             })()}
+            {item.preorderDiscountPct ? (
+              <span
+                style={{
+                  display: 'inline-block', margin: '0 0 6px', padding: '3px 10px', borderRadius: '100px',
+                  backgroundColor: maroon, color: 'white', fontFamily: sans, fontSize: '10.5px',
+                  fontWeight: 700, letterSpacing: '0.08em', textTransform: 'lowercase',
+                }}
+              >
+                preorder · {item.preorderDiscountPct}% off
+              </span>
+            ) : null}
             <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, margin: '0 0 2px' }}>
               Size: {item.selectedSize}
             </p>

@@ -8,10 +8,10 @@ import { PREORDERS, preorderIncoming } from '@/lib/preorderConfig';
  * flags. WHAT is on preorder, how many are coming and the Shopify setup that
  * goes with it are in lib/preorderConfig.ts.
  *
- * A listed size is a preorder only while it's selling below zero in Shopify
- * (`backorder` in lib/inventory.ts). While it still has stock on hand it sells
- * as a normal in-stock size at full price, so the same variant can be either,
- * depending on when it's bought.
+ * A listed size is a preorder once its available count in Shopify is at or
+ * below the units coming on the purchase order. While it still has stock on
+ * hand above that, it sells as a normal in-stock size at full price, so the
+ * same variant can be either, depending on when it's bought.
  *
  * ── THE DISCOUNT LIVES IN SHOPIFY ────────────────────────────────────────
  * This file only DISPLAYS the discount and counts it in the cart estimate.
@@ -35,11 +35,13 @@ export function preorderOffer(
   size: string | undefined,
 ): PreorderOffer | null {
   const handle = handleOf(product);
-  if (preorderIncoming(handle, color, size) === null) return null;
-  // In stock: a normal sale. Sold out: the incoming units are all spoken for.
-  // Unknown (Shopify unreachable): can't tell, so no preorder promise.
+  const incoming = preorderIncoming(handle, color, size);
+  if (incoming === null) return null;
+  // Sold out: nothing left to sell. Count unreadable (Shopify unreachable or
+  // no inventory scope): can't tell on-hand from incoming, so no preorder
+  // promise. Above `incoming`: still selling units that are on hand.
   const a = availability(product, color, size);
-  if (a.status !== 'available' || !a.backorder) return null;
+  if (a.status !== 'available' || a.quantity === null || a.quantity > incoming) return null;
   const cfg = PREORDERS[handle];
   return { discountPct: cfg.discountPct, shipWindow: cfg.shipWindow };
 }

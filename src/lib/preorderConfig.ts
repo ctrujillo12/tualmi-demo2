@@ -1,24 +1,23 @@
 /**
  * What's on preorder, and how many are coming. Data only, no imports, so both
- * lib/inventory.ts (which caps preorders) and lib/preorder.ts (which prices and
- * labels them) can read it without importing each other.
+ * lib/inventory.ts (which caps in-stock sales) and lib/preorder.ts (which
+ * prices and labels preorders) can read it without importing each other.
  *
  * ── HOW IT WORKS WITH SHOPIFY ────────────────────────────────────────────
- * For every size listed here, tick "Continue selling when out of stock" on
- * that variant in Shopify and leave its on-hand count alone. Then, per size:
- *   on hand > 0                      in stock: full price, ships as normal
- *   0 down to -(incoming - 1)        preorder: discounted, ships later
- *   -(incoming) or lower             sold out: every incoming unit is spoken for
- * Shopify counts backordered units as negative stock, so "how many preorders
- * have sold" is just how far below zero the count is.
- *
- * The cap is enforced by this site (add to cart, quantity, checkout
- * validation). Shopify itself will keep selling, so turn "Continue selling"
- * back OFF for a size if it should stop for any reason.
+ * The incoming units are ADDED to each variant's available stock in Shopify
+ * (done 23 Oct 2026), with "Continue selling when out of stock" OFF. So for a
+ * listed size, Shopify's available count is on-hand + incoming, and:
+ *   available > incoming      the units above `incoming` are on hand: sold
+ *                             in stock, full price, ships as normal
+ *   1 to incoming             what's left is the incoming shipment: preorder,
+ *                             discounted, ships later
+ *   0                         sold out, as usual; Shopify stops selling
+ * A size with nothing on hand (S, M) is a preorder from the first unit.
  *
  * ── WHEN THE SHIPMENT LANDS ──────────────────────────────────────────────
- * Receive the stock in Shopify, untick "Continue selling", and delete the
- * entry below. Every size then sells as normal in-stock again.
+ * Delete the entry below. The counts in Shopify are already right, so every
+ * size goes straight back to normal in-stock selling. Leaving the entry in
+ * after the stock arrives would keep selling in-hand units as preorders.
  */
 export interface PreorderConfig {
   colors: string[];

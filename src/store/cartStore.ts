@@ -109,10 +109,13 @@ function lineAttributesFor(item: CartItem): { key: string; value: string }[] | u
     .replace(/^in stock,\s*/i, '')
     .replace(/^ships\s+/i, '')
     .trim();
-  const attrs = window ? [{ key: 'Ships', value: window }] : [];
-  // So a preorder line is unmistakable on the order when it's being packed.
-  if (item.preorderDiscountPct) attrs.unshift({ key: 'Preorder', value: 'Yes' });
-  return attrs.length ? attrs : undefined;
+  // Preorder lines carry one attribute that reads as a sentence under the item
+  // on Shopify's checkout, order confirmation and admin order: "Preorder:
+  // ships late December – early January". Everything else keeps "Ships".
+  if (item.preorderDiscountPct) {
+    return [{ key: 'Preorder', value: window ? `ships ${window}` : 'ships later' }];
+  }
+  return window ? [{ key: 'Ships', value: window }] : undefined;
 }
 
 /**

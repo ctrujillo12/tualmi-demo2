@@ -832,6 +832,9 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                     const state = availability(product, selectedColor, size);
                     const soldOut = state.status === 'sold-out';
                     const low = state.low;
+                    // Labelled on the pill itself, so nobody picks a preorder
+                    // size thinking it ships this week.
+                    const pre = !soldOut && preorderSizeList.includes(size);
                     return (
                       <button
                         key={size}
@@ -842,6 +845,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                         // screen reader.
                         aria-label={
                           soldOut ? `${size} — ${SOLD_OUT_LABEL}`
+                          : pre ? `${size} — preorder`
                           : low ? `${size} — ${LOW_STOCK_LABEL}`
                           : size
                         }
@@ -850,8 +854,9 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                           // 42px min height: an 8px-padded 12px pill is a ~30px
                           // tap target, well under the 44px thumb minimum, and
                           // this is a phone-first store.
-                          padding: '11px 18px',
+                          padding: pre ? '6px 14px' : '11px 18px',
                           minHeight: '42px',
+                          lineHeight: pre ? 1.15 : undefined,
                           fontFamily: sans,
                           fontSize: '12px',
                           fontWeight: 600,
@@ -870,7 +875,12 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                         }}
                       >
                         {size}
-                        {low && !soldOut && (
+                        {pre && (
+                          <span style={{ display: 'block', fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.06em', opacity: 0.85 }}>
+                            preorder
+                          </span>
+                        )}
+                        {low && !soldOut && !pre && (
                           <span
                             aria-hidden
                             style={{
@@ -908,9 +918,9 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                         backgroundColor: 'rgba(169, 68, 92, 0.08)',
                       }}
                     >
-                      ✦ {preorderSizeList.join(', ')} {preorderSizeList.length > 1 ? 'are' : 'is'} back
-                      on preorder: <strong>{terms.discountPct}% off</strong>, ships {terms.shipWindow}.
-                      You&apos;re charged today, and anything else in your order ships right away.
+                      ✦ <strong>{preorderSizeList.join(', ')} {preorderSizeList.length > 1 ? 'are' : 'is'} preorder
+                      only</strong>: {terms.discountPct}% off, ships {terms.shipWindow}. You&apos;re charged
+                      today, and anything else in your order ships right away.
                     </p>
                   );
                 })()}
