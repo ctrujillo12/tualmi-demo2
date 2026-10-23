@@ -161,11 +161,21 @@ export default async function Home() {
         }}
       />
 
-      {/* About and the drop share a flex wrapper so a phone can show the
-          products first (.home-stack in globals.css). Desktop keeps the DOM
-          order: about, then products. */}
-      <div className="home-stack">
-      {/* ══ 2 · ABOUT ═════════════════════════════════════════════════════ */}
+      {/* ══ 2 · THE DROP — one panel per product, all colorways shown ═════ */}
+      {/* Two stacked colored bands; the background changes from the shorts
+          panel to the pants panel as you scroll between them. Panel markup
+          lives in components/ProductDropPanel.tsx, shared with the shop page
+          (/collections) — see lib/dropProducts.ts for why. */}
+      <div id="collection">
+        {DROP_PRODUCTS.map((p) => (
+          <ProductDropPanel key={p.handle} drop={p} resolvedProduct={productFor(p.handle)} />
+        ))}
+      </div>
+
+      {/* ══ 3 · ABOUT ═════════════════════════════════════════════════════ */}
+      {/* Below the products at every width (Oct 2026): the hero already
+          sells, so the first scroll goes to the products and the brand
+          story follows for anyone still deciding. */}
       {/* Kept short on mobile (see .home-about in globals.css): every pixel of
           brand copy here is a pixel between an ad click and a product. */}
       <section className="home-about" style={{ backgroundColor: cream, padding: 'clamp(80px, 12vw, 160px) clamp(24px, 6vw, 72px)', position: 'relative' }}>
@@ -232,18 +242,6 @@ export default async function Home() {
         </div>
 
       </section>
-
-      {/* ══ 3 · THE DROP — one panel per product, all colorways shown ═════ */}
-      {/* Two stacked colored bands; the background changes from the shorts
-          panel to the pants panel as you scroll between them. Panel markup
-          lives in components/ProductDropPanel.tsx, shared with the shop page
-          (/collections) — see lib/dropProducts.ts for why. */}
-      <div id="collection">
-        {DROP_PRODUCTS.map((p) => (
-          <ProductDropPanel key={p.handle} drop={p} resolvedProduct={productFor(p.handle)} />
-        ))}
-      </div>
-      </div>
 
       {/* ══ 5 · SOCIALS ═══════════════════════════════════════════════════ */}
       <section

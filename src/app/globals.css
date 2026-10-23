@@ -334,12 +334,8 @@ body {
     line-height: 1.75 !important;
     margin-bottom: 16px !important;
   }
-  /* Phone: products straight after the hero, about after them. Only the
-     middle paragraph stays; the full story is one tap away, and WRAP is
-     already stated on the product pages. Desktop is unchanged. */
-  .home-stack { display: flex; flex-direction: column; }
-  .home-stack > #collection { order: 1; }
-  .home-stack > .home-about { order: 2; }
+  /* Phone: only the middle paragraph stays; the full story is one tap
+     away, and WRAP is already stated on the product pages. */
   .home-about .home-about-extra { display: none; }
 }
 
