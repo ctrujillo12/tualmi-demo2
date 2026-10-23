@@ -927,7 +927,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                         backgroundColor: 'rgba(169, 68, 92, 0.08)',
                       }}
                     >
-                      ✦ <strong>{preorderSizeList.join(', ')} (dashed) {verb(preorderSizeList)} preorder only</strong>
+                      ✦ <strong>{preorderSizeList.join(', ')} {verb(preorderSizeList)} preorder only</strong>
                       {allOff
                         ? <>: {pct}% off, ships {terms.shipWindow}.</>
                         : <>, shipping {terms.shipWindow}.{offSizes.length > 0 && <> {offSizes.join(', ')} {verb(offSizes)} {pct}% off.</>}</>}
