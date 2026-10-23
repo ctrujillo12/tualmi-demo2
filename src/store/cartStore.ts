@@ -17,7 +17,7 @@ import {
 import type { ShopifyVariant } from '@/lib/shopify';
 import { findVariant, maxPurchasable } from '@/lib/inventory';
 import { attributionCartAttributes } from '@/lib/attribution';
-import { cartLinePricing } from '@/lib/preorder';
+import { cartLinePricing, preorderCodesFor } from '@/lib/preorder';
 import { PREORDERS } from '@/lib/preorderConfig';
 import { isPreorderHandle } from '@/lib/shipWindow';
 import { getDiscountCode } from '@/lib/discount';
@@ -578,6 +578,10 @@ export const useCartStore = create<CartStore>()(
           // affiliate sales can be reconciled exactly, not guessed by timestamp,
           // and pre-applies any creator code picked up at /discount/[code].
           const code = getDiscountCode();
+          // The creator/welcome code plus, when the cart holds a preorder line,
+          // the preorder discount code (lib/preorderConfig.ts). Shopify applies
+          // both only if each is set to combine with the other's type.
+          const codes = Array.from(new Set([...(code ? [code] : []), ...preorderCodesFor(items)]));
 
           // Last event we can fire ourselves — the purchase happens on Shopify's
           // domain, so that one has to come from Shopify's own GA4 integration.
@@ -629,14 +633,14 @@ export const useCartStore = create<CartStore>()(
             // computed above, so checkout still works.
             cart = await cartCreate(lines, cartAttributes);
             devLog('cartCreate (at checkout) ->', cart.id);
-            if (code) {
-              cart = (await cartDiscountCodesUpdate(cart.id, [code])) ?? cart;
+            if (codes.length) {
+              cart = (await cartDiscountCodesUpdate(cart.id, codes)) ?? cart;
             }
             set({ shopifyCartId: cart.id, shopifyCheckoutUrl: cart.checkoutUrl });
           } else {
             cart = (await cartAttributesUpdate(cart.id, cartAttributes)) ?? cart;
-            if (code) {
-              cart = (await cartDiscountCodesUpdate(cart.id, [code])) ?? cart;
+            if (codes.length) {
+              cart = (await cartDiscountCodesUpdate(cart.id, codes)) ?? cart;
             }
             set({ shopifyCheckoutUrl: cart.checkoutUrl });
           }

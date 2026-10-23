@@ -1,40 +1,42 @@
 /**
  * What's on preorder, and how many are coming. Data only, no imports, so both
- * lib/inventory.ts (which caps in-stock sales) and lib/preorder.ts (which
- * prices and labels preorders) can read it without importing each other.
+ * lib/inventory.ts (which caps preorders) and lib/preorder.ts (which prices and
+ * labels them) can read it without importing each other.
  *
  * ── HOW IT WORKS WITH SHOPIFY ────────────────────────────────────────────
- * The incoming units are ADDED to each variant's available stock in Shopify
- * (done 23 Oct 2026), with "Continue selling when out of stock" OFF. So for a
- * listed size, Shopify's available count is on-hand + incoming, and:
- *   available > incoming      the units above `incoming` are on hand: sold
- *                             in stock, full price, ships as normal
- *   1 to incoming             what's left is the incoming shipment: preorder,
- *                             discounted, ships later
- *   0                         sold out, as usual; Shopify stops selling
- * A size with nothing on hand (S, M) is a preorder from the first unit.
+ * Each listed variant holds its REAL on-hand count in Shopify, with "Continue
+ * selling when out of stock" ON (set up 23 Oct 2026). The incoming units are
+ * not in Shopify's count. Then, per size:
+ *   on hand > 0                      in stock: full price, ships as normal
+ *   0 down to -(incoming - 1)        preorder: ships later
+ *   -(incoming) or lower             sold out: every incoming unit is spoken for
+ * Shopify counts backordered units as negative stock, so how far below zero a
+ * size is = how many preorders have sold.
+ *
+ * The cap is enforced by this site (add to cart, quantity, checkout
+ * validation). Shopify itself would keep selling, so a sale on another channel
+ * (Shop app, social shops, POS) isn't capped or labelled as a preorder.
  *
  * ── WHEN THE SHIPMENT LANDS ──────────────────────────────────────────────
- * Delete the entry below. The counts in Shopify are already right, so every
- * size goes straight back to normal in-stock selling. Leaving the entry in
- * after the stock arrives would keep selling in-hand units as preorders.
+ * Receive the stock in Shopify, untick "Continue selling", and delete the
+ * entry below. Every size then sells as normal in-stock again.
  */
 export interface PreorderConfig {
   colors: string[];
   /** Units on the purchase order, per size. Only these sizes go on preorder. */
   incoming: Record<string, number>;
+  /** Every preorder unit gets this; in-stock units of the same sizes don't. */
   discountPct: number;
   /**
-   * Sizes that get `discountPct`. Must match the AUTOMATIC discount in Shopify
-   * exactly (Discounts → Amount off products → those variants), because that
-   * discount is what actually changes the price at checkout. Sizes on
-   * preorder but not listed here sell as preorders at full price.
-   *
-   * Only sizes with NOTHING on hand belong here: an automatic discount can't
-   * tell an on-hand unit from an incoming one, so a size still selling stock
-   * would give the discount on in-stock units too.
+   * The Shopify discount CODE that gives `discountPct`, applied by the site at
+   * checkout only when the cart holds a preorder line. A code, not an
+   * automatic discount, because an automatic discount on a variant applies
+   * whether that unit is on hand or a preorder, and the same size is both over
+   * time. In Shopify: Amount off products, `discountPct`%, on every variant in
+   * `incoming` for these colors. Deliberately not guessable, since anyone who
+   * types it gets it on in-stock units too.
    */
-  discountSizes: string[];
+  code: string;
   /** e.g. "late December – early January" */
   shipWindow: string;
 }
@@ -49,8 +51,7 @@ export const PREORDERS: Record<string, PreorderConfig> = {
     colors: ['Picnic'],
     incoming: { '2XS': 3, XS: 22, S: 34, M: 30, L: 8, XL: 3 },
     discountPct: 15,
-    // Shopify automatic discount on Picnic S and M, set 23 Oct 2026.
-    discountSizes: ['S', 'M'],
+    code: 'TMPRE-PICNIC-7Q4K',
     shipWindow: 'late December – early January',
   },
 };

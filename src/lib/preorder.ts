@@ -8,16 +8,17 @@ import { PREORDERS, preorderIncoming } from '@/lib/preorderConfig';
  * flags. WHAT is on preorder, how many are coming and the Shopify setup that
  * goes with it are in lib/preorderConfig.ts.
  *
- * A listed size is a preorder once its available count in Shopify is at or
- * below the units coming on the purchase order. While it still has stock on
- * hand above that, it sells as a normal in-stock size at full price, so the
- * same variant can be either, depending on when it's bought.
+ * A listed size is a preorder once its on-hand stock in Shopify is gone and it
+ * is selling below zero (`backorder` in lib/inventory.ts). While it still has
+ * stock on hand it sells as a normal in-stock size at full price, so the same
+ * variant can be either, depending on when it's bought.
  *
  * ── THE DISCOUNT LIVES IN SHOPIFY ────────────────────────────────────────
  * This file only DISPLAYS the discount and counts it in the cart estimate.
- * The charge comes from an automatic discount in Shopify on exactly the sizes
- * in the config's `discountSizes`. If the two disagree, the site promises a
- * price checkout won't honour.
+ * The charge comes from the Shopify discount code in the config, which the
+ * cart applies at checkout when it holds a preorder line (store/cartStore.ts).
+ * If that code is missing in Shopify or scoped differently, the site promises
+ * a price checkout won't honour.
  */
 export interface PreorderOffer {
   discountPct: number;
@@ -36,14 +37,21 @@ export function preorderOffer(
   const handle = handleOf(product);
   const incoming = preorderIncoming(handle, color, size);
   if (incoming === null) return null;
-  // Sold out: nothing left to sell. Count unreadable (Shopify unreachable or
-  // no inventory scope): can't tell on-hand from incoming, so no preorder
-  // promise. Above `incoming`: still selling units that are on hand.
+  // In stock: a normal sale. Sold out: the incoming units are all spoken for.
+  // Unknown (Shopify unreachable): can't tell, so no preorder promise.
   const a = availability(product, color, size);
-  if (a.status !== 'available' || a.quantity === null || a.quantity > incoming) return null;
+  if (a.status !== 'available' || !a.backorder) return null;
   const cfg = PREORDERS[handle];
-  const discountedSize = cfg.discountSizes.some((s) => s.toLowerCase() === size!.toLowerCase());
-  return { discountPct: discountedSize ? cfg.discountPct : 0, shipWindow: cfg.shipWindow };
+  return { discountPct: cfg.discountPct, shipWindow: cfg.shipWindow };
+}
+
+/** Shopify discount codes for the preorder lines in a cart, deduped. */
+export function preorderCodesFor(items: CartItem[]): string[] {
+  const codes = items
+    .filter((i) => i.isPreorder && i.preorderDiscountPct)
+    .map((i) => PREORDERS[handleOf(i.product)]?.code)
+    .filter((c): c is string => !!c);
+  return Array.from(new Set(codes));
 }
 
 /** Sizes of this colorway currently on preorder, in the product's size order. */
