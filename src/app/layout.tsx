@@ -23,11 +23,11 @@ const cedarvilleCursive = Cedarville_Cursive({ subsets: ['latin'], weight: '400'
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.tualmi.com'),
   title: {
-    default: 'Tualmi — actually cute hiking apparel',
+    default: 'Tualmi — actually cute hiking clothes for women',
     template: '%s | Tualmi',
   },
   description:
-    'Hiking apparel made by women, for women — the fits, prints, and colorways the legacy brands never made. Built for the trail, cute everywhere else.',
+    'Cute, functional hiking pants and shorts made by women, for women: the fits, prints and colorways the legacy outdoor brands never made. Built for the trail, cute everywhere else.',
   // Site-wide link preview (image, title, description). Lives in lib/og.ts so
   // pages that set their own `openGraph` can extend it instead of wiping it.
   openGraph: DEFAULT_OG,
@@ -50,7 +50,13 @@ const GA_MEASUREMENT_ID = 'G-PTRJN12KTL';
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  // A stable id so the WebSite block and every product's brand can point at
+  // this one entity instead of each describing "Tualmi" from scratch.
+  '@id': 'https://www.tualmi.com/#organization',
   name: 'Tualmi',
+  // The name people search and tag: the Instagram handle is @tualmioutdoors.
+  alternateName: ['Tualmi Outdoors'],
+  slogan: 'Gear for a new kind of outdoorsy.',
   legalName: BUSINESS.legalName,
   url: 'https://www.tualmi.com',
   logo: 'https://www.tualmi.com/images-2/logo2-maroon.png',
@@ -80,18 +86,21 @@ const organizationJsonLd = {
     areaServed: 'US',
     availableLanguage: 'English',
   },
+  // THE category sentence. Keep this wording in step with the Instagram /
+  // TikTok / LinkedIn bios and press boilerplate: AI assistants describe a
+  // brand by what independent sources agree it is, so one consistent
+  // sentence everywhere beats five clever ones.
   description:
-    'Tualmi is a women-owned outdoor apparel brand making fashion-forward, trail-ready hiking gear for women. Every piece features women-specific, flattering fits — not adapted from men’s patterns — and is made ethically in a WRAP-certified facility. Based in California.',
+    'Tualmi (Tualmi Outdoors) is a women-founded outdoor apparel brand from Los Angeles making cute, functional hiking clothes for young women. Its hiking pants and shorts combine women-specific fits (not adapted from men’s patterns), playful colors and prints, and technical fabrics, and are made ethically in a WRAP-certified facility.',
+  founder: BUSINESS.founders.map((f) => ({ '@type': 'Person', name: f.name, jobTitle: f.jobTitle })),
   knowsAbout: [
-    'women’s hiking apparel',
+    'women’s hiking pants',
+    'women’s hiking shorts',
+    'cute hiking outfits',
+    'women’s outdoor apparel',
     'sustainable outdoor clothing',
-    'fashion-forward trail gear',
-    'sustainable outdoor apparel',
   ],
-  sameAs: [
-    'https://www.tiktok.com/@tualmi.outdoors',
-    'https://www.instagram.com/tualmioutdoors',
-  ],
+  sameAs: [...BUSINESS.socialProfiles],
 };
 
 const websiteJsonLd = {
@@ -99,7 +108,8 @@ const websiteJsonLd = {
   '@type': 'WebSite',
   name: 'Tualmi',
   url: 'https://www.tualmi.com',
-  publisher: { '@type': 'Organization', name: 'Tualmi' },
+  alternateName: 'Tualmi Outdoors',
+  publisher: { '@id': 'https://www.tualmi.com/#organization' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

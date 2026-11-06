@@ -38,60 +38,25 @@ const ink      = '#5F5C46';  // body copy; blush-pink text on cream is unreadabl
 const rose     = '#C97C93';  // pink   — eyebrows and accents
 const brick    = '#A9503A';  // red    — links and the shorts band accent
 
-// Product structured data — all items are shown on this page.
+// Structured data for the homepage: a list of what's for sale, by URL.
 //
-// ⚠ THIS BLOCK IS STATIC. products/[id]/page.tsx derives availability from the
-// live Shopify variants; these values are typed by hand, so they can disagree
-// with the product pages and with the feed. They did: both bottoms sat at
-// PreOrder here long after they were shipping, while the product pages said
-// InStock. Merchant Center suspends accounts for exactly that mismatch.
-// If a product's availability changes, change it HERE too.
+// This used to be a hand-typed Product block per item, with its own price and
+// availability. That was a second, static source for numbers the product pages
+// already derive live from Shopify, and it drifted (both bottoms sat at
+// PreOrder here long after they shipped; Sierra in Picnic is on preorder now
+// and this block still said InStock). Merchant Center suspends accounts for
+// exactly that mismatch, and the account has already had one Misrepresentation
+// rejection. Product markup also belongs on the product's own page, not on a
+// page that lists several. So the homepage now points at the product pages
+// and lets their ProductGroup markup be the single source of truth.
 const SITE = 'https://www.tualmi.com';
-
-// Its own copy — lib/dropProducts.ts declares the same constant for its own
-// cover-photo paths, kept separate so this file's structured-data image paths
-// don't depend on that module.
-const RE = '/images-2/reedited-photos/Highlights';
 const productsJsonLd = {
   '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'Product',
-      name: 'Sierra Shorts',
-      brand: { '@type': 'Brand', name: 'Tualmi' },
-      category: 'Women’s Hiking Apparel',
-      material: '100% recycled nylon',
-      description:
-        'Mid-rise, relaxed-fit women’s hiking shorts with a flattering cut, deep pockets sized for a full phone, and bold, print-forward colorways. Made from 100% recycled nylon.',
-      image: `${SITE}${RE}/jam-front-5.jpg`,
-      offers: {
-        '@type': 'Offer', price: '68.00', priceCurrency: 'USD',
-        availability: 'https://schema.org/InStock', url: `${SITE}/products/sierra-shorts`,
-      },
-    },
-    {
-      '@type': 'Product',
-      name: 'Juniper Pant',
-      brand: { '@type': 'Brand', name: 'Tualmi' },
-      category: 'Women’s Hiking Apparel',
-      // The pant's shell is virgin nylon/spandex — see productDetails.ts.
-      // A false material claim in schema.org markup is submitted straight to
-      // Google, so this states the fit, not a fabric we don't have.
-      material: '88% Nylon, 12% Spandex',
-      description:
-        'Fashion-forward flare cargo pants that are genuinely trail-ready, with a flattering fold-over waist, functional cargo pockets, and a flared leg crafted for women’s proportions, not scaled down from a men’s pattern. Made ethically in a WRAP Gold Standard certified facility.',
-      image: `${SITE}${RE}/birch-front-1.jpg`,
-      offers: {
-        '@type': 'Offer', price: '108.00', priceCurrency: 'USD',
-        // InStock as of 22 Sept 2026 — the stock landed. No availabilityDate:
-        // that field is for preorder and backorder, and Google treats it as
-        // contradictory alongside InStock.
-        availability: 'https://schema.org/InStock', url: `${SITE}/products/juniper-pant`,
-      },
-    },
-    // Only the two products actually for sale. The Tioga Tee and Frolic
-    // Fleece are not on the site at all — the "also coming soon" strip that
-    // teased them was removed 14 Sept 2026.
+  '@type': 'ItemList',
+  name: 'Tualmi women’s hiking clothes',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, url: `${SITE}/products/juniper-pant`, name: 'Juniper Pant: women’s flare cargo hiking pants' },
+    { '@type': 'ListItem', position: 2, url: `${SITE}/products/sierra-shorts`, name: 'Sierra Shorts: women’s recycled nylon hiking shorts' },
   ],
 };
 

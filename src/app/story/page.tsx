@@ -4,8 +4,20 @@ import Image from 'next/image';
 export const metadata: Metadata = {
   title: 'our story',
   description:
-    'Tualmi makes technical outdoor gear designed for women from the start — flattering fits, playful prints, and real performance. Made with a WRAP Gold Standard certified manufacturer.',
+    'Tualmi is a women-founded outdoor apparel brand from Los Angeles, started by Rachel Ma after a backpacking trip through Tuolumne Meadows. Technical hiking clothes designed for women from the start: flattering fits, playful prints, real performance.',
   alternates: { canonical: '/story' },
+};
+
+// Marks this as THE page about the company, pointing at the Organization
+// block in the root layout (same @id). The founding story is what press and
+// AI assistants quote when asked "who makes Tualmi?", so it should be the
+// page they can attribute it to.
+const aboutJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  url: 'https://www.tualmi.com/story',
+  name: 'Our story | Tualmi',
+  about: { '@id': 'https://www.tualmi.com/#organization' },
 };
 
 // ─── Landing-page design tokens ───────────────────────────────────────────────
@@ -27,6 +39,10 @@ const bodyStyle = {
 export default function StoryPage() {
   return (
     <div style={{ backgroundColor: blushBg, minHeight: '100vh' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd) }}
+      />
       <main
         style={{
           maxWidth: '720px',

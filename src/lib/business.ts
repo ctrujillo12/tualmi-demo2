@@ -36,6 +36,28 @@ export const BUSINESS = {
     country: 'US',
   },
 
+  /**
+   * Public profiles, for the Organization structured data's `sameAs`. This
+   * list is how Google and AI assistants tie "Tualmi" on Instagram, TikTok,
+   * LinkedIn and Pinterest to this website as ONE company. Only add a URL
+   * that is live and that you control.
+   */
+  socialProfiles: [
+    'https://www.instagram.com/tualmioutdoors',
+    'https://www.tiktok.com/@tualmi.outdoors',
+    // TODO: add the LinkedIn company page and Pinterest profile URLs.
+  ],
+
+  /**
+   * Founders, for the Organization markup. Use the names exactly as they
+   * appear on LinkedIn and in press, so every mention resolves to one person.
+   */
+  founders: [
+    { name: 'Rachel Ma', jobTitle: 'Co-founder & CEO' },
+    // TODO: Cheyenne's full name as it appears on LinkedIn.
+    { name: 'Cheyenne', jobTitle: 'Co-founder' },
+  ],
+
   /** What we actually promise, so the contact page is not writing a cheque. */
   responseTime: '1–2 business days',
 } as const;

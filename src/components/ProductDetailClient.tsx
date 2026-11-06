@@ -714,6 +714,28 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
               {product.name}
             </h1>
 
+            {/* What the thing IS, in the words people search with. "Juniper
+                Pant" is a good name and tells a search engine nothing; this
+                line is the only place on the page, above the fold, that says
+                "women's hiking pants". Set per product as `descriptor` in
+                lib/productDetails.ts. */}
+            {fabricDetail?.descriptor && (
+              <p
+                className="pdp-descriptor"
+                style={{
+                  fontFamily: sans,
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  letterSpacing: '0.02em',
+                  color: soft,
+                  margin: '0 0 10px',
+                  textTransform: 'lowercase',
+                }}
+              >
+                {fabricDetail.descriptor}
+              </p>
+            )}
+
             {/* Price, at the size of a price. It was set in 14px body type,
                 which is smaller than the nav — on a phone it read as a caption
                 rather than the number the whole page exists to communicate. */}
@@ -1471,6 +1493,8 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 <div key={key} style={{ borderBottom: `1px solid ${rule}` }}>
                   <button
                     onClick={() => toggleSection(key)}
+                    aria-expanded={expandedSection === key}
+                    aria-controls={`pdp-acc-${key}`}
                     style={{
                       width: '100%',
                       padding: '16px 0',
@@ -1491,11 +1515,20 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                     <span>{label}</span>
                     <span style={{ fontSize: '16px', color: soft, fontWeight: 400 }}>{expandedSection === key ? '−' : '+'}</span>
                   </button>
-                  {expandedSection === key && (
-                    <div style={{ paddingBottom: '16px', ...bodyStyle, lineHeight: 1.9 }}>
-                      {content}
-                    </div>
-                  )}
+                  {/* Always in the HTML, hidden when collapsed. It used to be
+                      mounted only when open, so the FAQ answers, fabric
+                      composition, size chart and return policy were missing
+                      from the server-rendered page entirely: Google, ChatGPT
+                      and Perplexity read the HTML and never click "+", so as
+                      far as they could tell the pant had no FAQ and no fabric
+                      spec. `hidden` keeps it looking identical for shoppers. */}
+                  <div
+                    id={`pdp-acc-${key}`}
+                    hidden={expandedSection !== key}
+                    style={{ paddingBottom: '16px', ...bodyStyle, lineHeight: 1.9 }}
+                  >
+                    {content}
+                  </div>
                 </div>
               ))}
             </div>

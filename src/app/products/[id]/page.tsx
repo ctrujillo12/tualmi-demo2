@@ -15,6 +15,8 @@ import { isColorSoldOut } from '@/lib/inventory';
 import { DETAIL_HANDLES, hasDetailPage } from '@/lib/catalog';
 import { shipPhrase, isPreorderHandle, HANDLING_DAYS, TRANSIT_DAYS } from '@/lib/shipWindow';
 import { RETURN_WINDOW_DAYS } from '@/lib/business';
+import { PRODUCT_DETAILS } from '@/lib/productDetails';
+import { SITE_URL } from '@/lib/site';
 
 // NOTE ON LINK PREVIEWS
 // The `openGraph` block is what Instagram, iMessage, Linktree, WhatsApp etc.
@@ -29,9 +31,9 @@ const OG_BASE = {
 
 const PAGE_METADATA: Record<string, Metadata> = {
   'sierra-shorts': {
-    title: 'sierra shorts — mid-rise hiking shorts',
+    title: 'sierra shorts — women’s recycled nylon hiking shorts',
     description:
-      'Mid-rise, relaxed-fit women’s hiking shorts in 100% recycled nylon — fast-dry and water-repellent performance, ultra-light. In Jam, Picnic, and Confetti — shipping now.',
+      'Mid-rise, relaxed-fit women’s hiking shorts in 100% recycled nylon: fast-dry, water-repellent, ultra-light, with deep pockets that fit your whole phone. In Jam, Picnic and Confetti, sizes XXS–XXL.',
     alternates: { canonical: '/products/sierra-shorts' },
     openGraph: {
       ...OG_BASE,
@@ -49,9 +51,9 @@ const PAGE_METADATA: Record<string, Metadata> = {
     },
   },
   'juniper-pant': {
-    title: 'juniper pant — flare cargo hiking pants',
+    title: 'juniper pant — women’s flare cargo hiking pants',
     description:
-      `Fashion-forward flare cargo hiking pants with a flattering fit and real cargo pockets. Made ethically in a WRAP-certified facility. In stock, ${shipPhrase()}.`,
+      `Women’s flare cargo hiking pants with a fold-over waist, snap cargo pockets, 4-way stretch and a 29" inseam. In Birch and Olive, sizes XXS–XXL. Made in a WRAP-certified facility. In stock, ${shipPhrase()}.`,
     alternates: { canonical: '/products/juniper-pant' },
     openGraph: {
       ...OG_BASE,
@@ -298,6 +300,37 @@ export default async function ProductPage({
       }
     : {};
 
+  // ── Facts an AI assistant needs to place the product ──────────────────
+  // What it is, who it's for and what it's made of. All three come from
+  // lib/productDetails.ts, the same file the on-page spec list reads, so the
+  // markup cannot claim a fabric the page doesn't. `material` is the shell
+  // only: the pant's knit waistband is listed on the page, not here.
+  const detail = PRODUCT_DETAILS[product!.handle ?? id];
+  const descriptiveFacts = {
+    ...(detail?.descriptor ? { category: detail.descriptor } : {}),
+    ...(detail?.shell ? { material: detail.shell } : {}),
+    audience: {
+      '@type': 'PeopleAudience',
+      suggestedGender: 'female',
+    },
+  };
+
+  // FAQPage from the same Q&A the page renders in "questions we get". Google
+  // no longer shows FAQ rich results for most stores, so this is not for a
+  // SERP feature; it hands the answers to anything reading the page (AI
+  // Overviews, ChatGPT, Perplexity) as clean question/answer pairs.
+  const faqJsonLd = detail?.faq?.length
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: detail.faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      }
+    : null;
+
   const colorways = PRODUCT_COLORS[product!.handle ?? id] ?? [];
   const colorImages = PRODUCT_COLOR_IMAGES[product!.handle ?? id] ?? {};
 
@@ -312,6 +345,7 @@ export default async function ProductPage({
       '@type': 'Product',
       name: `${product!.name} in ${c.name}`,
       color: c.name,
+      ...descriptiveFacts,
       // Google lists a variant with no description as a (non-critical) gap.
       description: product!.description,
       image: abs(img),
@@ -338,7 +372,8 @@ export default async function ProductPage({
         '@type': 'ProductGroup',
         name: product!.name,
         description: product!.description,
-        brand: { '@type': 'Brand', name: 'Tualmi' },
+        brand: { '@type': 'Brand', name: 'Tualmi', url: SITE_URL },
+        ...descriptiveFacts,
         image: abs(product!.images[0]),
         url: canonicalUrl,
         productGroupID: product!.handle ?? id,
@@ -354,7 +389,8 @@ export default async function ProductPage({
         '@type': 'Product',
         name: product!.name,
         description: product!.description,
-        brand: { '@type': 'Brand', name: 'Tualmi' },
+        brand: { '@type': 'Brand', name: 'Tualmi', url: SITE_URL },
+        ...descriptiveFacts,
         image: abs(product!.images[0]),
         offers: {
           '@type': 'Offer',
@@ -391,6 +427,12 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
       <ProductDetailClient
         product={product!}
         initialColor={color ?? colorForVariant(product!, variant)}

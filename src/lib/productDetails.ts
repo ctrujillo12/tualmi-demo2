@@ -75,6 +75,15 @@ export interface FabricDetail {
    */
   tagline?: string;
 
+  /**
+   * What the product IS, in plain search language: "women's flare cargo
+   * hiking pants". Rendered as a small line under the product name and used
+   * in structured data as the category. The product names (Juniper, Sierra)
+   * are brand names; without this, nothing above the fold tells Google or an
+   * AI assistant that the page is about women's hiking pants.
+   */
+  descriptor?: string;
+
   faq?: { q: string; a: string }[];
   /**
    * The three claims in the strip above the product name.
@@ -118,6 +127,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     shell: '88% Nylon, 12% Spandex (woven)',
     waistband: '85% Nylon, 15% Spandex (knit)',
     weight: '200 GSM',
+    descriptor: 'women’s flare cargo hiking pants',
     tagline: 'Fits like your favorite pants. Built for the trail.',
     // ── THE $108 QUESTION ───────────────────────────────────────
     // These six are the answer to "why not $60?", so they lead with what a
@@ -245,6 +255,7 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     trustClaims: ['women-owned', 'WRAP-certified', 'recycled fabric'],
     shell: '100% Recycled Nylon',
     weight: '130-140 GSM',
+    descriptor: 'women’s mid-rise hiking shorts',
     highlights: [
       { icon: 'moisture', label: 'Fast-dry' },
       { icon: 'water',    label: 'Water-repellent' },
@@ -268,6 +279,27 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
     // No single direction: it depends how the shopper wants the shorts to
     // sit, and exchanges have gone both ways.
     fit: 'Mid-rise, relaxed fit. Between sizes? Size down for a snugger fit, up for more room.',
+    // Added Nov 2026 for search/AI visibility. Every answer restates a claim
+    // the page already makes (highlights, features, size chart) -- nothing
+    // new is asserted here. Same bar as the pant's FAQ: confirm before adding.
+    faq: [
+      {
+        q: 'What are they made of?',
+        a: '100% recycled nylon. It’s a lightweight technical fabric, about 130–140 GSM.',
+      },
+      {
+        q: 'Are they water resistant?',
+        a: 'The shell is water-repellent and fast-drying. They’re not waterproof.',
+      },
+      {
+        q: 'Will my phone fit in the pockets?',
+        a: 'Yes. The side pockets are deep enough for your whole phone.',
+      },
+      {
+        q: 'How short are they?',
+        a: 'A 1.5" inseam on every size, with a mid-rise waist and a relaxed fit. Full measurements are in the size guide.',
+      },
+    ],
     // modelNote removed: it said "rachel is 5'6"" on every colorway, which
     // the September 2026 shoot made false — it was shot with a different model
     // per colorway, and Picnic with two. This is now derived per photograph
