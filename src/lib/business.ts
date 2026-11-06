@@ -30,8 +30,6 @@ export const BUSINESS = {
     street: '145 N Rossmore Ave',
     city: 'Los Angeles',
     region: 'CA',
-    // 90004 was looked up from the street address, not supplied -- worth one
-    // glance before this is used to answer a suspension appeal.
     postalCode: '90004',
     country: 'US',
   },
@@ -45,7 +43,8 @@ export const BUSINESS = {
   socialProfiles: [
     'https://www.instagram.com/tualmioutdoors',
     'https://www.tiktok.com/@tualmi.outdoors',
-    // TODO: add the LinkedIn company page and Pinterest profile URLs.
+    'https://www.linkedin.com/company/tualmi/?skipRedirect=true', 
+    'https://www.pinterest.com/tualmioutdoors/'
   ],
 
   /**
@@ -54,12 +53,11 @@ export const BUSINESS = {
    */
   founders: [
     { name: 'Rachel Ma', jobTitle: 'Co-founder & CEO' },
-    // TODO: Cheyenne's full name as it appears on LinkedIn.
-    { name: 'Cheyenne', jobTitle: 'Co-founder' },
+    { name: 'Cheyenne Trujillo', jobTitle: 'Co-founder' },
   ],
 
   /** What we actually promise, so the contact page is not writing a cheque. */
-  responseTime: '1–2 business days',
+  responseTime: '1–3 business days',
 } as const;
 
 /** True once the address is complete enough to publish. */
