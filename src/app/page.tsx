@@ -72,10 +72,10 @@ export default async function Home() {
           screen width. Phones get the left pane only. */}
       <section className="tl-hero">
         <div className="tl-hero-pane tl-hero-pane-a">
-          <Image src={jh(138)} alt="Two friends in Tualmi Juniper Pants under clouded peaks in Jackson Hole" fill priority quality={80} sizes="(min-width: 768px) 50vw, 100vw" className="tl-hero-img" />
+          <Image src={jh(138)} alt="Two friends in Tualmi Juniper Pants under clouded peaks in Jackson Hole" fill priority quality={85} sizes="(min-width: 768px) 50vw, 170vw" className="tl-hero-img" />
         </div>
         <div className="tl-hero-pane tl-hero-pane-b">
-          <Image src={jh(129)} alt="Two friends dancing down a mountain road in Juniper Pants" fill quality={80} sizes="50vw" className="tl-hero-img" />
+          <Image src={jh(129)} alt="Two friends dancing down a mountain road in Juniper Pants" fill quality={85} sizes="85vw" className="tl-hero-img" />
         </div>
         <div className="tl-hero-copy">
           <h1 className="tl-display">gear for a new kind of outdoorsy.</h1>
@@ -99,7 +99,7 @@ export default async function Home() {
       </section>
 
       <Link href="/jackson-hole" className="tl-bleed" aria-label="See the Jackson Hole lookbook">
-        <Image src={jh(189)} alt="Two friends at a ranch fence beside a horse, mountains behind" fill sizes="100vw" style={{ objectFit: 'cover' }} />
+        <Image src={jh(189)} alt="Two friends at a ranch fence beside a horse, mountains behind" fill quality={85} sizes="(max-width: 767px) 200vw, 100vw" className="tl-bleed-img" />
         <span className="tl-bleed-copy">
           <span className="tl-display">jackson hole</span>
           <span className="tl-bleed-link">see the lookbook</span>

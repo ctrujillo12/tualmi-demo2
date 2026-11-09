@@ -1748,3 +1748,12 @@ body { background: var(--cream); }
   font-size: clamp(30px, 3.6vw, 46px) !important;
   line-height: 1.05;
 }
+
+/* Photos cropped to a tall phone frame display much wider than the screen, so
+   their `sizes` values are above 100vw. Without that the browser downloads a
+   small file and stretches it. */
+.tl-bleed-img { object-fit: cover; }
+@media (max-width: 767px) {
+  .tl-bleed:not(.tl-bleed-club) { height: auto; aspect-ratio: 4 / 5; }
+  .tl-bleed-img { object-position: 64% center; }
+}

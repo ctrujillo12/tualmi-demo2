@@ -118,7 +118,7 @@ export default async function CollectionsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <section className="shop-banner">
-        <Image src={jh(129)} alt="Mountains above a road in Jackson Hole, two friends dancing in Juniper Pants" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center top' }} />
+        <Image src={jh(129)} alt="Mountains above a road in Jackson Hole, two friends dancing in Juniper Pants" fill priority quality={85} sizes="(max-width: 767px) 150vw, 100vw" style={{ objectFit: 'cover', objectPosition: 'center top' }} />
         <div className="shop-banner-copy">
           <h1 className="tl-display">gear for a new kind of outdoorsy.</h1>
         </div>
