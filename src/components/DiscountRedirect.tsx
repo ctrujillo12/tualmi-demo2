@@ -44,7 +44,7 @@ export default function DiscountRedirect({
     <div
       style={{
         minHeight: '100vh',
-        backgroundColor: '#FBF1F5',
+        backgroundColor: '#FAF6EC',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -56,7 +56,7 @@ export default function DiscountRedirect({
           fontFamily: 'var(--font-montserrat), system-ui, sans-serif',
           fontSize: '15px',
           fontWeight: 600,
-          color: '#A9445C',
+          color: '#34402B',
           textTransform: 'lowercase',
           textAlign: 'center',
           margin: 0,

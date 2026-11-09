@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import QuickAdd from '@/components/QuickAdd';
+import ShopCard from '@/components/ShopCard';
+import { jh } from '@/lib/community';
+import { AFTERPAY_SHORT } from '@/lib/afterpay';
 import { getProduct } from '@/lib/products';
 import { DROP_PRODUCTS, priceLabel } from '@/lib/dropProducts';
 
@@ -105,7 +108,7 @@ export default async function CollectionsPage() {
   };
 
   return (
-    <main className="pdp-main header-clear">
+    <main className="pdp-main">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
@@ -114,45 +117,30 @@ export default async function CollectionsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      <section className="shop-banner">
+        <Image src={jh(142)} alt="Two friends in Juniper Pants facing clouded peaks" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: "center 12%" }} />
+        <div className="shop-banner-copy">
+          <h1 className="tl-display">actually cute hiking clothes for women</h1>
+        </div>
+      </section>
       <section className="shop-wrap">
-        <h1 className="shop-title">shop</h1>
+        <div className="shop-intro">
+          <p>flare cargo pants and recycled nylon shorts. built for the trail, cute everywhere else.</p>
+          <p className="shop-intro-pay">{AFTERPAY_SHORT}</p>
+        </div>
         <div className="shop-grid">
-          {DROP_PRODUCTS.flatMap((d) => {
-            const product = productFor(d.handle);
-            const price = product?.price ?? d.price;
-            const compareAt = product?.compareAtPrice;
-            const onSale = compareAt !== undefined && compareAt > price;
-            // "the juniper pant" -> "juniper pant": a card title, not a heading.
-            const name = d.name.replace(/^the /, '');
-            return d.colorways.map((cw) => (
-              <div key={`${d.handle}-${cw.color}`} className="shop-card">
-                <Link
-                  href={`/products/${d.handle}?color=${encodeURIComponent(cw.color)}`}
-                  className="shop-card-link"
-                >
-                  <div className="shop-card-photo">
-                    <Image
-                      src={cw.image}
-                      alt={`${name} in ${cw.color}`}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 300px"
-                      style={{ objectFit: 'cover' }}
-                    />
-                  </div>
-                  <p className="shop-card-name">{name}</p>
-                  <p className="shop-card-meta">
-                    <span className="shop-card-swatch" style={{ background: cw.swatch }} />
-                    {cw.color.toLowerCase()}
-                  </p>
-                  <p className="shop-card-price">
-                    {onSale && <s>{priceLabel(compareAt)}</s>}
-                    {priceLabel(price)}
-                  </p>
-                </Link>
-                <QuickAdd product={product} color={cw.color} accent="#A9445C" sizeVariant="link" />
-              </div>
-            ));
-          })}
+          {DROP_PRODUCTS.map((d) => d.colorways.map((cw) => (
+            <ShopCard key={`${d.handle}-${cw.color}`} drop={d} colorway={cw} product={productFor(d.handle)} />
+          ))).map((cards, i) => i === 0 ? [
+            ...cards,
+            <Link key="editorial" href="/jackson-hole" className="shop-editorial">
+              <Image src={jh(129)} alt="Two friends dancing down a mountain road in Juniper Pants" fill sizes="(max-width: 899px) 100vw, 50vw" style={{ objectFit: 'cover' }} />
+              <span className="shop-editorial-copy">
+                <span className="tl-display">jackson hole</span>
+                <span className="tl-bleed-link">see the lookbook</span>
+              </span>
+            </Link>,
+          ] : cards)}
           {/* Last, after the garments. No link: there is no tote page to
               send anyone to, and a dead link is worse than none. One size, so
               QuickAdd adds it straight away with no size step. Left out of
@@ -176,7 +164,7 @@ export default async function CollectionsPage() {
                 )}
                 {priceLabel(tote.price)}
               </p>
-              <QuickAdd product={tote} color="" accent="#A9445C" sizeVariant="link" />
+              <QuickAdd product={tote} color="" accent="#34402B" sizeVariant="link" />
             </div>
           )}
         </div>

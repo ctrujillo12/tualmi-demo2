@@ -3,9 +3,9 @@
 import { useState } from 'react';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon = '#A9445C';
-const soft   = '#C9849A';
-const rule   = '#F0D9E1';
+const maroon = '#34402B';
+const soft   = '#6F6B54';
+const rule   = '#E6DFCC';
 
 /**
  * Collapsed prompt for sold-out sizes. Opens into a size picker (sold-out

@@ -6,10 +6,10 @@
 import type { CSSProperties, ReactNode } from 'react';
 
 export const sans    = 'var(--font-montserrat), system-ui, sans-serif';
-export const maroon  = '#A9445C';
-export const blushBg = '#FBF1F5';
-export const soft    = '#C9849A';
-export const rule    = '#F0D9E1'; // hairlines / table borders
+export const maroon  = '#34402B';
+export const blushBg = '#FAF6EC';
+export const soft    = '#6F6B54';
+export const rule    = '#E6DFCC'; // hairlines / table borders
 
 export const bodyStyle: CSSProperties = {
   fontFamily: sans,

@@ -36,16 +36,16 @@ export const PHONE_THEMES: Record<'dark' | 'blush' | 'pink', PhoneOptInTheme> = 
     accent: 'rgba(255,255,255,0.85)',
     fieldBg: 'rgba(255,255,255,0.08)',
     btnBg: '#ffffff',
-    btnText: '#A9445C',
+    btnText: '#34402B',
     shadow: '0 1px 4px rgba(0,0,0,0.4)',
   },
   // /invite — blush landing page
   blush: {
-    text: '#A9445C',
-    muted: '#C9849A',
-    accent: '#A9445C',
+    text: '#34402B',
+    muted: '#6F6B54',
+    accent: '#34402B',
     fieldBg: '#ffffff',
-    btnBg: '#A9445C',
+    btnBg: '#34402B',
     btnText: '#ffffff',
   },
   // Welcome popup — pink card

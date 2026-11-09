@@ -36,7 +36,7 @@ export default function LaunchCountdown({ tone = 'light' }: { tone?: 'light' | '
   // Render nothing until mounted, or once the public launch has passed
   if (!mounted || !t) return null;
 
-  const color = tone === 'light' ? 'rgba(255,255,255,0.92)' : '#A9445C';
+  const color = tone === 'light' ? 'rgba(255,255,255,0.92)' : '#34402B';
   const parts = [
     t.d > 0 ? `${t.d}d` : null,
     `${t.h}h`,

@@ -12,10 +12,10 @@ const STORAGE_KEY = 'tualmi_welcome_shown';
 
 // Landing-page design tokens — the same set PolicyPage and /invite use.
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon  = '#A9445C';
-const blushBg = '#FBF1F5';
-const soft    = '#C9849A';
-const rule    = '#F0D9E1';
+const maroon  = '#34402B';
+const blushBg = '#FAF6EC';
+const soft    = '#6F6B54';
+const rule    = '#E6DFCC';
 
 /**
  * Newsletter prompt, shown once per browser.

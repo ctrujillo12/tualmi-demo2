@@ -1,5 +1,8 @@
 'use client';
 
+import AfterpayLine from '@/components/AfterpayLine';
+import { afterpayEligible, installmentLabel } from '@/lib/afterpay';
+import { PDP_LEAD } from '@/lib/community';
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -36,10 +39,10 @@ interface ProductDetailClientProps {
 
 // ─── Landing-page design tokens ───────────────────────────────────────────────
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon  = '#A9445C';
-const blushBg = '#FBF1F5';
-const soft    = '#C9849A';
-const rule    = '#F0D9E1';
+const maroon  = '#34402B';
+const blushBg = '#FAF6EC';
+const soft    = '#6F6B54';
+const rule    = '#E6DFCC';
 
 /**
  * Space between the size row and the color row, on every product page.
@@ -507,7 +510,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const activeColorIdx = swatchColors.length > 0
     ? swatchColors.findIndex((s) => s.name === selectedColor)
     : product.colors.indexOf(selectedColor);
-  const gallery     = getColorImages(Math.max(0, activeColorIdx));
+  const gallery     = [...(PDP_LEAD[handle]?.[selectedColor] ?? []), ...getColorImages(Math.max(0, activeColorIdx))];
 
   // Who is wearing what. Derived per photograph in lib/models.ts, but shown as
   // a single line in the fit block rather than stamped on every image.
@@ -701,10 +704,10 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
             <h1
               className="pdp-title"
               style={{
-                fontFamily: sans,
-                fontWeight: 700,
-                fontSize: 'clamp(26px, 3.5vw, 42px)',
-                letterSpacing: '-0.03em',
+                fontFamily: 'var(--font-display), Georgia, serif',
+                fontWeight: 400,
+                fontSize: 'clamp(38px, 4.2vw, 56px)',
+                letterSpacing: '-0.015em',
                 color: maroon,
                 margin: '0 0 6px',
                 lineHeight: 1.1,
@@ -758,6 +761,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
               )}
               <span>${(pricing.price / 100).toFixed(2)}</span>
             </p>
+            <AfterpayLine cents={pricing.price} />
 
             {/* The promise, directly under the price — the one place a shopper
                 is actually asking "is this worth it?". Everything else in this
@@ -840,7 +844,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                   padding: flashSize ? '10px' : 0,
                   // Cancels the 10px padding above exactly, on every side.
                   margin: flashSize ? '-10px' : undefined,
-                  backgroundColor: flashSize ? '#FBF1F5' : 'transparent',
+                  backgroundColor: flashSize ? '#FAF6EC' : 'transparent',
                   boxShadow: flashSize ? `0 0 0 2px ${maroon}` : 'none',
                   transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
                 }}
@@ -888,7 +892,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                           border: `1.5px ${pre ? 'dashed' : 'solid'} ${soldOut ? rule : maroon}`,
                           backgroundColor: selectedSize === size && !soldOut
                             ? maroon
-                            : pre ? 'rgba(169, 68, 92, 0.10)' : 'transparent',
+                            : pre ? 'rgba(52,64,43, 0.10)' : 'transparent',
                           // Sold-out sizes stay on the page rather than
                           // disappearing: a shopper who can't find their size
                           // assumes the site is broken, where a struck-through
@@ -946,7 +950,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                       style={{
                         fontFamily: sans, fontSize: '12.5px', fontWeight: 600, lineHeight: 1.6,
                         color: maroon, margin: '11px 0 0', padding: '10px 14px', borderRadius: '12px',
-                        backgroundColor: 'rgba(169, 68, 92, 0.08)',
+                        backgroundColor: 'rgba(52,64,43, 0.08)',
                       }}
                     >
                       ✦ <strong>{preorderSizeList.join(', ')} {verb(preorderSizeList)} preorder only</strong>
@@ -1322,7 +1326,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                     style={{
                       width: '100%',
                       boxSizing: 'border-box',
-                      backgroundColor: 'rgba(169,68,92,0.12)',
+                      backgroundColor: 'rgba(52,64,43,0.12)',
                       color: maroon,
                       padding: '16px 28px',
                       fontFamily: sans,
@@ -1576,6 +1580,9 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
               {selectedColor.toLowerCase()}
               {selectedSize ? ` · ${selectedSize}` : ' · pick a size'}
             </span>
+            {afterpayEligible(pricing.price) && (
+              <span className="pdp-buybar-pay">or 4 payments of {installmentLabel(pricing.price)} with Afterpay</span>
+            )}
           </div>
           {/* Once it's in the cart the bar becomes a link to the cart. It used
               to keep calling handleBuy while reading "in cart", so tapping it

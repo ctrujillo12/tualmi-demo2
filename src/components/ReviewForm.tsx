@@ -42,9 +42,9 @@ import { PRODUCT_COLORS } from '@/lib/productColors';
  */
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon = '#A9445C';
-const soft   = '#C9849A';
-const rule   = '#F0D9E1';
+const maroon = '#34402B';
+const soft   = '#6F6B54';
+const rule   = '#E6DFCC';
 const ink    = '#3B2F1E';
 
 /**
@@ -546,7 +546,7 @@ const CSS = `
   .rf-star:focus-visible { outline: 2px solid ${maroon}; outline-offset: 2px; border-radius: 4px; }
   .rf-star-note { font-family: ${sans}; font-size: 12px; color: ${soft}; margin-left: 8px; }
 
-  .rf-block { background: #FBF1F5; border-radius: 14px; padding: 18px 16px 4px; margin: 0 0 22px; }
+  .rf-block { background: #FAF6EC; border-radius: 14px; padding: 18px 16px 4px; margin: 0 0 22px; }
   .rf-block-h {
     font-family: ${sans}; font-size: 12px; font-weight: 700;
     letter-spacing: 0.06em; text-transform: lowercase; color: ${ink}; margin: 0 0 14px;
@@ -567,7 +567,7 @@ const CSS = `
   .rf-photo { display: flex; align-items: flex-start; gap: 12px; }
   .rf-photo img {
     width: 108px; height: 136px; object-fit: cover;
-    border-radius: 10px; display: block; background: #FBF1F5;
+    border-radius: 10px; display: block; background: #FAF6EC;
   }
   .rf-photo-x {
     font-family: ${sans}; font-size: 12px; font-weight: 600;

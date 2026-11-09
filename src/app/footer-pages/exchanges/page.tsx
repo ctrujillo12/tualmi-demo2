@@ -6,10 +6,10 @@ import { useState } from 'react';
 import type { CSSProperties, ChangeEvent } from 'react';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon = '#A9445C';
-const soft   = '#C9849A';
-const blush  = '#FBF1F5';
-const rule   = '#F0D9E1';
+const maroon = '#34402B';
+const soft   = '#6F6B54';
+const blush  = '#FAF6EC';
+const rule   = '#E6DFCC';
 
 type RequestType = 'size' | 'color' | 'refund' | 'issue' | 'cancel';
 

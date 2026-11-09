@@ -1,3 +1,5 @@
+import CommunityRow from '@/components/CommunityRow';
+import { itemsForProduct } from '@/lib/community';
 import type { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
 import ProductDetailClient from '@/components/ProductDetailClient';
@@ -438,6 +440,14 @@ export default async function ProductPage({
         initialColor={color ?? colorForVariant(product!, variant)}
         reviews={reviewSummary}
       />
+      {itemsForProduct(product!.handle ?? id).length > 0 && (
+        <section className="tl-section tl-section-row pdp-outthere">
+          <div className="tl-section-head">
+            <h2 className="tl-h2">out there</h2>
+          </div>
+          <CommunityRow items={itemsForProduct(product!.handle ?? id)} />
+        </section>
+      )}
       <ProductReviews summary={reviewSummary} productHandle={id} />
       {/* Last, on purpose. Somebody still reading the reviews has not decided
           yet; somebody past them has, one way or the other, and that is the

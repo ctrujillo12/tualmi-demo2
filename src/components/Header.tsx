@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useCartStore } from '@/store/cartStore';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-/* Brick rather than the old #A9445C maroon: it sits in the palette beside
+/* Brick rather than the old #34402B maroon: it sits in the palette beside
    the sage without clashing, and stays in the same red family as
    logo2-maroon.png, which is a fixed image asset. */
 const maroon = '#A9503A';
@@ -22,18 +22,17 @@ const maroon = '#A9503A';
  * add it here; it is the one destination this list no longer reaches.
  */
 const LEFT_LINKS = [
-  { name: 'home', href: '/' },
+  // Points at the real /collections page, not the homepage fragment it used
+  // to. The fragment worked for a visitor already on the homepage and meant
+  // the site had no crawlable page about the catalogue -- see the note at the
+  // top of app/collections/page.tsx.
+  { name: 'shop', href: '/collections' },
   // Our story sits in the nav on every page and at every width. It was
   // dropped when the nav was matched to the hero comp, which left /story
   // reachable only from a link hidden below xl — see the note in page.tsx.
   // Socials gave up the slot: the handle is in the socials band on the
   // landing page and in the footer, so nothing is actually lost.
   { name: 'our story', href: '/story' },
-  // Points at the real /collections page, not the homepage fragment it used
-  // to. The fragment worked for a visitor already on the homepage and meant
-  // the site had no crawlable page about the catalogue -- see the note at the
-  // top of app/collections/page.tsx.
-  { name: 'shop', href: '/collections' },
 ];
 
 const RIGHT_LINKS = [
@@ -143,23 +142,17 @@ export default function Header() {
       }}
     >
       <nav style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 3vw, 44px)' }}>
-        {/* Home link — small maroon logo, only shown off the landing page */}
-        {!isHome && (
-          <Link href="/" aria-label="Home" style={{ display: 'flex', alignItems: 'center' }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images-2/logo2-maroon.png"
-              alt=""
-              style={{ height: '24px', width: 'auto', objectFit: 'contain' }}
-            />
-          </Link>
-        )}
         {LEFT_LINKS.map((l) => (
           <Link key={l.name} href={l.href} style={linkStyle}>
             {l.name}
           </Link>
         ))}
       </nav>
+      {/* The logo, centered and always the way home. */}
+      <Link href="/" aria-label="Tualmi home" className="site-nav-logo">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images-2/logo2-maroon.png" alt="" />
+      </Link>
       <nav className="site-nav-right" style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 3vw, 44px)' }}>
         {RIGHT_LINKS.map((l) => (
           <Link key={l.name} href={l.href} style={linkStyle}>

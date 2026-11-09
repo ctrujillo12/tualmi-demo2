@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useShopAccess } from '@/lib/useShopAccess';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon = '#A9445C';
+const maroon = '#34402B';
 
 /**
  * Subtle confirmation for members who unlocked early access.

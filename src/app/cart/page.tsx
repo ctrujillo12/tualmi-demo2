@@ -1,5 +1,6 @@
 'use client';
 
+import AfterpayLine from '@/components/AfterpayLine';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import CartItem from '@/components/CartItem';
@@ -15,10 +16,10 @@ import { HANDLING_COPY } from '@/lib/shipWindow';
 
 // Landing-page design tokens
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon  = '#A9445C';
-const blushBg = '#FBF1F5';
-const soft    = '#C9849A';
-const rule    = '#F0D9E1';
+const maroon  = '#34402B';
+const blushBg = '#FAF6EC';
+const soft    = '#6F6B54';
+const rule    = '#E6DFCC';
 
 export default function CartPage() {
   const { items, getTotal, redirectToShopifyCheckout, refreshFromShopify } = useCartStore();
@@ -152,7 +153,7 @@ export default function CartPage() {
         <div
           style={{
             position: 'fixed', inset: 0, zIndex: 2000,
-            backgroundColor: 'rgba(251,241,245,0.94)',
+            backgroundColor: 'rgba(250,246,236,0.94)',
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center', gap: '18px',
             padding: '24px', textAlign: 'center',
@@ -260,6 +261,7 @@ export default function CartPage() {
                   ? 'Free US shipping included. Tax added at checkout.'
                   : `Includes ${money(FLAT_SHIPPING_CENTS)} US shipping. Tax added at checkout.`}
               </p>
+              <AfterpayLine cents={estimatedCents} />
               {/* Its own line rather than the tail of the sentence above, so an
                   international shopper finds it without reading the US maths. */}
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 600, color: maroon, margin: 0, lineHeight: 1.5 }}>

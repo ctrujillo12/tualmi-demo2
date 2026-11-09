@@ -19,8 +19,8 @@ export const metadata: Metadata = {
 };
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon = '#A9445C';
-const soft   = '#C9849A';
+const maroon = '#34402B';
+const soft   = '#6F6B54';
 
 export default function ReviewPage() {
   return (

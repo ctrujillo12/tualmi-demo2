@@ -41,8 +41,8 @@ import type { Product } from '@/types';
  */
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon = '#A9445C';
-const soft   = '#C9849A';
+const maroon = '#34402B';
+const soft   = '#6F6B54';
 
 /** Which products to offer, in order. Colorways come from PRODUCT_COLORS. */
 const UPSELL_HANDLES = ['sierra-shorts', 'juniper-pant'];
@@ -214,7 +214,7 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
         .cu-root {
           margin-top: clamp(48px, 7vw, 76px);
           padding-top: clamp(28px, 4vw, 40px);
-          border-top: 1px solid #F0D9E1;
+          border-top: 1px solid #E6DFCC;
         }
         /* On a phone this row moves above the order summary, where that big
            desktop margin becomes a dead band under "back to shop". Lives here

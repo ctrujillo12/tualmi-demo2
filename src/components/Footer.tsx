@@ -25,6 +25,8 @@ const LINK_COL_2 = [
   // only other link is in the about section and is hidden below xl, so without
   // this entry /story is unreachable on most screens.
   { name: 'our story',            href: '/story' },
+  { name: 'in the wild',          href: '/in-the-wild' },
+  { name: 'jackson hole lookbook', href: '/jackson-hole' },
   // A page, not a mailto:. Google's automated checks crawl pages, so a
   // mailto: href left the site with no discoverable contact information at
   // all -- which is how a new store ends up suspended for Misrepresentation.
@@ -66,7 +68,7 @@ export default function Footer() {
         zIndex: 3,
         // Solid brand maroon — matches the landing-page palette and keeps the
         // white type crisp without needing a photo overlay or text shadows.
-        backgroundColor: '#A9445C',
+        backgroundColor: '#34402B',
         padding: 'clamp(48px, 7vw, 88px) clamp(24px, 6vw, 72px) clamp(28px, 4vw, 44px)',
       }}
     >

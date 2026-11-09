@@ -16,9 +16,9 @@ interface CartItemProps {
 
 // Landing-page design tokens
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon = '#A9445C';
-const soft   = '#C9849A';
-const rule   = '#F0D9E1';
+const maroon = '#34402B';
+const soft   = '#6F6B54';
+const rule   = '#E6DFCC';
 
 export default function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeItem } = useCartStore();
@@ -75,7 +75,7 @@ export default function CartItem({ item }: CartItemProps) {
           total. Fall back through the live gallery, then to a branded tile, so
           this can never be empty again. */}
       {(() => {
-        const thumbStyle: React.CSSProperties = { position: 'relative', width: '100px', height: '130px', flexShrink: 0, backgroundColor: '#FBF1F5', display: 'block', borderRadius: '8px', overflow: 'hidden' };
+        const thumbStyle: React.CSSProperties = { position: 'relative', width: '100px', height: '130px', flexShrink: 0, backgroundColor: '#FAF6EC', display: 'block', borderRadius: '8px', overflow: 'hidden' };
         const inner = thumb ? (
           <Image
             src={thumb}

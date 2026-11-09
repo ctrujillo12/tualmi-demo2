@@ -29,9 +29,9 @@
 import { useEffect, useState } from 'react';
 
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon  = '#A9445C';
-const blushBg = '#FBF1F5';
-const soft    = '#C9849A';
+const maroon  = '#34402B';
+const blushBg = '#FAF6EC';
+const soft    = '#6F6B54';
 const olive   = '#ADAE6C';
 
 /** Same shape the signup route issues — see lib/referrals.ts. */

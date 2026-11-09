@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import localFont from 'next/font/local';
 import { Inter, Playfair_Display, Montserrat, Great_Vibes, Ballet, Codystar, Cedarville_Cursive } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
@@ -19,6 +20,15 @@ const greatVibes = Great_Vibes({ subsets: ['latin'], weight: '400', variable: '-
 const ballet = Ballet({ subsets: ['latin'], variable: '--font-ballet', display: 'swap' });
 const codystar = Codystar({ subsets: ['latin'], weight: '400', variable: '--font-codystar', display: 'swap' });
 const cedarvilleCursive = Cedarville_Cursive({ subsets: ['latin'], weight: '400', variable: '--font-cedarville', display: 'swap' });
+
+const display = localFont({
+  src: [
+    { path: '../fonts/InstrumentSerif-Regular.woff2', style: 'normal', weight: '400' },
+    { path: '../fonts/InstrumentSerif-Italic.woff2', style: 'italic', weight: '400' },
+  ],
+  variable: '--font-display',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.tualmi.com'),
@@ -114,7 +124,7 @@ const websiteJsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable} ${montserrat.variable} ${greatVibes.variable} ${ballet.variable} ${codystar.variable} ${cedarvilleCursive.variable}`}>
+    <html lang="en" className={`${display.variable} ${inter.variable} ${playfair.variable} ${montserrat.variable} ${greatVibes.variable} ${ballet.variable} ${codystar.variable} ${cedarvilleCursive.variable}`}>
       <body className="font-sans">
         {/* Google tag (gtag.js) — injected into <head> by next/script */}
         <Script

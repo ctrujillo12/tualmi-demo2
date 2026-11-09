@@ -22,9 +22,9 @@ const aboutJsonLd = {
 
 // ─── Landing-page design tokens ───────────────────────────────────────────────
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon  = '#A9445C';
-const blushBg = '#FBF1F5';
-const soft    = '#C9849A';
+const maroon  = '#34402B';
+const blushBg = '#FAF6EC';
+const soft    = '#6F6B54';
 
 const bodyStyle = {
   fontFamily: sans,
@@ -147,7 +147,7 @@ export default function StoryPage() {
                 aspectRatio: '4 / 5',
                 borderRadius: '16px',
                 overflow: 'hidden',
-                backgroundColor: '#F0D9E1',
+                backgroundColor: '#E6DFCC',
               }}
             >
               <Image

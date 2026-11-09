@@ -18,9 +18,9 @@ import { fitFacts, MIN_FIT_SAMPLE, REVIEWABLE_HANDLES, type Review, type ReviewS
  */
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon = '#A9445C';
-const soft   = '#C9849A';
-const rule   = '#F0D9E1';
+const maroon = '#34402B';
+const soft   = '#6F6B54';
+const rule   = '#E6DFCC';
 const ink    = '#3B2F1E';
 
 /**
@@ -256,7 +256,7 @@ const CSS = `
         .rv-photo {
           position: relative; margin: 0 0 10px;
           width: 100%; max-width: 220px; aspect-ratio: 4 / 5;
-          border-radius: 10px; overflow: hidden; background: #FBF1F5;
+          border-radius: 10px; overflow: hidden; background: #FAF6EC;
         }
         .rv-body {
           font-family: ${sans}; font-size: 13.5px; line-height: 1.75;
@@ -268,7 +268,7 @@ const CSS = `
         }
         .rv-fact {
           display: flex; align-items: baseline; gap: 5px;
-          background: #FBF1F5; border-radius: 999px; padding: 4px 10px;
+          background: #FAF6EC; border-radius: 999px; padding: 4px 10px;
         }
         .rv-fact dt {
           font-family: ${sans}; font-size: 9.5px; font-weight: 600;
@@ -287,7 +287,7 @@ const CSS = `
           display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
         }
         .rv-tag {
-          background: #FBF1F5; color: ${maroon};
+          background: #FAF6EC; color: ${maroon};
           border-radius: 999px; padding: 2px 8px;
           font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
         }

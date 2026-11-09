@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { US_STATES, US_VIEWBOX, projectAlbersUsa } from '@/lib/usMap';
 import { COUNTRY_MAPS, COUNTRY_VIEWBOX, projectCountry } from '@/lib/countryMaps';
-import Image from 'next/image';
+import CommunityRow from '@/components/CommunityRow';
+import { WILD_GALLERY } from '@/lib/community';
 import {
   getInternationalCountries,
   getInternationalPins,
@@ -13,37 +14,15 @@ import {
 export const metadata: Metadata = {
   title: 'in the wild',
   description:
-    'Where Tualmi shorts have turned up — a map of every town we have shipped a pair to.',
+    'Real people wearing Tualmi hiking pants and shorts, plus a map of everywhere we have shipped a pair.',
   alternates: { canonical: '/in-the-wild' },
 };
 
 // ─── Landing-page design tokens ───────────────────────────────────────────────
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon  = '#A9445C';
-const blushBg = '#FBF1F5';
-const soft    = '#C9849A';
-
-/**
- * ── THE COLLAGE ──────────────────────────────────────────────────────────
- * Real customer photos, in /public/images-2/wild/.
- *
- * `ratio` is each photo's own shape, so nothing is cropped — a masonry of
- * mixed shapes is what makes it read as a collage rather than a product grid.
- * When you add one, put the file in that folder and give its real pixel
- * dimensions as the ratio.
- */
-type Shot = { src: string; alt: string; ratio: string };
-
-const W = '/images-2/wild';
-const COLLAGE: Shot[] = [
-  { src: `${W}/wild-1.jpg`, alt: 'Hiker in Sierra Shorts on a rocky ridge above a snowfield',   ratio: '900 / 1600' },
-  { src: `${W}/wild-5.jpg`, alt: 'Confetti Sierra Shorts at altitude, mountains behind',        ratio: '1600 / 1433' },
-  { src: `${W}/wild-3.jpg`, alt: 'Cyclist in Sierra Shorts on a boardwalk trail through pines', ratio: '1200 / 1600' },
-  { src: `${W}/wild-4.jpg`, alt: 'Sitting on a picnic table in the Picnic Sierra Shorts',       ratio: '1199 / 1600' },
-  { src: `${W}/wild-6.jpg`, alt: 'Looking out from a ridgeline in the Confetti Sierra Shorts',  ratio: '1289 / 1183' },
-  { src: `${W}/wild-2.jpg`, alt: 'Hiker in the Confetti Sierra Shorts below jagged peaks',      ratio: '1200 / 1600' },
-  { src: `${W}/wild-7.jpg`, alt: 'Swinging from a tree branch over a creek in Sierra Shorts',   ratio: '1150 / 1526' },
-];
+const maroon  = '#34402B';
+const blushBg = '#FAF6EC';
+const soft    = '#6F6B54';
 
 /**
  * How far apart two places can be and still share one pin, in viewBox units.
@@ -327,6 +306,11 @@ export default function InTheWildPage() {
           we&apos;re here for women exploring.
         </h1>
 
+        {/* ══ GALLERY ═══════════════════════════════════════════════════ */}
+        <section style={{ marginTop: 'clamp(28px, 4vw, 44px)' }} aria-label="People wearing Tualmi outdoors">
+          <CommunityRow items={WILD_GALLERY} layout="grid" filters />
+        </section>
+
         {/* ══ 2 · MAP ═════════════════════════════════════════════════════ */}
         {/* Sits closer to the h1 than the collage does to it: with the intro
             paragraph gone, the heading and the map read as one block, and the
@@ -494,33 +478,13 @@ export default function InTheWildPage() {
 
         </section>
 
-        {/* ══ 3 · COLLAGE ════════════════════════════════════════════════ */}
-        {/* No heading: the photos say what they are. aria-label rather than
-            aria-labelledby, since there's no longer an element to point at. */}
-        <section style={{ marginTop: 'clamp(48px, 7vw, 80px)' }} aria-label="Customers wearing Tualmi outdoors">
-          <div className="wild-collage">
-            {COLLAGE.map((shot) => (
-              <figure key={shot.src} className="wild-shot">
-                <div className="wild-photo" style={{ aspectRatio: shot.ratio }}>
-                  <Image
-                    src={shot.src}
-                    alt={shot.alt}
-                    fill
-                    sizes="(max-width: 900px) 46vw, 340px"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </div>
-              </figure>
-            ))}
-          </div>
-        </section>
 
         {/* ══ 4 · CTA ═════════════════════════════════════════════════════ */}
         <section
           style={{
             marginTop: 'clamp(56px, 8vw, 92px)',
             paddingTop: 'clamp(32px, 5vw, 48px)',
-            borderTop: '1px solid #F0D9E1',
+            borderTop: '1px solid #E6DFCC',
             textAlign: 'center',
           }}
         >

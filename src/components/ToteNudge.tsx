@@ -61,9 +61,9 @@ import type { Product } from '@/types';
  */
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
-const maroon = '#A9445C';
-const soft   = '#C9849A';
-const rule   = '#F0D9E1';
+const maroon = '#34402B';
+const soft   = '#6F6B54';
+const rule   = '#E6DFCC';
 
 const TOTE_HANDLE = 'trailblazing-tote';
 
@@ -239,7 +239,7 @@ export default function ToteNudge() {
           border: 0;
           border-radius: 7px;
           overflow: hidden;
-          background: #FBF1F5;
+          background: #FAF6EC;
           cursor: pointer;
         }
 
@@ -281,7 +281,7 @@ export default function ToteNudge() {
           height: 120px;
           border-radius: 8px;
           overflow: hidden;
-          background: #FBF1F5;
+          background: #FAF6EC;
         }
         .tn-d-body { min-width: 0; }
         .tn-d-name {
