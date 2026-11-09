@@ -37,7 +37,8 @@ import type { ShopifyVariant } from '@/lib/shopify';
 import { preorderIncoming } from '@/lib/preorderConfig';
 
 /**
- * A size reads as "only a few left" at this quantity OR FEWER — so at 4,
+ * Raised to 5 in Nov 2026. A size reads as "only a few left" at this quantity
+ * OR FEWER — so when this note was written, at 4,
  * everything from 1 to 4 is flagged and 5 is not.
  *
  * The name spells out the comparison on purpose. This started as "threshold"
@@ -67,7 +68,7 @@ import { preorderIncoming } from '@/lib/preorderConfig';
 export const LOW_STOCK_AT_OR_BELOW =
   Number(process.env.NEXT_PUBLIC_LOW_STOCK_AT_OR_BELOW) > 0
     ? Number(process.env.NEXT_PUBLIC_LOW_STOCK_AT_OR_BELOW)
-    : 4;
+    : 5;
 
 export type AvailabilityStatus = 'available' | 'sold-out' | 'unknown';
 

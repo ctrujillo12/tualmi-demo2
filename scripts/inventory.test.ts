@@ -78,8 +78,8 @@ console.log('\nquantities readable');
     assert.equal(availability(p, 'Picnic', 'S').low, true);
     assert.equal(availability(p, 'Picnic', 'M').low, false);
   });
-  check('the boundary is "10 or fewer" — 10 is low, 11 is not', () => {
-    const q = product([v('Picnic', 'S', true, 10), v('Picnic', 'M', true, 11)]);
+  check('the boundary is "5 or fewer" — 5 is low, 6 is not', () => {
+    const q = product([v('Picnic', 'S', true, 5), v('Picnic', 'M', true, 6)]);
     assert.equal(availability(q, 'Picnic', 'S').low, true);
     assert.equal(availability(q, 'Picnic', 'M').low, false);
   });

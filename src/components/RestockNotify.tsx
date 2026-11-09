@@ -32,12 +32,13 @@ export default function RestockNotify({
   productName: string;
   color: string;
   soldOutSizes: string[];
-  mode?: 'notify' | 'pledge';
+  mode?: 'notify' | 'pledge' | 'both';
   /** Pledge mode only: the price they're committing to, e.g. "$68". */
   priceLabel?: string;
 }) {
-  const pledge = mode === 'pledge';
   const [committed, setCommitted] = useState(false);
+  // 'both': a plain size request, which becomes a pledge if they tick the box.
+  const pledge = mode === 'pledge' || (mode === 'both' && committed);
   const [open, setOpen] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
   const [email, setEmail] = useState('');
@@ -54,7 +55,7 @@ export default function RestockNotify({
     setError('');
     if (picked.length === 0) return setError('pick the size you want');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return setError('enter a valid email');
-    if (pledge && !committed) return setError('tick the box to confirm your pledge');
+    if (mode === 'pledge' && !committed) return setError('tick the box to confirm your pledge');
     setState('sending');
     try {
       const res = await fetch('/api/restock-interest', {
@@ -89,7 +90,9 @@ export default function RestockNotify({
         onClick={() => setOpen(true)}
         style={{ ...text, background: 'none', border: 0, padding: 0, margin: '14px 0 0', color: maroon, textDecoration: 'underline', textUnderlineOffset: '3px', cursor: 'pointer', textAlign: 'left', textTransform: 'lowercase' }}
       >
-        {pledge
+        {mode === 'both'
+          ? 'size sold out? tell us you want it →'
+          : pledge
           ? 'size sold out? pledge for a restock →'
           : 'don’t see your size? get notified if it restocks →'}
       </button>
@@ -101,7 +104,7 @@ export default function RestockNotify({
       <p style={{ ...text, color: maroon, margin: '0 0 10px', textTransform: 'lowercase' }}>
         which size(s) should we bring back?
       </p>
-      {pledge && (
+      {mode === 'pledge' && (
         <p style={{ ...text, fontWeight: 500, fontSize: '12px', color: soft, margin: '-4px 0 10px' }}>
           pledges decide which sizes we restock. no payment now. if your size comes back,
           you get a checkout link first.
@@ -144,7 +147,7 @@ export default function RestockNotify({
           {state === 'sending' ? 'sending…' : pledge ? 'pledge' : 'notify me'}
         </button>
       </div>
-      {pledge && (
+      {mode !== 'notify' && (
         <label style={{ ...text, fontWeight: 500, fontSize: '12px', color: maroon, display: 'flex', gap: '8px', alignItems: 'flex-start', margin: '10px 0 0', cursor: 'pointer' }}>
           <input
             type="checkbox"
