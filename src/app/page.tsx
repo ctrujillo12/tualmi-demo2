@@ -142,7 +142,6 @@ export default async function Home() {
           <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="tl-link">@tualmioutdoors</a>
         </div>
         <CommunityRow items={HOME_ROW} />
-        <Link href="/in-the-wild" className="tl-link tl-row-more">see everyone in the wild</Link>
       </section>
 
       <Link href="/trail-club" className="tl-bleed tl-bleed-club" aria-label="Join the trail club">
