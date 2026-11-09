@@ -1695,3 +1695,47 @@ body { background: var(--cream); }
    a person. Phones are tall enough to show the whole frame. */
 @media (min-width: 768px) { .shop-banner { height: clamp(300px, 26vw, 440px); } }
 @media (max-width: 767px) { .shop-banner { height: 440px; } }
+
+/* ── Every gallery photo sits in the same 2:3 frame ── */
+.pdp-tile, .pdp-swipe-slide { background-color: #fff; }
+
+/* ── Mobile product page: photo about 60% of the first screen, buying info below ── */
+@media (max-width: 767px) {
+  .pdp-swipe-slide {
+    flex: 0 0 auto;
+    height: min(calc(92vw * 1.5), 56svh);
+    aspect-ratio: 2 / 3;
+  }
+  .pdp-swipe-dots { margin-top: 8px; }
+  .pdp-buybox > .pdp-strip--trust,
+  .pdp-buybox > .pdp-shipline,
+  .pdp-buybox > .pdp-descriptor,
+  .pdp-buybox > .pdp-tagline { order: 2; }
+  .pdp-buybox > .pdp-strip--trust { margin: 14px 0 6px; }
+  .pdp-buybox > .pdp-tagline { margin: 6px 0 10px !important; }
+  .pdp-title { font-size: 32px !important; margin-bottom: 2px !important; }
+  .pdp-price { font-size: 18px !important; margin-bottom: 12px !important; }
+  .afterpay-line { margin: -8px 0 12px; }
+  .pdp-sizes > button { min-height: 44px; font-size: 12px !important; }
+  .pdp-cta-block { margin-bottom: 20px !important; }
+
+  /* Thumb-sized targets */
+  .site-nav a { padding-top: 11px; padding-bottom: 11px; margin-top: -11px; margin-bottom: -11px; font-size: 13px !important; }
+  .site-nav-right a[aria-label='Cart'] { padding: 11px 4px; }
+  .qa-btn { min-height: 44px; font-size: 12px; margin-top: 8px; }
+  .qa-size { min-height: 44px; font-size: 12px; }
+  .tl-link, .tl-link-light, .tl-bleed-link { display: inline-block; padding: 12px 0; }
+  .cm-filters button { min-height: 44px; }
+  .lb-shot figcaption a { padding: 10px 0; }
+}
+
+.cart-buybar, .cart-buybar-spacer { display: none; }
+@media (max-width: 767px) {
+  .cart-buybar-spacer { display: block; height: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  .cart-buybar { position: fixed; z-index: 90; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: rgba(250,246,236,.97); border-top: 1px solid var(--line); font-family: var(--font-montserrat), system-ui, sans-serif; }
+  .cart-buybar-label { display: block; font-size: 11px; font-weight: 500; color: var(--muted); text-transform: lowercase; }
+  .cart-buybar-total { display: block; font-size: 16px; font-weight: 700; color: var(--pine); }
+  .cart-buybar button { min-height: 48px; padding: 0 34px; border: 0; border-radius: 100px; background: var(--pine); color: #fff; font: inherit; font-size: 14px; font-weight: 700; text-transform: lowercase; }
+  .cart-buybar button:disabled { opacity: .6; }
+  .site-nav a { padding-top: 14px; padding-bottom: 14px; margin-top: -14px; margin-bottom: -14px; }
+}

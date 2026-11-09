@@ -174,7 +174,7 @@ export default function CartItem({ item }: CartItemProps) {
           <div style={{ display: 'flex', alignItems: 'center', border: `1.5px solid ${rule}`, borderRadius: '100px', overflow: 'hidden' }}>
             <button
               onClick={() => handleQuantityChange(item.quantity - 1)}
-              style={{ width: '30px', height: '30px', border: 'none', background: 'none', color: maroon, fontFamily: sans, fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: '44px', height: '44px', border: 'none', background: 'none', color: maroon, fontFamily: sans, fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               −
             </button>
@@ -183,7 +183,7 @@ export default function CartItem({ item }: CartItemProps) {
             </span>
             <button
               onClick={() => handleQuantityChange(item.quantity + 1)}
-              style={{ width: '30px', height: '30px', border: 'none', background: 'none', color: maroon, fontFamily: sans, fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: '44px', height: '44px', border: 'none', background: 'none', color: maroon, fontFamily: sans, fontSize: '15px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               +
             </button>

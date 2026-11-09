@@ -590,7 +590,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                     // so nothing is letterboxed — but if a future photo has a
                     // different ratio it will be shown whole on blush rather
                     // than silently cropped.
-                    style={{ objectFit: 'contain' }}
+                    style={{ objectFit: 'cover' }}
                   />
                 </div>
               ))}
@@ -639,12 +639,12 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                       // they are off-screen in the track until swiped to.
                       priority={i === 0}
                       quality={82}
-                      sizes="92vw"
+                      sizes="(max-width: 767px) 72vw, 92vw"
                       // contain on a white slide: the shoot is 2:3 and so is
                       // the box, so nothing letterboxes — and if a future photo
                       // is a different ratio it is shown whole against white
                       // rather than silently cropped.
-                      style={{ objectFit: 'contain' }}
+                      style={{ objectFit: 'cover' }}
                     />
                   </figure>
                 ))}
@@ -672,7 +672,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
             {/* ── Buy box ──
                 Everything needed to make the decision, in one block: name,
                 price, size, color, CTA. */}
-            <div className="pdp-buybox" ref={inlineCtaRef}>
+            <div className="pdp-buybox">
 
             {/* Trust strip. Most cold traffic lands straight on a product page
                 and never sees the homepage story, so the credibility signals
@@ -690,7 +690,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
             </div>
 
             {ready && (
-              <p style={{ ...eyebrowStyle, marginBottom: '8px' }}>
+              <p className="pdp-shipline" style={{ ...eyebrowStyle, marginBottom: '8px' }}>
                 {/* Was 'available now' for anything in stock, which is the
                     one thing a shopper already assumes and tells them nothing
                     about WHEN it arrives. The ship window is the useful fact,
@@ -769,6 +769,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 lib/productDetails.ts for why it moved up here. */}
             {fabricDetail?.tagline && (
               <p
+                className="pdp-tagline"
                 style={{
                   fontFamily: sans,
                   fontWeight: 600,
@@ -1116,8 +1117,9 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
               </div>
             )}
 
-            {/* CTA */}
-            <div style={{ marginBottom: '36px' }}>
+            {/* CTA. The sticky bar watches this, not the whole buy box, so it only
+                hides once the real button is on screen. */}
+            <div ref={inlineCtaRef} className="pdp-cta-block" style={{ marginBottom: '36px' }}>
               {/* Only renders when a creator code is stored — see lib/discount.ts */}
               <DiscountBadge />
 

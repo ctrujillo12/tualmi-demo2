@@ -374,6 +374,18 @@ export default function CartPage() {
 
         </div>
       </div>
+      {/* Phones: the total and checkout stay in reach above the fold line, since
+          the summary sits below the cart items and recommendations. */}
+      <div className="cart-buybar-spacer" aria-hidden />
+      <div className="cart-buybar">
+        <div>
+          <span className="cart-buybar-label">estimated total</span>
+          <span className="cart-buybar-total">${(estimatedCents / 100).toFixed(2)}</span>
+        </div>
+        <button onClick={handleCheckout} disabled={isLoading || (ready && !canShop) || blockedNames.length > 0}>
+          {isLoading ? 'one sec…' : blockedNames.length > 0 ? 'remove sold-out items' : (ready && !canShop ? 'opens friday' : 'checkout')}
+        </button>
+      </div>
     </main>
   );
 }
