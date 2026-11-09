@@ -89,7 +89,7 @@ export default async function Home() {
       <section id="collection" className="tl-section">
         <div className="tl-section-head">
           <h2 className="tl-h2">the lineup</h2>
-          <Link href="/collections" className="tl-link">shop all colorways</Link>
+          <Link href="/collections" className="tl-link">shop all</Link>
         </div>
         <div className="tl-lineup">
           {lineup.map(({ d, c }) => (
