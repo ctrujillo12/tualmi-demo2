@@ -207,6 +207,15 @@ console.log('\nbackorders (continue selling when out of stock)');
   });
 }
 
+console.log('\nout of stock with no preorder behind it');
+{
+  const p = product([v('Jam', 'S', true, 0, true)]);
+  check('continue-selling variant not in preorderConfig reads as sold out', () => {
+    assert.equal(isSoldOut(p, 'Jam', 'S'), true);
+    assert.equal(maxPurchasable(p, 'Jam', 'S', 10), 0);
+  });
+}
+
 console.log('\nthe substitution bug');
 {
   const p = product([

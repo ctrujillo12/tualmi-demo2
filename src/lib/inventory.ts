@@ -15,9 +15,10 @@
  * sale because we couldn't see.
  *
  * ── WHAT'S AUTHORITATIVE ─────────────────────────────────────────────────
- * `availableForSale` decides whether something can be bought. It already
- * accounts for the merchant's inventory policy, so it stays true for variants
- * set to "continue selling when out of stock".
+ * `availableForSale` is the starting point for whether something can be bought.
+ * It stays true for variants set to "continue selling when out of stock", so a
+ * variant that is out of stock and not listed in lib/preorderConfig.ts is
+ * treated as sold out here.
  *
  * `quantityAvailable` decides whether to say "only a few left" — and only when
  * it's actually readable. Without the inventory scope it's undefined, and the
@@ -208,6 +209,14 @@ export function availability(
   const incoming = backorder ? preorderIncoming(product.handle, color, size) : null;
   if (incoming !== null && qty !== null && qty <= -incoming) {
     return { status: 'sold-out', quantity: 0, low: false, backorder: false };
+  }
+
+  // Out of stock with no preorder behind it: sold out on this site, even if
+  // "Continue selling when out of stock" is ticked in Shopify. Nov 2026: Olive
+  // 2XL hit zero with that box on, stayed buyable, and nothing was coming to
+  // fill the order. Only sizes listed in lib/preorderConfig.ts may sell at zero.
+  if (backorder && incoming === null) {
+    return { status: 'sold-out', quantity: qty ?? 0, low: false, backorder: false };
   }
 
   // qty === null means the token couldn't read quantities for this variant.
