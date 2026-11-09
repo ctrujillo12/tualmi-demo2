@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { PRODUCT_DETAILS, type HighlightIcon } from '@/lib/productDetails';
-import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, PRODUCT_LIFESTYLE_IMAGES, cartThumbFor } from '@/lib/productColors';
+import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, cartThumbFor } from '@/lib/productColors';
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import { getVariantPricing } from '@/lib/productPricing';
 import DiscountBadge from '@/components/DiscountBadge';
@@ -198,9 +198,6 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
     setFocusIdx(0);
-    // The outdoor set differs per colorway and isn't the same length, so a
-    // stale index here would open the viewer on the wrong photo or on nothing.
-    setLifestyleIdx(null);
     // Persist the choice in the URL so a refresh keeps the same colorway
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
@@ -300,15 +297,6 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
   // 95.6% of traffic is mobile and 93.8% of product viewers never add to cart.
   // Tap any gallery photo to open it full-screen with zoom.
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-
-  /**
-   * Outdoor shots for the selected colorway, shown as a small row under the
-   * description rather than inside the gallery — see the note on
-   * PRODUCT_LIFESTYLE_IMAGES. Empty for products that don't have any, in which
-   * case the whole section doesn't render.
-   */
-  const lifestyleImages = PRODUCT_LIFESTYLE_IMAGES[handle]?.[selectedColor] ?? [];
-  const [lifestyleIdx, setLifestyleIdx] = useState<number | null>(null);
 
   const sizeRef = useRef<HTMLDivElement>(null);
   const inlineCtaRef = useRef<HTMLDivElement>(null);
@@ -552,6 +540,61 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
     setFocusIdx(0);
     swipeRef.current?.scrollTo({ left: 0 });
   }, [selectedColor]);
+
+  const SIZE_GUIDE_KEY = 'sizeguide';
+  // Everything past the buy button lives in these sections, so the page stays
+  // short and reviews are close. The content is still in the HTML when closed.
+  const trustBullets = [
+    ...(fabricDetail?.highlights?.map((h) => h.label) ?? []),
+    ...(fabricDetail?.trustClaims ?? DEFAULT_TRUST_CLAIMS),
+  ];
+  const leadSections: typeof accordionItems = [
+    {
+      key: 'details',
+      label: 'details',
+      content: (
+        <>
+          <p style={{ margin: 0 }}>{product.description}</p>
+          {trustBullets.length > 0 && (
+            <ul className="pdp-m-only" style={{ margin: '12px 0 0', padding: '0 0 0 16px' }}>
+              {trustBullets.map((t) => <li key={t}>{t}</li>)}
+            </ul>
+          )}
+        </>
+      ),
+    },
+  ];
+  if (fabricDetail?.fit) {
+    const guide = accordionItems.find((i) => i.key === SIZE_GUIDE_KEY);
+    leadSections.push({
+      key: 'fit',
+      label: 'size & fit',
+      content: (
+        <>
+          {Array.isArray(fabricDetail.fit) ? (
+            <ul style={{ margin: 0, padding: '0 0 0 16px' }}>
+              {fabricDetail.fit.map((point) => <li key={point}>{point}</li>)}
+            </ul>
+          ) : (
+            fabricDetail.fit.split('\n\n').map((block, i) => (
+              <p key={i} style={{ margin: i > 0 ? '10px 0 0' : 0 }}>{block}</p>
+            ))
+          )}
+          {(modelLine ?? fabricDetail.modelNote) && (
+            <p style={{ fontSize: '12.5px', fontStyle: 'italic', margin: '12px 0 0' }}>
+              {modelLine ?? fabricDetail.modelNote}
+            </p>
+          )}
+          {reviews && <FitConsensus summary={reviews} />}
+          {guide && <div style={{ marginTop: '14px' }}>{guide.content}</div>}
+          <p style={{ margin: '14px 0 0' }}>
+            Fit question? Email <span style={{ color: maroon, fontWeight: 600 }}>hello@tualmi.com</span>
+          </p>
+        </>
+      ),
+    });
+  }
+  const pageSections = [...leadSections, ...accordionItems.filter((i) => i.key !== SIZE_GUIDE_KEY)];
 
   return (
     <div className="pdp-page" style={{ minHeight: '100vh', backgroundColor: blushBg }}>
@@ -1384,118 +1427,9 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 On mobile this renders after the rest of the gallery. */}
             <div className="pdp-details">
 
-            {/* Description */}
-            <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
-              <p style={bodyStyle}>{product.description}</p>
-            </div>
-
-            {/* ── Out in the world ──
-                The outdoor shots, deliberately small and deliberately not in
-                the gallery above. Up here the studio frames answer "what does
-                this garment look like"; down here these answer "what does it
-                look like on a trail", which is a different question and a
-                worse job for a full-width hero-sized photo.
-
-                A horizontally scrolling row rather than a grid: it stays one
-                line tall on a phone, so it never pushes the fit and care
-                copy off the screen, and the overflow makes it obvious there
-                are more to swipe to. Tapping opens the same lightbox the
-                gallery uses. */}
-            {lifestyleImages.length > 0 && (
-              <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
-                <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '12px' }}>
-                  out in the world
-                </p>
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '8px',
-                    overflowX: 'auto',
-                    // Lets the row bleed to the screen edge on a phone, so the
-                    // last thumbnail is visibly cut off — the cue that says
-                    // "scrollable" without needing an arrow.
-                    scrollSnapType: 'x proximity',
-                    paddingBottom: '4px',
-                    WebkitOverflowScrolling: 'touch',
-                  }}
-                >
-                  {lifestyleImages.map((src, i) => (
-                    <button
-                      key={src}
-                      onClick={() => setLifestyleIdx(i)}
-                      aria-label={`${product.name} in ${selectedColor} — photo ${i + 1} of ${lifestyleImages.length}, open full screen`}
-                      style={{
-                        position: 'relative',
-                        flex: '0 0 auto',
-                        width: '104px',
-                        height: '156px',
-                        padding: 0,
-                        border: `1px solid ${rule}`,
-                        borderRadius: '10px',
-                        overflow: 'hidden',
-                        cursor: 'pointer',
-                        background: blushBg,
-                        scrollSnapAlign: 'start',
-                      }}
-                    >
-                      <Image
-                        src={src}
-                        alt=""
-                        fill
-                        sizes="104px"
-                        style={{ objectFit: 'cover' }}
-                        // Well below the fold on every viewport, and there are
-                        // up to six of them — no reason to compete with the
-                        // gallery for bandwidth.
-                        loading="lazy"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Fit & sizing */}
-            {fabricDetail?.fit && (
-              <div style={{ marginBottom: '32px', paddingBottom: '32px', borderBottom: `1px solid ${rule}` }}>
-                <p style={{ ...eyebrowStyle, fontSize: '12px', marginBottom: '12px' }}>fit & sizing</p>
-                {Array.isArray(fabricDetail.fit) ? (
-                  <ul style={{ ...bodyStyle, margin: 0, padding: '0 0 0 16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {fabricDetail.fit.map((point) => <li key={point}>{point}</li>)}
-                  </ul>
-                ) : (
-                  fabricDetail.fit.split('\n\n').map((block, i) => (
-                    <p key={i} style={{ ...bodyStyle, margin: i > 0 ? '10px 0 0' : 0 }}>{block}</p>
-                  ))
-                )}
-                {/* Built from the models actually present in the gallery on
-                    screen, so it lists both of them on Picnic and cannot drift
-                    out of step with the photographs. */}
-                {(modelLine ?? fabricDetail.modelNote) && (
-                  <p style={{ ...bodyStyle, fontSize: '12.5px', fontStyle: 'italic', marginTop: '12px' }}>
-                    {modelLine ?? fabricDetail.modelNote}
-                  </p>
-                )}
-                {fabricDetail.sizeChart && (
-                  <p style={{ ...bodyStyle, fontSize: '13px', marginTop: '12px' }}>
-                    Full measurements in the <span style={{ color: maroon, fontWeight: 600 }}>size guide</span> below.
-                  </p>
-                )}
-                {/* Insertion B — turns "true to size" from a claim we make
-                    into a count of customers, in the exact block where the
-                    sizing objection lives. Hidden until enough people have
-                    answered the fit question for a percentage to mean
-                    anything. */}
-                {reviews && <FitConsensus summary={reviews} />}
-                <p style={{ ...bodyStyle, marginTop: '16px' }}>
-                  Fit question? Email <span style={{ color: maroon, fontWeight: 600 }}>hello@tualmi.com</span>
-                </p>
-              </div>
-            )}
-
             {/* Accordion */}
             <div>
-              {accordionItems.map(({ key, label, content }) => (
+              {pageSections.map(({ key, label, content }) => (
                 <div key={key} style={{ borderBottom: `1px solid ${rule}` }}>
                   <button
                     onClick={() => toggleSection(key)}
@@ -1555,17 +1489,6 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
         />
       )}
 
-      {/* Same viewer, its own image set — so paging through the outdoor shots
-          doesn't wander into the studio gallery and vice versa. */}
-      {lifestyleIdx !== null && (
-        <ImageLightbox
-          images={lifestyleImages}
-          index={lifestyleIdx}
-          alt={`${product.name} in ${selectedColor}, outdoors`}
-          onClose={() => setLifestyleIdx(null)}
-          onIndexChange={setLifestyleIdx}
-        />
-      )}
 
       {/* ── Sticky mobile buy bar ──
           Mobile only. On by default; hides only while the inline buy box is on

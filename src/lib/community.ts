@@ -106,10 +106,28 @@ function weave(a: CommunityItem[], b: CommunityItem[]) {
 export const HOME_ROW = weave(SOCIAL, CUSTOMERS.slice(0, 4));
 export const WILD_GALLERY = [...weave(CUSTOMERS, SOCIAL), ...EDITORIAL];
 
+const LIFE = '/images-2/lifestyle';
+/** Sierra lifestyle shots that used to sit in the buy box. Flat lays left out. */
+const SIERRA_LIFESTYLE: CommunityItem[] = [
+  ...['picnic-life-1', 'picnic-life-3', 'picnic-life-5', 'picnic-life-2', 'picnic-life-4'].map((f) => ({ f, color: 'Picnic' })),
+  ...['confetti-life-1', 'confetti-life-3', 'confetti-life-4', 'confetti-life-2', 'confetti-life-5'].map((f) => ({ f, color: 'Confetti' })),
+  ...['jam-life-1', 'jam-life-2', 'jam-life-3'].map((f) => ({ f, color: 'Jam' })),
+].map(({ f, color }) => ({
+  id: f,
+  type: 'image' as const,
+  src: `${LIFE}/${f}.jpg`,
+  alt: `Sierra Shorts in ${color}, worn outdoors`,
+  kind: 'editorial' as const,
+  handle: 'sierra-shorts' as const,
+  color,
+}));
+
 export const itemsForProduct = (handle: string) =>
   handle === 'juniper-pant'
     ? EDITORIAL
-    : [...CUSTOMERS.filter((c) => c.handle === handle)];
+    : handle === 'sierra-shorts'
+      ? weave(CUSTOMERS, SIERRA_LIFESTYLE)
+      : [];
 
 /** Lead photo per colorway for shop cards. Sierra uses its studio product photos. */
 export const SHOP_COVERS: Record<string, Record<string, string>> = {
