@@ -302,7 +302,7 @@ export default function InTheWildPage() {
         <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '13px', letterSpacing: '0.14em', color: soft, margin: '0 0 14px', textTransform: 'lowercase' }}>
           in the wild
         </p>
-        <h1 style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(30px, 5vw, 56px)', letterSpacing: '-0.03em', lineHeight: 1.05, color: maroon, margin: 0, textTransform: 'lowercase' }}>
+        <h1 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(38.4px, 6.4vw, 71.7px)', letterSpacing: '-0.015em', lineHeight: 1.05, color: maroon, margin: 0, textTransform: 'lowercase' }}>
           we&apos;re here for women exploring.
         </h1>
 
@@ -322,9 +322,9 @@ export default function InTheWildPage() {
           <h2
             id="wild-map-heading"
             style={{
-              fontFamily: sans,
-              fontWeight: 500,
-              fontSize: 'clamp(14px, 1.7vw, 17px)',
+              fontFamily: 'var(--font-display), Georgia, serif',
+              fontWeight: 400,
+              fontSize: 'clamp(17.9px, 2.2vw, 21.8px)',
               letterSpacing: 0,
               lineHeight: 1.7,
               color: soft,
@@ -488,7 +488,7 @@ export default function InTheWildPage() {
             textAlign: 'center',
           }}
         >
-          <h2 style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(20px, 2.6vw, 28px)', letterSpacing: '-0.02em', color: maroon, margin: 0, textTransform: 'lowercase' }}>
+          <h2 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(25.6px, 3.3vw, 35.8px)', letterSpacing: '-0.015em', color: maroon, margin: 0, textTransform: 'lowercase' }}>
             want to be here?
           </h2>
           <p style={{ fontFamily: sans, fontWeight: 500, fontSize: 'clamp(13px, 1.5vw, 15px)', lineHeight: 1.8, color: soft, margin: '10px auto 24px', maxWidth: '440px' }}>

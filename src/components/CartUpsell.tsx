@@ -389,10 +389,10 @@ export default function CartUpsell({ className = '' }: { className?: string }) {
       <h2
         id="cu-heading"
         style={{
-          fontFamily: sans,
-          fontWeight: 700,
-          fontSize: 'clamp(19px, 2.4vw, 24px)',
-          letterSpacing: '-0.02em',
+          fontFamily: 'var(--font-display), Georgia, serif',
+          fontWeight: 400,
+          fontSize: 'clamp(24.3px, 3.1vw, 30.7px)',
+          letterSpacing: '-0.015em',
           color: maroon,
           margin: 0,
           textTransform: 'lowercase',

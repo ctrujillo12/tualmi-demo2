@@ -120,7 +120,7 @@ export default function CartPage() {
           <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '13px', letterSpacing: '0.14em', color: soft, margin: '0 0 18px', textTransform: 'lowercase' }}>
             your cart
           </p>
-          <h1 style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(28px, 4.5vw, 44px)', letterSpacing: '-0.03em', color: maroon, margin: '0 0 36px', textTransform: 'lowercase' }}>
+          <h1 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(35.8px, 5.8vw, 56.3px)', letterSpacing: '-0.015em', color: maroon, margin: '0 0 36px', textTransform: 'lowercase' }}>
             nothing here yet.
           </h1>
           <Link
@@ -182,7 +182,7 @@ export default function CartPage() {
           <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '13px', letterSpacing: '0.14em', color: soft, margin: '0 0 10px', textTransform: 'lowercase' }}>
             your cart
           </p>
-          <h1 style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(28px, 4vw, 42px)', letterSpacing: '-0.03em', color: maroon, margin: 0, textTransform: 'lowercase' }}>
+          <h1 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(35.8px, 5.1vw, 53.8px)', letterSpacing: '-0.015em', color: maroon, margin: 0, textTransform: 'lowercase' }}>
             {items.length} {items.length === 1 ? 'item' : 'items'}
           </h1>
         </div>
@@ -219,7 +219,7 @@ export default function CartPage() {
               globals.css. */}
           <div className="cart-summary-col">
           <div className="cart-summary-panel" style={{ backgroundColor: 'white', borderRadius: '14px', padding: 'clamp(20px, 3vw, 32px)' }}>
-            <h2 style={{ fontFamily: sans, fontWeight: 700, fontSize: '20px', letterSpacing: '-0.02em', color: maroon, margin: '0 0 24px', textTransform: 'lowercase' }}>
+            <h2 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: '25.6px', letterSpacing: '-0.015em', color: maroon, margin: '0 0 24px', textTransform: 'lowercase' }}>
               order summary
             </h2>
 

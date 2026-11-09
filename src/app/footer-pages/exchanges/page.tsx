@@ -101,7 +101,7 @@ export default function ExchangesPage() {
 
         {status === 'success' ? (
           <div style={{ textAlign: 'center', padding: 'clamp(20px, 6vw, 48px) 0' }}>
-            <h1 style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(28px, 5vw, 40px)', color: maroon, margin: '0 0 16px', textTransform: 'lowercase', letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(35.8px, 6.4vw, 51.2px)', color: maroon, margin: '0 0 16px', textTransform: 'lowercase', letterSpacing: '-0.015em' }}>
               got it — thank you!
             </h1>
             <p style={{ fontFamily: sans, fontSize: '16px', fontWeight: 500, lineHeight: 1.8, color: soft, margin: '0 auto', maxWidth: '440px' }}>
@@ -116,7 +116,7 @@ export default function ExchangesPage() {
         ) : (
           <>
             {/* Intro */}
-            <h1 style={{ fontFamily: sans, fontWeight: 700, fontSize: 'clamp(30px, 6vw, 46px)', color: maroon, margin: '0 0 14px', textTransform: 'lowercase', letterSpacing: '-0.03em' }}>
+            <h1 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(38.4px, 7.7vw, 58.9px)', color: maroon, margin: '0 0 14px', textTransform: 'lowercase', letterSpacing: '-0.015em' }}>
               let&apos;s make it right
             </h1>
             <p style={{ fontFamily: sans, fontSize: '16px', fontWeight: 500, lineHeight: 1.85, color: soft, margin: '0 0 14px' }}>

@@ -25,12 +25,13 @@ import { UPCOMING_EVENTS, PAST_EVENTS, type ClubEvent } from '@/lib/events';
 // Landing-page palette (see app/page.tsx). The old /invite ran on the sageDeep
 // and blush set, which read as "too pink" next to the rest of the site.
 const sans     = 'var(--font-montserrat), system-ui, sans-serif';
-const sage     = '#7C8252';  // buttons, badges
-const sageDeep = '#5F6742';  // headings, borders on light grounds
-const cream    = '#F7F2E4';  // page ground
-const ink      = '#5F5C46';  // body copy
-const rose     = '#C97C93';  // eyebrows only
-const brick    = '#A9503A';  // links, errors
+const sage     = '#34402B';  // buttons, badges
+const sageDeep = '#34402B';  // headings, borders on light grounds
+const cream    = '#FAF6EC';  // page ground
+const ink      = '#6F6B54';  // body copy
+const rose     = '#6F6B54';  // eyebrows only
+const brick    = '#34402B';
+const errorRed = '#B3341F';  // links, errors
 const card     = '#FFFDF7';
 const line     = 'rgba(95, 103, 66, 0.22)';
 
@@ -278,7 +279,7 @@ function RsvpForm({ event }: { event: ClubEvent }) {
   }
 
   const busy = step === 'loading';
-  const small: React.CSSProperties = { fontFamily: sans, fontSize: '12px', fontWeight: 500, color: brick, margin: 0 };
+  const small: React.CSSProperties = { fontFamily: sans, fontSize: '12px', fontWeight: 500, color: errorRed, margin: 0 };
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
       <div className="event-form-grid">
@@ -427,8 +428,8 @@ function UpcomingCard({ event }: { event: ClubEvent }) {
             </p>
             <h2
               style={{
-                fontFamily: sans, fontWeight: 700, fontSize: 'clamp(26px, 3.4vw, 36px)',
-                letterSpacing: '-0.025em', lineHeight: 1.1, color: sageDeep, margin: '0 0 10px', textTransform: 'lowercase',
+                fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(33.3px, 4.4vw, 46.1px)',
+                letterSpacing: '-0.015em', lineHeight: 1.1, color: sageDeep, margin: '0 0 10px', textTransform: 'lowercase',
               }}
             >
               {event.title}
@@ -448,8 +449,8 @@ function UpcomingCard({ event }: { event: ClubEvent }) {
           </p>
           <h2
             style={{
-              fontFamily: sans, fontWeight: 700, fontSize: 'clamp(28px, 4vw, 44px)',
-              letterSpacing: '-0.025em', lineHeight: 1.1, color: sageDeep, margin: 0, textTransform: 'lowercase',
+              fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(35.8px, 5.1vw, 56.3px)',
+              letterSpacing: '-0.015em', lineHeight: 1.1, color: sageDeep, margin: 0, textTransform: 'lowercase',
             }}
           >
             {event.title}
@@ -549,7 +550,7 @@ function PastCard({ event, onOpen }: { event: ClubEvent; onOpen: (index: number)
         <h3
           className="past-card-title"
           style={{
-            fontFamily: sans, fontWeight: 700, fontSize: '20px', letterSpacing: '-0.01em',
+            fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: '25.6px', letterSpacing: '-0.015em',
             lineHeight: 1.25, color: sageDeep, margin: '0 0 8px', textTransform: 'lowercase',
           }}
         >
@@ -647,7 +648,7 @@ function JoinForm() {
         </button>
       </div>
       {step === 'error' && (
-        <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: brick, margin: 0 }}>{errorMsg}</p>
+        <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: errorRed, margin: 0 }}>{errorMsg}</p>
       )}
     </div>
   );
@@ -671,8 +672,8 @@ export default function ClubEventsPage() {
           <p style={eyebrow}>{hasUpcoming ? 'can’t make it?' : 'first dibs'}</p>
           <h2
             style={{
-              fontFamily: sans, fontWeight: 700, fontSize: 'clamp(24px, 3.6vw, 38px)',
-              letterSpacing: '-0.02em', lineHeight: 1.15, color: sageDeep, margin: '0 0 22px', textTransform: 'lowercase',
+              fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(30.7px, 4.6vw, 48.6px)',
+              letterSpacing: '-0.015em', lineHeight: 1.15, color: sageDeep, margin: '0 0 22px', textTransform: 'lowercase',
             }}
           >
             {hasUpcoming ? 'join the club anyway.' : 'join the club.'}
@@ -696,8 +697,8 @@ export default function ClubEventsPage() {
       <h2 id={id} style={{ ...eyebrow, margin: '0 0 10px' }}>{eyebrowText}</h2>
       <p
         style={{
-          fontFamily: sans, fontWeight: 700, fontSize: 'clamp(24px, 3.4vw, 36px)',
-          letterSpacing: '-0.02em', lineHeight: 1.15, color: sageDeep, margin: 0, textTransform: 'lowercase',
+          fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(32px, 4.4vw, 46px)',
+          letterSpacing: '-0.015em', lineHeight: 1.15, color: sageDeep, margin: 0, textTransform: 'lowercase',
         }}
       >
         {title}
@@ -718,8 +719,8 @@ export default function ClubEventsPage() {
           <p style={eyebrow}>the trailblazing club</p>
           <h1
             style={{
-              fontFamily: sans, fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)',
-              letterSpacing: '-0.03em', lineHeight: 1.1, color: sageDeep,
+              fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(41px, 6.4vw, 66.6px)',
+              letterSpacing: '-0.015em', lineHeight: 1.1, color: sageDeep,
               margin: '0 0 clamp(14px, 2vw, 20px)', textTransform: 'lowercase',
             }}
           >

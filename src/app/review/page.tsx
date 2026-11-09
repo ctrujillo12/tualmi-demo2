@@ -29,7 +29,7 @@ export default function ReviewPage() {
         <p style={{ fontFamily: sans, fontSize: '10px', letterSpacing: '0.4em', textTransform: 'uppercase', color: soft, margin: '0 0 18px', textAlign: 'center' }}>
           Tualmi
         </p>
-        <h1 style={{ fontFamily: sans, fontSize: 'clamp(24px, 4vw, 34px)', fontWeight: 700, letterSpacing: '-0.02em', color: maroon, margin: '0 0 12px', textAlign: 'center', textTransform: 'lowercase' }}>
+        <h1 style={{ fontFamily: 'var(--font-display), Georgia, serif', fontSize: 'clamp(30.7px, 5.1vw, 43.5px)', fontWeight: 400, letterSpacing: '-0.015em', color: maroon, margin: '0 0 12px', textAlign: 'center', textTransform: 'lowercase' }}>
           how did they hold up?
         </h1>
         <p style={{ fontFamily: sans, fontSize: '14px', lineHeight: 1.8, color: '#3B2F1E', margin: '0 0 32px', textAlign: 'center' }}>

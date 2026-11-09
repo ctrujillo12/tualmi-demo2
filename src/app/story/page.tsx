@@ -69,10 +69,10 @@ export default function StoryPage() {
         {/* Heading — centered, lowercase, maroon */}
         <h1
           style={{
-            fontFamily: sans,
-            fontWeight: 700,
-            fontSize: 'clamp(28px, 4.5vw, 48px)',
-            letterSpacing: '-0.03em',
+            fontFamily: 'var(--font-display), Georgia, serif',
+            fontWeight: 400,
+            fontSize: 'clamp(35.8px, 5.8vw, 61.4px)',
+            letterSpacing: '-0.015em',
             lineHeight: 1.2,
             color: maroon,
             margin: '0 0 clamp(40px, 6vw, 64px)',
@@ -145,7 +145,7 @@ export default function StoryPage() {
                 maxWidth: '520px',
                 margin: '0 auto',
                 aspectRatio: '4 / 5',
-                borderRadius: '16px',
+                borderRadius: 0,
                 overflow: 'hidden',
                 backgroundColor: '#E6DFCC',
               }}

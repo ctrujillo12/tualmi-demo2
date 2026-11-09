@@ -43,10 +43,10 @@ export function PolicyPage({
       >
         <h1
           style={{
-            fontFamily: sans,
-            fontWeight: 700,
-            fontSize: 'clamp(28px, 4.5vw, 44px)',
-            letterSpacing: '-0.03em',
+            fontFamily: 'var(--font-display), Georgia, serif',
+            fontWeight: 400,
+            fontSize: 'clamp(35.8px, 5.8vw, 56.3px)',
+            letterSpacing: '-0.015em',
             color: maroon,
             margin: updated ? '0 0 10px' : '0 0 clamp(40px, 6vw, 60px)',
             textTransform: 'lowercase',
@@ -85,10 +85,10 @@ export function Section({ heading, children }: { heading?: string; children: Rea
       {heading && (
         <h2
           style={{
-            fontFamily: sans,
-            fontWeight: 700,
-            fontSize: '17px',
-            letterSpacing: '-0.01em',
+            fontFamily: 'var(--font-display), Georgia, serif',
+            fontWeight: 400,
+            fontSize: '21.8px',
+            letterSpacing: '-0.015em',
             color: maroon,
             margin: 0,
             textTransform: 'lowercase',

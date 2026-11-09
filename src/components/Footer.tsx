@@ -25,6 +25,7 @@ const LINK_COL_2 = [
   // only other link is in the about section and is hidden below xl, so without
   // this entry /story is unreachable on most screens.
   { name: 'our story',            href: '/story' },
+  { name: 'in the wild',          href: '/in-the-wild' },
   { name: 'jackson hole lookbook', href: '/jackson-hole' },
   // A page, not a mailto:. Google's automated checks crawl pages, so a
   // mailto: href left the site with no discoverable contact information at
@@ -105,9 +106,9 @@ export default function Footer() {
           <div style={{ maxWidth: '420px', flex: '1 1 320px' }}>
             <h3
               style={{
-                fontFamily: sans,
-                fontWeight: 700,
-                fontSize: 'clamp(24px, 3vw, 32px)',
+                fontFamily: 'var(--font-display), Georgia, serif',
+                fontWeight: 400,
+                fontSize: 'clamp(32px, 3.8vw, 42px)',
                 letterSpacing: '-0.02em',
                 color: '#fff',
                 margin: '0 0 14px',

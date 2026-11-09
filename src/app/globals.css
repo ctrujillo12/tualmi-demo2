@@ -1739,3 +1739,12 @@ body { background: var(--cream); }
   .cart-buybar button:disabled { opacity: .6; }
   .site-nav a { padding-top: 14px; padding-bottom: 14px; margin-top: -14px; margin-bottom: -14px; }
 }
+
+/* Section headings styled from stylesheets rather than inline. */
+.rv-h, .also-heading, .also-title, .rv-root h2, .pdp-main section h2:not(.tl-h2) {
+  font-family: var(--font-display), Georgia, serif !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.015em !important;
+  font-size: clamp(30px, 3.6vw, 46px) !important;
+  line-height: 1.05;
+}
