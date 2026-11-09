@@ -8,6 +8,12 @@
  * Confirm MIN and MAX against the limits on the Afterpay account. Below or
  * above them the line is hidden, because a shopper could not actually use it.
  */
+/**
+ * Master switch. Set to true once Afterpay appears at Shopify checkout; every
+ * Afterpay message on the site follows this one value.
+ */
+export const AFTERPAY_ENABLED = false;
+
 export const AFTERPAY_MIN_CENTS = 3500;
 export const AFTERPAY_MAX_CENTS = 200000;
 export const AFTERPAY_DISCLAIMER = 'Late fees may apply. Eligibility criteria apply.';
@@ -15,7 +21,7 @@ export const AFTERPAY_TERMS_URL = 'https://bit.ly/AfterpayTerms';
 export const AFTERPAY_SHORT = 'shop now, pay later with Afterpay';
 
 export const afterpayEligible = (cents: number) =>
-  cents >= AFTERPAY_MIN_CENTS && cents <= AFTERPAY_MAX_CENTS;
+  AFTERPAY_ENABLED && cents >= AFTERPAY_MIN_CENTS && cents <= AFTERPAY_MAX_CENTS;
 
 /** One of the four payments, rounded up so four of them cover the total. */
 export function installmentLabel(cents: number): string {

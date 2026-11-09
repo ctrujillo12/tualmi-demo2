@@ -1,6 +1,6 @@
 'use client';
 
-import { AFTERPAY_SHORT } from '@/lib/afterpay';
+import { AFTERPAY_ENABLED, AFTERPAY_SHORT } from '@/lib/afterpay';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
@@ -142,10 +142,14 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
             short on a phone, swapped by CSS), which put the sentence in the
             page twice for anything reading the HTML -- Google included. The
             short one fits on one line on a phone with the worldwide half. */}
-        <span className="ship-rotate">
-          <span>free U.S. shipping on <strong>{money(FREE_SHIPPING_THRESHOLD)}+</strong>{world}</span>
-          <span aria-hidden>{AFTERPAY_SHORT}</span>
-        </span>
+        {AFTERPAY_ENABLED ? (
+          <span className="ship-rotate">
+            <span>free U.S. shipping on <strong>{money(FREE_SHIPPING_THRESHOLD)}+</strong>{world}</span>
+            <span aria-hidden>{AFTERPAY_SHORT}</span>
+          </span>
+        ) : (
+          <>free U.S. shipping on <strong>{money(FREE_SHIPPING_THRESHOLD)}+</strong>{world}</>
+        )}
       </>
     );
 

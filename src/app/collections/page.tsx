@@ -4,7 +4,7 @@ import Link from 'next/link';
 import QuickAdd from '@/components/QuickAdd';
 import ShopCard from '@/components/ShopCard';
 import { jh } from '@/lib/community';
-import { AFTERPAY_SHORT } from '@/lib/afterpay';
+import { AFTERPAY_ENABLED, AFTERPAY_SHORT } from '@/lib/afterpay';
 import { getProduct } from '@/lib/products';
 import { DROP_PRODUCTS, priceLabel } from '@/lib/dropProducts';
 
@@ -126,7 +126,7 @@ export default async function CollectionsPage() {
       <section className="shop-wrap">
         <div className="shop-intro">
           <p>flare cargo pants and recycled nylon shorts. built for the trail, cute everywhere else.</p>
-          <p className="shop-intro-pay">{AFTERPAY_SHORT}</p>
+          {AFTERPAY_ENABLED && <p className="shop-intro-pay">{AFTERPAY_SHORT}</p>}
         </div>
         <div className="shop-grid">
           {DROP_PRODUCTS.map((d) => d.colorways.map((cw) => (
