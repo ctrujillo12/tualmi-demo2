@@ -29,7 +29,7 @@ export default function ShopCard({
     <div className="shop-card">
       <Link href={`/products/${drop.handle}?color=${encodeURIComponent(colorway.color)}`} className="shop-card-link">
         <div className="shop-card-photo">
-          <Image src={cover} alt={`${name} in ${colorway.color}, worn outdoors`} fill sizes={sizes} className="shop-card-img" />
+          <Image src={cover} alt={`${name} in ${colorway.color}`} fill sizes={sizes} className="shop-card-img" />
           {cover !== colorway.image && (
             <Image src={colorway.image} alt="" fill sizes={sizes} className="shop-card-img shop-card-img-alt" />
           )}

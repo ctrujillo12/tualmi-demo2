@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Image, { getImageProps } from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 import CommunityRow from '@/components/CommunityRow';
 import ShopCard from '@/components/ShopCard';
@@ -57,11 +57,6 @@ export default async function Home() {
   const productFor = (handle: string) =>
     handle === 'sierra-shorts' ? shortsProduct : handle === 'juniper-pant' ? pantProduct : null;
 
-  // Art-directed hero: a tall frame with open sky on phones, a wide one on desktop.
-  const common = { alt: 'Two friends in Tualmi Juniper Pants under clouded peaks in Jackson Hole', fill: true, priority: true, sizes: '100vw', quality: 80 };
-  const { props: { srcSet: wideSet } } = getImageProps({ ...common, src: jh(140) });
-  const { props: { srcSet: tallSet, ...rest } } = getImageProps({ ...common, src: jh(138) });
-
   const lineup = DROP_PRODUCTS.flatMap((d) =>
     d.colorways.filter((c) => c.color !== 'Jam').map((c) => ({ d, c })),
   );
@@ -73,13 +68,15 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productsJsonLd) }}
       />
 
+      {/* Two panes on desktop, chosen so both models stay fully in frame at any
+          screen width. Phones get the left pane only. */}
       <section className="tl-hero">
-        <picture>
-          <source media="(min-width: 768px)" srcSet={wideSet} sizes="100vw" />
-          <source srcSet={tallSet} sizes="100vw" />
-          {/* eslint-disable-next-line jsx-a11y/alt-text */}
-          <img {...rest} className="tl-hero-img" />
-        </picture>
+        <div className="tl-hero-pane tl-hero-pane-a">
+          <Image src={jh(138)} alt="Two friends in Tualmi Juniper Pants under clouded peaks in Jackson Hole" fill priority quality={80} sizes="(min-width: 768px) 50vw, 100vw" className="tl-hero-img" />
+        </div>
+        <div className="tl-hero-pane tl-hero-pane-b">
+          <Image src={jh(129)} alt="Two friends dancing down a mountain road in Juniper Pants" fill quality={80} sizes="50vw" className="tl-hero-img" />
+        </div>
         <div className="tl-hero-copy">
           <h1 className="tl-display">gear for a new kind of outdoorsy.</h1>
           <div className="tl-hero-cta">
@@ -144,13 +141,16 @@ export default async function Home() {
         <CommunityRow items={HOME_ROW} />
       </section>
 
-      <Link href="/trail-club" className="tl-bleed tl-bleed-club" aria-label="Join the trail club">
-        <Image src="/images-2/events/web/trail-club-1.jpg" alt="Trail club members with arms around each other at a waterfall" fill sizes="100vw" style={{ objectFit: 'cover' }} />
-        <span className="tl-bleed-copy">
-          <span className="tl-display">the trail club</span>
-          <span className="tl-bleed-link">join the club</span>
-        </span>
-      </Link>
+      <section className="tl-club">
+        <div className="tl-club-copy">
+          <h2 className="tl-display">the trail club</h2>
+          <p>In-person hikes and meetups for women who spend time outside.</p>
+          <Link href="/trail-club" className="tl-btn tl-btn-light">join the club</Link>
+        </div>
+        <Link href="/trail-club" className="tl-club-photo" aria-label="Join the trail club">
+          <Image src="/images-2/events/web/trail-club-1.jpg" alt="Trail club members in Tualmi shorts with arms around each other at a waterfall" fill sizes="(max-width: 899px) 100vw, 50vw" style={{ objectFit: 'cover', objectPosition: 'center bottom' }} />
+        </Link>
+      </section>
     </>
   );
 }

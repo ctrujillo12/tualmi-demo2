@@ -1663,3 +1663,35 @@ body { background: var(--cream); }
 .cm-grid { align-items: start; }
 .lb-shot figcaption a { white-space: nowrap; }
 .wild-wrap h1 { font-family: var(--font-display), Georgia, serif !important; font-weight: 400 !important; letter-spacing: -0.015em !important; }
+
+/* Hero: models stay fully in frame. Phones use one tall photo with the headline
+   in its open sky; desktop splits into two panes. */
+.tl-hero { display: block; }
+.tl-hero::after { display: none; }
+.tl-hero-pane { position: absolute; inset: 0; }
+.tl-hero-pane-b { display: none; }
+.tl-hero-img { object-fit: cover; object-position: center bottom; }
+.tl-hero-copy { top: 0; bottom: 0; left: 0; right: 0; padding: 104px 20px 28px; display: flex; flex-direction: column; justify-content: space-between; }
+.tl-hero-copy .tl-display { color: var(--pine); font-size: clamp(46px, 12.6vw, 64px); }
+@media (min-width: 768px) {
+  .tl-hero { display: grid; grid-template-columns: 1fr 1fr; }
+  .tl-hero-pane { position: relative; inset: auto; }
+  .tl-hero-pane-b { display: block; }
+  .tl-hero-pane-b .tl-hero-img { object-position: 58% center; }
+  .tl-hero-pane-b::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(20,24,14,.42), rgba(20,24,14,0) 34%); }
+  .tl-hero-copy { left: 50%; padding: clamp(104px, 13vh, 132px) clamp(24px, 3vw, 48px) clamp(24px, 4vh, 44px); }
+  .tl-hero-copy .tl-display { color: #fff; font-size: clamp(42px, 4.5vw, 84px); max-width: none; }
+}
+
+/* Trail club: tall enough to show the whole group. */
+.tl-club { display: grid; grid-template-columns: minmax(0, 1fr); background: var(--pine); color: var(--cream); }
+.tl-club-copy { padding: clamp(40px, 7vw, 100px) clamp(20px, 6vw, 100px); align-self: center; }
+.tl-club-copy .tl-display { font-size: clamp(44px, 6vw, 92px); }
+.tl-club-copy p { font-family: var(--font-montserrat), system-ui, sans-serif; font-size: 15px; font-weight: 500; line-height: 1.7; margin: 16px 0 26px; max-width: 30em; }
+.tl-club-photo { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; }
+@media (min-width: 900px) { .tl-club { grid-template-columns: 1fr 1fr; } }
+
+/* Short on desktop so the banner shows only mountains and never slices through
+   a person. Phones are tall enough to show the whole frame. */
+@media (min-width: 768px) { .shop-banner { height: clamp(300px, 26vw, 440px); } }
+@media (max-width: 767px) { .shop-banner { height: 440px; } }

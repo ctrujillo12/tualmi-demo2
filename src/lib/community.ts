@@ -26,7 +26,6 @@ export type CommunityItem = {
 
 const J = '/images-2/jackson-hole';
 const W = '/images-2/wild';
-const L = '/images-2/lifestyle';
 
 export type JhShot = {
   n: number;
@@ -112,14 +111,9 @@ export const itemsForProduct = (handle: string) =>
     ? EDITORIAL
     : [...CUSTOMERS.filter((c) => c.handle === handle)];
 
-/** On-body lead photo per colorway for shop cards. */
+/** Lead photo per colorway for shop cards. Sierra uses its studio product photos. */
 export const SHOP_COVERS: Record<string, Record<string, string>> = {
   'juniper-pant': { Birch: jh(146), Olive: jh(113) },
-  'sierra-shorts': {
-    Picnic: `${L}/picnic-life-1.jpg`,
-    Confetti: `${L}/confetti-life-1.jpg`,
-    Jam: `${L}/jam-life-2.jpg`,
-  },
 };
 
 /** Jackson Hole frame that opens the Juniper gallery, per colorway. */
