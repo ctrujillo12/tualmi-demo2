@@ -78,8 +78,8 @@ console.log('\nquantities readable');
     assert.equal(availability(p, 'Picnic', 'S').low, true);
     assert.equal(availability(p, 'Picnic', 'M').low, false);
   });
-  check('the boundary is "10 or fewer" — 10 is low, 11 is not', () => {
-    const q = product([v('Picnic', 'S', true, 10), v('Picnic', 'M', true, 11)]);
+  check('the boundary is "5 or fewer" — 5 is low, 6 is not', () => {
+    const q = product([v('Picnic', 'S', true, 5), v('Picnic', 'M', true, 6)]);
     assert.equal(availability(q, 'Picnic', 'S').low, true);
     assert.equal(availability(q, 'Picnic', 'M').low, false);
   });
@@ -204,6 +204,15 @@ console.log('\nbackorders (continue selling when out of stock)');
   });
   check('quantity is not capped to zero', () => {
     assert.equal(maxPurchasable(p, 'Picnic', 'S', 10), 10);
+  });
+}
+
+console.log('\nout of stock with no preorder behind it');
+{
+  const p = product([v('Jam', 'S', true, 0, true)]);
+  check('continue-selling variant not in preorderConfig reads as sold out', () => {
+    assert.equal(isSoldOut(p, 'Jam', 'S'), true);
+    assert.equal(maxPurchasable(p, 'Jam', 'S', 10), 0);
   });
 }
 

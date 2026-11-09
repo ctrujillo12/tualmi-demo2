@@ -1006,7 +1006,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                   productId={product.id}
                   productName={product.name}
                   color={selectedColor}
-                  mode={(product.handle ?? product.id) === 'sierra-shorts' ? 'pledge' : 'notify'}
+                  mode={(product.handle ?? product.id) === 'sierra-shorts' ? 'pledge' : 'both'}
                   priceLabel={`$${(product.price / 100).toFixed(product.price % 100 ? 2 : 0)}`}
                   soldOutSizes={product.sizes.filter((sz) => availability(product, selectedColor, sz).status === 'sold-out')}
                 />
