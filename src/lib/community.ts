@@ -85,13 +85,31 @@ export const CUSTOMERS: CommunityItem[] = [
   { id: 'wild-5', type: 'image', src: `${W}/wild-5.jpg`, alt: 'Confetti Sierra Shorts at altitude, mountains behind', kind: 'customer', handle: 'sierra-shorts', color: 'Confetti' },
 ];
 
-/** Placeholder-quality exports for now. Swap `src` when the raw videos arrive. */
+/**
+ * Instagram reels, compressed and trimmed (Instagram's end card removed). Files
+ * live in public/videos/reels. Reels with no `externalUrl` link to the profile.
+ * Order is the order they appear on the homepage.
+ */
+const IG = 'https://www.instagram.com';
+const R = '/videos/reels';
 export const SOCIAL: CommunityItem[] = [
-  { id: 'clip-1', type: 'video', src: '/videos/clip-1.mp4', poster: '/videos/poster-1.jpg', alt: 'Tualmi TikTok', kind: 'social', externalUrl: 'https://www.tiktok.com/@tualmi.outdoors/video/7625759601576660238' },
-  { id: 'clip-2', type: 'video', src: '/videos/clip-2.mp4', poster: '/videos/poster-2.jpg', alt: 'Tualmi TikTok', kind: 'social', externalUrl: 'https://www.tiktok.com/@tualmi.outdoors/video/7611273720295984398' },
-  { id: 'clip-3', type: 'video', src: '/videos/clip-3.mp4', poster: '/videos/poster-3.jpg', alt: 'Tualmi TikTok', kind: 'social', externalUrl: 'https://www.tiktok.com/@tualmi.outdoors/video/7666576797592456461' },
-  { id: 'clip-4', type: 'video', src: '/videos/clip-4.mp4', poster: '/videos/poster-4.jpg', alt: 'Tualmi TikTok', kind: 'social', externalUrl: 'https://www.tiktok.com/@tualmi.outdoors' },
-];
+  { n: 4, alt: 'Walking a mountain road in the Olive Juniper Pant', handle: 'juniper-pant', color: 'Olive', url: `${IG}/reel/DdHh2YkPFwj/` },
+  { n: 6, alt: 'Unboxing the Sierra Shorts in Picnic', handle: 'sierra-shorts', color: 'Picnic' },
+  { n: 2, alt: 'Two friends showing the fold-over waist of the Juniper Pant', handle: 'juniper-pant', url: `${IG}/reel/DeF8OpnTZo3/` },
+  { n: 3, alt: 'Trying on Sierra Shorts colorways', handle: 'sierra-shorts' },
+  { n: 1, alt: 'Two friends in Juniper Pants in a forest clearing', handle: 'juniper-pant', url: `${IG}/reel/Dc4FUuDTCv4/` },
+  { n: 5, alt: 'From a store mirror to the trail in Tualmi', url: `${IG}/reel/DdMkLxiz3AP/` },
+].map(({ n, alt, handle, color, url }) => ({
+  id: `reel-${n}`,
+  type: 'video' as const,
+  src: `${R}/reel-${n}.mp4`,
+  poster: `${R}/reel-${n}.jpg`,
+  alt,
+  kind: 'social' as const,
+  handle: handle as CommunityItem['handle'],
+  color,
+  externalUrl: url ?? 'https://www.instagram.com/tualmioutdoors',
+}));
 
 /** Weaves two lists together so one kind of content never clumps. */
 function weave(a: CommunityItem[], b: CommunityItem[]) {
@@ -103,7 +121,8 @@ function weave(a: CommunityItem[], b: CommunityItem[]) {
   return out;
 }
 
-export const HOME_ROW = weave(SOCIAL, CUSTOMERS.slice(0, 4));
+/** Homepage: all six reels first, then customer photos. */
+export const HOME_ROW = [...SOCIAL, ...CUSTOMERS.slice(0, 4)];
 export const WILD_GALLERY = [...weave(CUSTOMERS, SOCIAL), ...EDITORIAL];
 
 const LIFE = '/images-2/lifestyle';
@@ -122,12 +141,14 @@ const SIERRA_LIFESTYLE: CommunityItem[] = [
   color,
 }));
 
-export const itemsForProduct = (handle: string) =>
-  handle === 'juniper-pant'
-    ? EDITORIAL
+export const itemsForProduct = (handle: string) => {
+  const reels = SOCIAL.filter((r) => r.handle === handle);
+  return handle === 'juniper-pant'
+    ? weave(reels, EDITORIAL)
     : handle === 'sierra-shorts'
-      ? weave(CUSTOMERS, SIERRA_LIFESTYLE)
+      ? weave(reels, weave(CUSTOMERS, SIERRA_LIFESTYLE))
       : [];
+};
 
 /** Lead photo per colorway for shop cards. Sierra uses its studio product photos. */
 export const SHOP_COVERS: Record<string, Record<string, string>> = {

@@ -129,7 +129,7 @@ export default function CommunityRow({
                 {caption(active) && <p className="cm-sheet-cap">{caption(active)}</p>}
                 {active.gifted && <p className="cm-sheet-cap">gifted by Tualmi</p>}
                 {active.externalUrl && (
-                  <a className="cm-sheet-cap" href={active.externalUrl} target="_blank" rel="noopener noreferrer">watch on tiktok</a>
+                  <a className="cm-sheet-cap" href={active.externalUrl} target="_blank" rel="noopener noreferrer">watch on instagram</a>
                 )}
               </div>
               <Link href={shopHref(active)} className="tl-btn tl-btn-solid">
