@@ -594,7 +594,11 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
       ),
     });
   }
-  const pageSections = [...leadSections, ...accordionItems.filter((i) => i.key !== SIZE_GUIDE_KEY)];
+  const hidden = fabricDetail?.hideSections ?? [];
+  const pageSections = [
+    ...leadSections,
+    ...accordionItems.filter((i) => i.key !== SIZE_GUIDE_KEY && !hidden.includes(i.key)),
+  ];
 
   return (
     <div className="pdp-page" style={{ minHeight: '100vh', backgroundColor: blushBg }}>
