@@ -74,6 +74,8 @@ export interface FabricDetail {
    * "4-way stretch" before you have scrolled.
    */
   tagline?: string;
+  /** Replaces the Shopify description in the details section when set. */
+  about?: string;
 
   /**
    * What the product IS, in plain search language: "women's flare cargo
@@ -322,6 +324,26 @@ export const PRODUCT_DETAILS: Record<string, FabricDetail> = {
         { label: 'Drawcord (exposed, per side)', values: ['9"', '9"', '9"', '9"', '9"', '9"', '9"'] },
       ],
     },
+  },
+
+  'trailblazing-tote': {
+    trustClaims: ['women-owned', 'designed in LA', '100% organic cotton'],
+    shell: '100% organic cotton',
+    descriptor: 'organic cotton tote bag',
+    tagline: 'Our very first product. 100% organic cotton, designed by us.',
+    about:
+      'The Trailblazing Club Tote was the first thing we ever made. It’s 100% organic cotton, printed with our own Trailblazing Club artwork, and designed by us in LA. It’s big enough for a picnic, a farmers market haul, or everything you need for a day outside.',
+    features: [
+      'Original Trailblazing Club artwork, designed by us',
+      'Our very first product',
+      'Extra-wide, roomy body',
+      'Two shoulder straps',
+    ],
+    care: ['Machine wash cold, inside out', 'Hang dry', 'Do not bleach', 'Do not iron the print'],
+    faq: [
+      { q: 'What is it made of?', a: '100% organic cotton.' },
+      { q: 'Who designed it?', a: 'We did. The Trailblazing Club artwork is our own, and the tote was the very first Tualmi product.' },
+    ],
   },
 
   'alpine-baby-tee': {

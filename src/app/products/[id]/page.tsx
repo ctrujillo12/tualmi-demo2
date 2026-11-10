@@ -32,6 +32,19 @@ const OG_BASE = {
 };
 
 const PAGE_METADATA: Record<string, Metadata> = {
+  'trailblazing-tote': {
+    title: 'trailblazing club tote — 100% organic cotton tote bag',
+    description:
+      'The Tualmi Trailblazing Club Tote: a roomy 100% organic cotton tote with our own artwork, designed in LA. Our very first product.',
+    alternates: { canonical: '/products/trailblazing-tote' },
+    openGraph: {
+      ...OG_BASE,
+      title: 'The Trailblazing Club Tote | Tualmi',
+      description: '100% organic cotton tote with our own Trailblazing Club artwork. Our very first product.',
+      url: '/products/trailblazing-tote',
+      images: [{ url: '/images-2/tote/web/tote-1.jpg', width: 1600, height: 2400, alt: 'The Trailblazing Club Tote carried with flowers' }],
+    },
+  },
   'sierra-shorts': {
     title: 'sierra shorts — women’s recycled nylon hiking shorts',
     description:
@@ -92,6 +105,7 @@ export function generateStaticParams() {
   return [
     { id: 'sierra-shorts' },
     { id: 'juniper-pant' },
+    { id: 'trailblazing-tote' },
   ];
 }
 

@@ -141,22 +141,24 @@ export default async function CollectionsPage() {
               </span>
             </Link>,
           ] : cards)}
-          {/* Last, after the garments. No link: there is no tote page to
-              send anyone to, and a dead link is worse than none. One size, so
-              QuickAdd adds it straight away with no size step. Left out of
-              the ItemList above for the same reason -- it has no URL. */}
-          {tote && tote.images?.[0] && (
+          {/* Last, after the garments. Links to /products/trailblazing-tote.
+              One size, so QuickAdd adds it straight away with no size step. */}
+          {tote && (
             <div className="shop-card">
-              <div className="shop-card-photo">
+              <Link href="/products/trailblazing-tote" className="shop-card-photo" style={{ display: 'block' }}>
                 <Image
-                  src={tote.images[0]}
+                  src="/images-2/tote/web/tote-1.jpg"
                   alt={tote.name}
                   fill
                   sizes="(max-width: 768px) 50vw, 300px"
                   style={{ objectFit: 'cover' }}
                 />
-              </div>
-              <p className="shop-card-name">{tote.name.toLowerCase()}</p>
+              </Link>
+              <p className="shop-card-name">
+                <Link href="/products/trailblazing-tote" style={{ color: 'inherit', textDecoration: 'none' }}>
+                  {tote.name.toLowerCase()}
+                </Link>
+              </p>
               <p className="shop-card-meta">one size</p>
               <p className="shop-card-price">
                 {tote.compareAtPrice !== undefined && tote.compareAtPrice > tote.price && (

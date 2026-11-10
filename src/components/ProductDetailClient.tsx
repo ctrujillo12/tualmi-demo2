@@ -554,7 +554,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
       label: 'details',
       content: (
         <>
-          <p style={{ margin: 0 }}>{product.description}</p>
+          <p style={{ margin: 0 }}>{fabricDetail?.about ?? product.description}</p>
           {trustBullets.length > 0 && (
             <ul className="pdp-m-only" style={{ margin: '12px 0 0', padding: '0 0 0 16px' }}>
               {trustBullets.map((t) => <li key={t}>{t}</li>)}
@@ -1502,8 +1502,12 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
           <div className="pdp-buybar-info">
             <span className="pdp-buybar-name">{product.name}</span>
             <span className="pdp-buybar-meta">
-              {selectedColor.toLowerCase()}
-              {selectedSize ? ` · ${selectedSize}` : ' · pick a size'}
+              {[
+                selectedColor && selectedColor.toLowerCase() !== 'default' ? selectedColor.toLowerCase() : null,
+                selectedSize || 'pick a size',
+              ]
+                .filter(Boolean)
+                .join(' · ')}
             </span>
             {afterpayEligible(pricing.price) && (
               <span className="pdp-buybar-pay">or 4 payments of {installmentLabel(pricing.price)} with Afterpay</span>

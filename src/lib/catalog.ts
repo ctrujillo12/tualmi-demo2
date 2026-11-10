@@ -8,7 +8,7 @@
  * buyable but has no page, and CartItem linked to it anyway, so any cart
  * containing one had two links that dumped the shopper on the homepage.
  */
-export const DETAIL_HANDLES = ['sierra-shorts', 'juniper-pant'] as const;
+export const DETAIL_HANDLES = ['sierra-shorts', 'juniper-pant', 'trailblazing-tote'] as const;
 
 /** True when /products/<handle> renders something rather than redirecting. */
 export function hasDetailPage(handle: string | undefined | null): boolean {

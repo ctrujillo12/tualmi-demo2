@@ -11,8 +11,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/story`, priority: 0.8 },
     { url: `${BASE}/products/sierra-shorts`, priority: 0.8 },
     { url: `${BASE}/products/juniper-pant`, priority: 0.8 },
+    { url: `${BASE}/products/trailblazing-tote`, priority: 0.6 },
     { url: `${BASE}/trail-club`, priority: 0.6 },
     { url: `${BASE}/jackson-hole`, priority: 0.6 },
+    { url: `${BASE}/in-the-wild`, priority: 0.5 },
     // Higher than the other policy pages on purpose: it is the page that
     // establishes the business is real, which is the thing being checked.
     { url: `${BASE}/footer-pages/contact`, priority: 0.5 },

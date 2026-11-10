@@ -47,6 +47,22 @@ export const localProducts: Product[] = [
     shippingWindow: shipLabel(),
   },
   {
+    id: 'trailblazing-tote',
+    handle: 'trailblazing-tote',
+    name: 'Trailblazing Club Tote',
+    description:
+      'Our very first product. A roomy 100% organic cotton tote with our own Trailblazing Club artwork, designed by us in LA.',
+    price: 1800,
+    images: ['/images-2/tote/web/tote-1.jpg'],
+    category: 'Accessories',
+    sizes: ['One Size'],
+    colors: ['Default'],
+    stock: 100,
+    variants: [],
+    isPreorder: false,
+    shippingWindow: shipLabel(),
+  },
+  {
     id: 'alpine-baby-tee',
     handle: 'alpine-baby-tee',
     name: 'Tioga Tee',

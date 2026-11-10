@@ -53,6 +53,10 @@ export const PRODUCT_COLORS: Record<string, { name: string; value: string }[]> =
 const RE = '/images-2/reedited-photos/Highlights';
 
 export const PRODUCT_COLOR_IMAGES: Record<string, Record<string, string[]>> = {
+  // One colorway; Shopify names it 'Default' (no color option).
+  'trailblazing-tote': {
+    Default: [1, 2, 3, 4, 5, 6].map((n) => `/images-2/tote/web/tote-${n}.jpg`),
+  },
   /**
    * Same running order for every colorway, so flipping between them does not
    * rearrange the gallery:
