@@ -10,14 +10,53 @@ export const metadata: Metadata = {
   alternates: { canonical: '/jackson-hole' },
 };
 
-const href = (s: JhShot) =>
-  `/products/juniper-pant${s.color === 'both' ? '' : `?color=${s.color}`}`;
+type Color = 'Birch' | 'Olive';
+const shop = (c: Color) => `/products/juniper-pant?color=${c}`;
+
+/**
+ * Two-person shots carry one colorway each, so a single link can't land on
+ * "the color in the photo". These split at the gap between the two people:
+ * the left side links to `left`, the right side to the other color. `at` is
+ * the split as a % of the frame's width, eyeballed from the photo.
+ */
+const SPLIT: Record<number, { left: Color; at: number }> = {
+  26:  { left: 'Birch', at: 50 },
+  189: { left: 'Olive', at: 63 },
+  207: { left: 'Olive', at: 42 },
+  73:  { left: 'Birch', at: 45 },
+  142: { left: 'Olive', at: 50 },
+};
+
+const other = (c: Color): Color => (c === 'Birch' ? 'Olive' : 'Birch');
+
+// Already the hero photos on the homepage, collections and community pages —
+// the lookbook skips them so it isn't a rerun of what the shopper just scrolled past.
+// Filtered here rather than removed from JACKSON_HOLE, which also feeds the
+// community grid.
+const USED_AS_HERO = new Set([138, 146, 113, 129]);
 
 function Shot({ s, sizes }: { s: JhShot; sizes: string }) {
+  const frame = s.wide ? 'lb-img lb-img-wide' : 'lb-img';
+  const img = <Image src={jh(s.n)} alt={s.alt} fill sizes={sizes} style={{ objectFit: 'cover' }} />;
+  const split = s.color === 'both' ? SPLIT[s.n] : undefined;
+
+  if (split) {
+    const right = other(split.left);
+    return (
+      <figure className="lb-shot">
+        <div className={frame}>
+          {img}
+          <Link href={shop(split.left)} className="lb-hit" style={{ left: 0, width: `${split.at}%` }} aria-label={`Shop the ${split.left} Juniper Pant`} />
+          <Link href={shop(right)} className="lb-hit" style={{ right: 0, width: `${100 - split.at}%` }} aria-label={`Shop the ${right} Juniper Pant`} />
+        </div>
+      </figure>
+    );
+  }
+
   return (
     <figure className="lb-shot">
-      <Link href={href(s)} className={s.wide ? 'lb-img lb-img-wide' : 'lb-img'}>
-        <Image src={jh(s.n)} alt={s.alt} fill sizes={sizes} style={{ objectFit: 'cover' }} />
+      <Link href={s.color === 'both' ? '/products/juniper-pant' : shop(s.color)} className={frame}>
+        {img}
       </Link>
     </figure>
   );
@@ -26,7 +65,7 @@ function Shot({ s, sizes }: { s: JhShot; sizes: string }) {
 export default function JacksonHolePage() {
   const blocks: JhShot[][] = [];
   let pair: JhShot[] = [];
-  for (const s of JACKSON_HOLE) {
+  for (const s of JACKSON_HOLE.filter((s) => !USED_AS_HERO.has(s.n))) {
     if (s.wide) {
       if (pair.length) blocks.push(pair);
       pair = [];

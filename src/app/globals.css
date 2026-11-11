@@ -1656,6 +1656,7 @@ body { background: var(--cream); }
 .lb-shot { margin: 0; }
 .lb-img { position: relative; display: block; aspect-ratio: 2 / 3; overflow: hidden; background: var(--line); }
 .lb-img-wide { aspect-ratio: 3 / 2; }
+.lb-hit { position: absolute; top: 0; bottom: 0; z-index: 1; }
 .lb-shop { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
 .lb-foot { text-align: center; margin-top: 24px; }
 .cm-row { align-items: flex-start; }
