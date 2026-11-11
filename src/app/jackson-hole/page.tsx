@@ -12,7 +12,6 @@ export const metadata: Metadata = {
 
 const href = (s: JhShot) =>
   `/products/juniper-pant${s.color === 'both' ? '' : `?color=${s.color}`}`;
-const label = (s: JhShot) => (s.color === 'both' ? 'birch + olive' : s.color.toLowerCase());
 
 function Shot({ s, sizes }: { s: JhShot; sizes: string }) {
   return (
@@ -20,10 +19,6 @@ function Shot({ s, sizes }: { s: JhShot; sizes: string }) {
       <Link href={href(s)} className={s.wide ? 'lb-img lb-img-wide' : 'lb-img'}>
         <Image src={jh(s.n)} alt={s.alt} fill sizes={sizes} style={{ objectFit: 'cover' }} />
       </Link>
-      <figcaption>
-        <span>{label(s)}</span>
-        <Link href={href(s)}>shop the juniper</Link>
-      </figcaption>
     </figure>
   );
 }
@@ -52,7 +47,12 @@ export default function JacksonHolePage() {
         <p className="tl-eyebrow">the lookbook</p>
         <h1 className="tl-display">jackson hole</h1>
         <p className="lb-sub">the juniper pant, in birch and olive. built for the trail, cute everywhere else.</p>
-        <Link href="/products/juniper-pant" className="tl-btn tl-btn-solid">shop the juniper</Link>
+        {/* One product, two colorways — the shop links live here once rather
+            than under every photo. Photos still click through to their color. */}
+        <div className="lb-shop">
+          <Link href="/products/juniper-pant?color=Birch" className="tl-btn tl-btn-solid">shop birch</Link>
+          <Link href="/products/juniper-pant?color=Olive" className="tl-btn tl-btn-solid">shop olive</Link>
+        </div>
       </header>
       {blocks.map((b) => (
         <div key={b[0].n} className={b.length === 2 ? 'lb-pair' : 'lb-single'}>

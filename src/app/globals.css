@@ -1656,12 +1656,10 @@ body { background: var(--cream); }
 .lb-shot { margin: 0; }
 .lb-img { position: relative; display: block; aspect-ratio: 2 / 3; overflow: hidden; background: var(--line); }
 .lb-img-wide { aspect-ratio: 3 / 2; }
-.lb-shot figcaption { display: flex; justify-content: space-between; gap: 10px; padding-top: 8px; font-family: var(--font-montserrat), system-ui, sans-serif; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: lowercase; }
-.lb-shot figcaption a { color: var(--pine); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.lb-shop { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
 .lb-foot { text-align: center; margin-top: 24px; }
 .cm-row { align-items: flex-start; }
 .cm-grid { align-items: start; }
-.lb-shot figcaption a { white-space: nowrap; }
 .wild-wrap h1 { font-family: var(--font-display), Georgia, serif !important; font-weight: 400 !important; letter-spacing: -0.015em !important; }
 
 /* Hero: models stay fully in frame. Phones use one tall photo with the headline
@@ -1726,7 +1724,6 @@ body { background: var(--cream); }
   .qa-size { min-height: 44px; font-size: 12px; }
   .tl-link, .tl-link-light, .tl-bleed-link { display: inline-block; padding: 12px 0; }
   .cm-filters button { min-height: 44px; }
-  .lb-shot figcaption a { padding: 10px 0; }
 }
 
 .cart-buybar, .cart-buybar-spacer { display: none; }
@@ -1756,14 +1753,6 @@ body { background: var(--cream); }
 @media (max-width: 767px) {
   .tl-bleed:not(.tl-bleed-club) { height: auto; aspect-ratio: 4 / 5; }
   .tl-bleed-img { object-position: 64% center; }
-}
-
-/* Lookbook captions on phones: color above link, same left edge under every
-   photo, so a long color name can't wrap one caption out of line. */
-@media (max-width: 767px) {
-  .lb-shot figcaption { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 0; padding-top: 10px; line-height: 1.3; }
-  .lb-shot figcaption span { white-space: nowrap; }
-  .lb-shot figcaption a { display: inline-block; padding: 6px 0 10px; line-height: 1.3; }
 }
 
 /* Product page: trimmed to the decision. Specs, feature icons and badges live
