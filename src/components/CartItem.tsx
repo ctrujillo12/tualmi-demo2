@@ -151,7 +151,16 @@ export default function CartItem({ item }: CartItemProps) {
                 {SOLD_OUT_LABEL} — please remove
               </p>
             )}
+            {/* Preorder sizes sell at or below zero on purpose (lib/inventory.ts),
+                so the "only N left" check below would read "only 0 left" on
+                every one of them. Say it isn't in stock yet — never the count. */}
+            {lineState.status === 'available' && lineState.backorder && (
+              <p role="status" style={{ fontFamily: sans, fontSize: '11.5px', fontWeight: 700, color: soft, marginTop: '8px', textTransform: 'lowercase', letterSpacing: '0.06em' }}>
+                not in stock yet — ships when the preorder arrives
+              </p>
+            )}
             {lineState.status === 'available' &&
+              !lineState.backorder &&
               lineState.quantity !== null &&
               lineState.quantity < item.quantity && (
               <p role="status" style={{ fontFamily: sans, fontSize: '11.5px', fontWeight: 700, color: '#B85C49', marginTop: '8px', textTransform: 'lowercase', letterSpacing: '0.06em' }}>
