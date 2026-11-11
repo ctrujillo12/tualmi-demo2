@@ -220,6 +220,8 @@ async function productFetch<T>(
 export interface ShopifyVariant {
   id: string;
   title: string;
+  /** Merchant SKU, if one is set in Shopify admin. Sent to Afterpay's placement. */
+  sku?: string | null;
   price: { amount: string; currencyCode: string };
   compareAtPrice?: { amount: string; currencyCode: string } | null;
   /**
@@ -285,6 +287,7 @@ const productFields = (withInventory: boolean) => `
         node {
           id
           title
+          sku
           price { amount currencyCode }
           compareAtPrice { amount currencyCode }
           availableForSale${withInventory ? INVENTORY_FIELDS : ''}

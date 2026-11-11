@@ -1,6 +1,7 @@
 'use client';
 
-import AfterpayLine from '@/components/AfterpayLine';
+import SquarePlacement from '@/components/SquarePlacement';
+import { findVariant } from '@/lib/inventory';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import CartItem from '@/components/CartItem';
@@ -261,7 +262,13 @@ export default function CartPage() {
                   ? 'Free US shipping included. Tax added at checkout.'
                   : `Includes ${money(FLAT_SHIPPING_CENTS)} US shipping. Tax added at checkout.`}
               </p>
-              <AfterpayLine cents={estimatedCents} />
+              {/* Afterpay messaging under the cart total, as Square requires. */}
+              <SquarePlacement
+                pageType="cart"
+                cents={estimatedCents}
+                skus={items.map((i) => findVariant(i.product, i.selectedColor, i.selectedSize)?.sku)}
+                categories={items.map((i) => i.product.category)}
+              />
               {/* Its own line rather than the tail of the sentence above, so an
                   international shopper finds it without reading the US maths. */}
               <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 600, color: maroon, margin: 0, lineHeight: 1.5 }}>

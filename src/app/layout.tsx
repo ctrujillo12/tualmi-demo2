@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import { SQUARE_MARKETPLACE_SRC } from '@/lib/afterpay';
 import localFont from 'next/font/local';
 import { Inter, Playfair_Display, Montserrat, Great_Vibes, Ballet, Codystar, Cedarville_Cursive } from 'next/font/google';
 import './globals.css';
@@ -159,6 +160,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
             The company id is a public identifier; it appears in this script URL
             on every Klaviyo-enabled storefront. No private key belongs here. */}
+        {/* Afterpay on-site messaging (Square). Renders the <square-placement>
+            tags in components/SquarePlacement.tsx. */}
+        <Script id="square-marketplace" strategy="afterInteractive" src={SQUARE_MARKETPLACE_SRC} />
         <Script
           id="klaviyo-onsite"
           strategy="afterInteractive"

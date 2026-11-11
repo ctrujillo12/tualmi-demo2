@@ -1,6 +1,6 @@
 'use client';
 
-import AfterpayLine from '@/components/AfterpayLine';
+import SquarePlacement from '@/components/SquarePlacement';
 import { afterpayEligible, installmentLabel } from '@/lib/afterpay';
 import { PDP_LEAD } from '@/lib/community';
 import React, { useState, useEffect, useRef } from 'react';
@@ -17,7 +17,7 @@ import { FREE_SHIPPING_LABEL, WORLDWIDE_LABEL, WORLDWIDE_SENTENCE } from '@/lib/
 import { shipLabel } from '@/lib/shipWindow';
 import { RETURN_WINDOW_DAYS } from '@/lib/business';
 import { LOW_STOCK_LABEL, SOLD_OUT_LABEL } from '@/lib/lowStock';
-import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/inventory';
+import { availability, findVariant, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/inventory';
 import RestockNotify from '@/components/RestockNotify';
 import { preorderOffer, preorderSizes, preorderCartOptions, discounted } from '@/lib/preorder';
 import ImageLightbox from '@/components/ImageLightbox';
@@ -808,7 +808,13 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
               )}
               <span>${(pricing.price / 100).toFixed(2)}</span>
             </p>
-            <AfterpayLine cents={pricing.price} />
+            {/* Afterpay messaging, directly under the price as Square requires. */}
+            <SquarePlacement
+              pageType="product"
+              cents={pricing.price}
+              skus={[findVariant(product, selectedColor, selectedSize)?.sku]}
+              categories={[product.category]}
+            />
 
             {/* The promise, directly under the price — the one place a shopper
                 is actually asking "is this worth it?". Everything else in this

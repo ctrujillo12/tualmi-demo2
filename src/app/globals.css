@@ -1639,10 +1639,6 @@ body { background: var(--cream); }
 .pdp-main { background: var(--cream) !important; }
 .pdp-tile { border-radius: 0 !important; }
 .afterpay-line { margin: -10px 0 18px; font-family: var(--font-montserrat), system-ui, sans-serif; color: var(--pine); }
-.afterpay-main { font-size: 13px; font-weight: 500; margin: 0; }
-.afterpay-main strong { font-weight: 700; }
-.afterpay-fine { font-size: 10.5px; color: var(--muted); margin: 2px 0 0; }
-.afterpay-fine a { color: inherit; text-decoration: underline; }
 .pdp-buybar-pay { font-family: var(--font-montserrat), system-ui, sans-serif; font-size: 10.5px; font-weight: 500; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pdp-outthere { border-top: 1px solid var(--line); }
 
