@@ -19,7 +19,7 @@
  * Transit time is separate and lives in the Offer's deliveryTime.transitTime.
  * This is only the part before the carrier has it.
  */
-export const HANDLING_DAYS = { min: 1, max: 2 } as const;
+export const HANDLING_DAYS = { min: 2, max: 3 } as const;
 export const HANDLING_COPY = `${HANDLING_DAYS.min}–${HANDLING_DAYS.max} business days`;
 
 /**
@@ -33,7 +33,7 @@ export const TRANSIT_COPY = `${TRANSIT_DAYS.min}–${TRANSIT_DAYS.max} business 
 /**
  * TWO SHAPES, ONE FACT.
  *
- * shipPhrase() is the verb clause alone -- "ships in 1-2 business days" --
+ * shipPhrase() is the verb clause alone -- "ships in 2-3 business days" --
  * for a sentence that has already said the item is in stock.
  *
  * shipLabel() is the standalone version with the stock state on the front,
