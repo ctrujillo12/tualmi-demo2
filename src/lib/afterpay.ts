@@ -12,7 +12,7 @@
  * Master switch. Set to true once Afterpay appears at Shopify checkout; every
  * Afterpay message on the site follows this one value.
  */
-export const AFTERPAY_ENABLED = false;
+export const AFTERPAY_ENABLED = true;
 
 export const AFTERPAY_MIN_CENTS = 3500;
 export const AFTERPAY_MAX_CENTS = 200000;
