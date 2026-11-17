@@ -37,7 +37,7 @@ import type { ShopifyVariant } from '@/lib/shopify';
 import { preorderIncoming } from '@/lib/preorderConfig';
 
 /**
- * Raised to 9 (anything under 10) in Nov 2026. A size reads as "only a few left" at this quantity
+ * Raised to 9 (anything under 10) in Nov 2026, then to 15 on 16 Nov 2026. A size reads as "only a few left" at this quantity
  * OR FEWER — so when this note was written, at 4,
  * everything from 1 to 4 is flagged and 5 is not.
  *
@@ -68,7 +68,7 @@ import { preorderIncoming } from '@/lib/preorderConfig';
 export const LOW_STOCK_AT_OR_BELOW =
   Number(process.env.NEXT_PUBLIC_LOW_STOCK_AT_OR_BELOW) > 0
     ? Number(process.env.NEXT_PUBLIC_LOW_STOCK_AT_OR_BELOW)
-    : 9;
+    : 15;
 
 export type AvailabilityStatus = 'available' | 'sold-out' | 'unknown';
 
@@ -285,6 +285,50 @@ export function colorHasLowStock(
 ): boolean {
   if (!product) return false;
   return sizesFor(product).some((s) => isLowStock(product, color, s));
+}
+
+/**
+ * Colorway-level "only a few left" tag (product page + shop cards).
+ *
+ * Added 16 Nov 2026 for Sierra / Picnic and Juniper / Olive. Deliberately NOT a
+ * hand-kept list of colorways: it's derived from the same live Shopify
+ * quantities as the size dots, so the tag comes off by itself when a colorway
+ * is restocked and goes on by itself when another sells down. A colorway is
+ * tagged when its in-stock units, summed across sizes, are at or below this.
+ *
+ * 40 was picked against live stock on 16 Nov 2026: Picnic 31, Olive 35, then
+ * Jam 54, Confetti 59, Birch 74. So it tags exactly the two colorways asked
+ * for, with a clear gap before the next one.
+ *
+ * Preorder/backorder units don't count (they aren't on hand), and if any size's
+ * quantity can't be read the answer is "no tag" — same rule as the dots.
+ */
+export const COLORWAY_LOW_UNITS_AT_OR_BELOW = 40;
+
+/** Units on hand across every size of a colorway, or null if unknowable. */
+export function colorwayUnitsInStock(
+  product: Pick<Product, 'variants' | 'handle' | 'sizes'> | null | undefined,
+  color: string | undefined,
+): number | null {
+  if (!product?.variants?.length || !color) return null;
+  const sizes = sizesFor(product);
+  const states = sizes.length
+    ? sizes.map((s) => availability(product, color, s))
+    : [availability(product, color, undefined)];
+  if (states.some((a) => a.status === 'unknown')) return null;
+  return states.reduce(
+    (sum, a) => sum + (a.status === 'available' && !a.backorder && a.quantity ? Math.max(0, a.quantity) : 0),
+    0,
+  );
+}
+
+/** True when a colorway is in stock but down to its last few units overall. */
+export function isColorwayRunningLow(
+  product: Pick<Product, 'variants' | 'handle' | 'sizes'> | null | undefined,
+  color: string | undefined,
+): boolean {
+  const units = colorwayUnitsInStock(product, color);
+  return units !== null && units > 0 && units <= COLORWAY_LOW_UNITS_AT_OR_BELOW;
 }
 
 /**

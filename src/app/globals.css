@@ -1766,3 +1766,32 @@ body { background: var(--cream); }
   .pdp-buybox > .pdp-descriptor { display: none !important; }
   .pdp-details { margin-top: 4px; }
 }
+
+/* "only a few left" tag — colorway running low (lib/inventory.ts,
+   isColorwayRunningLow). Same red as the size dots. */
+.stock-tag {
+  display: inline-block;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: #fff;
+  background: #D2402F;
+  border-radius: 999px;
+  padding: 4px 10px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.stock-tag--pdp { margin: 0 0 10px; }
+.stock-tag--card {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .stock-tag { font-size: 10px; padding: 3px 8px; }
+  .stock-tag--card { top: 8px; left: 8px; }
+}

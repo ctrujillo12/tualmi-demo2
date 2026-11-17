@@ -17,7 +17,7 @@ import { FREE_SHIPPING_LABEL, WORLDWIDE_LABEL, WORLDWIDE_SENTENCE } from '@/lib/
 import { shipLabel } from '@/lib/shipWindow';
 import { RETURN_WINDOW_DAYS } from '@/lib/business';
 import { LOW_STOCK_LABEL, SOLD_OUT_LABEL } from '@/lib/lowStock';
-import { availability, isSoldOut, isColorSoldOut, maxPurchasable } from '@/lib/inventory';
+import { availability, isSoldOut, isColorSoldOut, isColorwayRunningLow, maxPurchasable } from '@/lib/inventory';
 import RestockNotify from '@/components/RestockNotify';
 import { preorderOffer, preorderSizes, preorderCartOptions, discounted } from '@/lib/preorder';
 import ImageLightbox from '@/components/ImageLightbox';
@@ -735,6 +735,10 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 </span>
               ))}
             </div>
+
+            {ready && !lockedForLaunch && isColorwayRunningLow(product, selectedColor) && (
+              <span className="stock-tag stock-tag--pdp">{LOW_STOCK_LABEL}</span>
+            )}
 
             {ready && (
               <p className="pdp-shipline" style={{ ...eyebrowStyle, marginBottom: '8px' }}>
