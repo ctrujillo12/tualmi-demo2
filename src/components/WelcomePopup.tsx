@@ -12,6 +12,59 @@ import { WELCOME_CODE, saveWelcomeCode } from '@/lib/discount';
 // (and dismissed) the old 10% welcome popup still get this one once.
 const STORAGE_KEY = 'tualmi_bf_early_access_shown';
 
+/** Public Black Friday launch: Fri 27 Nov 2026, 4:00 pm PT (PST = UTC-8). */
+const BF_LAUNCH = new Date('2026-11-27T16:00:00-08:00').getTime();
+
+/**
+ * Days / hours / mins / secs to launch, ticking once a second. Stops at zero.
+ * Only ever mounted inside the popup, which renders client-side after load,
+ * so Date.now() can't cause a hydration mismatch.
+ */
+function Countdown() {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const left = Math.max(0, BF_LAUNCH - now);
+  const units: [number, string][] = [
+    [Math.floor(left / 86_400_000), 'days'],
+    [Math.floor(left / 3_600_000) % 24, 'hours'],
+    [Math.floor(left / 60_000) % 60, 'mins'],
+    [Math.floor(left / 1000) % 60, 'secs'],
+  ];
+  return (
+    <div
+      role="timer"
+      aria-label="time until black friday"
+      style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', margin: '0 0 22px' }}
+    >
+      {units.map(([n, label]) => (
+        <div
+          key={label}
+          style={{
+            backgroundColor: 'white', border: `1px solid ${rule}`, borderRadius: '12px',
+            padding: '12px 4px 10px', textAlign: 'center',
+          }}
+        >
+          <div style={{
+            fontFamily: sans, fontWeight: 700, fontSize: 'clamp(24px, 6vw, 30px)',
+            lineHeight: 1, color: maroon, fontVariantNumeric: 'tabular-nums',
+          }}>
+            {String(n).padStart(2, '0')}
+          </div>
+          <div style={{
+            fontFamily: sans, fontWeight: 600, fontSize: '10px', letterSpacing: '0.14em',
+            color: soft, marginTop: '7px', textTransform: 'lowercase',
+          }}>
+            {label}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** Fired by the header strip's "sign up →" link to open this popup on demand. */
 export const OPEN_EARLY_ACCESS_EVENT = 'tualmi:open-early-access';
 
@@ -219,10 +272,20 @@ export default function WelcomePopup() {
           </div>
         ) : (
           <>
-            <h2 style={heading}>black friday early access: get in 24 hours before everyone else.</h2>
-            <p style={{ ...bodyText, margin: '-6px 0 24px' }}>
-              up to 30% off — but stock is already low and sizes are going fast.
-              the early access list shops first, while your size is still here.
+            <p style={{ ...eyebrow, textAlign: 'center' }}>up to 30% off everything</p>
+            <h2 style={{ ...heading, textAlign: 'center', margin: '0 0 6px' }}>black friday: 27 november</h2>
+            <p style={{ ...bodyText, textAlign: 'center', margin: '0 0 18px' }}>
+              friday, 4:00 pm pt
+            </p>
+
+            <Countdown />
+
+            <p style={{ ...bodyText, color: maroon, fontWeight: 700, textAlign: 'center', margin: '0 0 6px' }}>
+              get in 24 hours before everyone else ✦
+            </p>
+            <p style={{ ...bodyText, textAlign: 'center', margin: '0 0 20px' }}>
+              stock is already low and sizes are going fast. the early access list
+              shops thursday at 4:00 pm pt — while your size is still here.
             </p>
 
             <form onSubmit={handleSubmit}>
