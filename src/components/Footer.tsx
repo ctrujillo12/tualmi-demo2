@@ -50,7 +50,7 @@ export default function Footer() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'footer', attribution: getAttribution(), ref: getReferralCode() }),
+        body: JSON.stringify({ email, source: 'bf-early-access-footer', attribution: getAttribution(), ref: getReferralCode() }),
       });
       setStatus(res.ok ? 'success' : 'error');
       // Same welcome offer as the popup — one club, one code.
@@ -114,10 +114,10 @@ export default function Footer() {
                 textTransform: 'lowercase',
               }}
             >
-              get 10% off your first order.
+              get black friday early access.
             </h3>
 
-            {/* Same three perks as the welcome popup — one consistent ask. */}
+            {/* Black Friday early-access pitch, same as the popup (Nov 2026). */}
             <ul
               style={{
                 listStyle: 'none', padding: 0, margin: '0 0 22px',
@@ -125,9 +125,9 @@ export default function Footer() {
               }}
             >
               {[
-                '10% off, the second you join',
-                'special perks, discounts + early access to new drops',
-                'insider info and behind-the-scenes sneak peeks',
+                'shop black friday 24 hours before everyone else',
+                'up to 30% off everything',
+                'stock is already low — early access is your best shot at your size',
               ].map((perk) => (
                 <li
                   key={perk}
@@ -152,9 +152,10 @@ export default function Footer() {
               />
             ) : status === 'success' ? (
               <p style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: '#fff', margin: 0, textTransform: 'lowercase' }}>
-                you’re in ✦ here’s 10% off your first order:{' '}
+                you’re on the list ✦ we’ll email you 24 hours before black friday opens
+                {joinedSms ? ' and text you the second early access goes live' : ''}. in the meantime,
+                here’s 10% off your first order:{' '}
                 <span style={{ letterSpacing: '0.1em' }}>{WELCOME_CODE}</span>
-                {joinedSms ? ' — and we’ll text you when the next piece drops.' : ' — it’s in your inbox too.'}
               </p>
             ) : (
               <>
@@ -203,7 +204,7 @@ export default function Footer() {
                       textTransform: 'lowercase',
                     }}
                   >
-                    {status === 'loading' ? '…' : 'join'}
+                    {status === 'loading' ? '…' : 'get early access'}
                   </button>
                 </div>
                 {status === 'error' && (

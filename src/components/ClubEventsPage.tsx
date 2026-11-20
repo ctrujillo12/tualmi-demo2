@@ -583,7 +583,7 @@ function JoinForm() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'invite', attribution: getAttribution(), ref: getReferralCode() }),
+        body: JSON.stringify({ email, source: 'bf-early-access-trail-club', attribution: getAttribution(), ref: getReferralCode() }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -603,7 +603,7 @@ function JoinForm() {
     return (
       <div style={{ maxWidth: '460px', margin: '0 auto' }}>
         <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 700, color: sageDeep, margin: '0 0 22px', textTransform: 'lowercase' }}>
-          you&apos;re in ✦
+          you&apos;re on the black friday early access list ✦
         </p>
         <PhoneOptIn
           email={email}
@@ -617,9 +617,10 @@ function JoinForm() {
   if (step === 'success') {
     return (
       <p style={{ fontFamily: sans, fontSize: '14px', fontWeight: 600, color: sageDeep, margin: 0, textTransform: 'lowercase' }}>
-        you’re in ✦ 10% off your first order with code{' '}
+        you’re on the list ✦ we’ll email you 24 hours before black friday opens
+        {joinedSms ? ' and text you the second early access goes live' : ''}. in the meantime,
+        10% off your first order with code{' '}
         <span style={{ letterSpacing: '0.1em' }}>{WELCOME_CODE}</span>
-        {joinedSms ? '. you’ll get the drop link by text first.' : '. it’s in your inbox too.'}
       </p>
     );
   }
@@ -644,7 +645,7 @@ function JoinForm() {
           onClick={submit} disabled={!validEmail}
           style={{ padding: '13px 26px', background: 'none', border: 'none', fontFamily: sans, fontSize: '14px', fontWeight: 700, color: sageDeep, cursor: validEmail ? 'pointer' : 'default', opacity: validEmail ? 1 : 0.5, textTransform: 'lowercase', whiteSpace: 'nowrap' }}
         >
-          {step === 'error' ? 'retry' : 'join'}
+          {step === 'error' ? 'retry' : 'get early access'}
         </button>
       </div>
       {step === 'error' && (
@@ -669,20 +670,20 @@ export default function ClubEventsPage() {
           id="join"
           style={{ marginTop: sectionGap, maxWidth: '680px', marginLeft: 'auto', marginRight: 'auto', textAlign: 'center', scrollMarginTop: '96px' }}
         >
-          <p style={eyebrow}>{hasUpcoming ? 'can’t make it?' : 'first dibs'}</p>
+          <p style={eyebrow}>black friday · up to 30% off</p>
           <h2
             style={{
               fontFamily: 'var(--font-display), Georgia, serif', fontWeight: 400, fontSize: 'clamp(30.7px, 4.6vw, 48.6px)',
               letterSpacing: '-0.015em', lineHeight: 1.15, color: sageDeep, margin: '0 0 22px', textTransform: 'lowercase',
             }}
           >
-            {hasUpcoming ? 'join the club anyway.' : 'join the club.'}
+            get black friday early access.
           </h2>
           <ul style={{ listStyle: 'none', padding: 0, margin: '0 auto clamp(26px, 4vw, 36px)', display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left', maxWidth: '520px' }}>
             {[
-              '10% off your first order, the second you join',
-              'special perks, discounts + early access to new drops',
-              'insider info and behind-the-scenes sneak peeks',
+              'shop black friday 24 hours before everyone else',
+              'up to 30% off everything',
+              'stock is already low — early access is your best shot at your size',
             ].map((item) => (
               <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontFamily: sans, fontSize: 'clamp(14px, 1.6vw, 16px)', fontWeight: 500, color: ink, lineHeight: 1.8 }}>
                 <span style={{ color: sageDeep, flexShrink: 0 }}>✦</span>{item}
