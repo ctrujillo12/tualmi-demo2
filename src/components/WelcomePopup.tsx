@@ -8,7 +8,12 @@ import { klaviyoIdentify } from '@/lib/klaviyo';
 import { getReferralCode } from '@/lib/referralClient';
 import { WELCOME_CODE, saveWelcomeCode } from '@/lib/discount';
 
-const STORAGE_KEY = 'tualmi_welcome_shown';
+// New key for the Black Friday early-access push, so visitors who already saw
+// (and dismissed) the old 10% welcome popup still get this one once.
+const STORAGE_KEY = 'tualmi_bf_early_access_shown';
+
+/** Fired by the header strip's "sign up →" link to open this popup on demand. */
+export const OPEN_EARLY_ACCESS_EVENT = 'tualmi:open-early-access';
 
 // Landing-page design tokens — the same set PolicyPage and /invite use.
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
@@ -37,6 +42,14 @@ export default function WelcomePopup() {
 
   /** /invite is already a signup page; interrupting checkout costs more than an email. */
   const SUPPRESSED = ['/trail-club', '/invite', '/cart', '/discount'];
+
+  // The header strip links here. Opening on request ignores the once-per-browser
+  // flag and the suppressed pages: she asked for it.
+  useEffect(() => {
+    const open = () => { firedRef.current = true; setStatus('idle'); setVisible(true); };
+    window.addEventListener(OPEN_EARLY_ACCESS_EVENT, open);
+    return () => window.removeEventListener(OPEN_EARLY_ACCESS_EVENT, open);
+  }, []);
 
   useEffect(() => {
     if (SUPPRESSED.some((p) => pathname?.startsWith(p))) return;
@@ -79,7 +92,7 @@ export default function WelcomePopup() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
-          source: 'welcome-popup',
+          source: 'bf-early-access',
           attribution: getAttribution(), ref: getReferralCode() }),
       });
       const data = await res.json();
@@ -167,9 +180,10 @@ export default function WelcomePopup() {
 
         {status === 'success' ? (
           <div>
-            <p style={eyebrow}>welcome to the club</p>
-            <h2 style={{ ...heading, margin: '0 0 14px' }}>you&apos;re in ✦</h2>
+            <p style={eyebrow}>black friday early access</p>
+            <h2 style={{ ...heading, margin: '0 0 14px' }}>you&apos;re on the list ✦</h2>
             <p style={{ ...bodyText, margin: '0 0 14px' }}>
+              we&apos;ll email you 24 hours before everyone else gets in. in the meantime,
               here&apos;s 10% off your first order — already applied at checkout.
             </p>
             <div style={codeChip}>{WELCOME_CODE}</div>
@@ -204,33 +218,10 @@ export default function WelcomePopup() {
           </div>
         ) : (
           <>
-            <p style={eyebrow}>the trailblazing club</p>
-            <h2 style={heading}>get 10% off your first order.</h2>
-
-            <ul
-              style={{
-                listStyle: 'none', padding: 0, margin: '0 0 24px',
-                display: 'flex', flexDirection: 'column', gap: '9px',
-              }}
-            >
-              {[
-                '10% off, the second you join',
-                'special perks, discounts + early access to new drops',
-                'insider info and behind-the-scenes sneak peeks',
-              ].map((perk) => (
-                <li
-                  key={perk}
-                  style={{
-                    display: 'flex', alignItems: 'flex-start', gap: '10px',
-                    fontFamily: sans, fontSize: '14px', fontWeight: 500,
-                    color: soft, lineHeight: 1.7,
-                  }}
-                >
-                  <span style={{ color: maroon, flexShrink: 0 }}>✦</span>
-                  {perk}
-                </li>
-              ))}
-            </ul>
+            <h2 style={heading}>black friday early access: get in 24 hours before everyone else.</h2>
+            <p style={{ ...bodyText, margin: '-6px 0 24px' }}>
+              up to 30% off. limited sizes.
+            </p>
 
             <form onSubmit={handleSubmit}>
               <div
@@ -268,7 +259,7 @@ export default function WelcomePopup() {
                     transition: 'opacity 0.2s',
                   }}
                 >
-                  {status === 'loading' ? '…' : 'join'}
+                  {status === 'loading' ? '…' : 'get early access'}
                 </button>
               </div>
 
