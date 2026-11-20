@@ -156,7 +156,7 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
           }}
           style={{ color: 'inherit', textDecoration: 'none' }}
         >
-          Black Friday early access list is open. <strong>Sign up →</strong>
+          Black Friday early access is open · sizes are limited · <strong>Sign up →</strong>
         </a>
         {/* PRE-BF IDLE CONTENT — restore after Black Friday:
         {AFTERPAY_ENABLED ? (

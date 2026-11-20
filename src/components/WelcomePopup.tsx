@@ -183,7 +183,8 @@ export default function WelcomePopup() {
             <p style={eyebrow}>black friday early access</p>
             <h2 style={{ ...heading, margin: '0 0 14px' }}>you&apos;re on the list ✦</h2>
             <p style={{ ...bodyText, margin: '0 0 14px' }}>
-              we&apos;ll email you 24 hours before everyone else gets in. in the meantime,
+              we&apos;ll email you 24 hours before everyone else gets in — shop right away,
+              sizes won&apos;t last. in the meantime,
               here&apos;s 10% off your first order — already applied at checkout.
             </p>
             <div style={codeChip}>{WELCOME_CODE}</div>
@@ -220,7 +221,8 @@ export default function WelcomePopup() {
           <>
             <h2 style={heading}>black friday early access: get in 24 hours before everyone else.</h2>
             <p style={{ ...bodyText, margin: '-6px 0 24px' }}>
-              up to 30% off. limited sizes.
+              up to 30% off — but stock is already low and sizes are going fast.
+              the early access list shops first, while your size is still here.
             </p>
 
             <form onSubmit={handleSubmit}>
