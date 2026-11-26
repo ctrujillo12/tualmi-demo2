@@ -21,7 +21,7 @@ import { cartLinePricing, preorderCodesFor } from '@/lib/preorder';
 import { PREORDERS } from '@/lib/preorderConfig';
 import { isPreorderHandle } from '@/lib/shipWindow';
 import { getDiscountCode } from '@/lib/discount';
-import { bfCodeFor } from '@/lib/blackFriday';
+import { bfCodesFor } from '@/lib/blackFriday';
 import { galleryImageFor } from '@/lib/productColors';
 import { trackBeginCheckout } from '@/lib/analytics';
 import { getGaIds } from '@/lib/ga';
@@ -589,9 +589,11 @@ export const useCartStore = create<CartStore>()(
           // product discounts, and Shopify takes one non-combinable code, so
           // sending a creator code alongside would risk losing the bigger
           // discount. Creator credit still rides on the cart attributes below.
-          const bfCode = bfCodeFor(get().getTotal());
+          // Plus the BF free-shipping code when the pre-discount cart is $125+.
+          const bfCodes = bfCodesFor(get().getTotal());
+          const bfCode = bfCodes[0] ?? null;
           const codes = bfCode
-            ? [bfCode]
+            ? bfCodes
             : Array.from(new Set([...(code ? [code] : []), ...preorderCodesFor(items)]));
 
           // Last event we can fire ourselves — the purchase happens on Shopify's

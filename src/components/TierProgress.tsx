@@ -49,7 +49,8 @@ export default function TierProgress({ variant }: { variant: 'strip' | 'panel' }
     const body = !started ? (
       <>
         <span className="ship-spark" aria-hidden>✦</span>
-        black friday is live · <strong>up to {BF_MAX_PCT}% off</strong> · the more you spend, the more you save
+        black friday is live · <strong>up to {BF_MAX_PCT}% off</strong>
+        <span className="bf-strip-long"> · the more you spend, the more you save</span>
       </>
     ) : !tier ? (
       <>

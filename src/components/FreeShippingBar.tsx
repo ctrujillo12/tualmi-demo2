@@ -14,7 +14,7 @@ import {
 import { trackShippingNudge } from '@/lib/analytics';
 import { OPEN_EARLY_ACCESS_EVENT } from '@/components/WelcomePopup';
 import TierProgress from '@/components/TierProgress';
-import { useBlackFriday, bfDiscountCents } from '@/lib/blackFriday';
+import { useBlackFriday } from '@/lib/blackFriday';
 
 /**
  * Free-shipping messaging, shown in two places with the same numbers.
@@ -57,11 +57,9 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
   const rawTotal = useCartStore((s) => s.getTotal());
   const items = useCartStore((s) => s.items);
   const bf = useBlackFriday();
-  // During Black Friday, Shopify checks the free-shipping minimum against the
-  // order AFTER the tier discount, so this bar has to as well — otherwise a
-  // $150 cart (25% off = $112.50) would be told shipping is free and then
-  // charged for it at checkout.
-  const total = rawTotal - bfDiscountCents(rawTotal, bf.active);
+  // Free shipping stays "$125+ before discount" during Black Friday — the
+  // BF free-shipping code makes checkout agree (lib/blackFriday.ts).
+  const total = rawTotal;
 
   // The cart is persisted, so it isn't readable until after hydration. Render
   // the plain promo first and upgrade to live progress once it's known.
@@ -184,7 +182,7 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
             style={{ color: 'inherit', textDecoration: 'none' }}
           >
             {bf.phase === 'early-locked' ? (
-              <>early access is live for the list · everyone else fri 4pm pt · <strong>Sign up →</strong></>
+              <>early access is live for the list<span className="bf-strip-long"> · everyone else fri 4pm pt</span> · <strong>Sign up →</strong></>
             ) : (
               <>Black Friday early access is open · sizes are limited · <strong>Sign up →</strong></>
             )}

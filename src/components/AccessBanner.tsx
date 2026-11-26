@@ -37,6 +37,9 @@ export default function AccessBanner() {
 
   return (
     <div
+      // Desktop only: on a phone the header strip already says this, and a
+      // floating pill there sat on top of the cart/product checkout bars.
+      className="bf-access-pill"
       style={{
         position: 'fixed',
         left: '50%',

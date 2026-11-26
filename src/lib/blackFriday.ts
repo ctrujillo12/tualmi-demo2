@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { FREE_SHIPPING_THRESHOLD } from '@/lib/shipping';
 
 /**
  * ── Black Friday 2026 ────────────────────────────────────────────────────
@@ -128,10 +129,30 @@ export function bfActiveNow(): boolean {
   return bfPhase(Date.now(), hasEarlyFlag()) === 'live';
 }
 
-/** Code to send to Shopify for this cart, or null. */
-export function bfCodeFor(subtotalCents: number): string | null {
-  if (!bfActiveNow()) return null;
-  return tierFor(subtotalCents)?.code ?? null;
+/**
+ * Free US shipping during the sale, judged on the cart BEFORE the tier
+ * discount — so free shipping stays "$125+" exactly as advertised.
+ *
+ * Why a separate code: Shopify checks the regular automatic free-shipping
+ * rule ($125 minimum) against the order AFTER discounts, so a $150 cart at
+ * 25% off ($112.50) would lose free shipping. This code (Shopify: free
+ * shipping, US, rates under $12, $100 minimum, combines with order discounts,
+ * same window as the tier codes) is only sent when the pre-discount cart is
+ * $125+. Its $100 minimum is the post-discount floor of a $125 cart at 20%,
+ * so it can't help a smaller order even if it leaks.
+ */
+export const BF_SHIP_CODE = 'BFSHIP-K856TB';
+
+/**
+ * Codes to send to Shopify for this cart, or [] when the sale doesn't apply
+ * or no tier is reached. Only these: the tier codes don't combine with the
+ * welcome, creator or preorder codes, so nothing else is sent alongside.
+ */
+export function bfCodesFor(subtotalCents: number): string[] {
+  if (!bfActiveNow()) return [];
+  const tier = tierFor(subtotalCents);
+  if (!tier) return [];
+  return subtotalCents >= FREE_SHIPPING_THRESHOLD ? [tier.code, BF_SHIP_CODE] : [tier.code];
 }
 
 export interface BfState {

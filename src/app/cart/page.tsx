@@ -49,8 +49,9 @@ export default function CartPage() {
   const bfTier           = bf.active ? tierFor(totalCents) : null;
   const bfCents          = bfDiscountCents(totalCents, bf.active);
   const afterBfCents     = totalCents - bfCents;
-  // Free shipping is judged on the post-discount amount, as Shopify does.
-  const shipping         = freeShippingProgress(afterBfCents);
+  // Free shipping stays "$125+" on the pre-discount subtotal during Black
+  // Friday — checkout matches via the BF free-shipping code.
+  const shipping         = freeShippingProgress(totalCents);
   // A real number, not "from $7.99". Tax is still Shopify's to compute, but
   // shipping is a rate we set, so there's no reason to make the shopper guess.
   const shippingCents    = shipping.qualified ? 0 : FLAT_SHIPPING_CENTS;
@@ -397,7 +398,9 @@ export default function CartPage() {
       <div className="cart-buybar-spacer" aria-hidden />
       <div className="cart-buybar">
         <div>
-          <span className="cart-buybar-label">estimated total</span>
+          {/* The tier ladder is far down the page on a phone, so the bar
+              that's always on screen says the discount is in the total. */}
+          <span className="cart-buybar-label">{bfTier ? `total · ${bfTier.pct}% off applied` : 'estimated total'}</span>
           <span className="cart-buybar-total">${(estimatedCents / 100).toFixed(2)}</span>
         </div>
         <button onClick={handleCheckout} disabled={isLoading || (ready && !canShop) || blockedNames.length > 0}>
