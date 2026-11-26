@@ -1882,3 +1882,10 @@ body { background: var(--cream); }
   font-family: var(--font-montserrat), system-ui, sans-serif;
   font-size: 10.5px; font-weight: 500; color: #6F6B54; text-transform: lowercase;
 }
+
+/* Product page nudge: solid = already in cart, light = this item. */
+.bf-pdp { margin-bottom: 14px; }
+.bf-track { position: absolute; }
+.bf-fill-now, .bf-fill-ghost { position: absolute; left: 0; top: 0; }
+.bf-fill-ghost { background-color: #E3A391; }
+.bf-panel[data-max='true'] .bf-fill-ghost { background-color: #8E9A7E; }

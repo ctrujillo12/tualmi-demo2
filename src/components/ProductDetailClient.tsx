@@ -13,6 +13,8 @@ import { PRODUCT_COLORS, PRODUCT_COLOR_IMAGES, cartThumbFor } from '@/lib/produc
 import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib/useShopAccess';
 import { getVariantPricing } from '@/lib/productPricing';
 import DiscountBadge from '@/components/DiscountBadge';
+import { TierNudge } from '@/components/TierProgress';
+import { useBlackFriday } from '@/lib/blackFriday';
 import { FREE_SHIPPING_LABEL, WORLDWIDE_LABEL, WORLDWIDE_SENTENCE } from '@/lib/shipping';
 import { shipLabel } from '@/lib/shipWindow';
 import { RETURN_WINDOW_DAYS } from '@/lib/business';
@@ -193,6 +195,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
     ? { price: discounted(basePricing.price, preorder.discountPct), compareAtPrice: basePricing.price }
     : basePricing;
   const preordering = isPreorder || !!preorder;
+  const bf = useBlackFriday();
   const shipLine = preorder ? `Preorder, ships ${preorder.shipWindow}` : shippingLabel;
 
   const handleColorSelect = (color: string) => {
@@ -1171,8 +1174,11 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
             {/* CTA. The sticky bar watches this, not the whole buy box, so it only
                 hides once the real button is on screen. */}
             <div ref={inlineCtaRef} className="pdp-cta-block" style={{ marginBottom: '36px' }}>
+              {/* Black Friday: what adding this does to her tier (lib/blackFriday.ts). */}
+              {bf.active && buyable && <TierNudge addCents={pricing.price} />}
+
               {/* Only renders when a creator code is stored — see lib/discount.ts */}
-              <DiscountBadge />
+              {!bf.active && <DiscountBadge />}
 
               {/* The preorder callout that sat here is gone. It read
                   "✦ preorder — {window}. you're charged today and we ship the
