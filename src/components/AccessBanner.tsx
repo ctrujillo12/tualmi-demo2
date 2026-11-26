@@ -1,33 +1,38 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useShopAccess } from '@/lib/useShopAccess';
+import { useBlackFriday, BF_PUBLIC_MS } from '@/lib/blackFriday';
 
 const sans   = 'var(--font-montserrat), system-ui, sans-serif';
 const maroon = '#34402B';
 
 /**
+ * Black Friday 2026: confirms the email link worked. Shown only to browsers
+ * that came through it, until the sale opens to everyone on Friday 4pm.
+ *
  * Subtle confirmation for members who unlocked early access.
  * Sits as a small pill at the bottom of the screen (doesn't shift layout).
  * Disappears once the shop is public (early access is no longer special).
  */
 export default function AccessBanner() {
-  const { ready, hasEarly, canShop, publicOpen } = useShopAccess();
+  const { ready, hasEarly, phase } = useBlackFriday();
+  const publicOpen = phase === 'ended' || (ready && Date.now() >= BF_PUBLIC_MS);
+  const canShop = phase === 'live';
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    try { setDismissed(sessionStorage.getItem('tualmi_access_banner') === 'closed'); } catch { /* ignore */ }
+    try { setDismissed(sessionStorage.getItem('tualmi_bf_access_banner') === 'closed'); } catch { /* ignore */ }
   }, []);
 
   if (!ready || !hasEarly || publicOpen || dismissed) return null;
 
   const message = canShop
-    ? '✦ early access is live — you’re shopping before everyone else'
-    : '✦ you’re in — early access opens thursday 11am pt';
+    ? '✦ black friday early access is live — up to 35% off before everyone else'
+    : '✦ you’re in — black friday early access opens thursday 4pm pt';
 
   const close = () => {
     setDismissed(true);
-    try { sessionStorage.setItem('tualmi_access_banner', 'closed'); } catch { /* ignore */ }
+    try { sessionStorage.setItem('tualmi_bf_access_banner', 'closed'); } catch { /* ignore */ }
   };
 
   return (

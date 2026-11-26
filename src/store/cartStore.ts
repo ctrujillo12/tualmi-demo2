@@ -21,6 +21,7 @@ import { cartLinePricing, preorderCodesFor } from '@/lib/preorder';
 import { PREORDERS } from '@/lib/preorderConfig';
 import { isPreorderHandle } from '@/lib/shipWindow';
 import { getDiscountCode } from '@/lib/discount';
+import { bfCodeFor } from '@/lib/blackFriday';
 import { galleryImageFor } from '@/lib/productColors';
 import { trackBeginCheckout } from '@/lib/analytics';
 import { getGaIds } from '@/lib/ga';
@@ -581,7 +582,17 @@ export const useCartStore = create<CartStore>()(
           // The creator/welcome code plus, when the cart holds a preorder line,
           // the preorder discount code (lib/preorderConfig.ts). Shopify applies
           // both only if each is set to combine with the other's type.
-          const codes = Array.from(new Set([...(code ? [code] : []), ...preorderCodesFor(items)]));
+          //
+          // Black Friday overrides both: when this browser has the sale
+          // (lib/blackFriday.ts) and the cart reached a tier, the tier code is
+          // the ONLY code sent. The BF codes don't combine with other order or
+          // product discounts, and Shopify takes one non-combinable code, so
+          // sending a creator code alongside would risk losing the bigger
+          // discount. Creator credit still rides on the cart attributes below.
+          const bfCode = bfCodeFor(get().getTotal());
+          const codes = bfCode
+            ? [bfCode]
+            : Array.from(new Set([...(code ? [code] : []), ...preorderCodesFor(items)]));
 
           // Last event we can fire ourselves — the purchase happens on Shopify's
           // domain, so that one has to come from Shopify's own GA4 integration.
@@ -594,7 +605,7 @@ export const useCartStore = create<CartStore>()(
               quantity: i.quantity,
             })),
             get().getTotal() / 100,
-            code ?? undefined,
+            bfCode ?? code ?? undefined,
           );
 
           // GA4 ids ride along on the cart so the orders webhook can replay a

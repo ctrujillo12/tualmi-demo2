@@ -1795,3 +1795,90 @@ body { background: var(--cream); }
   .stock-tag { font-size: 10px; padding: 3px 8px; }
   .stock-tag--card { top: 8px; left: 8px; }
 }
+
+/* ── Black Friday tier ladder (components/TierProgress.tsx) ─────────────────
+   The strip reuses .ship-strip; .bf-strip only changes the colour so the
+   sale reads as a different message from shipping. Remove after BF. */
+.bf-strip { background-color: #A9503A; }
+.bf-strip[data-qualified='true'] { background-color: #34402B; }
+
+.bf-panel {
+  margin-bottom: 16px;
+  padding: 14px 15px 13px;
+  border: 1.5px solid #A9503A;
+  border-radius: 14px;
+  background-color: #FDF4F1;
+}
+.bf-panel[data-max='true'] { border-color: #34402B; background-color: #F3F1E6; }
+
+.bf-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.bf-panel-msg {
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #34402B;
+  text-transform: lowercase;
+  line-height: 1.3;
+}
+.bf-panel-msg strong { font-weight: 800; color: #A9503A; }
+.bf-panel-amount {
+  flex: 0 0 auto;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #A9503A;
+  white-space: nowrap;
+}
+
+/* Track plus five markers. Bottom padding leaves room for the labels. */
+.bf-ladder { position: relative; height: 44px; margin: 0 4px; }
+.bf-track {
+  position: absolute; left: 0; right: 0; top: 4px;
+  height: 7px; border-radius: 100px; background-color: #E6DFCC; overflow: hidden;
+}
+.bf-fill {
+  height: 100%; border-radius: 100px; background-color: #A9503A;
+  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bf-panel[data-max='true'] .bf-fill { background-color: #34402B; }
+
+.bf-step {
+  position: absolute; top: 0;
+  display: flex; flex-direction: column; align-items: center;
+  transform: translateX(-50%);
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+}
+.bf-step:last-of-type { align-items: flex-end; transform: translateX(-100%); }
+.bf-step:last-of-type .bf-dot { margin-right: -1px; }
+.bf-dot {
+  width: 15px; height: 15px; border-radius: 50%;
+  background-color: white; border: 2px solid #D9CFB8;
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+.bf-step[data-reached='true'] .bf-dot { background-color: #A9503A; border-color: #A9503A; }
+.bf-step[data-current='true'] .bf-dot { transform: scale(1.2); box-shadow: 0 0 0 3px rgba(169, 80, 58, 0.18); }
+.bf-panel[data-max='true'] .bf-step[data-reached='true'] .bf-dot { background-color: #34402B; border-color: #34402B; }
+
+.bf-step-pct { margin-top: 4px; font-size: 11px; font-weight: 800; color: #6F6B54; line-height: 1.1; }
+.bf-step-min { font-size: 9.5px; font-weight: 600; color: #9A957C; line-height: 1.2; }
+.bf-step[data-reached='true'] .bf-step-pct { color: #A9503A; }
+.bf-panel[data-max='true'] .bf-step[data-reached='true'] .bf-step-pct { color: #34402B; }
+
+.bf-panel-note {
+  margin: 10px 0 0;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 12px; font-weight: 500; color: #34402B;
+  text-transform: lowercase; line-height: 1.45;
+}
+.bf-panel-note strong { font-weight: 800; }
+.bf-panel-fine {
+  margin: 4px 0 0;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 10.5px; font-weight: 500; color: #6F6B54; text-transform: lowercase;
+}

@@ -7,6 +7,7 @@ import { getAttribution } from '@/lib/attribution';
 import { klaviyoIdentify } from '@/lib/klaviyo';
 import { getReferralCode } from '@/lib/referralClient';
 import { WELCOME_CODE, saveWelcomeCode } from '@/lib/discount';
+import { BF_PUBLIC_MS, captureBfAccess, hasEarlyFlag } from '@/lib/blackFriday';
 
 // New key for the Black Friday early-access push, so visitors who already saw
 // (and dismissed) the old 10% welcome popup still get this one once.
@@ -107,6 +108,12 @@ export default function WelcomePopup() {
   useEffect(() => {
     if (SUPPRESSED.some((p) => pathname?.startsWith(p))) return;
     if (localStorage.getItem(STORAGE_KEY)) return;
+    // Black Friday: no early-access pitch once the sale is open to everyone
+    // (the countdown would sit at zero), and none for someone who already
+    // came through the email link — they're on the list.
+    if (Date.now() >= BF_PUBLIC_MS) return;
+    captureBfAccess();
+    if (hasEarlyFlag()) return;
 
     const show = () => {
       if (firedRef.current) return;

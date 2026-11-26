@@ -8,6 +8,8 @@ import DiscountBadge from '@/components/DiscountBadge';
 import FreeShippingBar from '@/components/FreeShippingBar';
 import CartUpsell from '@/components/CartUpsell';
 import ToteNudge from '@/components/ToteNudge';
+import TierProgress from '@/components/TierProgress';
+import { useBlackFriday, bfDiscountCents, tierFor } from '@/lib/blackFriday';
 import { freeShippingProgress, FLAT_SHIPPING_CENTS, money, WORLDWIDE_SENTENCE } from '@/lib/shipping';
 import { useCartStore, unsellableLines } from '@/store/cartStore';
 import { useShopAccess } from '@/lib/useShopAccess';
@@ -24,6 +26,7 @@ const rule    = '#E6DFCC';
 export default function CartPage() {
   const { items, getTotal, redirectToShopifyCheckout, refreshFromShopify } = useCartStore();
   const { canShop, ready } = useShopAccess();
+  const bf = useBlackFriday();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError]         = useState<string | null>(null);
 
@@ -41,11 +44,17 @@ export default function CartPage() {
 
   const totalCents       = getTotal();
   const total            = totalCents / 100;
-  const shipping         = freeShippingProgress(totalCents);
+  // Black Friday tier, when the sale applies to this visitor. Shopify charges
+  // it at checkout (lib/blackFriday.ts); this is the same maths, shown early.
+  const bfTier           = bf.active ? tierFor(totalCents) : null;
+  const bfCents          = bfDiscountCents(totalCents, bf.active);
+  const afterBfCents     = totalCents - bfCents;
+  // Free shipping is judged on the post-discount amount, as Shopify does.
+  const shipping         = freeShippingProgress(afterBfCents);
   // A real number, not "from $7.99". Tax is still Shopify's to compute, but
   // shipping is a rate we set, so there's no reason to make the shopper guess.
   const shippingCents    = shipping.qualified ? 0 : FLAT_SHIPPING_CENTS;
-  const estimatedCents   = totalCents + shippingCents;
+  const estimatedCents   = afterBfCents + shippingCents;
   // No local tax/total estimate — Shopify calculates both at checkout, and
   // showing a guess here only sets up a mismatch on the next screen.
   /**
@@ -225,6 +234,7 @@ export default function CartPage() {
 
             {/* How close they are to free shipping — the one number that
                 changes behaviour at this step. */}
+            {bf.active && <TierProgress variant="panel" />}
             <FreeShippingBar variant="panel" />
 
             {/* Price breakdown */}
@@ -233,6 +243,12 @@ export default function CartPage() {
                 <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 500, color: soft }}>Subtotal</span>
                 <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: maroon }}>${total.toFixed(2)}</span>
               </div>
+              {bfTier && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: '#A9503A' }}>Black Friday ({bfTier.pct}% off)</span>
+                  <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 700, color: '#A9503A' }}>−${(bfCents / 100).toFixed(2)}</span>
+                </div>
+              )}
               {/* Shipping is the cost people are actually worried about, so it
                   gets a firm number. It read "from $7.99" while the line below
                   it showed the subtotal again — so the shopper tapped checkout
@@ -272,7 +288,9 @@ export default function CartPage() {
             {/* Reassures the shopper the creator code survived to checkout —
                 the totals above can't reflect it, since Shopify computes the
                 discount on its own checkout page. */}
-            <DiscountBadge />
+            {/* Hidden when a BF tier applies: the tier code replaces a creator
+                code at checkout, so "code X applied" would be untrue. */}
+            {!bfTier && <DiscountBadge />}
 
             {/* Ship windows for anything in the cart that has one. This used to
                 open with "Your order contains pre-order items"; nothing is sold

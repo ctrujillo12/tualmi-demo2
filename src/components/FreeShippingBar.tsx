@@ -1,7 +1,6 @@
 'use client';
 
-// Unused while the Black Friday line holds the idle strip — restore with it.
-// import { AFTERPAY_ENABLED, AFTERPAY_SHORT } from '@/lib/afterpay';
+import { AFTERPAY_ENABLED, AFTERPAY_SHORT } from '@/lib/afterpay';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
@@ -14,6 +13,8 @@ import {
 } from '@/lib/shipping';
 import { trackShippingNudge } from '@/lib/analytics';
 import { OPEN_EARLY_ACCESS_EVENT } from '@/components/WelcomePopup';
+import TierProgress from '@/components/TierProgress';
+import { useBlackFriday, bfDiscountCents } from '@/lib/blackFriday';
 
 /**
  * Free-shipping messaging, shown in two places with the same numbers.
@@ -53,8 +54,14 @@ import { OPEN_EARLY_ACCESS_EVENT } from '@/components/WelcomePopup';
  *   'panel' — bordered block with a full progress bar, for the cart summary
  */
 export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'strip' | 'panel' }) {
-  const total = useCartStore((s) => s.getTotal());
+  const rawTotal = useCartStore((s) => s.getTotal());
   const items = useCartStore((s) => s.items);
+  const bf = useBlackFriday();
+  // During Black Friday, Shopify checks the free-shipping minimum against the
+  // order AFTER the tier discount, so this bar has to as well — otherwise a
+  // $150 cart (25% off = $112.50) would be told shipping is free and then
+  // charged for it at checkout.
+  const total = rawTotal - bfDiscountCents(rawTotal, bf.active);
 
   // The cart is persisted, so it isn't readable until after hydration. Render
   // the plain promo first and upgrade to live progress once it's known.
@@ -93,7 +100,10 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
    * if she wants it. Move the multiplier if the price ladder changes.
    */
   const PROPORTIONATE = 1.5;
+  // Off during Black Friday: adding a pair also moves the tier discount, so
+  // "$X total" would be wrong — and the tier ladder already makes this ask.
   const secondPairClears =
+    !bf.active &&
     !qualified &&
     cheapestCents > 0 &&
     secondPairTotal >= FREE_SHIPPING_THRESHOLD &&
@@ -115,6 +125,9 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
   // Always the plain version. There is no room here for a sentence, and the
   // header is not where a shopper is deciding what else to buy.
   if (variant === 'strip') {
+    // While the sale applies to this visitor, the header is the tier ladder.
+    if (bf.active) return <TierProgress variant="strip" />;
+
     // Tacked onto every state so "free US shipping" never reads as "US only"
     // to the international half of the audience.
     const world = <span className="ship-strip-world"> · {WORLDWIDE_LABEL}</span>;
@@ -148,26 +161,35 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
             free-shipping line; once the cart has something in it the strip
             goes back to shipping progress above. Previous idle content is
             kept below in a comment so it is easy to restore after BF. */}
-        <a
-          href="#early-access"
-          onClick={(e) => {
-            e.preventDefault();
-            window.dispatchEvent(new Event(OPEN_EARLY_ACCESS_EVENT));
-          }}
-          style={{ color: 'inherit', textDecoration: 'none' }}
-        >
-          Black Friday early access is open · sizes are limited · <strong>Sign up →</strong>
-        </a>
-        {/* PRE-BF IDLE CONTENT — restore after Black Friday:
-        {AFTERPAY_ENABLED ? (
-          <span className="ship-rotate">
-            <span>free U.S. shipping on <strong>{money(FREE_SHIPPING_THRESHOLD)}+</strong>{world}</span>
-            <span aria-hidden>{AFTERPAY_SHORT}</span>
-          </span>
+        {bf.phase === 'ended' ? (
+          // Post-BF: back to the regular idle line.
+          AFTERPAY_ENABLED ? (
+            <span className="ship-rotate">
+              <span>free U.S. shipping on <strong>{money(FREE_SHIPPING_THRESHOLD)}+</strong>{world}</span>
+              <span aria-hidden>{AFTERPAY_SHORT}</span>
+            </span>
+          ) : (
+            <>free U.S. shipping on <strong>{money(FREE_SHIPPING_THRESHOLD)}+</strong>{world}</>
+          )
+        ) : bf.phase === 'early-waiting' ? (
+          // Came through the email link before Thursday 4pm.
+          <>✦ you&apos;re in · black friday early access opens <strong>thu 4pm pt</strong></>
         ) : (
-          <>free U.S. shipping on <strong>{money(FREE_SHIPPING_THRESHOLD)}+</strong>{world}</>
+          <a
+            href="#early-access"
+            onClick={(e) => {
+              e.preventDefault();
+              window.dispatchEvent(new Event(OPEN_EARLY_ACCESS_EVENT));
+            }}
+            style={{ color: 'inherit', textDecoration: 'none' }}
+          >
+            {bf.phase === 'early-locked' ? (
+              <>early access is live for the list · everyone else fri 4pm pt · <strong>Sign up →</strong></>
+            ) : (
+              <>Black Friday early access is open · sizes are limited · <strong>Sign up →</strong></>
+            )}
+          </a>
         )}
-        */}
       </>
     );
 
