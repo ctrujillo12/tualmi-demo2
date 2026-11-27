@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import CommunityRow from '@/components/CommunityRow';
 import ShopCard from '@/components/ShopCard';
+import BlackFridayHero from '@/components/BlackFridayHero';
 import { HOME_ROW, jh } from '@/lib/community';
 import { getProduct } from '@/lib/products';
 import { DROP_PRODUCTS } from '@/lib/dropProducts';
@@ -78,7 +79,14 @@ export default async function Home() {
           <Image src={jh(129)} alt="Two friends dancing down a mountain road in Juniper Pants" fill quality={85} sizes="85vw" className="tl-hero-img" />
         </div>
         <div className="tl-hero-copy">
-          <h1 className="tl-display">gear for a new kind of outdoorsy.</h1>
+          {/* Black Friday: small one-line pill under the headline, centred on
+              the screen. Renders nothing after the sale (remove after BF). */}
+          {/* Wrapped with the h1 so the phone layout (flex, space-between)
+              keeps them together at the top. */}
+          <div className="tl-hero-top">
+            <h1 className="tl-display">gear for a new kind of outdoorsy.</h1>
+            <BlackFridayHero />
+          </div>
           <div className="tl-hero-cta">
             <Link href="/products/juniper-pant" className="tl-btn tl-btn-light">shop the juniper pant</Link>
             <Link href="/collections" className="tl-link-light">shop all</Link>
