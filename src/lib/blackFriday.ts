@@ -79,6 +79,17 @@ export function nextTier(cents: number): BfTier | null {
   return BF_TIERS.find((t) => cents < t.min) ?? null;
 }
 
+/**
+ * The "base" sale price shown on product cards and the product page: what
+ * this item costs bought on its own, at the tier its own price reaches
+ * ($68 shorts → 15% off, $108 pant → 20% off). A bigger cart only does
+ * better, so this never overpromises. null below the first tier.
+ */
+export function saleUnit(cents: number): { price: number; pct: number } | null {
+  const t = tierFor(cents);
+  return t ? { price: Math.round((cents * (100 - t.pct)) / 100), pct: t.pct } : null;
+}
+
 /** What the tier takes off, in cents (display estimate; Shopify charges it). */
 export function bfDiscountCents(cents: number, active: boolean): number {
   if (!active) return 0;

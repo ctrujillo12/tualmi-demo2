@@ -56,6 +56,18 @@ export const PREORDERS: Record<string, PreorderConfig> = {
   },
 };
 
+/**
+ * Black Friday 2026: the preorder discount is OFF for the sale, so a Picnic
+ * preorder doesn't show 15% off on top of the tier discount. In Shopify,
+ * PREORDER15 was rescheduled to start again Tue 1 Dec 12:00am PT; this window
+ * matches it. Once it's past, this does nothing and can be deleted.
+ */
+const PREORDER_PAUSE_FROM = new Date('2026-11-26T16:00:00-08:00').getTime();
+const PREORDER_PAUSE_UNTIL = new Date('2026-12-01T00:00:00-08:00').getTime();
+export function preorderDiscountPaused(now: number = Date.now()): boolean {
+  return now >= PREORDER_PAUSE_FROM && now < PREORDER_PAUSE_UNTIL;
+}
+
 const eq = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 
 /** Size labels on the site may be "XXS"/"XXL" where Shopify and the PO say "2XS"/"2XL". */

@@ -1883,12 +1883,40 @@ body { background: var(--cream); }
   font-size: 10.5px; font-weight: 500; color: #6F6B54; text-transform: lowercase;
 }
 
-/* Product page nudge: solid = already in cart, light = this item. */
+/* Product page nudge. */
 .bf-pdp { margin-bottom: 14px; }
-.bf-track { position: absolute; }
-.bf-fill-now, .bf-fill-ghost { position: absolute; left: 0; top: 0; }
-.bf-fill-ghost { background-color: #E3A391; }
-.bf-panel[data-max='true'] .bf-fill-ghost { background-color: #8E9A7E; }
+.bf-pdp-msg {
+  margin: 0 0 14px;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 13px; font-weight: 600; color: #34402B;
+  text-transform: lowercase; line-height: 1.35;
+}
+.bf-pdp-msg strong { font-weight: 800; color: #A9503A; }
+.bf-panel[data-max='true'] .bf-pdp-msg strong { color: #34402B; }
+
+/* Sale price on the product page: "20% off" pill after the price. */
+.bf-pdp-pill {
+  display: inline-block; margin-left: 10px; padding: 3px 9px; border-radius: 100px;
+  background: #A9503A; color: #fff; font-size: 11.5px; font-weight: 800;
+  letter-spacing: 0.04em; vertical-align: 3px; text-transform: lowercase;
+}
+
+/* Shop cards (home + /collections): sale price + diagonal corner ribbon. */
+.bf-sale-price { color: #A9503A; }
+.bf-ribbon {
+  position: absolute; top: 22px; right: -38px; z-index: 2;
+  width: 150px; padding: 6px 0;
+  transform: rotate(45deg);
+  background: #A9503A; color: #fff; text-align: center;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: lowercase;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .bf-ribbon { top: 14px; right: -44px; width: 140px; padding: 4px 0; font-size: 10.5px; }
+  .bf-pdp-msg { font-size: 12.5px; }
+}
 
 /* ── Black Friday on phones ── */
 @media (max-width: 767px) {

@@ -132,8 +132,7 @@ export default function TierProgress({ variant }: { variant: 'strip' | 'panel' }
       <p className="bf-panel-note">
         {next ? (
           <>
-            add <strong>{money(gap)}</strong> more to get <strong>{next.pct}% off</strong> your whole order
-            {tier ? <> (up from {tier.pct}%)</> : null}
+            spend <strong>{money(gap)}</strong> more, get <strong>{next.pct}% off</strong> your whole cart
           </>
         ) : (
           <>you&apos;ve hit the top tier — {tier!.pct}% off everything in your cart</>
@@ -145,51 +144,43 @@ export default function TierProgress({ variant }: { variant: 'strip' | 'panel' }
 }
 
 /**
- * Product page version: shows where the cart lands IF she adds this item.
- *
- * The cart ladder says where you are; this one says what this button does to
- * it ("adding this gets your order to 20% off"), which is the moment the
- * nudge is worth most. The solid fill is what's already in the cart, the
- * lighter segment is this item. Only rendered when the sale applies.
+ * Product page version: one plain sentence about the WHOLE cart —
+ * "spend $42 more, get 25% off your whole cart" — plus the ladder showing
+ * where the cart is now. (An earlier "add this → 30%" version projected this
+ * item into the cart and added a second "then $X more" line; both read as
+ * confusing, so it now just says what the header strip says, in full.)
  */
-export function TierNudge({ addCents }: { addCents: number }) {
+export function TierNudge() {
   const total = useCartStore((s) => s.getTotal());
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
 
   const now = hydrated ? total : 0;
-  const withItem = now + addCents;
-  const tierNow = tierFor(now);
-  const tierWith = tierFor(withItem);
-  const next = nextTier(withItem);
-  const jumps = !!tierWith && tierWith.pct !== tierNow?.pct;
+  const next = nextTier(now);
+  const tier = tierFor(now);
 
   return (
     <div className="bf-panel bf-pdp" data-max={next ? 'false' : 'true'}>
-      <div className="bf-panel-head" style={{ marginBottom: '12px' }}>
-        <span className="bf-panel-msg">
-          {jumps ? (
-            <>add this → <strong>{tierWith!.pct}% off</strong> your whole order</>
-          ) : tierWith ? (
-            <>you&apos;re at <strong>{tierWith.pct}% off</strong> with this in your cart</>
-          ) : (
-            <>black friday · <strong>15% off</strong> at {money(BF_TIERS[0].min)}</>
-          )}
-        </span>
-        {tierWith && <span className="bf-panel-amount">−{money(bfDiscountCents(withItem, true))}</span>}
-      </div>
+      <p className="bf-pdp-msg">
+        {now === 0 ? (
+          <>the more you spend, the more you save — up to <strong>{BF_MAX_PCT}% off</strong> your whole cart</>
+        ) : next ? (
+          <>spend <strong>{money(next.min - now)}</strong> more, get <strong>{next.pct}% off</strong> your whole cart</>
+        ) : (
+          <>✦ you&apos;ve unlocked <strong>{tier!.pct}% off</strong> your whole cart</>
+        )}
+      </p>
 
       <div className="bf-ladder" aria-hidden>
         <div className="bf-track">
-          <div className="bf-fill bf-fill-ghost" style={{ width: `${pos(withItem) * 100}%` }} />
-          <div className="bf-fill bf-fill-now" style={{ width: `${pos(now) * 100}%` }} />
+          <div className="bf-fill" style={{ width: `${pos(now) * 100}%` }} />
         </div>
         {BF_TIERS.map((t) => (
           <div
             key={t.min}
             className="bf-step"
-            data-reached={withItem >= t.min ? 'true' : 'false'}
-            data-current={tierWith?.min === t.min ? 'true' : 'false'}
+            data-reached={now >= t.min ? 'true' : 'false'}
+            data-current={tier?.min === t.min ? 'true' : 'false'}
             style={{ left: `${pos(t.min) * 100}%` }}
           >
             <span className="bf-dot" />
@@ -198,14 +189,6 @@ export function TierNudge({ addCents }: { addCents: number }) {
           </div>
         ))}
       </div>
-
-      <p className="bf-panel-note">
-        {next ? (
-          <>then <strong>{money(next.min - withItem)}</strong> more gets you <strong>{next.pct}% off</strong></>
-        ) : (
-          <>that&apos;s the top tier — {tierWith!.pct}% off everything</>
-        )}
-      </p>
     </div>
   );
 }

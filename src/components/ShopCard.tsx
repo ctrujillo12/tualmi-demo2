@@ -6,6 +6,7 @@ import { LOW_STOCK_LABEL } from '@/lib/lowStock';
 import { priceLabel, type DropProduct } from '@/lib/dropProducts';
 import { SHOP_COVERS } from '@/lib/community';
 import type { Product } from '@/types';
+import { SalePrice, SaleRibbon } from '@/components/SalePrice';
 
 /**
  * One colorway in a shop grid: on-body photo first, the studio frame on hover,
@@ -37,6 +38,8 @@ export default function ShopCard({
             <Image src={colorway.image} alt="" fill sizes={sizes} className="shop-card-img shop-card-img-alt" />
           )}
           {runningLow && <span className="stock-tag stock-tag--card">{LOW_STOCK_LABEL}</span>}
+          {/* Black Friday: this item's own tier, e.g. "15% off" (lib/blackFriday.ts). */}
+          <SaleRibbon cents={price} />
         </div>
         <p className="shop-card-name">{name}</p>
         <p className="shop-card-meta">
@@ -44,8 +47,7 @@ export default function ShopCard({
           {colorway.color.toLowerCase()}
         </p>
         <p className="shop-card-price">
-          {onSale && <s>{priceLabel(compareAt)}</s>}
-          {priceLabel(price)}
+          <SalePrice cents={price} compareAt={onSale ? compareAt : undefined} />
         </p>
       </Link>
       <QuickAdd product={product} color={colorway.color} accent="#34402B" sizeVariant="link" />

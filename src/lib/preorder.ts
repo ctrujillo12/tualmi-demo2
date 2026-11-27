@@ -1,7 +1,7 @@
 import type { Product, CartItem } from '@/types';
 import { availability } from '@/lib/inventory';
 import { getVariantPricing } from '@/lib/productPricing';
-import { PREORDERS, preorderIncoming } from '@/lib/preorderConfig';
+import { PREORDERS, preorderIncoming, preorderDiscountPaused } from '@/lib/preorderConfig';
 
 /**
  * Size-level preorders with a preorder discount: pricing, labels and cart
@@ -42,11 +42,13 @@ export function preorderOffer(
   const a = availability(product, color, size);
   if (a.status !== 'available' || !a.backorder) return null;
   const cfg = PREORDERS[handle];
-  return { discountPct: cfg.discountPct, shipWindow: cfg.shipWindow };
+  // Paused for Black Friday (lib/preorderConfig.ts): still a preorder, no discount.
+  return { discountPct: preorderDiscountPaused() ? 0 : cfg.discountPct, shipWindow: cfg.shipWindow };
 }
 
 /** Shopify discount codes for the preorder lines in a cart, deduped. */
 export function preorderCodesFor(items: CartItem[]): string[] {
+  if (preorderDiscountPaused()) return [];
   const codes = items
     .filter((i) => i.isPreorder && i.preorderDiscountPct)
     .map((i) => PREORDERS[handleOf(i.product)]?.code)
@@ -83,7 +85,8 @@ export function preorderCartOptions(offer: PreorderOffer) {
  */
 export function cartLinePricing(item: CartItem): { price: number; compareAtPrice?: number } {
   const base = getVariantPricing(item.product, item.selectedSize, item.selectedColor);
-  const pct = item.preorderDiscountPct;
+  // A line added before Black Friday still carries its 15% snapshot; ignore it during the pause.
+  const pct = preorderDiscountPaused() ? 0 : item.preorderDiscountPct;
   if (!pct) return base;
   return { price: discounted(base.price, pct), compareAtPrice: base.compareAtPrice ?? base.price };
 }

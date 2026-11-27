@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { CartItem as CartItemType } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { cartLinePricing } from '@/lib/preorder';
+import { preorderDiscountPaused } from '@/lib/preorderConfig';
 import { galleryImageFor } from '@/lib/productColors';
 import { availability } from '@/lib/inventory';
 import { SOLD_OUT_LABEL } from '@/lib/lowStock';
@@ -125,7 +126,7 @@ export default function CartItem({ item }: CartItemProps) {
                   fontWeight: 700, letterSpacing: '0.08em', textTransform: 'lowercase',
                 }}
               >
-                preorder{item.preorderDiscountPct ? ` · ${item.preorderDiscountPct}% off` : ''}
+                preorder{item.preorderDiscountPct && !preorderDiscountPaused() ? ` · ${item.preorderDiscountPct}% off` : ''}
               </span>
             ) : null}
             <p style={{ fontFamily: sans, fontSize: '12px', fontWeight: 500, color: soft, margin: '0 0 2px' }}>

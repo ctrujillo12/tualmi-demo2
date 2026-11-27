@@ -14,7 +14,7 @@ import { useShopAccess, isBuyable, GATED_HANDLES, PREORDER_HANDLES } from '@/lib
 import { getVariantPricing } from '@/lib/productPricing';
 import DiscountBadge from '@/components/DiscountBadge';
 import { TierNudge } from '@/components/TierProgress';
-import { useBlackFriday } from '@/lib/blackFriday';
+import { useBlackFriday, saleUnit } from '@/lib/blackFriday';
 import { FREE_SHIPPING_LABEL, WORLDWIDE_LABEL, WORLDWIDE_SENTENCE } from '@/lib/shipping';
 import { shipLabel } from '@/lib/shipWindow';
 import { RETURN_WINDOW_DAYS } from '@/lib/business';
@@ -196,6 +196,12 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
     : basePricing;
   const preordering = isPreorder || !!preorder;
   const bf = useBlackFriday();
+  // What the price lines and buttons SHOW. During Black Friday that's this
+  // item's own-tier price, struck against the regular one ("$108 → $86.40,
+  // 20% off"), so the button no longer says $108 while the cart says less.
+  // `pricing` stays the real list price for the tier maths and analytics.
+  const bfSale = bf.active ? saleUnit(pricing.price) : null;
+  const shown = bfSale ? { price: bfSale.price, compareAtPrice: pricing.price } : pricing;
   const shipLine = preorder ? `Preorder, ships ${preorder.shipWindow}` : shippingLabel;
 
   const handleColorSelect = (color: string) => {
@@ -810,12 +816,13 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 margin: '0 0 18px',
               }}
             >
-              {pricing.compareAtPrice && pricing.compareAtPrice > pricing.price && (
-                <s style={{ color: soft, fontWeight: 500 }}>${(pricing.compareAtPrice / 100).toFixed(2)}</s>
+              {shown.compareAtPrice && shown.compareAtPrice > shown.price && (
+                <s style={{ color: soft, fontWeight: 500 }}>${(shown.compareAtPrice / 100).toFixed(2)}</s>
               )}
-              <span>${(pricing.price / 100).toFixed(2)}</span>
+              <span>${(shown.price / 100).toFixed(2)}</span>
+              {bfSale && <span className="bf-pdp-pill">{bfSale.pct}% off</span>}
             </p>
-            <AfterpayLine cents={pricing.price} />
+            <AfterpayLine cents={shown.price} />
 
             {/* The promise, directly under the price — the one place a shopper
                 is actually asking "is this worth it?". Everything else in this
@@ -1175,7 +1182,7 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 hides once the real button is on screen. */}
             <div ref={inlineCtaRef} className="pdp-cta-block" style={{ marginBottom: '36px' }}>
               {/* Black Friday: what adding this does to her tier (lib/blackFriday.ts). */}
-              {bf.active && buyable && <TierNudge addCents={pricing.price} />}
+              {bf.active && buyable && <TierNudge />}
 
               {/* Only renders when a creator code is stored — see lib/discount.ts */}
               {!bf.active && <DiscountBadge />}
@@ -1246,12 +1253,12 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                           without a size opens the picker instead of doing
                           nothing — a dead button reads as a broken page. */}
                       {preordering ? 'preorder' : 'add to cart'} —{' '}
-                      {pricing.compareAtPrice && pricing.compareAtPrice > pricing.price && (
+                      {shown.compareAtPrice && shown.compareAtPrice > shown.price && (
                         <s style={{ opacity: 0.7, fontWeight: 500, marginRight: '6px' }}>
-                          ${(pricing.compareAtPrice / 100).toFixed(2)}
+                          ${(shown.compareAtPrice / 100).toFixed(2)}
                         </s>
                       )}
-                      <span>${(pricing.price / 100).toFixed(2)}</span>
+                      <span>${(shown.price / 100).toFixed(2)}</span>
                     </button>
                   ) : (
                     /* ── In the cart: quantity stepper ── */
@@ -1523,8 +1530,8 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
                 .filter(Boolean)
                 .join(' · ')}
             </span>
-            {afterpayEligible(pricing.price) && (
-              <span className="pdp-buybar-pay">or 4 payments of {installmentLabel(pricing.price)} with Afterpay</span>
+            {afterpayEligible(shown.price) && (
+              <span className="pdp-buybar-pay">or 4 payments of {installmentLabel(shown.price)} with Afterpay</span>
             )}
           </div>
           {/* Once it's in the cart the bar becomes a link to the cart. It used
@@ -1543,12 +1550,12 @@ export default function ProductDetailClient({ product, initialColor, reviews }: 
           ) : (
             <button onClick={handleBuy} className="pdp-buybar-cta">
               {preordering ? 'preorder' : 'add'} —{' '}
-              {pricing.compareAtPrice && pricing.compareAtPrice > pricing.price && (
+              {shown.compareAtPrice && shown.compareAtPrice > shown.price && (
                 <s style={{ opacity: 0.7, fontWeight: 500, marginRight: '6px' }}>
-                  ${(pricing.compareAtPrice / 100).toFixed(2)}
+                  ${(shown.compareAtPrice / 100).toFixed(2)}
                 </s>
               )}
-              <span>${(pricing.price / 100).toFixed(2)}</span>
+              <span>${(shown.price / 100).toFixed(2)}</span>
             </button>
           )}
         </div>
