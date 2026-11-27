@@ -1933,35 +1933,27 @@ body { background: var(--cream); }
   .bf-panel-note { font-size: 11.5px; }
 }
 
-/* ── Black Friday hero pill (components/BlackFridayHero.tsx) — remove after BF ── */
+/* ── Black Friday bar on the hero (components/BlackFridayHero.tsx) — remove after BF ──
+   Pinned to the bottom edge of the hero, full width, text centred. The hero
+   copy gets extra bottom padding while it's there so the CTA never sits under it. */
 .bfh-pill {
-  display: inline-block;
-  align-self: center;
-  margin: 16px 0 0; padding: 7px 14px;
-  border: none; border-radius: 100px;
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  display: block; width: 100%;
+  padding: 11px 16px; border: none; border-radius: 0;
   background: #A9503A; color: #fff; cursor: pointer;
   font-family: var(--font-montserrat), system-ui, sans-serif;
-  font-size: 13px; font-weight: 600; line-height: 1.25; text-align: left;
+  font-size: 14px; font-weight: 600; line-height: 1.3; text-align: center;
   text-transform: lowercase; text-decoration: none;
-  box-shadow: 0 4px 14px rgba(20, 24, 14, 0.25);
 }
 .bfh-pill strong { font-weight: 800; }
-.bfh-pill:hover { opacity: 0.92; }
-.bfh-dot { display: inline-block; margin-right: 7px; vertical-align: 1px; width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: bfh-pulse 1.4s ease-in-out infinite; }
+.bfh-pill:hover { background: #9A4733; }
+.bfh-dot { display: inline-block; margin-right: 8px; vertical-align: 1px; width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: bfh-pulse 1.4s ease-in-out infinite; }
 @keyframes bfh-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-/* Desktop: the hero copy sits in the right half (left: 50%), so pull the pill
-   back by the column's left padding and half its own width to centre it on
-   the screen, right over the seam between the two photos. */
+.tl-hero:has(.bfh-pill) .tl-hero-copy { padding-bottom: calc(28px + 42px); }
 @media (min-width: 768px) {
-  .bfh-pill {
-    align-self: flex-start;
-    margin-top: 22px;
-    transform: translateX(calc(-50% - clamp(24px, 3vw, 48px)));
-    white-space: nowrap;
-  }
+  .tl-hero:has(.bfh-pill) .tl-hero-copy { padding-bottom: calc(clamp(24px, 4vh, 44px) + 44px); }
 }
 @media (max-width: 767px) {
-  .bfh-pill { font-size: 11.5px; padding: 6px 12px; margin-top: 14px; }
+  .bfh-pill { font-size: 12.5px; padding: 10px 12px; }
   .bfh-long { display: none; }
 }
-.tl-hero-top { display: flex; flex-direction: column; align-items: flex-start; }
