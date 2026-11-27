@@ -216,7 +216,8 @@ export default function FreeShippingBar({ variant = 'strip' }: { variant?: 'stri
         {inner}
       </Link>
     ) : (
-      <div className="ship-strip" data-qualified="false">
+      // Black Friday pre-sale lines get the pink sale strip too (globals.css .bf-strip).
+      <div className={bf.phase !== 'ended' ? 'ship-strip bf-strip' : 'ship-strip'} data-qualified="false">
         {inner}
       </div>
     );

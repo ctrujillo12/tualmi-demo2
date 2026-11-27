@@ -23,9 +23,11 @@ export default function BlackFridayHero() {
     return () => clearInterval(id);
   }, []);
 
-  // Before hydration the early-access flag isn't known; time alone gives the
-  // right line for almost everyone, so show that instead of popping in late.
-  const phase: BfPhase = bf.ready ? bf.phase : bfPhase(now ?? Date.now(), false);
+  // Rendered only in the browser. The homepage HTML is cached (~60s), so a
+  // copy built before Fri 4pm can be served just after it; deciding the text
+  // on the server would then disagree with the browser and break hydration.
+  if (now === null) return null;
+  const phase: BfPhase = bf.ready ? bf.phase : bfPhase(now, false);
   if (phase === 'ended') return null;
 
   const live = phase === 'live';

@@ -246,8 +246,8 @@ export default function CartPage() {
               </div>
               {bfTier && (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: '#A9503A' }}>Black Friday ({bfTier.pct}% off)</span>
-                  <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 700, color: '#A9503A' }}>−${(bfCents / 100).toFixed(2)}</span>
+                  <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 600, color: '#C7356F' }}>Black Friday ({bfTier.pct}% off)</span>
+                  <span style={{ fontFamily: sans, fontSize: '13px', fontWeight: 700, color: '#C7356F' }}>−${(bfCents / 100).toFixed(2)}</span>
                 </div>
               )}
               {/* Shipping is the cost people are actually worried about, so it
