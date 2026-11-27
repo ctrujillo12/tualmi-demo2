@@ -1799,17 +1799,17 @@ body { background: var(--cream); }
 /* ── Black Friday tier ladder (components/TierProgress.tsx) ─────────────────
    The strip reuses .ship-strip; .bf-strip only changes the colour so the
    sale reads as a different message from shipping. Remove after BF. */
-.bf-strip { background-color: #F7B6D2; color: #34402B; }
-.bf-strip .ship-strip-fill { background-color: #C7356F; }
-.bf-strip[data-qualified='true'] { background-color: #C7356F; color: #fff; }
+.bf-strip { background-color: #F9D5DF; color: #34402B; }
+.bf-strip .ship-strip-fill { background-color: #A9445C; }
+.bf-strip[data-qualified='true'] { background-color: #A9445C; color: #fff; }
 .bf-strip[data-qualified='true'] .ship-strip-fill { background-color: rgba(255,255,255,0.9); }
 
 .bf-panel {
   margin-bottom: 16px;
   padding: 14px 15px 13px;
-  border: 1.5px solid #C7356F;
+  border: 1.5px solid #A9445C;
   border-radius: 14px;
-  background-color: #FFF0F6;
+  background-color: #FDF2F5;
 }
 .bf-panel[data-max='true'] { border-color: #34402B; background-color: #F3F1E6; }
 
@@ -1828,13 +1828,13 @@ body { background: var(--cream); }
   text-transform: lowercase;
   line-height: 1.3;
 }
-.bf-panel-msg strong { font-weight: 800; color: #C7356F; }
+.bf-panel-msg strong { font-weight: 800; color: #A9445C; }
 .bf-panel-amount {
   flex: 0 0 auto;
   font-family: var(--font-montserrat), system-ui, sans-serif;
   font-size: 13px;
   font-weight: 800;
-  color: #C7356F;
+  color: #A9445C;
   white-space: nowrap;
 }
 
@@ -1847,7 +1847,7 @@ body { background: var(--cream); }
   height: 7px; border-radius: 100px; background-color: #E6DFCC; overflow: hidden;
 }
 .bf-fill {
-  height: 100%; border-radius: 100px; background-color: #C7356F;
+  height: 100%; border-radius: 100px; background-color: #A9445C;
   transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .bf-panel[data-max='true'] .bf-fill { background-color: #34402B; }
@@ -1863,13 +1863,13 @@ body { background: var(--cream); }
   background-color: white; border: 2px solid #D9CFB8;
   transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
 }
-.bf-step[data-reached='true'] .bf-dot { background-color: #C7356F; border-color: #C7356F; }
-.bf-step[data-current='true'] .bf-dot { transform: scale(1.2); box-shadow: 0 0 0 3px rgba(199, 53, 111, 0.18); }
+.bf-step[data-reached='true'] .bf-dot { background-color: #A9445C; border-color: #A9445C; }
+.bf-step[data-current='true'] .bf-dot { transform: scale(1.2); box-shadow: 0 0 0 3px rgba(169, 68, 92, 0.18); }
 .bf-panel[data-max='true'] .bf-step[data-reached='true'] .bf-dot { background-color: #34402B; border-color: #34402B; }
 
 .bf-step-pct { margin-top: 4px; font-size: 11px; font-weight: 800; color: #6F6B54; line-height: 1.1; }
 .bf-step-min { font-size: 9.5px; font-weight: 600; color: #9A957C; line-height: 1.2; }
-.bf-step[data-reached='true'] .bf-step-pct { color: #C7356F; }
+.bf-step[data-reached='true'] .bf-step-pct { color: #A9445C; }
 .bf-panel[data-max='true'] .bf-step[data-reached='true'] .bf-step-pct { color: #34402B; }
 
 .bf-panel-note {
@@ -1893,23 +1893,23 @@ body { background: var(--cream); }
   font-size: 13px; font-weight: 600; color: #34402B;
   text-transform: lowercase; line-height: 1.35;
 }
-.bf-pdp-msg strong { font-weight: 800; color: #C7356F; }
+.bf-pdp-msg strong { font-weight: 800; color: #A9445C; }
 .bf-panel[data-max='true'] .bf-pdp-msg strong { color: #34402B; }
 
 /* Sale price on the product page: "20% off" pill after the price. */
 .bf-pdp-pill {
   display: inline-block; margin-left: 10px; padding: 3px 9px; border-radius: 100px;
-  background: #C7356F; color: #fff; font-size: 11.5px; font-weight: 800;
+  background: #A9445C; color: #fff; font-size: 11.5px; font-weight: 800;
   letter-spacing: 0.04em; vertical-align: 3px; text-transform: lowercase;
 }
 
 /* Shop cards (home + /collections): sale price + diagonal corner ribbon. */
-.bf-sale-price { color: #C7356F; }
+.bf-sale-price { color: #A9445C; }
 .bf-ribbon {
   position: absolute; top: 22px; right: -38px; z-index: 2;
   width: 150px; padding: 6px 0;
   transform: rotate(45deg);
-  background: #C7356F; color: #fff; text-align: center;
+  background: #A9445C; color: #fff; text-align: center;
   font-family: var(--font-montserrat), system-ui, sans-serif;
   font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: lowercase;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
@@ -1942,15 +1942,15 @@ body { background: var(--cream); }
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
   display: block; width: 100%;
   padding: 11px 16px; border: none; border-radius: 0;
-  background: #F7B6D2; color: #34402B; cursor: pointer;
+  background: #F9D5DF; color: #34402B; cursor: pointer;
   font-family: var(--font-montserrat), system-ui, sans-serif;
   font-size: 14px; font-weight: 600; line-height: 1.3; text-align: center;
   text-transform: lowercase; text-decoration: none;
 }
 .bfh-pill strong { font-weight: 800; }
-.bfh-pill:hover { background: #F3A2C5; }
-.bfh-pill strong { color: #C7356F; }
-.bfh-dot { display: inline-block; margin-right: 8px; vertical-align: 1px; width: 7px; height: 7px; border-radius: 50%; background: #C7356F; animation: bfh-pulse 1.4s ease-in-out infinite; }
+.bfh-pill:hover { background: #F5C6D3; }
+.bfh-pill strong { color: #A9445C; }
+.bfh-dot { display: inline-block; margin-right: 8px; vertical-align: 1px; width: 7px; height: 7px; border-radius: 50%; background: #A9445C; animation: bfh-pulse 1.4s ease-in-out infinite; }
 @keyframes bfh-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .tl-hero:has(.bfh-pill) .tl-hero-copy { padding-bottom: calc(28px + 42px); }
 @media (min-width: 768px) {
