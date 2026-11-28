@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
 import { freeShippingProgress, money } from '@/lib/shipping';
+import { useBlackFriday, tierFor, nextTier, bfDiscountCents } from '@/lib/blackFriday';
+import { cartLinePricing } from '@/lib/preorder';
 import { cartThumbFor } from '@/lib/productColors';
 import { trackAddToCart } from '@/lib/analytics';
 import type { Product } from '@/types';
@@ -96,11 +99,60 @@ export function shouldOfferTote(opts: {
   return opts.remaining <= opts.totePrice;
 }
 
+/**
+ * ── BLACK FRIDAY ─────────────────────────────────────────────────────────
+ * While the tiered sale applies, "add the tote to unlock free US shipping"
+ * stops being the whole story: the tote can also lift the cart into the next
+ * discount tier, and the shopper is really paying the tote's price minus
+ * the discount — sometimes much less, because a tier jump re-discounts the
+ * whole cart. So during the sale the row is offered only when the tote
+ * unlocks something real (a higher tier, free US shipping, or both), names
+ * exactly what it unlocks, and shows what it actually adds to the total
+ * after the discount.
+ *
+ * When the tote unlocks nothing, the row becomes a plain pointer to the next
+ * tier instead of an offer that doesn't move anything.
+ *
+ * Pure and exported for the same reason as shouldOfferTote(). `baseCents`
+ * is the cart WITHOUT the tote. Returns null when the tote unlocks nothing.
+ */
+export interface BfToteOffer {
+  /** The tier % the tote lifts the cart into, or null if it stays put. */
+  tierPct: number | null;
+  /** Whether it takes the cart over the free-US-shipping line. */
+  ship: boolean;
+  /** What adding it changes the merchandise total by, after the tier discount. */
+  netCents: number;
+}
+
+export function bfToteOffer(baseCents: number, totePrice: number): BfToteOffer | null {
+  const withTote = baseCents + totePrice;
+  const before = tierFor(baseCents)?.pct ?? 0;
+  const after  = tierFor(withTote)?.pct ?? 0;
+  const tierUp = after > before;
+  // Free shipping is judged on the pre-discount subtotal during the sale
+  // (see BF_SHIP_CODE in lib/blackFriday.ts), so this is the same test.
+  const ship = !freeShippingProgress(baseCents).qualified && freeShippingProgress(withTote).qualified;
+  if (!tierUp && !ship) return null;
+  const netCents =
+    (withTote - bfDiscountCents(withTote, true)) - (baseCents - bfDiscountCents(baseCents, true));
+  return { tierPct: tierUp ? after : null, ship, netCents };
+}
+
+/** "25% off your whole cart + free US shipping", "free US shipping", … */
+function unlockPhrase(o: BfToteOffer): string {
+  const parts: string[] = [];
+  if (o.tierPct) parts.push(`${o.tierPct}% off your whole cart`);
+  if (o.ship) parts.push('free US shipping');
+  return parts.join(' + ');
+}
+
 export default function ToteNudge() {
   const items      = useCartStore((s) => s.items);
   const total      = useCartStore((s) => s.getTotal());
   const addItem    = useCartStore((s) => s.addItem);
   const removeItem = useCartStore((s) => s.removeItem);
+  const bf         = useBlackFriday();
 
   const [tote, setTote] = useState<Product | null>(null);
   const [showDetails, setShowDetails] = useState(false);
@@ -135,9 +187,49 @@ export default function ToteNudge() {
   const line = items.find((i) => (i.product.handle ?? i.product.id) === TOTE_HANDLE);
   const inCart = !!line;
 
-  const { qualified, remaining } = freeShippingProgress(total);
-  if (!shouldOfferTote({ inCart, qualified, remaining, totePrice: tote.price })) {
-    return null;
+  // During the sale: what the tote does for the cart it is (or would be)
+  // added to. Judged on the cart without it, so a ticked row still knows
+  // what it unlocked.
+  const baseCents = line ? total - cartLinePricing(line).price * line.quantity : total;
+  const offer = bf.active ? bfToteOffer(baseCents, tote.price) : null;
+
+  if (bf.active) {
+    // The tote unlocks nothing here, so don't offer it — point at the next
+    // tier instead. (Nothing at all once the top tier is reached.)
+    if (!inCart && !offer) {
+      const next = nextTier(total);
+      if (!next) return null;
+      return (
+        <p className="tn-hint">
+          <style>{`
+            .tn-hint {
+              max-width: 440px;
+              margin: 14px 0 0;
+              padding: 10px 12px;
+              border: 1px dashed ${rule};
+              border-radius: 10px;
+              background: #fff;
+              font-family: ${sans};
+              font-size: 12px;
+              font-weight: 600;
+              line-height: 1.45;
+              color: ${soft};
+            }
+            .tn-hint strong { font-weight: 700; color: ${maroon}; }
+            .tn-hint a { color: ${maroon}; font-weight: 700; text-underline-offset: 3px; white-space: nowrap; }
+            @media (max-width: 560px) { .tn-hint { max-width: none; font-size: 11.5px; } }
+          `}</style>
+          you&apos;re <strong>{money(next.min - total)}</strong> away from{' '}
+          <strong>{next.pct}% off your whole cart</strong> ·{' '}
+          <Link href="/collections">keep shopping →</Link>
+        </p>
+      );
+    }
+  } else {
+    const { qualified, remaining } = freeShippingProgress(total);
+    if (!shouldOfferTote({ inCart, qualified, remaining, totePrice: tote.price })) {
+      return null;
+    }
   }
 
 
@@ -352,7 +444,23 @@ export default function ToteNudge() {
       <span className="tn-text">
         {inCart ? (
           <>
-            <strong>free US shipping unlocked</strong>&#160;&#10022;
+            <strong>{offer ? `${unlockPhrase(offer)} unlocked` : bf.active ? 'tote added' : 'free US shipping unlocked'}</strong>&#160;&#10022;
+          </>
+        ) : offer ? (
+          // The sale version: what it really adds after the discount, and
+          // exactly what it unlocks. The struck price is the tote's own price;
+          // the second is what the merchandise total actually goes up by.
+          <>
+            add the {tote.name.toLowerCase()} (
+            {offer.netCents < tote.price ? (
+              <>
+                <s>{price}</s>{' '}
+                {offer.netCents <= 0 ? 'free' : money(offer.netCents)} after discount
+              </>
+            ) : (
+              price
+            )}
+            ) to <strong>unlock {unlockPhrase(offer)}</strong>
           </>
         ) : (
           <>
