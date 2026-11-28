@@ -743,7 +743,7 @@ export default function ClubEventsPage() {
                 textDecoration: 'none',
               }}
             >
-              ✦ the next hike is in the works. <span style={{ color: brick, fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px' }}>join to hear first →</span>
+              ✦ something&apos;s brewing in colorado this december. <span style={{ color: brick, fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px' }}>join to hear first →</span>
             </a>
           )}
         </header>
