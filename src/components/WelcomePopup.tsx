@@ -7,69 +7,16 @@ import { getAttribution } from '@/lib/attribution';
 import { klaviyoIdentify } from '@/lib/klaviyo';
 import { getReferralCode } from '@/lib/referralClient';
 import { WELCOME_CODE, saveWelcomeCode } from '@/lib/discount';
-import { BF_PUBLIC_MS, captureBfAccess, hasEarlyFlag } from '@/lib/blackFriday';
 
-// New key for the Black Friday early-access push, so visitors who already saw
-// (and dismissed) the old 10% welcome popup still get this one once.
-const STORAGE_KEY = 'tualmi_bf_early_access_shown';
-
-/** Public Black Friday launch: Fri 27 Nov 2026, 4:00 pm PT (PST = UTC-8). */
-const BF_LAUNCH = new Date('2026-11-27T16:00:00-08:00').getTime();
-
-/**
- * Days / hours / mins / secs to launch, ticking once a second. Stops at zero.
- * Only ever mounted inside the popup, which renders client-side after load,
- * so Date.now() can't cause a hydration mismatch.
- */
-function Countdown() {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, []);
-  const left = Math.max(0, BF_LAUNCH - now);
-  const units: [number, string][] = [
-    [Math.floor(left / 86_400_000), 'days'],
-    [Math.floor(left / 3_600_000) % 24, 'hours'],
-    [Math.floor(left / 60_000) % 60, 'mins'],
-    [Math.floor(left / 1000) % 60, 'secs'],
-  ];
-  return (
-    <div
-      role="timer"
-      aria-label="time until black friday"
-      style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', margin: '0 0 22px' }}
-    >
-      {units.map(([n, label]) => (
-        <div
-          key={label}
-          style={{
-            backgroundColor: 'white', border: `1px solid ${rule}`, borderRadius: '12px',
-            padding: '12px 4px 10px', textAlign: 'center',
-          }}
-        >
-          <div style={{
-            fontFamily: sans, fontWeight: 700, fontSize: 'clamp(24px, 6vw, 30px)',
-            lineHeight: 1, color: maroon, fontVariantNumeric: 'tabular-nums',
-          }}>
-            {String(n).padStart(2, '0')}
-          </div>
-          <div style={{
-            fontFamily: sans, fontWeight: 600, fontSize: '10px', letterSpacing: '0.14em',
-            color: soft, marginTop: '7px', textTransform: 'lowercase',
-          }}>
-            {label}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/** Fired by the header strip's "sign up →" link to open this popup on demand. */
-export const OPEN_EARLY_ACCESS_EVENT = 'tualmi:open-early-access';
+const STORAGE_KEY = 'tualmi_welcome_shown';
 
 // Landing-page design tokens — the same set PolicyPage and /invite use.
+/**
+ * Fired by the header strip / hero links to open this popup on demand.
+ * (Name kept from the Black Friday early-access push so those callers still work.)
+ */
+export const OPEN_EARLY_ACCESS_EVENT = 'tualmi:open-early-access';
+
 const sans    = 'var(--font-montserrat), system-ui, sans-serif';
 const maroon  = '#34402B';
 const blushBg = '#FAF6EC';
@@ -92,28 +39,20 @@ export default function WelcomePopup() {
   // then, so it can never cost us the email conversion.
   const [smsStage, setSmsStage] = useState<'ask' | 'done'>('ask');
   const firedRef                = useRef(false);
+
+  useEffect(() => {
+    const open = () => { firedRef.current = true; setVisible(true); };
+    window.addEventListener(OPEN_EARLY_ACCESS_EVENT, open);
+    return () => window.removeEventListener(OPEN_EARLY_ACCESS_EVENT, open);
+  }, []);
   const pathname                = usePathname();
 
   /** /invite is already a signup page; interrupting checkout costs more than an email. */
   const SUPPRESSED = ['/trail-club', '/invite', '/cart', '/discount'];
 
-  // The header strip links here. Opening on request ignores the once-per-browser
-  // flag and the suppressed pages: she asked for it.
-  useEffect(() => {
-    const open = () => { firedRef.current = true; setStatus('idle'); setVisible(true); };
-    window.addEventListener(OPEN_EARLY_ACCESS_EVENT, open);
-    return () => window.removeEventListener(OPEN_EARLY_ACCESS_EVENT, open);
-  }, []);
-
   useEffect(() => {
     if (SUPPRESSED.some((p) => pathname?.startsWith(p))) return;
     if (localStorage.getItem(STORAGE_KEY)) return;
-    // Black Friday: no early-access pitch once the sale is open to everyone
-    // (the countdown would sit at zero), and none for someone who already
-    // came through the email link — they're on the list.
-    if (Date.now() >= BF_PUBLIC_MS) return;
-    captureBfAccess();
-    if (hasEarlyFlag()) return;
 
     const show = () => {
       if (firedRef.current) return;
@@ -152,7 +91,7 @@ export default function WelcomePopup() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
-          source: 'bf-early-access',
+          source: 'welcome-popup',
           attribution: getAttribution(), ref: getReferralCode() }),
       });
       const data = await res.json();
@@ -240,11 +179,9 @@ export default function WelcomePopup() {
 
         {status === 'success' ? (
           <div>
-            <p style={eyebrow}>black friday early access</p>
-            <h2 style={{ ...heading, margin: '0 0 14px' }}>you&apos;re on the list ✦</h2>
+            <p style={eyebrow}>welcome to the club</p>
+            <h2 style={{ ...heading, margin: '0 0 14px' }}>you&apos;re in ✦</h2>
             <p style={{ ...bodyText, margin: '0 0 14px' }}>
-              we&apos;ll email you 24 hours before everyone else gets in — shop right away,
-              sizes won&apos;t last. in the meantime,
               here&apos;s 10% off your first order — already applied at checkout.
             </p>
             <div style={codeChip}>{WELCOME_CODE}</div>
@@ -279,21 +216,33 @@ export default function WelcomePopup() {
           </div>
         ) : (
           <>
-            <p style={{ ...eyebrow, textAlign: 'center' }}>up to 30% off everything</p>
-            <h2 style={{ ...heading, textAlign: 'center', margin: '0 0 6px' }}>black friday: 27 november</h2>
-            <p style={{ ...bodyText, textAlign: 'center', margin: '0 0 18px' }}>
-              friday, 4:00 pm pt
-            </p>
+            <p style={eyebrow}>the trailblazing club</p>
+            <h2 style={heading}>get 10% off your first order.</h2>
 
-            <Countdown />
-
-            <p style={{ ...bodyText, color: maroon, fontWeight: 700, textAlign: 'center', margin: '0 0 6px' }}>
-              get in 24 hours before everyone else ✦
-            </p>
-            <p style={{ ...bodyText, textAlign: 'center', margin: '0 0 20px' }}>
-              stock is already low and sizes are going fast. the early access list
-              shops thursday at 4:00 pm pt — while your size is still here.
-            </p>
+            <ul
+              style={{
+                listStyle: 'none', padding: 0, margin: '0 0 24px',
+                display: 'flex', flexDirection: 'column', gap: '9px',
+              }}
+            >
+              {[
+                '10% off, the second you join',
+                'special perks, discounts + early access to new drops',
+                'insider info and behind-the-scenes sneak peeks',
+              ].map((perk) => (
+                <li
+                  key={perk}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: '10px',
+                    fontFamily: sans, fontSize: '14px', fontWeight: 500,
+                    color: soft, lineHeight: 1.7,
+                  }}
+                >
+                  <span style={{ color: maroon, flexShrink: 0 }}>✦</span>
+                  {perk}
+                </li>
+              ))}
+            </ul>
 
             <form onSubmit={handleSubmit}>
               <div
@@ -331,7 +280,7 @@ export default function WelcomePopup() {
                     transition: 'opacity 0.2s',
                   }}
                 >
-                  {status === 'loading' ? '…' : 'get early access'}
+                  {status === 'loading' ? '…' : 'join'}
                 </button>
               </div>
 

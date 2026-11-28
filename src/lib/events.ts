@@ -80,6 +80,19 @@ export type ClubEvent = {
 // with status 'upcoming' as soon as it's announced.
 export const CLUB_EVENTS: ClubEvent[] = [
   {
+    // Teaser until the plan is locked: no trail, time or RSVP yet. When it is,
+    // fill in `details` / `trail` and set rsvpOpen: true.
+    id: 'trail-club-colorado-dec-2026',
+    status: 'upcoming',
+    title: 'we’re coming to colorado',
+    dateLabel: 'dec 19 2026',
+    location: 'colorado',
+    blurb:
+      'One last Trailblazing Club hike before Christmas, this time in Colorado. Trail, time and the rest of the details are coming soon.',
+    rsvpOpen: false,
+    photos: [],
+  },
+  {
     id: 'logging-off-idyllwild',
     status: 'past',
     title: 'tualmi logging off: idyllwild',
